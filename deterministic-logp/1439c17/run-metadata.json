@@ -1,0 +1,247 @@
+{
+  "started_at_utc": "2026-10-11T20:57:42.145034+00:00",
+  "source_commit": "1439c17a3f4cf321ba25486e261e795dad3c4a31",
+  "source_dirty": false,
+  "upstream_main_commit": "16b81175874ecf11d5ff05c00de3b69e9457591b",
+  "branch": "feat/b200-deterministic-logp-autograd",
+  "source": "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/source",
+  "output_directory": "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation",
+  "original_evidence": "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/recursive-validation.json",
+  "preserved_original_evidence_sha256": {
+    "recursive-validation.json": "56b035ce3654309eaa644af92404389221acd066b490b29ff02678e19a7af4d6",
+    "recursive-backends.json": "8a2bf8f6287ceabb60e44062e05e7e740026d152073b1a8c2f8662237414563f",
+    "logp-backends.json": "34f4052271a15ba37cc7594116975e03b85aa0a8e9b1f348407efb19b592c066",
+    "forward-compatibility.json": "32970c0d865643cf375d6b463b7790e788a4a58622590ebbc7ec30f9fede0b5f",
+    "regression-v4.xml": "5a539c4aef6f33f786bb090b4c9e958209542a884222e0dc93fb03e7d9518e3e",
+    "higher-order-v4.xml": "39c862bc7073d6abb1b44bc2926f73ec6a63f8a00064a98cf646388894e9de50",
+    "third-order-v4.xml": "5959dd8b4d4dd7a39a4f7d47c121ac44f8b29940eb89634203d1d1e64889726d",
+    "recursive.xml": "cd35e366a0a51a95239e5a1108742797f72c2e83416d8b20fc132bbc078afff0",
+    "recursive-order10.xml": "73a41f7da7347eefded7e9a1ac71f21507beda8391cc2b9961323c71f87b6555",
+    "acceptance-v4.xml": "a6347d59d5bd1ac19fd19095509c332e295f186f84edc4626e717fdc707548d0"
+  },
+  "commands": [
+    {
+      "label": "regression",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "-m",
+        "pytest",
+        "tests/ops/logprob/test_deterministic_logp_autograd.py",
+        "tests/ops/logprob/test_deterministic_logp.py",
+        "tests/ops/logprob/test_batch_invariant_logp.py",
+        "tests/build/test_extension_smoke.py",
+        "tests/runtime/test_dispatch.py",
+        "tests/benchmarks/test_profiler.py",
+        "tests/e2e/test_grpo_single_gpu_example.py",
+        "-v",
+        "-rs",
+        "-o",
+        "junit_family=legacy",
+        "--junitxml=/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/regression.xml"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:57:42.193537+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:58:01.401175+00:00"
+    },
+    {
+      "label": "higher-order",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "-m",
+        "pytest",
+        "tests/ops/logprob/test_deterministic_logp_higher_order.py",
+        "-v",
+        "-rs",
+        "-o",
+        "junit_family=legacy",
+        "--junitxml=/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/higher-order.xml"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:58:01.402243+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:58:08.773810+00:00"
+    },
+    {
+      "label": "third-order",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "-m",
+        "pytest",
+        "tests/ops/logprob/test_deterministic_logp_third_order.py",
+        "-v",
+        "-rs",
+        "-o",
+        "junit_family=legacy",
+        "--junitxml=/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/third-order.xml"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:58:08.775808+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:58:15.895271+00:00"
+    },
+    {
+      "label": "recursive",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "-m",
+        "pytest",
+        "tests/ops/logprob/test_deterministic_logp_recursive.py",
+        "-v",
+        "-rs",
+        "-o",
+        "junit_family=legacy",
+        "--junitxml=/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/recursive.xml"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:58:15.898195+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:58:47.484458+00:00"
+    },
+    {
+      "label": "recursive-order10",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "-m",
+        "pytest",
+        "tests/ops/logprob/test_deterministic_logp_recursive.py",
+        "-k",
+        "recursive_orders and dtype3",
+        "-v",
+        "-rs",
+        "-o",
+        "junit_family=legacy",
+        "--junitxml=/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/recursive-order10.xml"
+      ],
+      "environment_overrides": {
+        "RL_KERNEL_LOGP_MAX_ORDER": "10"
+      },
+      "started_at_utc": "2026-10-11T20:58:47.487244+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:58:56.918424+00:00"
+    },
+    {
+      "label": "acceptance",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "-m",
+        "pytest",
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/test_logp_acceptance.py",
+        "-v",
+        "-rs",
+        "-o",
+        "junit_family=legacy",
+        "--junitxml=/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/acceptance.xml"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:58:56.921006+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:59:04.888398+00:00"
+    },
+    {
+      "label": "forward-compatibility",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/compare_forward_baseline.py"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:59:04.890959+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:59:08.502306+00:00"
+    },
+    {
+      "label": "grpo",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "examples/post_training/grpo_single_gpu.py",
+        "--device",
+        "cuda",
+        "--logp-backend",
+        "deterministic",
+        "--require-fused-logp",
+        "--require-batch-invariant-logp",
+        "--steps",
+        "3",
+        "--num-prompts",
+        "1",
+        "--samples-per-prompt",
+        "2",
+        "--prompt-len",
+        "2",
+        "--completion-len",
+        "3",
+        "--vocab-size",
+        "257",
+        "--hidden-dim",
+        "8"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:59:08.505277+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:59:13.629211+00:00"
+    },
+    {
+      "label": "logp-backends",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/probe_logp_backends.py"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:59:13.632469+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:59:18.964123+00:00"
+    },
+    {
+      "label": "recursive-backends",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "tools/validation/operators/probe_deterministic_logp_autograd.py",
+        "--output",
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/recursive-backends.json"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:59:18.967141+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:59:29.623144+00:00"
+    },
+    {
+      "label": "docs",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "-m",
+        "mkdocs",
+        "build",
+        "--strict",
+        "-f",
+        "mkdocs.yaml",
+        "--site-dir",
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/site"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:59:29.625800+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:59:39.278989+00:00"
+    },
+    {
+      "label": "layout",
+      "command": [
+        "/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/.venv-b200/bin/python",
+        "ci/run.py",
+        "layout",
+        "-v",
+        "-rs",
+        "-o",
+        "junit_family=legacy",
+        "--junitxml=/data/wrd/projects/students/wenbo.ji/egocentric_video_generation/RL-Kernel/runs/b200-autograd/rebased-main-validation/layout.xml"
+      ],
+      "environment_overrides": {},
+      "started_at_utc": "2026-10-11T20:59:39.281331+00:00",
+      "returncode": 0,
+      "finished_at_utc": "2026-10-11T20:59:50.884702+00:00"
+    }
+  ],
+  "finished_at_utc": "2026-10-11T20:59:50.887594+00:00",
+  "source_commit_after": "1439c17a3f4cf321ba25486e261e795dad3c4a31",
+  "source_dirty_after": false,
+  "runner_sha256": "0ba8b3d645cc0894e4b8a2c46592e9cc1b5d4b9c7b863f070349f0cb7d1c184b"
+}
