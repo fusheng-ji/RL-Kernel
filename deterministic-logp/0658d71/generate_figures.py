@@ -39,6 +39,7 @@ plt.rcParams.update(
         "axes.labelcolor": "#314252",
         "text.color": "#213242",
         "svg.fonttype": "none",
+        "svg.hashsalt": "deterministic-logp-0658d71",
         "figure.facecolor": "white",
     }
 )
@@ -46,7 +47,9 @@ plt.rcParams.update(
 
 def save(fig, output, name):
     fig.savefig(output / f"{name}.png", dpi=180, facecolor="white")
-    fig.savefig(output / f"{name}.svg", metadata={"Date": None})
+    svg = output / f"{name}.svg"
+    fig.savefig(svg, metadata={"Date": None})
+    svg.write_text("\n".join(line.rstrip() for line in svg.read_text().splitlines()) + "\n")
     plt.close(fig)
 
 
@@ -320,7 +323,7 @@ def main():
         shutil.copyfile(args.report, snapshot)
     rows, maxima = extract(report)
     with (args.output / "derivative-errors.csv").open("w", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
     data = {
