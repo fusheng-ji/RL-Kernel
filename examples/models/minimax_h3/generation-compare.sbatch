@@ -12,10 +12,11 @@ source_dir=$1
 python_bin=$2
 reference_root=$3
 result_root=$4
+extra_dependencies=$5   # overlay with scikit-image / scipy (the reference job used it too)
 cd "$source_dir"
 [[ -z $(git status --porcelain) ]]
 commit=$(git rev-parse HEAD)
-export PYTHONPATH="$source_dir"
+export PYTHONPATH="$source_dir:$extra_dependencies"
 "$python_bin" -m tools.validation.models.h3_generation_compare \
   --reference "$reference_root/generation-reference" \
   --candidate "$result_root/generation-${commit:0:8}" \
