@@ -1,0 +1,1608 @@
+{
+  "kind": "actual_vime_vllm_ws2_provider_evidence_index",
+  "schema_version": 1,
+  "packaging": "Lossless deterministic gzip of complete original runner JSON, including every rank and case. No records omitted.",
+  "case_identity": "Seed, row count, execution dtype, caller temperature, real/padded vocabulary, and support mask; full input and native sampled-ID byte hashes are checked across ranks/topologies.",
+  "runs": {
+    "tp1": {
+      "artifact": "tp1.json.gz",
+      "raw_json_sha256": "566c23c8b5069a640dc709cfc8a3c57b5666a17e7e2d3c3d74120cc786823887",
+      "gzip_sha256": "6aacfee3c511549f97147f116d29e40d8361eaaa0a87491eec1c82a86cb13e99",
+      "raw_json_bytes": 2137891,
+      "gzip_bytes": 190688,
+      "per_rank": [
+        {
+          "kind": "actual_vime_vllm_ws2_provider_evidence",
+          "git_commit": "3c49083dcbb18ce596a733de372f35fceb97dc9b",
+          "git_dirty": false,
+          "runner_sha256": "8e287ee70f37b0751549cc2f2f0ddc7a7201336deacee5125c2e017dab12996a",
+          "run_utc": "2026-10-18T14:07:00.735387+00:00",
+          "command": [
+            "<PYTHON_ENV>/bin/python",
+            "benchmarks/fused_logp_provider_evidence.py",
+            "--out",
+            "<TMP>/x",
+            "--seeds",
+            "3",
+            "4",
+            "5",
+            "--flash-attn-src",
+            "<TMP>/x/flash-attention"
+          ],
+          "environment": {
+            "torch": "2.13.0+cu130",
+            "cuda": "13.0",
+            "python": "3.12.14",
+            "vllm": "0.30.0",
+            "triton": "3.7.1",
+            "VLLM_USE_FLASHINFER_SAMPLER": "0",
+            "installed_vllm_sources": {
+              "vllm.v1.sample.sampler": {
+                "path": "<PYTHON_ENV>/lib/python3.12/site-packages/vllm/v1/sample/sampler.py",
+                "sha256": "f95805b2c6d06218c724826aa5f881a606e8d0a534a566aee7c85948520dd216"
+              },
+              "vllm.v1.sample.metadata": {
+                "path": "<PYTHON_ENV>/lib/python3.12/site-packages/vllm/v1/sample/metadata.py",
+                "sha256": "6582cfe1a240c7ddb975f0ef6dd7dcd28dcf0fc7670394390250013977aa7ffd"
+              }
+            }
+          },
+          "topology": {
+            "rank": 0,
+            "local_rank": 0,
+            "device_index": 0,
+            "device_name": "NVIDIA B200",
+            "device_uuid": "da12e6f8-b299-87ee-11bc-d4d17556e57b",
+            "visible_gpu_count": 1,
+            "world_size": 1,
+            "transport": "none",
+            "physical_gpu_topology_claim": "one rank per GPU"
+          },
+          "scope": "real integration providers on frozen logits; actual Sampler.forward; no full model or serving engine",
+          "summary": {
+            "case_count": 48,
+            "existing_ws2_provider_baseline": {
+              "comparisons_checked": 1392,
+              "elements_checked": 34224,
+              "rows_checked": 34224,
+              "elements_differing": 220,
+              "rows_differing": 220,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06,
+              "all_bitwise_equal": false,
+              "all_finite": true,
+              "passes": false
+            },
+            "flash_attn_candidate": {
+              "status": "executed",
+              "same_provider_train_vs_no_grad": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "replicated_tp1_train_vs_rollout_control": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "fixed_topology_layout_invariance": {
+                "comparisons_checked": 672,
+                "elements_checked": 16224,
+                "rows_checked": 16224,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "coordinated_train_vs_rollout": {
+                "comparisons_checked": 384,
+                "elements_checked": 9600,
+                "rows_checked": 9600,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "changed_implementation_vs_ws2_diagnostic": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 84,
+                "rows_differing": 84,
+                "nonfinite_elements": 0,
+                "max_abs": 9.5367431640625e-07,
+                "all_bitwise_equal": false,
+                "all_finite": true,
+                "passes": false
+              },
+              "coordinated_replacement_passes_sampled_contract": true
+            },
+            "top_p_replay_rejection_observed": true,
+            "scope": "sampled provider/scorer contracts; CE-vs-WS2 drift is diagnostic, not a replacement gate"
+          },
+          "unique_configurations_on_this_rank": 48,
+          "primary_rows_per_quantity": 1200,
+          "primary_comparisons": {
+            "existing_ws2_train_vs_rollout_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "coordinated_flash_train_vs_rollout_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_vs_ws2_diagnostic_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 42,
+              "elements_checked": 1200,
+              "elements_differing": 42,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "existing_ws2_train_vs_rollout_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "coordinated_flash_train_vs_rollout_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_vs_ws2_diagnostic_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 42,
+              "elements_checked": 1200,
+              "elements_differing": 42,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            }
+          },
+          "layout_comparisons": {
+            "reverse_permutation": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            },
+            "chunks_1": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            },
+            "chunks_7": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            }
+          },
+          "active_row_compaction": {
+            "vime_train_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vime_train_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vllm_rollout_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vllm_rollout_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "flash_train_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_train_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_rollout_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_rollout_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            }
+          },
+          "explicit_active_mask": {
+            "train_vs_infer_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "train_vs_infer_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "active_or_zero_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "all_rows_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            }
+          }
+        }
+      ]
+    },
+    "tp2": {
+      "artifact": "tp2.json.gz",
+      "raw_json_sha256": "e27e3c15a98b6034834e5f355665330b2c22501d32f95156f552a42505d8b43e",
+      "gzip_sha256": "b07443cc7d7bfda65447d9e567c07ccddf8ba16d100fb8f9cb2652c358bbd0df",
+      "raw_json_bytes": 4814312,
+      "gzip_bytes": 440110,
+      "per_rank": [
+        {
+          "kind": "actual_vime_vllm_ws2_provider_evidence",
+          "git_commit": "3c49083dcbb18ce596a733de372f35fceb97dc9b",
+          "git_dirty": false,
+          "runner_sha256": "8e287ee70f37b0751549cc2f2f0ddc7a7201336deacee5125c2e017dab12996a",
+          "run_utc": "2026-10-18T14:07:04.591839+00:00",
+          "command": [
+            "<PYTHON_ENV>/bin/python",
+            "benchmarks/fused_logp_provider_evidence.py",
+            "--out",
+            "<TMP>/x",
+            "--seeds",
+            "3",
+            "4",
+            "5",
+            "--flash-attn-src",
+            "<TMP>/x/flash-attention"
+          ],
+          "environment": {
+            "torch": "2.13.0+cu130",
+            "cuda": "13.0",
+            "python": "3.12.14",
+            "vllm": "0.30.0",
+            "triton": "3.7.1",
+            "VLLM_USE_FLASHINFER_SAMPLER": "0",
+            "installed_vllm_sources": {
+              "vllm.v1.sample.sampler": {
+                "path": "<PYTHON_ENV>/lib/python3.12/site-packages/vllm/v1/sample/sampler.py",
+                "sha256": "f95805b2c6d06218c724826aa5f881a606e8d0a534a566aee7c85948520dd216"
+              },
+              "vllm.v1.sample.metadata": {
+                "path": "<PYTHON_ENV>/lib/python3.12/site-packages/vllm/v1/sample/metadata.py",
+                "sha256": "6582cfe1a240c7ddb975f0ef6dd7dcd28dcf0fc7670394390250013977aa7ffd"
+              }
+            }
+          },
+          "topology": {
+            "rank": 0,
+            "local_rank": 0,
+            "device_index": 0,
+            "device_name": "NVIDIA B200",
+            "device_uuid": "a000345e-9eed-ee0a-026b-dac6a95f16e6",
+            "visible_gpu_count": 2,
+            "world_size": 2,
+            "transport": "nccl",
+            "physical_gpu_topology_claim": "one rank per GPU"
+          },
+          "scope": "real integration providers on frozen logits; actual Sampler.forward; no full model or serving engine",
+          "summary": {
+            "case_count": 48,
+            "existing_ws2_provider_baseline": {
+              "comparisons_checked": 1392,
+              "elements_checked": 34224,
+              "rows_checked": 34224,
+              "elements_differing": 220,
+              "rows_differing": 220,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06,
+              "all_bitwise_equal": false,
+              "all_finite": true,
+              "passes": false
+            },
+            "flash_attn_candidate": {
+              "status": "executed",
+              "same_provider_train_vs_no_grad": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "replicated_tp1_train_vs_rollout_control": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "fixed_topology_layout_invariance": {
+                "comparisons_checked": 672,
+                "elements_checked": 16224,
+                "rows_checked": 16224,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "coordinated_train_vs_rollout": {
+                "comparisons_checked": 384,
+                "elements_checked": 9600,
+                "rows_checked": 9600,
+                "elements_differing": 2256,
+                "rows_differing": 2256,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06,
+                "all_bitwise_equal": false,
+                "all_finite": true,
+                "passes": false
+              },
+              "changed_implementation_vs_ws2_diagnostic": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 544,
+                "rows_differing": 544,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06,
+                "all_bitwise_equal": false,
+                "all_finite": true,
+                "passes": false
+              },
+              "coordinated_replacement_passes_sampled_contract": false
+            },
+            "top_p_replay_rejection_observed": true,
+            "scope": "sampled provider/scorer contracts; CE-vs-WS2 drift is diagnostic, not a replacement gate"
+          },
+          "unique_configurations_on_this_rank": 48,
+          "primary_rows_per_quantity": 1200,
+          "primary_comparisons": {
+            "existing_ws2_train_vs_rollout_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "coordinated_flash_train_vs_rollout_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 282,
+              "elements_checked": 1200,
+              "elements_differing": 282,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            },
+            "flash_vs_ws2_diagnostic_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 272,
+              "elements_checked": 1200,
+              "elements_differing": 272,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            },
+            "existing_ws2_train_vs_rollout_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "coordinated_flash_train_vs_rollout_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 282,
+              "elements_checked": 1200,
+              "elements_differing": 282,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            },
+            "flash_vs_ws2_diagnostic_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 272,
+              "elements_checked": 1200,
+              "elements_differing": 272,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            }
+          },
+          "layout_comparisons": {
+            "reverse_permutation": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            },
+            "chunks_1": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            },
+            "chunks_7": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            }
+          },
+          "active_row_compaction": {
+            "vime_train_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vime_train_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vllm_rollout_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vllm_rollout_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "flash_train_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_train_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_rollout_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_rollout_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            }
+          },
+          "explicit_active_mask": {
+            "train_vs_infer_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "train_vs_infer_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "active_or_zero_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "all_rows_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            }
+          }
+        },
+        {
+          "kind": "actual_vime_vllm_ws2_provider_evidence",
+          "git_commit": "3c49083dcbb18ce596a733de372f35fceb97dc9b",
+          "git_dirty": false,
+          "runner_sha256": "8e287ee70f37b0751549cc2f2f0ddc7a7201336deacee5125c2e017dab12996a",
+          "run_utc": "2026-10-18T14:07:04.600329+00:00",
+          "command": [
+            "<PYTHON_ENV>/bin/python",
+            "benchmarks/fused_logp_provider_evidence.py",
+            "--out",
+            "<TMP>/x",
+            "--seeds",
+            "3",
+            "4",
+            "5",
+            "--flash-attn-src",
+            "<TMP>/x/flash-attention"
+          ],
+          "environment": {
+            "torch": "2.13.0+cu130",
+            "cuda": "13.0",
+            "python": "3.12.14",
+            "vllm": "0.30.0",
+            "triton": "3.7.1",
+            "VLLM_USE_FLASHINFER_SAMPLER": "0",
+            "installed_vllm_sources": {
+              "vllm.v1.sample.sampler": {
+                "path": "<PYTHON_ENV>/lib/python3.12/site-packages/vllm/v1/sample/sampler.py",
+                "sha256": "f95805b2c6d06218c724826aa5f881a606e8d0a534a566aee7c85948520dd216"
+              },
+              "vllm.v1.sample.metadata": {
+                "path": "<PYTHON_ENV>/lib/python3.12/site-packages/vllm/v1/sample/metadata.py",
+                "sha256": "6582cfe1a240c7ddb975f0ef6dd7dcd28dcf0fc7670394390250013977aa7ffd"
+              }
+            }
+          },
+          "topology": {
+            "rank": 1,
+            "local_rank": 1,
+            "device_index": 1,
+            "device_name": "NVIDIA B200",
+            "device_uuid": "da12e6f8-b299-87ee-11bc-d4d17556e57b",
+            "visible_gpu_count": 2,
+            "world_size": 2,
+            "transport": "nccl",
+            "physical_gpu_topology_claim": "one rank per GPU"
+          },
+          "scope": "real integration providers on frozen logits; actual Sampler.forward; no full model or serving engine",
+          "summary": {
+            "case_count": 48,
+            "existing_ws2_provider_baseline": {
+              "comparisons_checked": 1392,
+              "elements_checked": 34224,
+              "rows_checked": 34224,
+              "elements_differing": 220,
+              "rows_differing": 220,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06,
+              "all_bitwise_equal": false,
+              "all_finite": true,
+              "passes": false
+            },
+            "flash_attn_candidate": {
+              "status": "executed",
+              "same_provider_train_vs_no_grad": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "replicated_tp1_train_vs_rollout_control": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "fixed_topology_layout_invariance": {
+                "comparisons_checked": 672,
+                "elements_checked": 16224,
+                "rows_checked": 16224,
+                "elements_differing": 0,
+                "rows_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0,
+                "all_bitwise_equal": true,
+                "all_finite": true,
+                "passes": true
+              },
+              "coordinated_train_vs_rollout": {
+                "comparisons_checked": 384,
+                "elements_checked": 9600,
+                "rows_checked": 9600,
+                "elements_differing": 2256,
+                "rows_differing": 2256,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06,
+                "all_bitwise_equal": false,
+                "all_finite": true,
+                "passes": false
+              },
+              "changed_implementation_vs_ws2_diagnostic": {
+                "comparisons_checked": 96,
+                "elements_checked": 2400,
+                "rows_checked": 2400,
+                "elements_differing": 544,
+                "rows_differing": 544,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06,
+                "all_bitwise_equal": false,
+                "all_finite": true,
+                "passes": false
+              },
+              "coordinated_replacement_passes_sampled_contract": false
+            },
+            "top_p_replay_rejection_observed": true,
+            "scope": "sampled provider/scorer contracts; CE-vs-WS2 drift is diagnostic, not a replacement gate"
+          },
+          "unique_configurations_on_this_rank": 48,
+          "primary_rows_per_quantity": 1200,
+          "primary_comparisons": {
+            "existing_ws2_train_vs_rollout_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "coordinated_flash_train_vs_rollout_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 282,
+              "elements_checked": 1200,
+              "elements_differing": 282,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            },
+            "flash_vs_ws2_diagnostic_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 272,
+              "elements_checked": 1200,
+              "elements_differing": 272,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            },
+            "existing_ws2_train_vs_rollout_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "coordinated_flash_train_vs_rollout_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 282,
+              "elements_checked": 1200,
+              "elements_differing": 282,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            },
+            "flash_vs_ws2_diagnostic_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 272,
+              "elements_checked": 1200,
+              "elements_differing": 272,
+              "nonfinite_elements": 0,
+              "max_abs": 1.9073486328125e-06
+            }
+          },
+          "layout_comparisons": {
+            "reverse_permutation": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            },
+            "chunks_1": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 22,
+                "elements_checked": 1200,
+                "elements_differing": 22,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            },
+            "chunks_7": {
+              "vime_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vime_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "vllm_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 27,
+                "elements_checked": 1200,
+                "elements_differing": 27,
+                "nonfinite_elements": 0,
+                "max_abs": 1.9073486328125e-06
+              },
+              "flash_train_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_train_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_logp": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              },
+              "flash_rollout_lse": {
+                "comparisons_checked": 48,
+                "rows_checked": 1200,
+                "rows_differing": 0,
+                "elements_checked": 1200,
+                "elements_differing": 0,
+                "nonfinite_elements": 0,
+                "max_abs": 0.0
+              }
+            }
+          },
+          "active_row_compaction": {
+            "vime_train_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vime_train_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vllm_rollout_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "vllm_rollout_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 6,
+              "elements_checked": 456,
+              "elements_differing": 6,
+              "nonfinite_elements": 0,
+              "max_abs": 9.5367431640625e-07
+            },
+            "flash_train_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_train_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_rollout_logp": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "flash_rollout_lse": {
+              "comparisons_checked": 24,
+              "rows_checked": 456,
+              "rows_differing": 0,
+              "elements_checked": 456,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            }
+          },
+          "explicit_active_mask": {
+            "train_vs_infer_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "train_vs_infer_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "active_or_zero_logp": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            },
+            "all_rows_lse": {
+              "comparisons_checked": 48,
+              "rows_checked": 1200,
+              "rows_differing": 0,
+              "elements_checked": 1200,
+              "elements_differing": 0,
+              "nonfinite_elements": 0,
+              "max_abs": 0.0
+            }
+          }
+        }
+      ]
+    }
+  },
+  "cross_topology_identity_verification": {
+    "matched_case_pairs": 96,
+    "tp1_vs_each_tp2_rank": true,
+    "identical_full_input_bytes": true,
+    "identical_native_sampled_ids": true,
+    "identical_full_batch_ws2_logp_and_lse_bytes": true,
+    "unique_configurations_per_topology": 48,
+    "unique_rows_per_quantity_per_topology": 1200,
+    "tp2_rank_rows_are_replicated_checks_not_additional_independent_samples": true
+  }
+}

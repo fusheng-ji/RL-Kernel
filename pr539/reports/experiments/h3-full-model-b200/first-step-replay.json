@@ -1,0 +1,346 @@
+{
+  "note": "First denoising step of the generation replayed from its saved packed inputs and compared with the provider's saved step-000 output.",
+  "torch": "2.9.1+cu130",
+  "device": "NVIDIA B200",
+  "runs": [
+    {
+      "configuration": "candidate-seed42",
+      "seed": 42,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.8027234077453613,
+        "relative_l2": 0.02850635223954963
+      },
+      "audio": {
+        "max_abs": 0.05083441734313965,
+        "relative_l2": 0.00942012909146412
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "candidate-seed44",
+      "seed": 44,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.7223995476961136,
+        "relative_l2": 0.027426683709690723
+      },
+      "audio": {
+        "max_abs": 0.0573124885559082,
+        "relative_l2": 0.01241700390736722
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "candidate",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.745826244354248,
+        "relative_l2": 0.021209762732343464
+      },
+      "audio": {
+        "max_abs": 0.06768512725830078,
+        "relative_l2": 0.009717391058985784
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "provider-blas-cublaslt",
+      "seed": 43,
+      "mode": "provider",
+      "provider_variant": "blas-cublaslt",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "audio": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "bitwise_equal_to_saved_step": true
+    },
+    {
+      "configuration": "provider-default-seed42",
+      "seed": 42,
+      "mode": "provider",
+      "provider_variant": "default",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "audio": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "bitwise_equal_to_saved_step": true
+    },
+    {
+      "configuration": "provider-default-seed44",
+      "seed": 44,
+      "mode": "provider",
+      "provider_variant": "default",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "audio": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "bitwise_equal_to_saved_step": true
+    },
+    {
+      "configuration": "provider-default",
+      "seed": 43,
+      "mode": "provider",
+      "provider_variant": "default",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "audio": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "bitwise_equal_to_saved_step": true
+    },
+    {
+      "configuration": "provider-sdpa-efficient",
+      "seed": 43,
+      "mode": "provider",
+      "provider_variant": "sdpa-efficient",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.6021814942359924,
+        "relative_l2": 0.021762088257232606
+      },
+      "audio": {
+        "max_abs": 0.11750853061676025,
+        "relative_l2": 0.01208836099469164
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "provider-sdpa-flash",
+      "seed": 43,
+      "mode": "provider",
+      "provider_variant": "sdpa-flash",
+      "provider_nodes": [],
+      "video": {
+        "max_abs": 0.5810486078262329,
+        "relative_l2": 0.021851701156253497
+      },
+      "audio": {
+        "max_abs": 0.039952635765075684,
+        "relative_l2": 0.008856910928061738
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-adaln-projection",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "adaln_projection"
+      ],
+      "video": {
+        "max_abs": 0.5249228458851576,
+        "relative_l2": 0.019318762041699574
+      },
+      "audio": {
+        "max_abs": 0.10288548469543457,
+        "relative_l2": 0.011492602491042543
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-all-interim",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "attention",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "ffn_gate_up",
+        "ffn_down",
+        "swiglu",
+        "q_norm",
+        "k_norm"
+      ],
+      "video": {
+        "max_abs": 0.6517516002058983,
+        "relative_l2": 0.019215745760982526
+      },
+      "audio": {
+        "max_abs": 0.0754936933517456,
+        "relative_l2": 0.007306189061935126
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-all-nodes",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "adaln_projection",
+        "norm1",
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "q_norm",
+        "k_norm",
+        "rope_q",
+        "rope_k",
+        "attention",
+        "o_proj",
+        "residual_attn",
+        "norm2",
+        "ffn_gate_up",
+        "swiglu",
+        "ffn_down",
+        "residual_mlp"
+      ],
+      "video": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "audio": {
+        "max_abs": 0.0,
+        "relative_l2": 0.0
+      },
+      "bitwise_equal_to_saved_step": true
+    },
+    {
+      "configuration": "swap-attention",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "attention"
+      ],
+      "video": {
+        "max_abs": 0.6839338541030884,
+        "relative_l2": 0.022538684760177344
+      },
+      "audio": {
+        "max_abs": 0.12327277660369873,
+        "relative_l2": 0.01219504873224334
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-gemms",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "q_proj",
+        "k_proj",
+        "v_proj",
+        "o_proj",
+        "ffn_gate_up",
+        "ffn_down"
+      ],
+      "video": {
+        "max_abs": 0.6956955194473267,
+        "relative_l2": 0.021742028793818237
+      },
+      "audio": {
+        "max_abs": 0.06502187252044678,
+        "relative_l2": 0.011894607683330317
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-norm12",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "norm1",
+        "norm2"
+      ],
+      "video": {
+        "max_abs": 0.745826244354248,
+        "relative_l2": 0.021209762732343464
+      },
+      "audio": {
+        "max_abs": 0.06768512725830078,
+        "relative_l2": 0.009717391058985784
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-qk-norm",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "q_norm",
+        "k_norm"
+      ],
+      "video": {
+        "max_abs": 0.745826244354248,
+        "relative_l2": 0.021209762732343464
+      },
+      "audio": {
+        "max_abs": 0.06768512725830078,
+        "relative_l2": 0.009717391058985784
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-residuals",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "residual_attn",
+        "residual_mlp"
+      ],
+      "video": {
+        "max_abs": 0.745826244354248,
+        "relative_l2": 0.021209762732343464
+      },
+      "audio": {
+        "max_abs": 0.06768512725830078,
+        "relative_l2": 0.009717391058985784
+      },
+      "bitwise_equal_to_saved_step": false
+    },
+    {
+      "configuration": "swap-swiglu",
+      "seed": 43,
+      "mode": "candidate",
+      "provider_variant": "default",
+      "provider_nodes": [
+        "swiglu"
+      ],
+      "video": {
+        "max_abs": 0.5192471146583557,
+        "relative_l2": 0.019776315307719446
+      },
+      "audio": {
+        "max_abs": 0.057758331298828125,
+        "relative_l2": 0.011885089589135754
+      },
+      "bitwise_equal_to_saved_step": false
+    }
+  ]
+}
