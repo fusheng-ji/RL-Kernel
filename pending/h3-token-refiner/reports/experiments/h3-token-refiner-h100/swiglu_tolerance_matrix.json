@@ -1,0 +1,100 @@
+{
+  "artifact": "swiglu_tolerance_matrix",
+  "purpose": "Per-node swiglu relative error vs FP64 golden under the chained candidate and provider graphs (seed=3), for the forward bound used in test_nodes_accuracy_repeat_batch_and_isolated.",
+  "hardware": {
+    "gpu": "NVIDIA H100",
+    "memory_gib": 93,
+    "compute_capability": "sm90"
+  },
+  "software": {
+    "driver": "580",
+    "cuda": "13.0",
+    "torch": "2.13.0+cu130",
+    "checkpoint": "MiniMax-H3@42ed227"
+  },
+  "branch": "feat/h3-token-refiner",
+  "measured_at_commit": "6de320dc8004df018ea64fef7c7cf828eb3b5cc6",
+  "tolerance": {
+    "forward_factor": 1.25,
+    "forward_floor": 0.001,
+    "rule": "candidate_rel_err_vs_golden <= forward_factor * provider_rel_err_vs_golden + forward_floor"
+  },
+  "cases": [
+    {
+      "block": 0,
+      "tokens": 1,
+      "swiglu": {
+        "candidate_rel_err_vs_golden": 0.004771406569045494,
+        "provider_rel_err_vs_golden": 0.004771406569045494,
+        "bound": 0.006964258211306867,
+        "pass": true,
+        "margin": 0.0021928516422613734
+      }
+    },
+    {
+      "block": 0,
+      "tokens": 64,
+      "swiglu": {
+        "candidate_rel_err_vs_golden": 0.009174007443181276,
+        "provider_rel_err_vs_golden": 0.01406571838796866,
+        "bound": 0.018582147984960825,
+        "pass": true,
+        "margin": 0.009408140541779549
+      }
+    },
+    {
+      "block": 0,
+      "tokens": 257,
+      "swiglu": {
+        "candidate_rel_err_vs_golden": 0.008605119705433992,
+        "provider_rel_err_vs_golden": 0.008292728193364666,
+        "bound": 0.011365910241705832,
+        "pass": true,
+        "margin": 0.0027607905362718402
+      }
+    },
+    {
+      "block": 1,
+      "tokens": 1,
+      "swiglu": {
+        "candidate_rel_err_vs_golden": 0.002589881618176447,
+        "provider_rel_err_vs_golden": 0.002589881618176447,
+        "bound": 0.004237352022720559,
+        "pass": true,
+        "margin": 0.0016474704045441116
+      }
+    },
+    {
+      "block": 1,
+      "tokens": 64,
+      "swiglu": {
+        "candidate_rel_err_vs_golden": 0.01024320517817219,
+        "provider_rel_err_vs_golden": 0.009724340083390907,
+        "bound": 0.013155425104238633,
+        "pass": true,
+        "margin": 0.002912219926066443
+      }
+    },
+    {
+      "block": 1,
+      "tokens": 257,
+      "swiglu": {
+        "candidate_rel_err_vs_golden": 0.012117038002033502,
+        "provider_rel_err_vs_golden": 0.012117038002033502,
+        "bound": 0.016146297502541877,
+        "pass": true,
+        "margin": 0.004029259500508375
+      }
+    }
+  ],
+  "cross_device_reference": {
+    "note": "B200 numbers are from the failing pytest on feat/h3-token-refiner at 67af7966 (PR #570 body); included for comparison only.",
+    "b200_block1_tokens257": {
+      "candidate_rel_err_vs_golden": 0.01211,
+      "provider_rel_err_vs_golden": 0.00816,
+      "bound": 0.01116,
+      "pass": false
+    },
+    "interpretation": "H100 and B200 show the same candidate swiglu error (~0.0121) on this case; H100 passes because the provider chain matches the candidate, while B200 fails because the provider chain is lower at swiglu."
+  }
+}
