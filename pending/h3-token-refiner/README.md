@@ -1,6 +1,6 @@
 # Evidence of the `feat/h3-token-refiner` PR (staged, PR number not assigned yet)
 
-Measurement outputs of branch `feat/h3-token-refiner` (head `b9e6b1c5b3` when staged), kept here instead of in the pull request.
+Measurement outputs of branch `feat/h3-token-refiner` (measured at head `b9e6b1c5b3`; current head `67af7966`, which adds row-permutation-invariant parameter gradients and does not change the forward path, so these numbers were not re-measured), kept here instead of in the pull request.
 Rename this directory to `pr<N>/` once the PR number is known. The structure below it is the repository path a runner writes to
 (`reports/experiments/...`); only files this PR adds relative to its parent PR are included.
 

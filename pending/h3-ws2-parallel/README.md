@@ -1,6 +1,6 @@
 # Evidence of the `feat/h3-ws2-parallel` PR (staged, PR number not assigned yet)
 
-Measurement outputs of branch `feat/h3-ws2-parallel` (head `900f96296a` when staged), kept here instead of in the pull request.
+Measurement outputs of branch `feat/h3-ws2-parallel` (measured at head `900f96296a`; current head `d086b5ce`, which adds row-permutation-invariant parameter gradients and does not change the forward path, so these numbers were not re-measured), kept here instead of in the pull request.
 Rename this directory to `pr<N>/` once the PR number is known. The structure below it is the repository path a runner writes to
 (`reports/experiments/...`); only files this PR adds relative to its parent PR are included.
 
