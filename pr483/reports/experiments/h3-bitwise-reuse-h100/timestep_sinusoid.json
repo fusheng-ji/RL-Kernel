@@ -1,0 +1,118 @@
+{
+  "kind": "h3_bitwise_reuse",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "timestep_sinusoid",
+  "rl_kernel_commit": "21bf6d8d3eea54dc7f54dd2d11b0db6c64a49f55",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": null
+    },
+    "mode_environment": {
+      "plain": {}
+    }
+  },
+  "cases": [
+    "random_2^20",
+    "dense_fp32_sweep",
+    "grid_100001"
+  ],
+  "results": {
+    "diffusers": {
+      "source": "diffusers get_timestep_embedding (op-for-op replay)",
+      "vs rl_kernel": {
+        "dense_fp32_sweep": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 273551104,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {}
+        },
+        "grid_100001": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 25600256,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {}
+        },
+        "random_2^20": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 268435456,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {}
+        }
+      }
+    },
+    "rl_kernel": {
+      "source": "rl-kernel H3TimestepSinusoidCudaOp (check_range=False)",
+      "vs diffusers": {
+        "dense_fp32_sweep": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 273551104,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {}
+        },
+        "grid_100001": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 25600256,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {}
+        },
+        "random_2^20": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 268435456,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {}
+        }
+      }
+    },
+    "sglang": {
+      "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+    }
+  }
+}

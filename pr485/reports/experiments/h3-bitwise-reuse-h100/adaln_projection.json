@@ -1,0 +1,567 @@
+{
+  "kind": "h3_bitwise_reuse",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "adaln_projection",
+  "rl_kernel_commit": "cb5145299595fff995c3b2aee77c33c9a34ebe92",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": null
+    },
+    "mode_environment": {
+      "plain": {},
+      "vllm": {
+        "CUBLAS_WORKSPACE_CONFIG": ":16:8",
+        "CUBLASLT_WORKSPACE_SIZE": "1"
+      },
+      "sglang": {},
+      "sglang_ieee": {
+        "TRITON_F32_DEFAULT": "ieee"
+      },
+      "megatron_te_native": {
+        "CUBLASLT_WORKSPACE_SIZE": "0"
+      },
+      "megatron_triton": {},
+      "megatron_triton_ieee": {
+        "TRITON_F32_DEFAULT": "ieee"
+      }
+    }
+  },
+  "cases": [
+    1,
+    4,
+    64,
+    2048
+  ],
+  "results": {
+    "diffusers[plain]": {
+      "source": "diffusers AdaLN projection, BF16 F.linear [plain]",
+      "vs rl_kernel": {
+        "1": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 155,
+              "numel": 96768,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 2688,
+              "numel": 2688,
+              "max_abs": 0.05595111846923828
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 260112384,
+              "max_abs": 0.0
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "2048": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 316662,
+              "numel": 198180864,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 5504928,
+              "numel": 5505024,
+              "max_abs": 0.07063865661621094
+            },
+            "w": {
+              "equal": false,
+              "differ": 318443,
+              "numel": 260112384,
+              "max_abs": 0.5
+            },
+            "b": {
+              "equal": false,
+              "differ": 2,
+              "numel": 96768,
+              "max_abs": 7.62939453125e-06
+            }
+          }
+        },
+        "4": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 627,
+              "numel": 387072,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 10752,
+              "numel": 10752,
+              "max_abs": 0.06047821044921875
+            },
+            "w": {
+              "equal": false,
+              "differ": 143,
+              "numel": 260112384,
+              "max_abs": 0.03125
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "64": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 9696,
+              "numel": 6193152,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 172027,
+              "numel": 172032,
+              "max_abs": 0.06778144836425781
+            },
+            "w": {
+              "equal": false,
+              "differ": 11023,
+              "numel": 260112384,
+              "max_abs": 0.125
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        }
+      }
+    },
+    "diffusers[vllm]": {
+      "source": "diffusers AdaLN projection, BF16 F.linear [vllm]",
+      "vs diffusers[plain]": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 119,
+              "numel": 2688,
+              "max_abs": 0.05624103546142578
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 260112384,
+              "max_abs": 0.0
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "2048": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 198180864,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": true,
+              "differ": 0,
+              "numel": 5505024,
+              "max_abs": 0.0
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 260112384,
+              "max_abs": 0.0
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "4": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 387072,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 449,
+              "numel": 10752,
+              "max_abs": 0.06674480438232422
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 260112384,
+              "max_abs": 0.0
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "64": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 6193152,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 7092,
+              "numel": 172032,
+              "max_abs": 0.1374378204345703
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 260112384,
+              "max_abs": 0.0
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        }
+      },
+      "vs rl_kernel": {
+        "1": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 155,
+              "numel": 96768,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 2688,
+              "numel": 2688,
+              "max_abs": 0.05595111846923828
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 260112384,
+              "max_abs": 0.0
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "2048": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 316662,
+              "numel": 198180864,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 5504928,
+              "numel": 5505024,
+              "max_abs": 0.07063865661621094
+            },
+            "w": {
+              "equal": false,
+              "differ": 318443,
+              "numel": 260112384,
+              "max_abs": 0.5
+            },
+            "b": {
+              "equal": false,
+              "differ": 2,
+              "numel": 96768,
+              "max_abs": 7.62939453125e-06
+            }
+          }
+        },
+        "4": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 627,
+              "numel": 387072,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 10752,
+              "numel": 10752,
+              "max_abs": 0.06047821044921875
+            },
+            "w": {
+              "equal": false,
+              "differ": 143,
+              "numel": 260112384,
+              "max_abs": 0.03125
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "64": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 9696,
+              "numel": 6193152,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 172027,
+              "numel": 172032,
+              "max_abs": 0.0696563720703125
+            },
+            "w": {
+              "equal": false,
+              "differ": 11023,
+              "numel": 260112384,
+              "max_abs": 0.125
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        }
+      }
+    },
+    "rl_kernel": {
+      "source": "rl-kernel H3AdaLNProjectionCudaOp",
+      "vs diffusers[plain]": {
+        "1": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 155,
+              "numel": 96768,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 2688,
+              "numel": 2688,
+              "max_abs": 0.05595111846923828
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 260112384,
+              "max_abs": 0.0
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "2048": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 316662,
+              "numel": 198180864,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 5504928,
+              "numel": 5505024,
+              "max_abs": 0.07063865661621094
+            },
+            "w": {
+              "equal": false,
+              "differ": 318443,
+              "numel": 260112384,
+              "max_abs": 0.5
+            },
+            "b": {
+              "equal": false,
+              "differ": 2,
+              "numel": 96768,
+              "max_abs": 7.62939453125e-06
+            }
+          }
+        },
+        "4": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 627,
+              "numel": 387072,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 10752,
+              "numel": 10752,
+              "max_abs": 0.06047821044921875
+            },
+            "w": {
+              "equal": false,
+              "differ": 143,
+              "numel": 260112384,
+              "max_abs": 0.03125
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "64": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 9696,
+              "numel": 6193152,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "temb": {
+              "equal": false,
+              "differ": 172027,
+              "numel": 172032,
+              "max_abs": 0.06778144836425781
+            },
+            "w": {
+              "equal": false,
+              "differ": 11023,
+              "numel": 260112384,
+              "max_abs": 0.125
+            },
+            "b": {
+              "equal": true,
+              "differ": 0,
+              "numel": 96768,
+              "max_abs": 0.0
+            }
+          }
+        }
+      }
+    },
+    "sglang": {
+      "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+    },
+    "megatron_triton": {
+      "unavailable": "ModuleNotFoundError: No module named 'megatron'"
+    },
+    "megatron_te_native": {
+      "unavailable": "ModuleNotFoundError: No module named 'megatron'"
+    },
+    "megatron_triton_ieee": {
+      "unavailable": "ModuleNotFoundError: No module named 'megatron'"
+    },
+    "sglang_ieee": {
+      "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+    }
+  }
+}

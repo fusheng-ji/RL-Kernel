@@ -1,0 +1,549 @@
+{
+  "kind": "h3_bitwise_reuse",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "norm_modulate",
+  "rl_kernel_commit": "f027e802ab2a4c13866ac76a12355f5e47f82562",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": null
+    },
+    "mode_environment": {
+      "plain": {}
+    }
+  },
+  "cases": [
+    1,
+    257,
+    4097,
+    32768
+  ],
+  "results": {
+    "diffusers": {
+      "source": "diffusers composition (F.rms_norm + index_select modulation)",
+      "vs rl_kernel": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 5376,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 1333,
+              "numel": 5376,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 1325,
+              "numel": 5376,
+              "max_abs": 0.03125
+            },
+            "sh": {
+              "equal": true,
+              "differ": 0,
+              "numel": 48384,
+              "max_abs": 0.0
+            },
+            "sc": {
+              "equal": true,
+              "differ": 0,
+              "numel": 48384,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 1381632,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 358191,
+              "numel": 1381632,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 2297,
+              "numel": 5376,
+              "max_abs": 0.25
+            },
+            "sh": {
+              "equal": false,
+              "differ": 34532,
+              "numel": 48384,
+              "max_abs": 0.3125
+            },
+            "sc": {
+              "equal": false,
+              "differ": 35261,
+              "numel": 48384,
+              "max_abs": 0.5
+            }
+          }
+        },
+        "32768": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 176160768,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 45733384,
+              "numel": 176160768,
+              "max_abs": 0.03125
+            },
+            "w": {
+              "equal": false,
+              "differ": 2276,
+              "numel": 5376,
+              "max_abs": 2.0
+            },
+            "sh": {
+              "equal": false,
+              "differ": 46989,
+              "numel": 48384,
+              "max_abs": 37.0
+            },
+            "sc": {
+              "equal": false,
+              "differ": 46970,
+              "numel": 48384,
+              "max_abs": 40.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 22025472,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 5717474,
+              "numel": 22025472,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 2273,
+              "numel": 5376,
+              "max_abs": 1.0
+            },
+            "sh": {
+              "equal": false,
+              "differ": 44629,
+              "numel": 48384,
+              "max_abs": 5.0
+            },
+            "sc": {
+              "equal": false,
+              "differ": 44531,
+              "numel": 48384,
+              "max_abs": 5.5
+            }
+          }
+        }
+      }
+    },
+    "rl_kernel": {
+      "source": "rl-kernel H3RMSNormCudaOp.forward_modulated",
+      "vs diffusers": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 5376,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 1333,
+              "numel": 5376,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 1325,
+              "numel": 5376,
+              "max_abs": 0.03125
+            },
+            "sh": {
+              "equal": true,
+              "differ": 0,
+              "numel": 48384,
+              "max_abs": 0.0
+            },
+            "sc": {
+              "equal": true,
+              "differ": 0,
+              "numel": 48384,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 1381632,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 358191,
+              "numel": 1381632,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 2297,
+              "numel": 5376,
+              "max_abs": 0.25
+            },
+            "sh": {
+              "equal": false,
+              "differ": 34532,
+              "numel": 48384,
+              "max_abs": 0.3125
+            },
+            "sc": {
+              "equal": false,
+              "differ": 35261,
+              "numel": 48384,
+              "max_abs": 0.5
+            }
+          }
+        },
+        "32768": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 176160768,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 45733384,
+              "numel": 176160768,
+              "max_abs": 0.03125
+            },
+            "w": {
+              "equal": false,
+              "differ": 2276,
+              "numel": 5376,
+              "max_abs": 2.0
+            },
+            "sh": {
+              "equal": false,
+              "differ": 46989,
+              "numel": 48384,
+              "max_abs": 37.0
+            },
+            "sc": {
+              "equal": false,
+              "differ": 46970,
+              "numel": 48384,
+              "max_abs": 40.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 22025472,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 5717474,
+              "numel": 22025472,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 2273,
+              "numel": 5376,
+              "max_abs": 1.0
+            },
+            "sh": {
+              "equal": false,
+              "differ": 44629,
+              "numel": 48384,
+              "max_abs": 5.0
+            },
+            "sc": {
+              "equal": false,
+              "differ": 44531,
+              "numel": 48384,
+              "max_abs": 5.5
+            }
+          }
+        }
+      }
+    },
+    "torch_rms_norm": {
+      "source": "torch F.rms_norm (no modulation)",
+      "vs diffusers": {
+        "1": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 5317,
+              "numel": 5376,
+              "max_abs": 0.921875
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 5219,
+              "numel": 5376,
+              "max_abs": 0.421875
+            },
+            "w": {
+              "equal": false,
+              "differ": 5230,
+              "numel": 5376,
+              "max_abs": 1.5
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 1365683,
+              "numel": 1381632,
+              "max_abs": 1.5625
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 1350370,
+              "numel": 1381632,
+              "max_abs": 0.796875
+            },
+            "w": {
+              "equal": false,
+              "differ": 5276,
+              "numel": 5376,
+              "max_abs": 7.125
+            }
+          }
+        },
+        "32768": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 174121666,
+              "numel": 176160768,
+              "max_abs": 2.25
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 172163180,
+              "numel": 176160768,
+              "max_abs": 0.984375
+            },
+            "w": {
+              "equal": false,
+              "differ": 5283,
+              "numel": 5376,
+              "max_abs": 88.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 21770168,
+              "numel": 22025472,
+              "max_abs": 2.03125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 21525691,
+              "numel": 22025472,
+              "max_abs": 0.953125
+            },
+            "w": {
+              "equal": false,
+              "differ": 5285,
+              "numel": 5376,
+              "max_abs": 31.75
+            }
+          }
+        }
+      },
+      "vs rl_kernel": {
+        "1": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 5317,
+              "numel": 5376,
+              "max_abs": 0.921875
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 5208,
+              "numel": 5376,
+              "max_abs": 0.421875
+            },
+            "w": {
+              "equal": false,
+              "differ": 5219,
+              "numel": 5376,
+              "max_abs": 1.5
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 1365683,
+              "numel": 1381632,
+              "max_abs": 1.5625
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 1348658,
+              "numel": 1381632,
+              "max_abs": 0.796875
+            },
+            "w": {
+              "equal": false,
+              "differ": 5279,
+              "numel": 5376,
+              "max_abs": 7.125
+            }
+          }
+        },
+        "32768": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 174121666,
+              "numel": 176160768,
+              "max_abs": 2.25
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 171945452,
+              "numel": 176160768,
+              "max_abs": 0.9765625
+            },
+            "w": {
+              "equal": false,
+              "differ": 5288,
+              "numel": 5376,
+              "max_abs": 88.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 21770168,
+              "numel": 22025472,
+              "max_abs": 2.03125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 21498372,
+              "numel": 22025472,
+              "max_abs": 0.9375
+            },
+            "w": {
+              "equal": false,
+              "differ": 5276,
+              "numel": 5376,
+              "max_abs": 31.75
+            }
+          }
+        }
+      }
+    },
+    "sglang": {
+      "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+    },
+    "liger": {
+      "unavailable": "ModuleNotFoundError: No module named 'liger_kernel'"
+    },
+    "transformer_engine": {
+      "unavailable": "ModuleNotFoundError: No module named 'transformer_engine'"
+    },
+    "liger_rlk_gather": {
+      "unavailable": "ModuleNotFoundError: No module named 'liger_kernel'"
+    }
+  }
+}

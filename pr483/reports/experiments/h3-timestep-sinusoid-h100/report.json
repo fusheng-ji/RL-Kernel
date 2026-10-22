@@ -1,0 +1,129 @@
+{
+  "kind": "h3_operator_report",
+  "op": "timestep_sinusoid_h3",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "model_revision": "42ed227ee7df40d41602854ae760620d6eb651fe",
+  "reference_commit": "f53d552036a0d1bd5570782a39cd40cfabf112bc",
+  "rl_kernel_commit": "21bf6d8d3eea54dc7f54dd2d11b0db6c64a49f55",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false
+  },
+  "accuracy": {
+    "contract_atol": 1e-05,
+    "cases": [
+      {
+        "num_timesteps": 1,
+        "bitwise_equal_to_provider": true,
+        "max_abs_vs_fp64": 0.0,
+        "provider_max_abs_vs_fp64": 0.0
+      },
+      {
+        "num_timesteps": 2,
+        "bitwise_equal_to_provider": true,
+        "max_abs_vs_fp64": 5.960464477539063e-08,
+        "provider_max_abs_vs_fp64": 5.960464477539063e-08
+      },
+      {
+        "num_timesteps": 3,
+        "bitwise_equal_to_provider": true,
+        "max_abs_vs_fp64": 5.960464477539063e-08,
+        "provider_max_abs_vs_fp64": 5.960464477539063e-08
+      },
+      {
+        "num_timesteps": 7,
+        "bitwise_equal_to_provider": true,
+        "max_abs_vs_fp64": 5.960464477539063e-08,
+        "provider_max_abs_vs_fp64": 5.960464477539063e-08
+      },
+      {
+        "num_timesteps": 64,
+        "bitwise_equal_to_provider": true,
+        "max_abs_vs_fp64": 5.960464477539063e-08,
+        "provider_max_abs_vs_fp64": 5.960464477539063e-08
+      },
+      {
+        "num_timesteps": 1000,
+        "bitwise_equal_to_provider": true,
+        "max_abs_vs_fp64": 1.1920928955078125e-07,
+        "provider_max_abs_vs_fp64": 1.1920928955078125e-07
+      },
+      {
+        "num_timesteps": 4097,
+        "bitwise_equal_to_provider": true,
+        "max_abs_vs_fp64": 1.1920928955078125e-07,
+        "provider_max_abs_vs_fp64": 1.1920928955078125e-07
+      }
+    ]
+  },
+  "perf": [
+    {
+      "op": "timestep_sinusoid_h3",
+      "case": "T=1",
+      "backend": "H3TimestepSinusoidCudaOp",
+      "bytes": 1028,
+      "candidate_us": 25.679999962449074,
+      "candidate_gbps": 0.04003115270651117,
+      "candidate_peak_mib": 0.0009765625,
+      "candidate_checked_us": 83.3440013229847,
+      "candidate_checked_gbps": 0.012334420998293216,
+      "candidate_checked_peak_mib": 0.001953125,
+      "provider_us": 111.02400347590446,
+      "provider_gbps": 0.009259258969373293,
+      "provider_peak_mib": 0.0029296875
+    },
+    {
+      "op": "timestep_sinusoid_h3",
+      "case": "T=2",
+      "backend": "H3TimestepSinusoidCudaOp",
+      "bytes": 2056,
+      "candidate_us": 25.26400052011013,
+      "candidate_gbps": 0.08138061897059515,
+      "candidate_peak_mib": 0.001953125,
+      "candidate_checked_us": 82.2560004889965,
+      "candidate_checked_gbps": 0.024995136984262124,
+      "candidate_checked_peak_mib": 0.001953125,
+      "provider_us": 114.83200266957283,
+      "provider_gbps": 0.017904416471043405,
+      "provider_peak_mib": 0.00537109375
+    },
+    {
+      "op": "timestep_sinusoid_h3",
+      "case": "T=4",
+      "backend": "H3TimestepSinusoidCudaOp",
+      "bytes": 4112,
+      "candidate_us": 25.456000119447708,
+      "candidate_gbps": 0.1615336258919382,
+      "candidate_peak_mib": 0.00390625,
+      "candidate_checked_us": 82.83199742436409,
+      "candidate_checked_gbps": 0.04964265172712716,
+      "candidate_checked_peak_mib": 0.00390625,
+      "provider_us": 115.6960017979145,
+      "provider_gbps": 0.03554141833857323,
+      "provider_peak_mib": 0.01025390625
+    },
+    {
+      "op": "timestep_sinusoid_h3",
+      "case": "T=64",
+      "backend": "H3TimestepSinusoidCudaOp",
+      "bytes": 65792,
+      "candidate_us": 24.927999824285507,
+      "candidate_gbps": 2.6392811482573797,
+      "candidate_peak_mib": 0.0625,
+      "candidate_checked_us": 82.67199993133545,
+      "candidate_checked_gbps": 0.7958196252013331,
+      "candidate_checked_peak_mib": 0.0625,
+      "provider_us": 114.84800279140472,
+      "provider_gbps": 0.5728615073916105,
+      "provider_peak_mib": 0.15673828125
+    }
+  ]
+}

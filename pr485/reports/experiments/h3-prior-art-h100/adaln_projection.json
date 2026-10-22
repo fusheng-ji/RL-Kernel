@@ -1,0 +1,563 @@
+{
+  "kind": "h3_prior_art",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "adaln_projection",
+  "rl_kernel_commit": "cb5145299595fff995c3b2aee77c33c9a34ebe92",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": null
+    },
+    "megatron_source_commit": null,
+    "mode_environment": {
+      "plain": {},
+      "vllm": {
+        "CUBLAS_WORKSPACE_CONFIG": ":16:8",
+        "CUBLASLT_WORKSPACE_SIZE": "1"
+      },
+      "sglang": {},
+      "sglang_ieee": {
+        "TRITON_F32_DEFAULT": "ieee"
+      },
+      "megatron_te_native": {
+        "CUBLASLT_WORKSPACE_SIZE": "0"
+      },
+      "megatron_triton": {},
+      "megatron_triton_ieee": {
+        "TRITON_F32_DEFAULT": "ieee"
+      }
+    }
+  },
+  "quick": false,
+  "results": {
+    "plain": {
+      "diffusers[plain]": {
+        "source": "diffusers AdaLN projection, BF16 F.linear [plain]",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "2048": {
+              "rows": 6144,
+              "fwd_differ": 0,
+              "rowgrad_differ": 6144
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 4096,
+            "sub_batch_sizes": [
+              1,
+              7,
+              1024,
+              2048
+            ],
+            "sub_batches": 2060,
+            "fwd_differ": 0,
+            "rowgrad_differ": 2056
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025,
+              2047,
+              2048
+            ],
+            "probe_rows": [
+              0,
+              259,
+              515,
+              771,
+              1027,
+              1283,
+              1539,
+              2047
+            ],
+            "comparisons": 2256,
+            "differ": 600,
+            "first_failures": [
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 0,
+                "row": 0
+              },
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 255,
+                "row": 0
+              },
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 510,
+                "row": 0
+              },
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 0,
+                "row": 259
+              },
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 255,
+                "row": 259
+              },
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 510,
+                "row": 259
+              },
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 0,
+                "row": 515
+              },
+              {
+                "seed": 3,
+                "batch": 511,
+                "position": 255,
+                "row": 515
+              }
+            ]
+          },
+          "batch_invariant": false
+        },
+        "accuracy_latency": {
+          "1": {
+            "fwd_rel_err": 0.003043083807175075,
+            "grad_rel_err": {
+              "temb": 0.0026370288189089303,
+              "w": 0.004108917853014856,
+              "b": 0.0
+            },
+            "fwd_us": 267.7280008792877,
+            "fwd_bwd_us": 1426.256000995636
+          },
+          "3": {
+            "fwd_rel_err": 0.0036786795037124505,
+            "grad_rel_err": {
+              "temb": 0.002672495696253447,
+              "w": 0.0039446027143119735,
+              "b": 0.0019723865877712033
+            },
+            "fwd_us": 268.5759961605072,
+            "fwd_bwd_us": 1260.8000040054321
+          },
+          "4": {
+            "fwd_rel_err": 0.0036647697353985446,
+            "grad_rel_err": {
+              "temb": 0.002672495696253447,
+              "w": 0.0042006972435608605,
+              "b": 0.0023264831329972858
+            },
+            "fwd_us": 269.21600103378296,
+            "fwd_bwd_us": 1260.5759501457214
+          },
+          "64": {
+            "fwd_rel_err": 0.003331451832048825,
+            "grad_rel_err": {
+              "temb": 0.0020654441147761452,
+              "w": 0.003729561112563885,
+              "b": 0.0029693486590038312
+            },
+            "fwd_us": 278.7359952926636,
+            "fwd_bwd_us": 1339.4559621810913
+          },
+          "256": {
+            "fwd_rel_err": 0.0033101057973087987,
+            "grad_rel_err": {
+              "temb": 0.0020952926315630713,
+              "w": 0.003240805513298677,
+              "b": 0.0034377675701924015
+            },
+            "fwd_us": 314.2240047454834,
+            "fwd_bwd_us": 1435.8720183372498
+          },
+          "2048": {
+            "fwd_rel_err": 0.003187686040072791,
+            "grad_rel_err": {
+              "temb": 0.0021927610349549904,
+              "w": 0.003431285034976262,
+              "b": 0.0024224226237438322
+            },
+            "fwd_us": 1436.8800520896912,
+            "fwd_bwd_us": 9858.688354492188
+          }
+        }
+      },
+      "rl_kernel": {
+        "source": "rl-kernel H3AdaLNProjectionCudaOp",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "2048": {
+              "rows": 6144,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 4096,
+            "sub_batch_sizes": [
+              1,
+              7,
+              1024,
+              2048
+            ],
+            "sub_batches": 2060,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025,
+              2047,
+              2048
+            ],
+            "probe_rows": [
+              0,
+              259,
+              515,
+              771,
+              1027,
+              1283,
+              1539,
+              2047
+            ],
+            "comparisons": 2256,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "1": {
+            "fwd_rel_err": 0.003043083807175075,
+            "grad_rel_err": {
+              "temb": 1.2284746663064936e-06,
+              "w": 0.004108917853014856,
+              "b": 0.0
+            },
+            "fwd_us": 252.1440088748932,
+            "fwd_bwd_us": 4870.719909667969
+          },
+          "3": {
+            "fwd_rel_err": 0.0036786795037124505,
+            "grad_rel_err": {
+              "temb": 1.0866918850752674e-06,
+              "w": 0.0039446027143119735,
+              "b": 0.0019723865877712033
+            },
+            "fwd_us": 252.25600600242615,
+            "fwd_bwd_us": 5245.872020721436
+          },
+          "4": {
+            "fwd_rel_err": 0.0036647697353985446,
+            "grad_rel_err": {
+              "temb": 1.0866918850752674e-06,
+              "w": 0.0042006972435608605,
+              "b": 0.0023264831329972858
+            },
+            "fwd_us": 253.1999945640564,
+            "fwd_bwd_us": 5203.519821166992
+          },
+          "64": {
+            "fwd_rel_err": 0.003331451832048825,
+            "grad_rel_err": {
+              "temb": 1.2119052348275488e-06,
+              "w": 0.003729561112563885,
+              "b": 0.0029693486590038312
+            },
+            "fwd_us": 1967.4879908561707,
+            "fwd_bwd_us": 28537.663459777832
+          },
+          "256": {
+            "fwd_rel_err": 0.0033101057973087987,
+            "grad_rel_err": {
+              "temb": 1.2461769727997451e-06,
+              "w": 0.003240805513298677,
+              "b": 0.0034377675701924015
+            },
+            "fwd_us": 15344.719886779785,
+            "fwd_bwd_us": 110152.31704711914
+          },
+          "2048": {
+            "fwd_rel_err": 0.003187686040072791,
+            "grad_rel_err": {
+              "temb": 1.7075221457465576e-06,
+              "w": 0.003431285034976262,
+              "b": 0.0024224226237438322
+            },
+            "fwd_us": 140538.70391845703,
+            "fwd_bwd_us": 416842.3309326172
+          }
+        }
+      }
+    },
+    "vllm": {
+      "diffusers[vllm]": {
+        "source": "diffusers AdaLN projection, BF16 F.linear [vllm]",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "2048": {
+              "rows": 6144,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 4096,
+            "sub_batch_sizes": [
+              1,
+              7,
+              1024,
+              2048
+            ],
+            "sub_batches": 2060,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025,
+              2047,
+              2048
+            ],
+            "probe_rows": [
+              0,
+              259,
+              515,
+              771,
+              1027,
+              1283,
+              1539,
+              2047
+            ],
+            "comparisons": 2256,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "1": {
+            "fwd_rel_err": 0.0030430838071754053,
+            "grad_rel_err": {
+              "temb": 0.0026370288189089303,
+              "w": 0.004108917853014856,
+              "b": 0.0
+            },
+            "fwd_us": 304.03199791908264,
+            "fwd_bwd_us": 1453.4239768981934
+          },
+          "3": {
+            "fwd_rel_err": 0.0036786795037124505,
+            "grad_rel_err": {
+              "temb": 0.002672495696253447,
+              "w": 0.0039446027143119735,
+              "b": 0.0019723865877712033
+            },
+            "fwd_us": 305.58399856090546,
+            "fwd_bwd_us": 1286.3839864730835
+          },
+          "4": {
+            "fwd_rel_err": 0.0036647697353985446,
+            "grad_rel_err": {
+              "temb": 0.002672495696253447,
+              "w": 0.0042006972435608605,
+              "b": 0.0023264831329972858
+            },
+            "fwd_us": 306.0320019721985,
+            "fwd_bwd_us": 1288.9599800109863
+          },
+          "64": {
+            "fwd_rel_err": 0.003331451832048825,
+            "grad_rel_err": {
+              "temb": 0.002129551553552314,
+              "w": 0.003729561112563885,
+              "b": 0.0029693486590038312
+            },
+            "fwd_us": 316.25598669052124,
+            "fwd_bwd_us": 1352.1440029144287
+          },
+          "256": {
+            "fwd_rel_err": 0.0033101057973087987,
+            "grad_rel_err": {
+              "temb": 0.0021470990780976125,
+              "w": 0.003240805513298677,
+              "b": 0.0034377675701924015
+            },
+            "fwd_us": 350.3040075302124,
+            "fwd_bwd_us": 1502.4320483207703
+          },
+          "2048": {
+            "fwd_rel_err": 0.003187686040072791,
+            "grad_rel_err": {
+              "temb": 0.0021927610349549904,
+              "w": 0.003431285034976262,
+              "b": 0.0024224226237438322
+            },
+            "fwd_us": 1628.3519864082336,
+            "fwd_bwd_us": 5196.528196334839
+          }
+        }
+      }
+    },
+    "sglang": {
+      "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+    },
+    "sglang_ieee": {
+      "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+    },
+    "megatron_te_native": {
+      "unavailable": "ModuleNotFoundError: No module named 'megatron'"
+    },
+    "megatron_triton": {
+      "unavailable": "ModuleNotFoundError: No module named 'megatron'"
+    },
+    "megatron_triton_ieee": {
+      "unavailable": "ModuleNotFoundError: No module named 'megatron'"
+    }
+  }
+}

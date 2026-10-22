@@ -1,0 +1,248 @@
+{
+  "kind": "h3_prior_art",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "adaln_row_gather",
+  "rl_kernel_commit": "fb052a86a15834b2f594ea11744637aa145709b2",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": null
+    },
+    "megatron_source_commit": null,
+    "mode_environment": {
+      "plain": {}
+    }
+  },
+  "quick": false,
+  "results": {
+    "plain": {
+      "diffusers": {
+        "source": "diffusers six index_select calls",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "2048": {
+              "rows": 6144,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": false,
+          "full_vs_sub_batches": {
+            "full_batch": 131072,
+            "sub_batch_sizes": [
+              1,
+              7,
+              4097,
+              32768,
+              65536
+            ],
+            "sub_batches": 2124,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025,
+              2047,
+              2048
+            ],
+            "probe_rows": [
+              0,
+              259,
+              515,
+              771,
+              1027,
+              1283,
+              1539,
+              2047
+            ],
+            "comparisons": 2256,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": false
+        },
+        "accuracy_latency": {
+          "4097": {
+            "fwd_rel_err": 0.0,
+            "grad_rel_err": {
+              "table": 0.050791409675261946
+            },
+            "fwd_us": 149.07199889421463,
+            "fwd_bwd_us": 1544.7199940681458
+          },
+          "32768": {
+            "fwd_rel_err": 0.0,
+            "grad_rel_err": {
+              "table": 0.16567735271819906
+            },
+            "fwd_us": 964.8640155792236,
+            "fwd_bwd_us": 12268.879890441895
+          }
+        }
+      },
+      "rl_kernel": {
+        "source": "rl-kernel H3AdaLNRowGatherCudaOp",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "2048": {
+              "rows": 6144,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 131072,
+            "sub_batch_sizes": [
+              1,
+              7,
+              4097,
+              32768,
+              65536
+            ],
+            "sub_batches": 2124,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025,
+              2047,
+              2048
+            ],
+            "probe_rows": [
+              0,
+              259,
+              515,
+              771,
+              1027,
+              1283,
+              1539,
+              2047
+            ],
+            "comparisons": 2256,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "4097": {
+            "fwd_rel_err": 0.0,
+            "grad_rel_err": {
+              "table": 0.0024038835747062595
+            },
+            "fwd_us": 242.25600063800812,
+            "fwd_bwd_us": 1706.3360214233398
+          },
+          "32768": {
+            "fwd_rel_err": 0.0,
+            "grad_rel_err": {
+              "table": 0.003380548299045336
+            },
+            "fwd_us": 1030.7999849319458,
+            "fwd_bwd_us": 5833.53590965271
+          }
+        }
+      }
+    }
+  }
+}

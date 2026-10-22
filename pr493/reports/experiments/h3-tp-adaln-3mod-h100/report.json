@@ -1,0 +1,958 @@
+{
+  "kind": "h3_ws2_report",
+  "op": "tp_adaln_3mod",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "model_revision": "42ed227ee7df40d41602854ae760620d6eb651fe",
+  "rl_kernel_commit": "dcd8a0028cb23a09abe89809ed691c5043e04d30",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "gpus": 4
+  },
+  "weights": [
+    "transformer_blocks.0.adaln_proj.linear.weight",
+    "transformer_blocks.0.adaln_proj.linear.bias"
+  ],
+  "runs": [
+    {
+      "tp": 1,
+      "ranks": [
+        {
+          "rank": 0,
+          "equality": [
+            {
+              "num_timesteps": 1,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 2,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 3,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 4,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            }
+          ],
+          "perf": [
+            {
+              "num_timesteps": 1,
+              "tp_forward_us": 301.5199899673462,
+              "tp_forward_backward_us": 1988.1280064582825,
+              "ws1_forward_us": 287.3919904232025,
+              "ws1_forward_backward_us": 1997.759997844696
+            },
+            {
+              "num_timesteps": 2,
+              "tp_forward_us": 302.0640015602112,
+              "tp_forward_backward_us": 2361.0719442367554,
+              "ws1_forward_us": 286.73599660396576,
+              "ws1_forward_backward_us": 2318.495988845825
+            },
+            {
+              "num_timesteps": 3,
+              "tp_forward_us": 302.2720068693161,
+              "tp_forward_backward_us": 2423.359990119934,
+              "ws1_forward_us": 287.48801350593567,
+              "ws1_forward_backward_us": 2377.039909362793
+            },
+            {
+              "num_timesteps": 4,
+              "tp_forward_us": 302.7999997138977,
+              "tp_forward_backward_us": 2346.016049385071,
+              "ws1_forward_us": 287.1199995279312,
+              "ws1_forward_backward_us": 2336.9280099868774
+            }
+          ],
+          "readback": {
+            "op": "tp_adaln_3mod",
+            "kernel_id": "rl_engine._C.h3_det_linear_forward[column_shard]+all_gather[rank_order]",
+            "backward_kernel_id": "rl_engine._C.h3_det_linear_backward_weight+rl_engine._C.h3_det_linear_backward_input_partials+all_gather+rl_engine._C.h3_det_linear_fold_chunks",
+            "contract": "h3-det-linear-v1",
+            "collective_backend": "cuda_ipc_fixed_tree",
+            "collective_ops": [
+              "all_gather"
+            ],
+            "reduction_order": "ws1_ascending_chunk_fold_after_rank_ordered_gather",
+            "tp": 1,
+            "rank": 0,
+            "columns": [
+              0,
+              96768
+            ],
+            "slots": [
+              [
+                0,
+                0,
+                0,
+                5376
+              ],
+              [
+                0,
+                1,
+                0,
+                5376
+              ],
+              [
+                0,
+                2,
+                0,
+                5376
+              ],
+              [
+                0,
+                3,
+                0,
+                5376
+              ],
+              [
+                0,
+                4,
+                0,
+                5376
+              ],
+              [
+                0,
+                5,
+                0,
+                5376
+              ],
+              [
+                1,
+                0,
+                0,
+                5376
+              ],
+              [
+                1,
+                1,
+                0,
+                5376
+              ],
+              [
+                1,
+                2,
+                0,
+                5376
+              ],
+              [
+                1,
+                3,
+                0,
+                5376
+              ],
+              [
+                1,
+                4,
+                0,
+                5376
+              ],
+              [
+                1,
+                5,
+                0,
+                5376
+              ],
+              [
+                2,
+                0,
+                0,
+                5376
+              ],
+              [
+                2,
+                1,
+                0,
+                5376
+              ],
+              [
+                2,
+                2,
+                0,
+                5376
+              ],
+              [
+                2,
+                3,
+                0,
+                5376
+              ],
+              [
+                2,
+                4,
+                0,
+                5376
+              ],
+              [
+                2,
+                5,
+                0,
+                5376
+              ]
+            ],
+            "fallback": null
+          }
+        }
+      ]
+    },
+    {
+      "tp": 2,
+      "ranks": [
+        {
+          "rank": 0,
+          "equality": [
+            {
+              "num_timesteps": 1,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 2,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 3,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 4,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            }
+          ],
+          "perf": [
+            {
+              "num_timesteps": 1,
+              "tp_forward_us": 226.8960028886795,
+              "tp_forward_backward_us": 1385.3440284729004,
+              "ws1_forward_us": 286.9279980659485,
+              "ws1_forward_backward_us": 1983.1039905548096
+            },
+            {
+              "num_timesteps": 2,
+              "tp_forward_us": 219.88800168037415,
+              "tp_forward_backward_us": 1667.5519943237305,
+              "ws1_forward_us": 286.3840013742447,
+              "ws1_forward_backward_us": 2318.7040090560913
+            },
+            {
+              "num_timesteps": 3,
+              "tp_forward_us": 216.2880003452301,
+              "tp_forward_backward_us": 1981.216013431549,
+              "ws1_forward_us": 286.1279994249344,
+              "ws1_forward_backward_us": 2375.3119707107544
+            },
+            {
+              "num_timesteps": 4,
+              "tp_forward_us": 217.27999299764633,
+              "tp_forward_backward_us": 1998.1760382652283,
+              "ws1_forward_us": 286.0639989376068,
+              "ws1_forward_backward_us": 2326.6719579696655
+            }
+          ],
+          "readback": {
+            "op": "tp_adaln_3mod",
+            "kernel_id": "rl_engine._C.h3_det_linear_forward[column_shard]+all_gather[rank_order]",
+            "backward_kernel_id": "rl_engine._C.h3_det_linear_backward_weight+rl_engine._C.h3_det_linear_backward_input_partials+all_gather+rl_engine._C.h3_det_linear_fold_chunks",
+            "contract": "h3-det-linear-v1",
+            "collective_backend": "cuda_ipc_fixed_tree",
+            "collective_ops": [
+              "all_gather"
+            ],
+            "reduction_order": "ws1_ascending_chunk_fold_after_rank_ordered_gather",
+            "tp": 2,
+            "rank": 0,
+            "columns": [
+              0,
+              48384
+            ],
+            "slots": [
+              [
+                0,
+                0,
+                0,
+                5376
+              ],
+              [
+                0,
+                1,
+                0,
+                5376
+              ],
+              [
+                0,
+                2,
+                0,
+                5376
+              ],
+              [
+                0,
+                3,
+                0,
+                5376
+              ],
+              [
+                0,
+                4,
+                0,
+                5376
+              ],
+              [
+                0,
+                5,
+                0,
+                5376
+              ],
+              [
+                1,
+                0,
+                0,
+                5376
+              ],
+              [
+                1,
+                1,
+                0,
+                5376
+              ],
+              [
+                1,
+                2,
+                0,
+                5376
+              ]
+            ],
+            "fallback": null
+          }
+        },
+        {
+          "rank": 1,
+          "equality": [
+            {
+              "num_timesteps": 1,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 2,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 3,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 4,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            }
+          ],
+          "perf": [
+            {
+              "num_timesteps": 1,
+              "tp_forward_us": 227.34399884939194,
+              "tp_forward_backward_us": 1384.6400380134583,
+              "ws1_forward_us": 285.8560085296631,
+              "ws1_forward_backward_us": 1982.3039770126343
+            },
+            {
+              "num_timesteps": 2,
+              "tp_forward_us": 220.41600197553635,
+              "tp_forward_backward_us": 1666.1279797554016,
+              "ws1_forward_us": 285.39200127124786,
+              "ws1_forward_backward_us": 2302.5920391082764
+            },
+            {
+              "num_timesteps": 3,
+              "tp_forward_us": 216.63999557495117,
+              "tp_forward_backward_us": 1982.591986656189,
+              "ws1_forward_us": 285.0239872932434,
+              "ws1_forward_backward_us": 2355.4561138153076
+            },
+            {
+              "num_timesteps": 4,
+              "tp_forward_us": 217.48799830675125,
+              "tp_forward_backward_us": 1998.464047908783,
+              "ws1_forward_us": 284.6880108118057,
+              "ws1_forward_backward_us": 2307.103991508484
+            }
+          ],
+          "readback": {
+            "op": "tp_adaln_3mod",
+            "kernel_id": "rl_engine._C.h3_det_linear_forward[column_shard]+all_gather[rank_order]",
+            "backward_kernel_id": "rl_engine._C.h3_det_linear_backward_weight+rl_engine._C.h3_det_linear_backward_input_partials+all_gather+rl_engine._C.h3_det_linear_fold_chunks",
+            "contract": "h3-det-linear-v1",
+            "collective_backend": "cuda_ipc_fixed_tree",
+            "collective_ops": [
+              "all_gather"
+            ],
+            "reduction_order": "ws1_ascending_chunk_fold_after_rank_ordered_gather",
+            "tp": 2,
+            "rank": 1,
+            "columns": [
+              48384,
+              96768
+            ],
+            "slots": [
+              [
+                1,
+                3,
+                0,
+                5376
+              ],
+              [
+                1,
+                4,
+                0,
+                5376
+              ],
+              [
+                1,
+                5,
+                0,
+                5376
+              ],
+              [
+                2,
+                0,
+                0,
+                5376
+              ],
+              [
+                2,
+                1,
+                0,
+                5376
+              ],
+              [
+                2,
+                2,
+                0,
+                5376
+              ],
+              [
+                2,
+                3,
+                0,
+                5376
+              ],
+              [
+                2,
+                4,
+                0,
+                5376
+              ],
+              [
+                2,
+                5,
+                0,
+                5376
+              ]
+            ],
+            "fallback": null
+          }
+        }
+      ]
+    },
+    {
+      "tp": 4,
+      "ranks": [
+        {
+          "rank": 0,
+          "equality": [
+            {
+              "num_timesteps": 1,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 2,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 3,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 4,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            }
+          ],
+          "perf": [
+            {
+              "num_timesteps": 1,
+              "tp_forward_us": 205.07200062274933,
+              "tp_forward_backward_us": 1059.727966785431,
+              "ws1_forward_us": 287.2319966554642,
+              "ws1_forward_backward_us": 1971.1840152740479
+            },
+            {
+              "num_timesteps": 2,
+              "tp_forward_us": 161.3440066576004,
+              "tp_forward_backward_us": 1183.9839816093445,
+              "ws1_forward_us": 286.5599989891052,
+              "ws1_forward_backward_us": 2291.4559841156006
+            },
+            {
+              "num_timesteps": 3,
+              "tp_forward_us": 165.1040017604828,
+              "tp_forward_backward_us": 1381.3599944114685,
+              "ws1_forward_us": 285.98400950431824,
+              "ws1_forward_backward_us": 2357.4399948120117
+            },
+            {
+              "num_timesteps": 4,
+              "tp_forward_us": 168.8160002231598,
+              "tp_forward_backward_us": 1497.2960352897644,
+              "ws1_forward_us": 286.3519936800003,
+              "ws1_forward_backward_us": 2316.320061683655
+            }
+          ],
+          "readback": {
+            "op": "tp_adaln_3mod",
+            "kernel_id": "rl_engine._C.h3_det_linear_forward[column_shard]+all_gather[rank_order]",
+            "backward_kernel_id": "rl_engine._C.h3_det_linear_backward_weight+rl_engine._C.h3_det_linear_backward_input_partials+all_gather+rl_engine._C.h3_det_linear_fold_chunks",
+            "contract": "h3-det-linear-v1",
+            "collective_backend": "cuda_ipc_fixed_tree",
+            "collective_ops": [
+              "all_gather"
+            ],
+            "reduction_order": "ws1_ascending_chunk_fold_after_rank_ordered_gather",
+            "tp": 4,
+            "rank": 0,
+            "columns": [
+              0,
+              24192
+            ],
+            "slots": [
+              [
+                0,
+                0,
+                0,
+                5376
+              ],
+              [
+                0,
+                1,
+                0,
+                5376
+              ],
+              [
+                0,
+                2,
+                0,
+                5376
+              ],
+              [
+                0,
+                3,
+                0,
+                5376
+              ],
+              [
+                0,
+                4,
+                0,
+                2688
+              ]
+            ],
+            "fallback": null
+          }
+        },
+        {
+          "rank": 1,
+          "equality": [
+            {
+              "num_timesteps": 1,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 2,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 3,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 4,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            }
+          ],
+          "perf": [
+            {
+              "num_timesteps": 1,
+              "tp_forward_us": 203.88799905776978,
+              "tp_forward_backward_us": 1056.5119981765747,
+              "ws1_forward_us": 286.73599660396576,
+              "ws1_forward_backward_us": 2033.0719947814941
+            },
+            {
+              "num_timesteps": 2,
+              "tp_forward_us": 161.3440066576004,
+              "tp_forward_backward_us": 1177.7600049972534,
+              "ws1_forward_us": 284.92799401283264,
+              "ws1_forward_backward_us": 2342.2080278396606
+            },
+            {
+              "num_timesteps": 3,
+              "tp_forward_us": 165.0559976696968,
+              "tp_forward_backward_us": 1377.9840469360352,
+              "ws1_forward_us": 285.7600003480911,
+              "ws1_forward_backward_us": 2400.5919694900513
+            },
+            {
+              "num_timesteps": 4,
+              "tp_forward_us": 169.08800601959229,
+              "tp_forward_backward_us": 1494.480013847351,
+              "ws1_forward_us": 285.21600365638733,
+              "ws1_forward_backward_us": 2357.583999633789
+            }
+          ],
+          "readback": {
+            "op": "tp_adaln_3mod",
+            "kernel_id": "rl_engine._C.h3_det_linear_forward[column_shard]+all_gather[rank_order]",
+            "backward_kernel_id": "rl_engine._C.h3_det_linear_backward_weight+rl_engine._C.h3_det_linear_backward_input_partials+all_gather+rl_engine._C.h3_det_linear_fold_chunks",
+            "contract": "h3-det-linear-v1",
+            "collective_backend": "cuda_ipc_fixed_tree",
+            "collective_ops": [
+              "all_gather"
+            ],
+            "reduction_order": "ws1_ascending_chunk_fold_after_rank_ordered_gather",
+            "tp": 4,
+            "rank": 1,
+            "columns": [
+              24192,
+              48384
+            ],
+            "slots": [
+              [
+                0,
+                4,
+                2688,
+                5376
+              ],
+              [
+                0,
+                5,
+                0,
+                5376
+              ],
+              [
+                1,
+                0,
+                0,
+                5376
+              ],
+              [
+                1,
+                1,
+                0,
+                5376
+              ],
+              [
+                1,
+                2,
+                0,
+                5376
+              ]
+            ],
+            "fallback": null
+          }
+        },
+        {
+          "rank": 2,
+          "equality": [
+            {
+              "num_timesteps": 1,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 2,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 3,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 4,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            }
+          ],
+          "perf": [
+            {
+              "num_timesteps": 1,
+              "tp_forward_us": 202.83199846744537,
+              "tp_forward_backward_us": 1055.5999875068665,
+              "ws1_forward_us": 289.3120050430298,
+              "ws1_forward_backward_us": 2002.0480155944824
+            },
+            {
+              "num_timesteps": 2,
+              "tp_forward_us": 160.20800173282623,
+              "tp_forward_backward_us": 1178.991973400116,
+              "ws1_forward_us": 288.88000547885895,
+              "ws1_forward_backward_us": 2325.1519203186035
+            },
+            {
+              "num_timesteps": 3,
+              "tp_forward_us": 163.503997027874,
+              "tp_forward_backward_us": 1378.5760402679443,
+              "ws1_forward_us": 288.5279953479767,
+              "ws1_forward_backward_us": 2373.952031135559
+            },
+            {
+              "num_timesteps": 4,
+              "tp_forward_us": 167.59999841451645,
+              "tp_forward_backward_us": 1494.975984096527,
+              "ws1_forward_us": 289.4880026578903,
+              "ws1_forward_backward_us": 2340.9279584884644
+            }
+          ],
+          "readback": {
+            "op": "tp_adaln_3mod",
+            "kernel_id": "rl_engine._C.h3_det_linear_forward[column_shard]+all_gather[rank_order]",
+            "backward_kernel_id": "rl_engine._C.h3_det_linear_backward_weight+rl_engine._C.h3_det_linear_backward_input_partials+all_gather+rl_engine._C.h3_det_linear_fold_chunks",
+            "contract": "h3-det-linear-v1",
+            "collective_backend": "cuda_ipc_fixed_tree",
+            "collective_ops": [
+              "all_gather"
+            ],
+            "reduction_order": "ws1_ascending_chunk_fold_after_rank_ordered_gather",
+            "tp": 4,
+            "rank": 2,
+            "columns": [
+              48384,
+              72576
+            ],
+            "slots": [
+              [
+                1,
+                3,
+                0,
+                5376
+              ],
+              [
+                1,
+                4,
+                0,
+                5376
+              ],
+              [
+                1,
+                5,
+                0,
+                5376
+              ],
+              [
+                2,
+                0,
+                0,
+                5376
+              ],
+              [
+                2,
+                1,
+                0,
+                2688
+              ]
+            ],
+            "fallback": null
+          }
+        },
+        {
+          "rank": 3,
+          "equality": [
+            {
+              "num_timesteps": 1,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 2,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 3,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            },
+            {
+              "num_timesteps": 4,
+              "table": true,
+              "d_temb": true,
+              "d_weight_shard": true,
+              "d_bias_shard": true
+            }
+          ],
+          "perf": [
+            {
+              "num_timesteps": 1,
+              "tp_forward_us": 202.14399695396423,
+              "tp_forward_backward_us": 1051.6799688339233,
+              "ws1_forward_us": 289.34401273727417,
+              "ws1_forward_backward_us": 1993.776023387909
+            },
+            {
+              "num_timesteps": 2,
+              "tp_forward_us": 159.69599783420563,
+              "tp_forward_backward_us": 1181.0719966888428,
+              "ws1_forward_us": 288.60801458358765,
+              "ws1_forward_backward_us": 2323.8720893859863
+            },
+            {
+              "num_timesteps": 3,
+              "tp_forward_us": 163.39199990034103,
+              "tp_forward_backward_us": 1380.288004875183,
+              "ws1_forward_us": 288.4320020675659,
+              "ws1_forward_backward_us": 2373.088002204895
+            },
+            {
+              "num_timesteps": 4,
+              "tp_forward_us": 167.31199622154236,
+              "tp_forward_backward_us": 1495.8400130271912,
+              "ws1_forward_us": 288.768008351326,
+              "ws1_forward_backward_us": 2333.6639404296875
+            }
+          ],
+          "readback": {
+            "op": "tp_adaln_3mod",
+            "kernel_id": "rl_engine._C.h3_det_linear_forward[column_shard]+all_gather[rank_order]",
+            "backward_kernel_id": "rl_engine._C.h3_det_linear_backward_weight+rl_engine._C.h3_det_linear_backward_input_partials+all_gather+rl_engine._C.h3_det_linear_fold_chunks",
+            "contract": "h3-det-linear-v1",
+            "collective_backend": "cuda_ipc_fixed_tree",
+            "collective_ops": [
+              "all_gather"
+            ],
+            "reduction_order": "ws1_ascending_chunk_fold_after_rank_ordered_gather",
+            "tp": 4,
+            "rank": 3,
+            "columns": [
+              72576,
+              96768
+            ],
+            "slots": [
+              [
+                2,
+                1,
+                2688,
+                5376
+              ],
+              [
+                2,
+                2,
+                0,
+                5376
+              ],
+              [
+                2,
+                3,
+                0,
+                5376
+              ],
+              [
+                2,
+                4,
+                0,
+                5376
+              ],
+              [
+                2,
+                5,
+                0,
+                5376
+              ]
+            ],
+            "fallback": null
+          }
+        }
+      ]
+    }
+  ]
+}
