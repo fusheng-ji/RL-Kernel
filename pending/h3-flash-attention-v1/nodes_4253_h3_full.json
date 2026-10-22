@@ -1,0 +1,129 @@
+{
+ "attention": "h3_full",
+ "layout": "4253",
+ "seq_len": 4253,
+ "device": "NVIDIA H100",
+ "candidate_total_ms": 181.49528093636036,
+ "provider_total_ms": 8.423129096627235,
+ "nodes": [
+  {
+   "node": "adaln_projection",
+   "candidate_ms": 0.3726482391357422,
+   "provider_ms": 0.3643864765763283,
+   "ratio": 1.0226730767756231,
+   "binding": "row:adaln_projection_3mod"
+  },
+  {
+   "node": "norm1",
+   "candidate_ms": 0.21946895867586136,
+   "provider_ms": 0.2918485552072525,
+   "ratio": 0.7519960430162428,
+   "binding": "row:h3_rmsnorm"
+  },
+  {
+   "node": "q_proj",
+   "candidate_ms": 1.6653314232826233,
+   "provider_ms": 0.44433679431676865,
+   "ratio": 3.747903492537251,
+   "binding": "row:h3_qkv_gemm"
+  },
+  {
+   "node": "k_proj",
+   "candidate_ms": 1.3700425624847412,
+   "provider_ms": 0.4226779565215111,
+   "ratio": 3.2413390415712784,
+   "binding": "row:h3_qkv_gemm"
+  },
+  {
+   "node": "v_proj",
+   "candidate_ms": 1.3570431619882584,
+   "provider_ms": 0.4178779199719429,
+   "ratio": 3.247463187524655,
+   "binding": "row:h3_qkv_gemm"
+  },
+  {
+   "node": "q_norm",
+   "candidate_ms": 0.22461824119091034,
+   "provider_ms": 0.19503850489854813,
+   "ratio": 1.1516610082083458,
+   "binding": "interim:h3_qk_rmsnorm_d128"
+  },
+  {
+   "node": "k_norm",
+   "candidate_ms": 0.20278897136449814,
+   "provider_ms": 0.17994921654462814,
+   "ratio": 1.1269233356968,
+   "binding": "interim:h3_qk_rmsnorm_d128"
+  },
+  {
+   "node": "rope_q",
+   "candidate_ms": 0.5912575870752335,
+   "provider_ms": 0.5744965746998787,
+   "ratio": 1.0291751302157213,
+   "binding": "reference:h3_mm_rope_3axis_partial"
+  },
+  {
+   "node": "rope_k",
+   "candidate_ms": 0.5557164549827576,
+   "provider_ms": 0.5457364022731781,
+   "ratio": 1.0182873135601898,
+   "binding": "reference:h3_mm_rope_3axis_partial"
+  },
+  {
+   "node": "attention",
+   "candidate_ms": 113.48250415176153,
+   "provider_ms": 0.9570643305778503,
+   "ratio": 118.57353839866101,
+   "binding": "interim:h3_full_attention"
+  },
+  {
+   "node": "o_proj",
+   "candidate_ms": 8.794162422418594,
+   "provider_ms": 0.4764879122376442,
+   "ratio": 18.456213046665038,
+   "binding": "interim:h3_attention_o_gemm"
+  },
+  {
+   "node": "residual_attn",
+   "candidate_ms": 0.3619277849793434,
+   "provider_ms": 0.1831483095884323,
+   "ratio": 1.9761459212627255,
+   "binding": "row:adaln_gate_residual"
+  },
+  {
+   "node": "norm2",
+   "candidate_ms": 0.22012926638126373,
+   "provider_ms": 0.29448792338371277,
+   "ratio": 0.7474984503674843,
+   "binding": "row:h3_rmsnorm"
+  },
+  {
+   "node": "ffn_gate_up",
+   "candidate_ms": 33.97963847965002,
+   "provider_ms": 1.5998007729649544,
+   "ratio": 21.239918778558053,
+   "binding": "interim:h3_ffn_gate_up_gemm"
+  },
+  {
+   "node": "swiglu",
+   "candidate_ms": 0.6693573668599129,
+   "provider_ms": 0.4232274368405342,
+   "ratio": 1.5815547589654892,
+   "binding": "interim:h3_swiglu"
+  },
+  {
+   "node": "ffn_down",
+   "candidate_ms": 17.070588655769825,
+   "provider_ms": 0.8745249360799789,
+   "ratio": 19.519842089681305,
+   "binding": "interim:h3_ffn_down_gemm"
+  },
+  {
+   "node": "residual_mlp",
+   "candidate_ms": 0.3580572083592415,
+   "provider_ms": 0.1780390739440918,
+   "ratio": 2.0111158771342486,
+   "binding": "row:adaln_gate_residual"
+  }
+ ]
+}

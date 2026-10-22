@@ -1,0 +1,136 @@
+WARNING 10-23 01:06:12 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 10-23 01:06:13 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 10-23 01:06:13 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 10-23 01:06:16 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 10-23 01:06:16 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 10-23 01:06:16 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 10-23 01:06:16 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+{
+ "attention": "flash",
+ "layout": "8349",
+ "seq_len": 8349,
+ "device": "NVIDIA H100",
+ "candidate_total_ms": 133.51983204483986,
+ "provider_total_ms": 17.033115029335022,
+ "nodes": [
+  {
+   "node": "adaln_projection",
+   "candidate_ms": 0.3850376233458519,
+   "provider_ms": 0.3656381741166115,
+   "ratio": 1.0530564109617653,
+   "binding": "row:adaln_projection_3mod"
+  },
+  {
+   "node": "norm1",
+   "candidate_ms": 0.2781888470053673,
+   "provider_ms": 0.5495361983776093,
+   "ratio": 0.506224790699251,
+   "binding": "row:h3_rmsnorm"
+  },
+  {
+   "node": "q_proj",
+   "candidate_ms": 2.233576960861683,
+   "provider_ms": 0.8563334122300148,
+   "ratio": 2.608302944813433,
+   "binding": "row:h3_qkv_gemm"
+  },
+  {
+   "node": "k_proj",
+   "candidate_ms": 1.9217580556869507,
+   "provider_ms": 0.8326740935444832,
+   "ratio": 2.30793544627588,
+   "binding": "row:h3_qkv_gemm"
+  },
+  {
+   "node": "v_proj",
+   "candidate_ms": 1.9124094396829605,
+   "provider_ms": 0.8254451677203178,
+   "ratio": 2.3168218974066783,
+   "binding": "row:h3_qkv_gemm"
+  },
+  {
+   "node": "q_norm",
+   "candidate_ms": 0.3798976540565491,
+   "provider_ms": 0.34762732684612274,
+   "ratio": 1.0928302372060377,
+   "binding": "interim:h3_qk_rmsnorm_d128"
+  },
+  {
+   "node": "k_norm",
+   "candidate_ms": 0.35339780151844025,
+   "provider_ms": 0.33061858266592026,
+   "ratio": 1.068898785630382,
+   "binding": "interim:h3_qk_rmsnorm_d128"
+  },
+  {
+   "node": "rope_q",
+   "candidate_ms": 1.031334511935711,
+   "provider_ms": 1.0264627635478973,
+   "ratio": 1.0047461520873633,
+   "binding": "reference:h3_mm_rope_3axis_partial"
+  },
+  {
+   "node": "rope_k",
+   "candidate_ms": 0.993373803794384,
+   "provider_ms": 0.9963037446141243,
+   "ratio": 0.9970591891924735,
+   "binding": "reference:h3_mm_rope_3axis_partial"
+  },
+  {
+   "node": "attention",
+   "candidate_ms": 7.871200330555439,
+   "provider_ms": 3.2685603946447372,
+   "ratio": 2.408155083642249,
+   "binding": "interim:h3_full_attention"
+  },
+  {
+   "node": "o_proj",
+   "candidate_ms": 16.421210020780563,
+   "provider_ms": 0.8210055530071259,
+   "ratio": 20.00133855445194,
+   "binding": "interim:h3_attention_o_gemm"
+  },
+  {
+   "node": "residual_attn",
+   "candidate_ms": 0.38584694266319275,
+   "provider_ms": 0.3292784094810486,
+   "ratio": 1.1717954519742053,
+   "binding": "row:adaln_gate_residual"
+  },
+  {
+   "node": "norm2",
+   "candidate_ms": 0.26664789766073227,
+   "provider_ms": 0.5593057721853256,
+   "ratio": 0.47674798101740073,
+   "binding": "row:h3_rmsnorm"
+  },
+  {
+   "node": "ffn_gate_up",
+   "candidate_ms": 64.85817302018404,
+   "provider_ms": 3.2038614153862,
+   "ratio": 20.243751090078252,
+   "binding": "interim:h3_ffn_gate_up_gemm"
+  },
+  {
+   "node": "swiglu",
+   "candidate_ms": 1.2448616325855255,
+   "provider_ms": 0.7946453988552094,
+   "ratio": 1.5665624370051239,
+   "binding": "interim:h3_swiglu"
+  },
+  {
+   "node": "ffn_down",
+   "candidate_ms": 32.48042054474354,
+   "provider_ms": 1.5990501269698143,
+   "ratio": 20.312321669548687,
+   "binding": "interim:h3_ffn_down_gemm"
+  },
+  {
+   "node": "residual_mlp",
+   "candidate_ms": 0.5024969577789307,
+   "provider_ms": 0.32676849514245987,
+   "ratio": 1.5377766377381614,
+   "binding": "row:adaln_gate_residual"
+  }
+ ]
+}
