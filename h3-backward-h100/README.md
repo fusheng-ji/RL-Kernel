@@ -10,3 +10,7 @@ Measured on NVIDIA H100 (sm90), torch 2.13.0+cu130, at the PR heads: #484 `ac66d
 ## 30-repeat native-diffusers repeatability (`native-repeat30/`)
 
 The two-run repeat check above is extended to 30 replays per op and size, for native diffusers, deterministic diffusers and the rl-kernel op, with the CUDA kernels of one native backward listed. See `native-repeat30/REPORT.md`. Result: every gradient that flows through a diffusers `index_select` gather has 30 distinct bitwise results in native mode (run-to-run spread up to 0.2 of max|grad| at 32768 rows), and the native backward of those ops launches the atomic `indexFuncLargeIndex` (index_add) kernel. Deterministic diffusers and rl-kernel give 1 distinct result everywhere. Plain GEMM, layer-norm and element-wise gradients are repeatable in all three.
+
+## Fix for the non-repeatable diffusers gather gradients (`rowgather-fix/`)
+
+`RowGather` (`rowgather_fix.py`): `index_select` forward unchanged, backward = stable sort + FP32 segmented sum + cast. With it the diffusers replay of all four gather ops gives 1 distinct bitwise result in 30 runs at every size (native: 30), forward output bitwise unchanged, error vs FP64 within about 1.3x of the rl-kernel op and 10 to 20x below native/deterministic diffusers. On 4 GPUs it is also repeatable for sharded tokens plus all_reduce and for replicated tokens (native replicas disagree across ranks). Bitwise equality with the kernel is not expected (different intermediate rounding). See `rowgather-fix/REPORT.md`.
