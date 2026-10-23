@@ -7,13 +7,13 @@ Update **Status** and **Evidence** here before starting work on a blocker. Statu
 
 | ID | Title | Status | Depends on |
 | --- | --- | --- | --- |
-| B1 | Probe: full weights + native VeRL-Omni baseline | in_progress | — |
-| B2 | SDE transition contract draft | in_progress | — |
-| B3 | Performance: GEMM tiles, flash, linears | pending | — |
-| B4 | VeRL-Omni integration branch | pending | B1, B2 |
-| B5 | RFC gap table and final rows | in_progress | — |
-| B6 | Tiny-scale R/R smoke | pending | B4 |
-| B7 | Full experiment matrix + result bundle | pending | B3, B4, B5, B6 |
+| B1 | Probe: full weights + native VeRL-Omni baseline | blocked | — |
+| B2 | SDE transition contract draft | done | — |
+| B3 | Performance: GEMM tiles, flash, linears | in_progress | — |
+| B4 | VeRL-Omni integration branch | in_progress | B1, B2 |
+| B5 | RFC gap table and final rows | done | — |
+| B6 | Tiny-scale R/R smoke | blocked | B4 |
+| B7 | Full experiment matrix + result bundle | in_progress | B3, B4, B5, B6 |
 
 ---
 
@@ -39,7 +39,10 @@ Update **Status** and **Evidence** here before starting work on a blocker. Statu
 - Repro scripts: VeRL-Omni `tests/special_e2e/run_flowgrpo_minimax_h3_tiny.py`,
   `tests/special_e2e/run_minimax_h3_lora_sync_tp2.sh`.
 
-**Next actions:** quota check → HF download remaining shards → run TP=2 script → append `log.md`.
+**Next actions:** quota check → HF download remaining shards → P/P metrics on real weights.
+
+**Update 2026-10-23:** TP=2 LoRA sync regression **PASS** — see [`probe-results.md`](probe-results.md).
+Weights still 1/14 (blocked on quota).
 
 ---
 
@@ -74,6 +77,9 @@ Update **Status** and **Evidence** here before starting work on a blocker. Statu
 
 **Evidence:** PR [#576](https://github.com/RL-Align/RL-Kernel/pull/576); `pr_assets` flash-vs-553 JSON.
 
+**Update:** shape-based tile pick lives on local `local/h3-step-time` (`c75fa192`); open PR after #568 merges
+(cherry-pick onto `test-h3` alone is insufficient — no `h3_projection.py` on upstream yet).
+
 ---
 
 ## B4 — VeRL-Omni integration
@@ -88,7 +94,10 @@ Update **Status** and **Evidence** here before starting work on a blocker. Statu
 - Fused QKV ≡ split q/k/v column test; Ulysses SP aligned with rollout.
 - Bitwise comparators for velocity / `prev_sample_mean` wired into metrics.
 
-**Blocked on:** community `verl-omni` fork remote; open PR stack merged for mapper/vLLM adapter (#575).
+**Update 2026-10-23:** Skeleton package `verl_omni/integrations/rl_kernel/` on local `rl-kernel/h3` branch
+(manifest, metrics, actor/rollout patch stubs). Patches raise `NotImplementedError` until #575 adapter is wired.
+
+**Blocked on:** push to community `verl-omni` fork; #575 merged or manifest-pinned local build.
 
 **Outline:** [`verl-omni-integration-outline.md`](verl-omni-integration-outline.md).
 
@@ -112,7 +121,7 @@ Update **Status** and **Evidence** here before starting work on a blocker. Statu
 
 **Done when:** Same metric pipeline as #377 on ≥8 steps; logged CSV row per step.
 
-**Depends on:** B4 minimal hooks on `rl-kernel/h3` branch.
+**Depends on:** B4 patches implemented (not stubs). **Blocked** until actor/rollout hooks call RL-Kernel.
 
 ---
 
@@ -126,6 +135,9 @@ Update **Status** and **Evidence** here before starting work on a blocker. Statu
 - 8×H100, real weights, rollout TP=2, actor FSDP + Ulysses SP as in VeRL-Omni H3 recipe.
 
 **Depends on:** B3 sufficient rollout perf, B6 green, B1 weights, Slurm 8-GPU job.
+
+**Update 2026-10-23:** Scaffold [`examples/minimax_h3_verl_omni_e2e/experiment_matrix.json`](../../../examples/minimax_h3_verl_omni_e2e/experiment_matrix.json)
+and README on this branch; analyze/collect/plot scripts TODO (copy from vime example when B6 runs).
 
 ---
 

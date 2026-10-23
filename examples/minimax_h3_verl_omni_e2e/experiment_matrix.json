@@ -1,0 +1,47 @@
+{
+  "name": "minimax_h3_verl_omni_e2e",
+  "status": "planned",
+  "hardware": "8x NVIDIA H100 80GB (2 nodes x 4 GPUs)",
+  "arms": {
+    "G10_PP": {
+      "train": "production",
+      "rollout": "production",
+      "rl_kernel_mode": "off"
+    },
+    "G11_RR": {
+      "train": "rl_kernel_strict",
+      "rollout": "rl_kernel_strict",
+      "rl_kernel_mode": "strict"
+    },
+    "RP_localize_train": {
+      "train": "rl_kernel_strict",
+      "rollout": "production",
+      "rl_kernel_mode": "mixed"
+    },
+    "PR_localize_rollout": {
+      "train": "production",
+      "rollout": "rl_kernel_strict",
+      "rl_kernel_mode": "mixed"
+    }
+  },
+  "verl_omni": {
+    "baseline_branch": "main",
+    "integration_branch": "rl-kernel/h3",
+    "recipe": "flowgrpo_minimax_h3",
+    "rollout_tp": 2,
+    "actor_sp": 2,
+    "sde_type": "cps",
+    "noise_level": 0.8
+  },
+  "horizons": {
+    "smoke_steps": 8,
+    "short_steps": 32,
+    "seeds": [11, 22, 33]
+  },
+  "pass_criteria": {
+    "RR_mismatch_count": 0,
+    "RR_max_abs_diff": 0,
+    "PP_logprob_drift": "non_zero_expected",
+    "e2e_time_RR_not_slower_than_PP": "paired_bootstrap_95ci"
+  }
+}

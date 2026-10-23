@@ -38,6 +38,7 @@ clock, that is the community value proposition (same story as VIME + RL-Kernel).
 | [`stochastic-transition-contract-draft.md`](stochastic-transition-contract-draft.md) | B2 SDE/CPS draft for maintainer review |
 | [`verl-omni-integration-outline.md`](verl-omni-integration-outline.md) | B4 hook points and file map |
 | [`log.md`](log.md) | Dated decisions and results |
+| [`probe-results.md`](probe-results.md) | B1 CPU/GPU probe and TP=2 regression |
 
 ## Dependency graph
 
