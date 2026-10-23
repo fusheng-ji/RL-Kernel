@@ -1,0 +1,30 @@
+{
+  "experiment": "h3_dual_trajectory_step3_probe",
+  "seed": 33,
+  "commit": "eb7840bb6ad59c0025dc7c655a9dd9e22f950500",
+  "device": "NVIDIA B200",
+  "compute_capability": "sm100",
+  "execution_status": "arms_B_C_not_executed_on_this_cluster",
+  "execution_note": "SLURM on mcml has no sm100 nodes; arms A metrics below are replayed from pr_assets dual_trajectory_seed33.json (forward not re-run here). Re-run experiments/h3_dual_trajectory_step3_probe.py on B200 to populate arms B/C and refresh A.",
+  "D_delta_at_step2_from_historical_json": {
+    "max_abs_latent_video_at_step2": 1.9073486328125e-06,
+    "max_abs_latent_audio_at_step2": 0.0,
+    "source": "dual_trajectory_seed33.json entries step=2 kind=latent"
+  },
+  "arms": {
+    "A": {
+      "max_abs_velocity_video": 0.6215000152587891,
+      "max_abs_velocity_audio": 0.3051609992980957,
+      "name": "A_replay_step3_entry",
+      "source": "historical dual_trajectory_seed33.json (rlkernel_strict step=3 velocity)"
+    },
+    "B": null,
+    "C": null
+  },
+  "h100_mechanism_sensitivity_reference": {
+    "note": "Same script on H100 with artificial step-2 delta scale K shows step-3 velocity diff can reach ~0.53 at K=1000 while natural K=1 stays ~5.7e-06. See h3-euler-step3-probe-h100/seed33_report.json optional_delta_scale_sweep.",
+    "does_not_replace_sm100_B_shared_arm": true
+  },
+  "conclusion_b200_style": "inconclusive",
+  "conclusion_detail": "Pending sm100 execution of arms B (shared single step-2 latent) and C. If B max_abs << 0.62 then supports_latent_accumulation; if B ~ 0.62 then supports_step3_layout_sensitivity."
+}
