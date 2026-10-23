@@ -1,0 +1,884 @@
+{
+ "device": "NVIDIA B200",
+ "cases": [
+  {
+   "block": 0,
+   "tokens": 12,
+   "seed": 3,
+   "backends": {
+    "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+    "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+    "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+    "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+    "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+    "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+    "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+   },
+   "nodes": [
+    {
+     "node": "norm1",
+     "rfc_row": "h3_rmsnorm",
+     "status": "row",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.0017871977034782448,
+     "provider_rel_err_vs_golden": 0.0017871977034782448
+    },
+    {
+     "node": "q_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.002522874635441755,
+     "provider_rel_err_vs_golden": 0.002522874635441755
+    },
+    {
+     "node": "k_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.0029328130185812522,
+     "provider_rel_err_vs_golden": 0.0029328130185812522
+    },
+    {
+     "node": "v_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.00295382474728662,
+     "provider_rel_err_vs_golden": 0.00295382474728662
+    },
+    {
+     "node": "q_norm",
+     "rfc_row": "h3_qk_rmsnorm_d128",
+     "status": "interim",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.0043847337227333185,
+     "provider_rel_err_vs_golden": 0.0043847337227333185
+    },
+    {
+     "node": "k_norm",
+     "rfc_row": "h3_qk_rmsnorm_d128",
+     "status": "interim",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.004992582974020569,
+     "provider_rel_err_vs_golden": 0.004992582974020569
+    },
+    {
+     "node": "attention",
+     "rfc_row": "h3_full_attention",
+     "status": "interim",
+     "backend": "DeterministicAttentionOp(causal=False)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "candidate_rel_err_vs_golden": 0.005990490680975002,
+     "provider_rel_err_vs_golden": 0.006394768111111882
+    },
+    {
+     "node": "o_proj",
+     "rfc_row": "h3_attention_o_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 1.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.5
+     },
+     "candidate_rel_err_vs_golden": 0.004769939812498067,
+     "provider_rel_err_vs_golden": 0.004769939812498067
+    },
+    {
+     "node": "residual_attn",
+     "rfc_row": "token_refiner_block",
+     "status": "row",
+     "backend": "torch.add (BF16 elementwise)",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 1.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.005944178997155421,
+     "provider_rel_err_vs_golden": 0.005944178997155421
+    },
+    {
+     "node": "norm2",
+     "rfc_row": "h3_rmsnorm",
+     "status": "row",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.0234375
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.005627663484867679,
+     "provider_rel_err_vs_golden": 0.005977740727168743
+    },
+    {
+     "node": "ffn_gate_up",
+     "rfc_row": "h3_ffn_gate_up_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "candidate_rel_err_vs_golden": 0.004946653801295464,
+     "provider_rel_err_vs_golden": 0.004972214777339893
+    },
+    {
+     "node": "swiglu",
+     "rfc_row": "h3_swiglu",
+     "status": "interim",
+     "backend": "SwiGLUCudaOp",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 6.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 1.0
+     },
+     "candidate_rel_err_vs_golden": 0.007901102334265282,
+     "provider_rel_err_vs_golden": 0.007901102334265282
+    },
+    {
+     "node": "ffn_down",
+     "rfc_row": "h3_ffn_down_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 32.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 16.0
+     },
+     "candidate_rel_err_vs_golden": 0.0030298843160224058,
+     "provider_rel_err_vs_golden": 0.0030298843160224058
+    },
+    {
+     "node": "residual_mlp",
+     "rfc_row": "token_refiner_block",
+     "status": "row",
+     "backend": "torch.add (BF16 elementwise)",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 32.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.0029157116977310046,
+     "provider_rel_err_vs_golden": 0.0029157116977310046
+    }
+   ],
+   "first_drift": "attention",
+   "first_isolated_drift": "attention",
+   "first_repeat_drift": null,
+   "first_batch_drift": null,
+   "output": {
+    "candidate_rel_err_vs_golden": 0.0029157116977310046,
+    "provider_rel_err_vs_golden": 0.0029157116977310046,
+    "candidate_vs_provider_max_abs": 32.0
+   },
+   "candidate_ms": 2.1899109706282616,
+   "provider_ms": 0.23357011377811432
+  },
+  {
+   "block": 0,
+   "tokens": 257,
+   "seed": 3,
+   "backends": {
+    "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+    "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+    "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+    "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+    "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+    "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+    "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+   },
+   "nodes": [
+    {
+     "node": "norm1",
+     "rfc_row": "h3_rmsnorm",
+     "status": "row",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.003295548552396121,
+     "provider_rel_err_vs_golden": 0.003295548552396121
+    },
+    {
+     "node": "q_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.00299335781540468,
+     "provider_rel_err_vs_golden": 0.00299335781540468
+    },
+    {
+     "node": "k_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.003301400204864544,
+     "provider_rel_err_vs_golden": 0.003301400204864544
+    },
+    {
+     "node": "v_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.0035807482771803953,
+     "provider_rel_err_vs_golden": 0.0035807482771803953
+    },
+    {
+     "node": "q_norm",
+     "rfc_row": "h3_qk_rmsnorm_d128",
+     "status": "interim",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.004954349669277008,
+     "provider_rel_err_vs_golden": 0.004954349669277008
+    },
+    {
+     "node": "k_norm",
+     "rfc_row": "h3_qk_rmsnorm_d128",
+     "status": "interim",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.004974151389733387,
+     "provider_rel_err_vs_golden": 0.004974151389733387
+    },
+    {
+     "node": "attention",
+     "rfc_row": "h3_full_attention",
+     "status": "interim",
+     "backend": "DeterministicAttentionOp(causal=False)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "candidate_rel_err_vs_golden": 0.006184799088429175,
+     "provider_rel_err_vs_golden": 0.006892911484622862
+    },
+    {
+     "node": "o_proj",
+     "rfc_row": "h3_attention_o_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.5
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.5
+     },
+     "candidate_rel_err_vs_golden": 0.006774994713232797,
+     "provider_rel_err_vs_golden": 0.006992473187666031
+    },
+    {
+     "node": "residual_attn",
+     "rfc_row": "token_refiner_block",
+     "status": "row",
+     "backend": "torch.add (BF16 elementwise)",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.5
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.007163224064240479,
+     "provider_rel_err_vs_golden": 0.007650412462796538
+    },
+    {
+     "node": "norm2",
+     "rfc_row": "h3_rmsnorm",
+     "status": "row",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.03125
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.009308275802589807,
+     "provider_rel_err_vs_golden": 0.009308275802589807
+    },
+    {
+     "node": "ffn_gate_up",
+     "rfc_row": "h3_ffn_gate_up_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.25
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.25
+     },
+     "candidate_rel_err_vs_golden": 0.00638665836097388,
+     "provider_rel_err_vs_golden": 0.007205910675766255
+    },
+    {
+     "node": "swiglu",
+     "rfc_row": "h3_swiglu",
+     "status": "interim",
+     "backend": "SwiGLUCudaOp",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 12.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 4.0
+     },
+     "candidate_rel_err_vs_golden": 0.008293036485108325,
+     "provider_rel_err_vs_golden": 0.010808133939378076
+    },
+    {
+     "node": "ffn_down",
+     "rfc_row": "h3_ffn_down_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 64.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 32.0
+     },
+     "candidate_rel_err_vs_golden": 0.0036686734485042705,
+     "provider_rel_err_vs_golden": 0.0036686734485042705
+    },
+    {
+     "node": "residual_mlp",
+     "rfc_row": "token_refiner_block",
+     "status": "row",
+     "backend": "torch.add (BF16 elementwise)",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 64.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.005718683827540075,
+     "provider_rel_err_vs_golden": 0.005718683827540075
+    }
+   ],
+   "first_drift": "attention",
+   "first_isolated_drift": "attention",
+   "first_repeat_drift": null,
+   "first_batch_drift": null,
+   "output": {
+    "candidate_rel_err_vs_golden": 0.005718683827540075,
+    "provider_rel_err_vs_golden": 0.005718683827540075,
+    "candidate_vs_provider_max_abs": 64.0
+   },
+   "candidate_ms": 4.879299085587263,
+   "provider_ms": 0.3414619714021683
+  },
+  {
+   "block": 0,
+   "tokens": 925,
+   "seed": 3,
+   "backends": {
+    "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+    "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+    "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+    "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+    "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+    "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+    "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+   },
+   "nodes": [
+    {
+     "node": "norm1",
+     "rfc_row": "h3_rmsnorm",
+     "status": "row",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.003031970396013122,
+     "provider_rel_err_vs_golden": 0.003031970396013122
+    },
+    {
+     "node": "q_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.0031023573140450357,
+     "provider_rel_err_vs_golden": 0.0031023573140450357
+    },
+    {
+     "node": "k_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.003482465098231492,
+     "provider_rel_err_vs_golden": 0.003482465098231492
+    },
+    {
+     "node": "v_proj",
+     "rfc_row": "h3_qkv_gemm",
+     "status": "row",
+     "backend": "H3QKVGemmCudaOp.project",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.0033778438145225095,
+     "provider_rel_err_vs_golden": 0.0033778438145225095
+    },
+    {
+     "node": "q_norm",
+     "rfc_row": "h3_qk_rmsnorm_d128",
+     "status": "interim",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.005105515531978967,
+     "provider_rel_err_vs_golden": 0.005105515531978967
+    },
+    {
+     "node": "k_norm",
+     "rfc_row": "h3_qk_rmsnorm_d128",
+     "status": "interim",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.004573093096540348,
+     "provider_rel_err_vs_golden": 0.004573093096540348
+    },
+    {
+     "node": "attention",
+     "rfc_row": "h3_full_attention",
+     "status": "interim",
+     "backend": "DeterministicAttentionOp(causal=False)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.125
+     },
+     "candidate_rel_err_vs_golden": 0.005714541569825715,
+     "provider_rel_err_vs_golden": 0.005414487288435914
+    },
+    {
+     "node": "o_proj",
+     "rfc_row": "h3_attention_o_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.5
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.25
+     },
+     "candidate_rel_err_vs_golden": 0.006521928036441625,
+     "provider_rel_err_vs_golden": 0.006521928036441625
+    },
+    {
+     "node": "residual_attn",
+     "rfc_row": "token_refiner_block",
+     "status": "row",
+     "backend": "torch.add (BF16 elementwise)",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.5
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.007087884612441754,
+     "provider_rel_err_vs_golden": 0.008089645559741176
+    },
+    {
+     "node": "norm2",
+     "rfc_row": "h3_rmsnorm",
+     "status": "row",
+     "backend": "H3RMSNormCudaOp.forward",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.03125
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.007925004642523662,
+     "provider_rel_err_vs_golden": 0.007116797225252829
+    },
+    {
+     "node": "ffn_gate_up",
+     "rfc_row": "h3_ffn_gate_up_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.5
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 0.25
+     },
+     "candidate_rel_err_vs_golden": 0.0071487207820798305,
+     "provider_rel_err_vs_golden": 0.00803804052523051
+    },
+    {
+     "node": "swiglu",
+     "rfc_row": "h3_swiglu",
+     "status": "interim",
+     "backend": "SwiGLUCudaOp",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 16.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 2.0
+     },
+     "candidate_rel_err_vs_golden": 0.010837445335098684,
+     "provider_rel_err_vs_golden": 0.010837445335098684
+    },
+    {
+     "node": "ffn_down",
+     "rfc_row": "h3_ffn_down_gemm",
+     "status": "interim",
+     "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+     "provider_bitwise_isolated_promised": false,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 128.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 64.0
+     },
+     "candidate_rel_err_vs_golden": 0.00464677619687036,
+     "provider_rel_err_vs_golden": 0.00464677619687036
+    },
+    {
+     "node": "residual_mlp",
+     "rfc_row": "token_refiner_block",
+     "status": "row",
+     "backend": "torch.add (BF16 elementwise)",
+     "provider_bitwise_isolated_promised": true,
+     "repeat_bitwise_equal": true,
+     "batch_row_bitwise_equal": true,
+     "chained_vs_provider": {
+      "bitwise_equal": false,
+      "max_abs": 128.0
+     },
+     "isolated_vs_provider": {
+      "bitwise_equal": true,
+      "max_abs": 0.0
+     },
+     "candidate_rel_err_vs_golden": 0.006646972919046188,
+     "provider_rel_err_vs_golden": 0.006646972919046188
+    }
+   ],
+   "first_drift": "attention",
+   "first_isolated_drift": "attention",
+   "first_repeat_drift": null,
+   "first_batch_drift": null,
+   "output": {
+    "candidate_rel_err_vs_golden": 0.006646972919046188,
+    "provider_rel_err_vs_golden": 0.006646972919046188,
+    "candidate_vs_provider_max_abs": 128.0
+   },
+   "candidate_ms": 23.371801245957613,
+   "provider_ms": 0.6939498707652092
+  }
+ ]
+}

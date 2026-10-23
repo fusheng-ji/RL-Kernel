@@ -1,0 +1,825 @@
+{
+ "device": "NVIDIA B200",
+ "torch": "2.13.0+cu130",
+ "runtime_modes": {
+  "strict": {
+   "mode": "strict",
+   "bind": "True",
+   "fail_on_fallback": "True",
+   "report_only": "False",
+   "case_id": "R/R"
+  },
+  "audit": {
+   "mode": "audit",
+   "bind": "True",
+   "fail_on_fallback": "False",
+   "report_only": "True",
+   "case_id": "R/R"
+  },
+  "auto": {
+   "mode": "auto",
+   "bind": "False",
+   "fail_on_fallback": "False",
+   "report_only": "False",
+   "case_id": "P/P"
+  },
+  "off": {
+   "mode": "off",
+   "bind": "False",
+   "fail_on_fallback": "False",
+   "report_only": "False",
+   "case_id": "P/P"
+  }
+ },
+ "lora_gate": [
+  {
+   "repeatable": true,
+   "forward_rows_independent": true,
+   "base_frozen": true,
+   "forward_rel_err_vs_fp64": 0.0016628886382380277,
+   "shape": "N512 K384 T70",
+   "grad_a_rel_err_vs_fp64": 4.2864513391316615e-07,
+   "grad_b_rel_err_vs_fp64": 3.939262429061526e-07,
+   "grad_x_rel_err_vs_fp64": 0.0016806951918813904
+  },
+  {
+   "repeatable": true,
+   "forward_rows_independent": true,
+   "base_frozen": true,
+   "forward_rel_err_vs_fp64": 0.0016638051394851322,
+   "shape": "N2048 K1024 T257",
+   "grad_a_rel_err_vs_fp64": 8.826294947584371e-07,
+   "grad_b_rel_err_vs_fp64": 6.394984691358041e-07,
+   "grad_x_rel_err_vs_fp64": 0.001655864934619874
+  },
+  {
+   "repeatable": true,
+   "forward_rows_independent": true,
+   "base_frozen": true,
+   "forward_rel_err_vs_fp64": 0.0016637816415382449,
+   "shape": "N5120 K5120 T33",
+   "grad_a_rel_err_vs_fp64": 1.3357639121159844e-06,
+   "grad_b_rel_err_vs_fp64": 1.344963020090559e-06,
+   "grad_x_rel_err_vs_fp64": 0.0016649321648075175
+  }
+ ],
+ "transition": [
+  {
+   "shape": "B3 x 257x96",
+   "prev_sample_bitwise": true,
+   "mean_bitwise": true,
+   "logp_max_rel_diff_vs_torch_mean": 5.830258487549145e-06,
+   "batch_invariant": true,
+   "scoring_reproduces_sampling_logprob": true,
+   "verl_omni_mean_bitwise": true,
+   "verl_omni_logp_max_rel_diff": 5.830258487549145e-06
+  },
+  {
+   "shape": "B4 x 4096x96",
+   "prev_sample_bitwise": true,
+   "mean_bitwise": true,
+   "logp_max_rel_diff_vs_torch_mean": 0.00015298921789508313,
+   "batch_invariant": true,
+   "scoring_reproduces_sampling_logprob": true,
+   "verl_omni_mean_bitwise": true,
+   "verl_omni_logp_max_rel_diff": 0.00015305518172681332
+  },
+  {
+   "shape": "B2 x 8192x32",
+   "prev_sample_bitwise": true,
+   "mean_bitwise": true,
+   "logp_max_rel_diff_vs_torch_mean": 7.475486199837178e-05,
+   "batch_invariant": true,
+   "scoring_reproduces_sampling_logprob": true,
+   "verl_omni_mean_bitwise": true,
+   "verl_omni_logp_max_rel_diff": 7.482107321266085e-05
+  }
+ ],
+ "model": [
+  {
+   "tokens": 12,
+   "variant": "off",
+   "label": "P/P",
+   "case_id": "P/P",
+   "bound": false,
+   "video_rel_diff_vs_provider": 0.0,
+   "audio_rel_diff_vs_provider": 0.0,
+   "input_grad_rel_diff_vs_provider": 0.0,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {}
+  },
+  {
+   "tokens": 12,
+   "variant": "strict",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.002287312675306021,
+   "audio_rel_diff_vs_provider": 0.02127153102741735,
+   "input_grad_rel_diff_vs_provider": 0.19953975840136862,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 12,
+   "variant": "strict (repeat)",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.002287312675306021,
+   "audio_rel_diff_vs_provider": 0.02127153102741735,
+   "input_grad_rel_diff_vs_provider": 0.19953975840136862,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 12,
+   "variant": "audit",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.002287312675306021,
+   "audio_rel_diff_vs_provider": 0.02127153102741735,
+   "input_grad_rel_diff_vs_provider": 0.19953975840136862,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 12,
+   "variant": "strict, node:attention native",
+   "label": "ablation(native: node:attention)",
+   "case_id": "ablation",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.002461699096721401,
+   "audio_rel_diff_vs_provider": 0.02228600762116597,
+   "input_grad_rel_diff_vs_provider": 0.17962553088614588,
+   "logp_rel_diff_vs_provider": 2.0514683316201293e-07,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 12,
+   "variant": "strict, boundary:token_refiner native",
+   "label": "ablation(native: boundary:token_refiner)",
+   "case_id": "ablation",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.002157756783280713,
+   "audio_rel_diff_vs_provider": 0.021899552410848483,
+   "input_grad_rel_diff_vs_provider": 0.15748630668557442,
+   "logp_rel_diff_vs_provider": 1.3676455544134196e-07,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "provider"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 925,
+   "variant": "off",
+   "label": "P/P",
+   "case_id": "P/P",
+   "bound": false,
+   "video_rel_diff_vs_provider": 0.0,
+   "audio_rel_diff_vs_provider": 0.0,
+   "input_grad_rel_diff_vs_provider": 0.012655351532518245,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {}
+  },
+  {
+   "tokens": 925,
+   "variant": "strict",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.00540072899508474,
+   "audio_rel_diff_vs_provider": 0.023372823619203002,
+   "input_grad_rel_diff_vs_provider": 0.1339311281539856,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 925,
+   "variant": "strict (repeat)",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.00540072899508474,
+   "audio_rel_diff_vs_provider": 0.023372823619203002,
+   "input_grad_rel_diff_vs_provider": 0.1339311281539856,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 925,
+   "variant": "audit",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.00540072899508474,
+   "audio_rel_diff_vs_provider": 0.023372823619203002,
+   "input_grad_rel_diff_vs_provider": 0.1339311281539856,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 925,
+   "variant": "strict, node:attention native",
+   "label": "ablation(native: node:attention)",
+   "case_id": "ablation",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.005633273720177278,
+   "audio_rel_diff_vs_provider": 0.022911677851723114,
+   "input_grad_rel_diff_vs_provider": 0.12778637964386427,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 925,
+   "variant": "strict, boundary:token_refiner native",
+   "label": "ablation(native: boundary:token_refiner)",
+   "case_id": "ablation",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.0054525621373174085,
+   "audio_rel_diff_vs_provider": 0.023933773139045024,
+   "input_grad_rel_diff_vs_provider": 0.13386305117620537,
+   "logp_rel_diff_vs_provider": 6.605765036108433e-08,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "provider"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 4253,
+   "variant": "off",
+   "label": "P/P",
+   "case_id": "P/P",
+   "bound": false,
+   "video_rel_diff_vs_provider": 0.0,
+   "audio_rel_diff_vs_provider": 0.0,
+   "input_grad_rel_diff_vs_provider": 0.016239019937026325,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {}
+  },
+  {
+   "tokens": 4253,
+   "variant": "strict",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.005198249913260954,
+   "audio_rel_diff_vs_provider": 0.02037646796666082,
+   "input_grad_rel_diff_vs_provider": 0.16835791387186425,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 4253,
+   "variant": "strict (repeat)",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.005198249913260954,
+   "audio_rel_diff_vs_provider": 0.02037646796666082,
+   "input_grad_rel_diff_vs_provider": 0.16835791387186425,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 4253,
+   "variant": "audit",
+   "label": "R/R",
+   "case_id": "R/R",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.005198249913260954,
+   "audio_rel_diff_vs_provider": 0.02037646796666082,
+   "input_grad_rel_diff_vs_provider": 0.16835791387186425,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 4253,
+   "variant": "strict, node:attention native",
+   "label": "ablation(native: node:attention)",
+   "case_id": "ablation",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.005284618739909409,
+   "audio_rel_diff_vs_provider": 0.018980617501558945,
+   "input_grad_rel_diff_vs_provider": 0.15823570762480443,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  },
+  {
+   "tokens": 4253,
+   "variant": "strict, boundary:token_refiner native",
+   "label": "ablation(native: boundary:token_refiner)",
+   "case_id": "ablation",
+   "bound": true,
+   "video_rel_diff_vs_provider": 0.005277970769566138,
+   "audio_rel_diff_vs_provider": 0.020094624166622763,
+   "input_grad_rel_diff_vs_provider": 0.1552897670997056,
+   "logp_rel_diff_vs_provider": 0.0,
+   "boundary_bindings": {
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "provider"
+    },
+    "proj_in": {
+     "row": null,
+     "status": "provider"
+    },
+    "proj_out": {
+     "row": null,
+     "status": "provider"
+    },
+    "time_embedder": {
+     "row": null,
+     "status": "provider"
+    },
+    "norm_out": {
+     "row": null,
+     "status": "provider"
+    }
+   }
+  }
+ ],
+ "model_checks": {
+  "12": {
+   "strict_bitwise_repeatable": true,
+   "audit_equals_strict": true
+  },
+  "925": {
+   "strict_bitwise_repeatable": true,
+   "audit_equals_strict": true
+  },
+  "4253": {
+   "strict_bitwise_repeatable": true,
+   "audit_equals_strict": true
+  }
+ }
+}

@@ -1,0 +1,195 @@
+{
+  "status": "execution_complete",
+  "device": "NVIDIA B200",
+  "torch": "2.13.0+cu130",
+  "parameters": 33122992896,
+  "load_seconds": 11.661551864817739,
+  "strict_boundaries": true,
+  "candidate_vs_provider": {
+    "video_rel": 0.002287312675306021,
+    "audio_rel": 0.02127153102741735,
+    "input_grad_rel": {
+      "hidden_states": 0.19953975840136862,
+      "audio_hidden_states": 0.19411832114061484,
+      "encoder_hidden_states": 0.3295994350448156
+    },
+    "param_grad_rel_max": 0.5483074132665747,
+    "param_grad_rel_median": 0.20154230910935503,
+    "param_grad_count": 638
+  },
+  "provider_repeat_vs_provider": {
+    "video_rel": 0.0,
+    "audio_rel": 0.0,
+    "input_grad_rel": {
+      "hidden_states": 0.0,
+      "audio_hidden_states": 0.0,
+      "encoder_hidden_states": 0.0
+    },
+    "param_grad_rel_max": null,
+    "param_grad_rel_median": null,
+    "param_grad_count": 638
+  },
+  "provider_variants_vs_provider": {
+    "sdpa-efficient": {
+      "video_rel": 0.001989446199294064,
+      "audio_rel": 0.019280621561399734,
+      "input_grad_rel": {
+        "hidden_states": 0.14797477467509568,
+        "audio_hidden_states": 0.15143973741753125,
+        "encoder_hidden_states": 0.22537377943934822
+      },
+      "param_grad_rel_max": 0.44962861094345935,
+      "param_grad_rel_median": 0.16630678558642512,
+      "param_grad_count": 638
+    },
+    "blas-cublaslt": {
+      "video_rel": 0.002200526306673909,
+      "audio_rel": 0.01994000994123404,
+      "input_grad_rel": {
+        "hidden_states": 0.1645480099159719,
+        "audio_hidden_states": 0.1670480145996261,
+        "encoder_hidden_states": 0.27705905706328793
+      },
+      "param_grad_rel_max": 1.6879931349316226,
+      "param_grad_rel_median": 0.30371134051377446,
+      "param_grad_count": 638
+    }
+  },
+  "provider_bitwise_repeatable": true,
+  "candidate_bitwise_repeatable": true,
+  "seconds": {
+    "provider": 35.27274955995381,
+    "candidate": 11.479115355759859,
+    "provider_forward": 0.8664311766624451,
+    "candidate_forward": 2.1708374489098787
+  },
+  "peak_allocated_bytes": 73276446720,
+  "trace": {
+    "bindings": {
+      "adaln_projection": {
+        "rfc_row": "adaln_projection_3mod",
+        "status": "row",
+        "backend": "H3AdaLNProjectionCudaOp"
+      },
+      "norm1": {
+        "rfc_row": "h3_rmsnorm",
+        "status": "row",
+        "backend": "H3RMSNormCudaOp.forward_modulated"
+      },
+      "q_proj": {
+        "rfc_row": "h3_qkv_gemm",
+        "status": "row",
+        "backend": "H3QKVGemmCudaOp.project"
+      },
+      "k_proj": {
+        "rfc_row": "h3_qkv_gemm",
+        "status": "row",
+        "backend": "H3QKVGemmCudaOp.project"
+      },
+      "v_proj": {
+        "rfc_row": "h3_qkv_gemm",
+        "status": "row",
+        "backend": "H3QKVGemmCudaOp.project"
+      },
+      "q_norm": {
+        "rfc_row": "h3_qk_rmsnorm_d128",
+        "status": "interim",
+        "backend": "H3RMSNormCudaOp.forward"
+      },
+      "k_norm": {
+        "rfc_row": "h3_qk_rmsnorm_d128",
+        "status": "interim",
+        "backend": "H3RMSNormCudaOp.forward"
+      },
+      "rope_q": {
+        "rfc_row": "h3_mm_rope_3axis_partial",
+        "status": "reference",
+        "backend": "provider_apply_rotary"
+      },
+      "rope_k": {
+        "rfc_row": "h3_mm_rope_3axis_partial",
+        "status": "reference",
+        "backend": "provider_apply_rotary"
+      },
+      "attention": {
+        "rfc_row": "h3_full_attention",
+        "status": "interim",
+        "backend": "DeterministicAttentionOp(causal=False)"
+      },
+      "o_proj": {
+        "rfc_row": "h3_attention_o_gemm",
+        "status": "interim",
+        "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)"
+      },
+      "residual_attn": {
+        "rfc_row": "adaln_gate_residual",
+        "status": "row",
+        "backend": "H3GateResidualCudaOp"
+      },
+      "norm2": {
+        "rfc_row": "h3_rmsnorm",
+        "status": "row",
+        "backend": "H3RMSNormCudaOp.forward_modulated"
+      },
+      "ffn_gate_up": {
+        "rfc_row": "h3_ffn_gate_up_gemm",
+        "status": "interim",
+        "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)"
+      },
+      "swiglu": {
+        "rfc_row": "h3_swiglu",
+        "status": "interim",
+        "backend": "SwiGLUCudaOp"
+      },
+      "ffn_down": {
+        "rfc_row": "h3_ffn_down_gemm",
+        "status": "interim",
+        "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)"
+      },
+      "residual_mlp": {
+        "rfc_row": "adaln_gate_residual",
+        "status": "row",
+        "backend": "H3GateResidualCudaOp"
+      }
+    },
+    "boundary_bindings": {
+      "audio_proj_in": {
+        "row": "audio_input_projection_fp32",
+        "status": "row"
+      },
+      "audio_proj_out": {
+        "row": "audio_output_projection_fp32",
+        "status": "row"
+      },
+      "context_embedder": {
+        "row": "text_context_projection",
+        "status": "row"
+      },
+      "token_refiner": {
+        "row": "token_refiner_block",
+        "status": "row"
+      },
+      "proj_in": {
+        "row": null,
+        "status": "provider"
+      },
+      "proj_out": {
+        "row": null,
+        "status": "provider"
+      },
+      "time_embedder": {
+        "row": null,
+        "status": "provider"
+      },
+      "norm_out": {
+        "row": null,
+        "status": "provider"
+      }
+    },
+    "candidate_calls": 878
+  },
+  "loss": {
+    "provider": 98790.0,
+    "candidate": 97348.2578125
+  }
+}
