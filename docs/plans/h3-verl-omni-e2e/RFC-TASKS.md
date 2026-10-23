@@ -7,7 +7,7 @@ Parent plan: [`rfc-closeout-roadmap.md`](rfc-closeout-roadmap.md).
 | --- | --- | --- | --- | --- |
 | R1 | PR stack #539,#567–#575 CI/DCO; respond review | in_progress | — | Per-PR checks; rebase on `test-h3` as needed |
 | R2 | Refresh `pr_assets` + PR bodies (SHAs, figures) | pending | R1 | `pending/h3-*` dirs; no local paths in public text |
-| R3 | Full weights; rerun #571 33B + dual trajectory | blocked | quota | 1/14 shards; see probe-results |
+| R3 | Full weights; rerun #571 33B + dual trajectory | in_progress | R1 | **14/14** transformer shards under `hf_full/transformer` (pinned rev); set `RL_KERNEL_H3_WEIGHTS` to weights root |
 | R4 | H-C0–H-C7 matrix (pass/gap/N/A) | in_progress | R3 partial | [`rfc-gap.md`](rfc-gap.md); fill H-C6 |
 | R5 | §6.4 P/P,R/R,R/P,P/R on Diffusers strict stack | pending | R3, #574 merged | Extend `h3_dual_trajectory` runners |
 | R6 | H1–H17 ablation signature table | pending | #574 | Overlay exists; need published mismatch runs |

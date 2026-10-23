@@ -27,8 +27,9 @@
 
 ## Weights
 
-- HF transformer shards on disk: **1 / 14** (~4.5 GiB of ~134 GiB bf16 total).
-- Full download: pending quota confirmation (admin `quota` unavailable on login node).
+- **Full transformer (RFC tests):** `hf_full/transformer` — **14 / 14** shards (~62 GiB index total size), revision `42ed227e`.
+- **Conditioning-only tree:** `hf/transformer` — shard 1 only (~4.5 GiB) for `prepare_h3_weights.py` extract path.
+- Use `export RL_KERNEL_H3_WEIGHTS=<weights root>`; `h3_weights.h3_shard_root()` prefers `hf_full/transformer`.
 
 ## Repro (GPU node)
 

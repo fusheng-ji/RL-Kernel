@@ -14,3 +14,5 @@
 - B7: `examples/minimax_h3_verl_omni_e2e/experiment_matrix.json` scaffold added.
 - User direction: **RFC closeout before maintainer proposal**; added `rfc-closeout-roadmap.md`,
   `RFC-TASKS.md` (R1–R8), `maintainer-proposal-outline.md` (draft, do not post yet).
+- R3 weights: confirmed **14/14** shards already present under `hf_full/transformer` (pinned
+  `MiniMaxAI/MiniMax-H3` @ `42ed227e`); shard-1 sha256 matches `h3_manifest.json`.

@@ -57,7 +57,7 @@ Update status in [`RFC-TASKS.md`](RFC-TASKS.md).
 | --- | --- | --- |
 | R1 | PR stack CI + DCO + review hygiene | All #567–#575 green; linear signed history |
 | R2 | Evidence refresh on `pr_assets` | One commit SHA cited in all PRs; charts for accuracy + perf |
-| R3 | Full HF weights + #571 rerun | 50L forward/backward + dual trajectory on real checkpoint |
+| R3 | Full HF weights + #571 rerun | 50L forward/backward + dual trajectory on real checkpoint (**weights on disk: 14/14 shards**) |
 | R4 | H-C0–H-C7 evidence matrix | Single table with pass / gap / N/A |
 | R5 | §6.4 arms on Diffusers stack | P/P vs R/R + R/P + P/R scripts and JSON (not VeRL-Omni) |
 | R6 | `h3_ablation_overlay` H1–H17 table | At least one mismatch signature demo per category (or deferred list) |
