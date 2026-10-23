@@ -30,7 +30,7 @@ We request maintainer guidance on:
 | #574 | runtime modes, ablation, Diffusers adapter, LoRA gate | Integration + overlay |
 | #575 | checkpoint mapper, vLLM-Omni adapter | Mapper tests + rollout hook surface |
 
-Optional: [#576](https://github.com/RL-Align/RL-Kernel/pull/576) flash backend — **does not claim** `h3_full_attention`; offered for maintainer + #553 author review.
+Optional: [#576](https://github.com/RL-Align/RL-Kernel/pull/576) flash backend — **does not claim** `h3_full_attention`; discussion stays on the PR with stack reviewers (no comment on merged #553).
 
 ---
 

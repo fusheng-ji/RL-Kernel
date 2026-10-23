@@ -19,3 +19,4 @@
 - Added CUDA ownership tables (unclaimed / contested / external deps) to `rfc-gap.md` for maintainer proposal.
 - Audio projection overlap: co-author invite to walker-ai on PR #568 (documented in `rfc-gap.md` §B).
 - verl-omni: cleaned false filemode drift (mcmlfs); pushed `rl-kernel/h3` to `fusheng-ji/verl-omni` (fork created).
+- **Decision:** will **not** post a follow-up comment on merged PR #553; optional flash follow-up is [#576](https://github.com/RL-Align/RL-Kernel/pull/576) for reviewers only.
