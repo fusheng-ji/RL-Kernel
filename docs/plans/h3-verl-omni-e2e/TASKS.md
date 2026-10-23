@@ -136,8 +136,8 @@ Weights still 1/14 (blocked on quota).
 
 **Depends on:** B3 sufficient rollout perf, B6 green, B1 weights, Slurm 8-GPU job.
 
-**Update 2026-10-23:** Scaffold [`examples/minimax_h3_verl_omni_e2e/experiment_matrix.json`](../../../examples/minimax_h3_verl_omni_e2e/experiment_matrix.json)
-and README on this branch; analyze/collect/plot scripts TODO (copy from vime example when B6 runs).
+**Update 2026-10-23:** Scaffold `examples/minimax_h3_verl_omni_e2e/experiment_matrix.json` and README on this
+branch; analyze/collect/plot scripts TODO (copy from vime example when B6 runs).
 
 ---
 
