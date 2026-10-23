@@ -34,7 +34,7 @@ Merge order (each PR targets `test-h3`, stacks on prior head):
 | 5 | [#571](https://github.com/RL-Align/RL-Kernel/pull/571) | full transformer, dual trajectory | Needs full weights for strongest claim |
 | 6 | [#574](https://github.com/RL-Align/RL-Kernel/pull/574) | runtime, ablation, Diffusers adapter, LoRA gate | `stochastic_transition_contract` doc pending approval |
 | 7 | [#575](https://github.com/RL-Align/RL-Kernel/pull/575) | checkpoint mapper, vLLM-Omni adapter | Binds #553 attention in strict path |
-| — | [#576](https://github.com/RL-Align/RL-Kernel/pull/576) | *optional perf; does not claim `h3_full_attention`* | Author coordination (#553); separate from stack merge order |
+| — | [#576](https://github.com/RL-Align/RL-Kernel/pull/576) | *optional perf; does not claim `h3_full_attention`* | **No #553 issue comment**; reviewers on #576 only; separate from stack merge order |
 
 **Action:** refresh each PR body with current short SHAs and `pr_assets` commit after every evidence rerun.
 
