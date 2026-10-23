@@ -15,5 +15,13 @@
     "b200": 0.960169792175293
   },
   "auditable_per_step_max": "pending/h3-full-transformer/reports/experiments/h3-full-transformer-h100/dual_trajectory_step_max.json",
-  "mechanism_note": "Observed: unbound video proj_in/proj_out correlate with ~1e-6 layout drift; diag video-proj binding -> 0/16 on H100 and B200. Hypothesis that Euler integration amplifies step-0..2 drift into B200 step-3 spike is NOT isolated experimentally."
+  "mechanism_note": "Observed: unbound video proj_in/proj_out correlate with ~1e-6 layout drift; diag video-proj binding -> 0/16 on H100 and B200.",
+  "euler_step3_probe": {
+    "conclusion": "inconclusive",
+    "conclusion_detail": "H100 arms A/B/C all ~5.7e-06 at step 3 (shared step-2 latent does not change sm90 result). Artificial step-2 delta scale K=1000 on H100 yields ~0.53 step-3 velocity diff (see h3-euler-step3-probe-h100). B200 arm B/C not executed on cluster (no sm100); historical A=0.6215 from dual_trajectory_seed33.json.",
+    "reports": {
+      "h100": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/seed33_report.json",
+      "b200": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/seed33_report.json"
+    }
+  }
 }
