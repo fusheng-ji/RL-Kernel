@@ -1,6 +1,6 @@
 {
   "description": "strict single vs batched; diag arm uses --diag-video-projections (existing JSON, no GPU rerun for diag)",
-  "pr_assets_pin": "59866c537e7481afa9e9f051b4b5100fb482fc10",
+  "pr_assets_pin": "54526e996e5b85778dbb26c981168a6fb2ecf2c6",
   "seeds": [11, 22, 33],
   "rlkernel_strict_bitwise_equal_all_steps_with_diag": {
     "h100": true,
@@ -17,11 +17,26 @@
   "auditable_per_step_max": "pending/h3-full-transformer/reports/experiments/h3-full-transformer-h100/dual_trajectory_step_max.json",
   "mechanism_note": "Observed: unbound video proj_in/proj_out correlate with ~1e-6 layout drift; diag video-proj binding -> 0/16 on H100 and B200.",
   "euler_step3_probe": {
-    "conclusion": "inconclusive",
-    "conclusion_detail": "H100 arms A/B/C all ~5.7e-06 at step 3 (shared step-2 latent does not change sm90 result). Artificial step-2 delta scale K=1000 on H100 yields ~0.53 step-3 velocity diff (see h3-euler-step3-probe-h100). B200 arm B/C not executed on cluster (no sm100); historical A=0.6215 from dual_trajectory_seed33.json.",
+    "conclusion": "step3_forward_amplification_not_euler_accumulation",
+    "conclusion_detail": "B200 seed 33 (eb7840bb, strict safetensors from dual trajectory): step-2 video latent fork 1.9e-06 (audio 0). Arm A step-3 video velocity max 0.6215 (audio 0.305). Arms B/C with shared step-2 latent: video ~4.3e-06 / ~5.4e-06 (audio 0) — not layout-only when inputs match. Euler integrator did not need to amplify prior steps; spike is step-3 forward sensitivity. H100 same probe: natural fork ~2.6e-06 -> ~5.7e-06 velocity; K=1000 latent inflation -> ~0.53. Cross-report: B200 ~3 orders more sensitive at ~2e-06 fork (not one replicated sweep on both GPUs). Script field conclusion_b200_style=supports_latent_accumulation is a B<<A threshold only — not a mechanism label.",
+    "b200_seed33_arms": {
+      "step2_latent_video_max_abs": 1.9073486328125e-06,
+      "step2_latent_audio_max_abs": 0.0,
+      "A_replay_video_velocity_max": 0.6215000152587891,
+      "A_replay_audio_velocity_max": 0.3051609992980957,
+      "B_shared_single_video_velocity_max": 4.291534423828125e-06,
+      "C_shared_batched_video_velocity_max": 5.424022674560547e-06
+    },
     "reports": {
       "h100": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/seed33_report.json",
-      "b200": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/seed33_report.json"
-    }
+      "b200": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/seed33_report.json",
+      "b200_readme": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/README.md"
+    },
+    "limitations": [
+      "single seed (33)",
+      "one run per arm",
+      "amplifying layer/submodule not localized",
+      "H100 delta-scale K sweep not repeated on B200"
+    ]
   }
 }
