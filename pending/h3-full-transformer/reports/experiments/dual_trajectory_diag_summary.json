@@ -1,12 +1,19 @@
 {
-  "description": "strict single vs batched with --diag-video-projections (existing pr_assets JSON, no rerun)",
-  "h100_evidence_commit": "92f4adc860ac69ff611a614385e3b8797c6310ae",
-  "b200_evidence_commit": "a27b08d60f686418d3362c8b14ba4c8fc815b1f3",
+  "description": "strict single vs batched; diag arm uses --diag-video-projections (existing JSON, no GPU rerun for diag)",
+  "pr_assets_pin": "f95ff554e088da6a7b9f04862135f0009e68e8d5",
   "seeds": [11, 22, 33],
-  "rlkernel_strict_bitwise_equal_all_steps": {
+  "rlkernel_strict_bitwise_equal_all_steps_with_diag": {
     "h100": true,
     "b200": true
   },
-  "without_diag_b200_strict_seed33_step3_max_abs_video_velocity": 0.6215000152587891,
-  "without_diag_h100_strict_seed33_step3_max_abs_video_velocity": 5.7220458984375e-06
+  "without_diag_strict_seed33_step3_max_abs_video_velocity": {
+    "h100": 5.7220458984375e-06,
+    "b200": 0.6215000152587891
+  },
+  "without_diag_provider_seed33_step3_max_abs_video_velocity": {
+    "h100": 2.577500343322754,
+    "b200": 0.960169792175293
+  },
+  "auditable_per_step_max": "pending/h3-full-transformer/reports/experiments/h3-full-transformer-h100/dual_trajectory_step_max.json",
+  "mechanism_note": "Observed: unbound video proj_in/proj_out correlate with ~1e-6 layout drift; diag video-proj binding -> 0/16 on H100 and B200. Hypothesis that Euler integration amplifies step-0..2 drift into B200 step-3 spike is NOT isolated experimentally."
 }
