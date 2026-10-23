@@ -18,21 +18,35 @@ A reproduces the 0.6215 of the full run.
 ## What it shows, and what it does not
 - The two step-2 latents differ by 1.9e-06 (video) and are identical (audio). The step 0-2 differences were not amplified by the
   Euler updates: the input of step 3 is still about 2e-06 apart.
-- That 2e-06 input difference becomes a 0.62 video and 0.31 audio velocity difference in the step-3 forward (the audio latent is
-  identical in both layouts, so the audio difference comes from the video side through the joint attention).
+- That input difference becomes a 0.62 video and 0.31 audio velocity difference in the step-3 forward (the audio latent is
+  identical in both layouts, so the audio difference comes from the video side through the joint attention). What the 2e-06
+  amounts to after the bfloat16 cast is in the correction below.
 - With the same input in both layouts (B, C) the two layouts agree to 4e-06 to 5e-06. The layouts themselves do not produce the
   large difference.
 - `conclusion_b200_style` (`supports_latent_accumulation`) is the label the script's threshold rule produces. It should not be read
-  as "the Euler integration amplifies the drift": the latent drift stays at the 1e-06 level. The data are consistent with the step-3
-  forward being highly sensitive to a very small input difference on this device.
+  as "the Euler integration amplifies the drift": the latent drift stays at the 1e-06 level. See the correction below for what the
+  data do show about the size of the input difference.
 - One seed, one run, one device. The layer where the amplification happens was not located. H100 was not run with this script here.
 
-## Comparison with the H100 run of the same script (`h3-euler-step3-probe-h100/seed33_report.json`, not rerun here)
-- Natural step-2 latent difference: 2.62e-06 (H100) against 1.91e-06 (B200); step-3 velocity difference with each layout's own
-  latent: 5.7e-06 (H100) against 0.6215 (B200).
-- The H100 file's delta-scale sweep multiplies the batched step-2 latent difference by K. The step-3 video velocity difference there is
-  5.7e-06 at K=1, 0.53 at K=1000, 3.8 at K=1e6. So the H100 forward also amplifies an input difference, but a difference about a
-  thousand times larger than the natural one is needed to reach the size that the B200 shows at K=1. That sweep was not run on B200.
+## Correction (added after the first version of this file)
+The first version said the B200 was about a thousand times more sensitive to the input difference than the H100. That is **withdrawn**.
+The model casts the FP32 latent to bfloat16 before `proj_in`, so a 1e-06 FP32 difference becomes either no difference or a full
+bfloat16 step. Counting the elements that differ after the cast in the saved B200 tensors (single vs batched latent):
+
+| entry latent | elements differing in FP32 (video) | elements differing after the bf16 cast (video) | largest difference after the cast |
+|---|---|---|---|
+| seed 33, step 2 (the input of step 3) | 306 of 384 | **1** | 1.95e-03 |
+| seed 33, step 0 | 322 of 384 | 1 | 9.5e-07 (an element near zero) |
+| seed 33, step 1 | 323 of 384 | 0 | 0 |
+| seeds 11 and 22, steps 0 to 2 | 311 to 339 of 384 | 0 | 0 |
+
+The audio latents are identical in every case. So the input of step 3 in seed 33 differs by one bfloat16 step in a single video
+element (1.95e-03), and every other entry latent that was checked is bitwise identical after the cast. A 1.95e-03 difference in one
+input element giving a 0.62 velocity difference is the same order as the H100 file's sweep (`h3-euler-step3-probe-h100/seed33_report.json`,
+not rerun here: about 2.6e-03 on the latents, K=1000, gives 0.53). On this evidence the two devices are not shown to differ in
+sensitivity; the difference between the natural runs may be only that the B200 seed-33 latents happen to straddle a bfloat16
+rounding boundary. Whether the H100 natural run has such an element can be checked on its saved tensors with the same count (it was
+not checked here).
 
 This file replaces the placeholder `seed33_report.json` that was staged here earlier (`arms_B_C_not_executed_on_this_cluster`, arm A
 replayed from the historical JSON); arms B and C and a fresh arm A were executed on a B200 for this version.
