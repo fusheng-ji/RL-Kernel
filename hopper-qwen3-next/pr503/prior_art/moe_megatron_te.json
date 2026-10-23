@@ -1,0 +1,100 @@
+{
+  "kind": "qwen3_next_prior_art_report",
+  "rfc": 428,
+  "rl_kernel_commit": "77d59a5918a5f313722e8f03e6449f387b85ea0f",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "libraries": {
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "transformers": "5.17.0",
+      "triton": "3.7.1",
+      "sglang": null,
+      "sgl-kernel": null,
+      "megatron_core": "0.16.0rc0",
+      "megatron-core": "0.16.0rc0",
+      "transformer_engine": "2.18.0",
+      "vime": "0.3.0"
+    }
+  },
+  "op": "qwen3_next_routed_moe",
+  "shape": {
+    "hidden": 2048,
+    "experts": 512,
+    "top_k": 10,
+    "expert_width": 512
+  },
+  "probe_rows": 8,
+  "candidates": [
+    {
+      "key": "megatron_te",
+      "name": "Megatron-core MoELayer + TE grouped GEMM (VIME's Qwen3-Next config)",
+      "source": "megatron-core 0.16.0rc0, transformer-engine 2.18.0",
+      "route_rows_bitwise": {
+        "16": true,
+        "64": false,
+        "256": false,
+        "1024": false
+      },
+      "output_rows_bitwise": {
+        "16": true,
+        "64": false,
+        "256": true,
+        "1024": false
+      },
+      "repeatable": true,
+      "dx_rows_bitwise": {
+        "16": true,
+        "64": false,
+        "256": false,
+        "1024": false
+      },
+      "dweight_zero_rows_bitwise": {
+        "16": true,
+        "64": false,
+        "256": true,
+        "1024": false
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.004574033696880937,
+        "max_abs_vs_fp64": 0.0021247057837870398,
+        "tokens_with_different_expert_set": 0,
+        "tokens": 256
+      },
+      "batch_invariant": false
+    }
+  ],
+  "latency": {
+    "forward_us": {
+      "1": {
+        "megatron_te": 5753.80802154541
+      },
+      "8": {
+        "megatron_te": 7476.224184036255
+      },
+      "64": {
+        "megatron_te": 14872.128009796143
+      },
+      "256": {
+        "megatron_te": 18176.591873168945
+      },
+      "1024": {
+        "megatron_te": 18268.76735687256
+      },
+      "4096": {
+        "megatron_te": 18413.80786895752
+      }
+    },
+    "forward_plus_backward_us": {
+      "64": {
+        "megatron_te": 69887.0735168457
+      },
+      "1024": {
+        "megatron_te": 82215.02304077148
+      }
+    }
+  }
+}

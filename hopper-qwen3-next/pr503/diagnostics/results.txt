@@ -1,0 +1,9 @@
+# H100 (132 SMs), torch 2.13.0+cu130, vLLM 0.30.0, PR #503 head f9caee24
+# diag_sum.py: torch.sum(-1) over 2048 FP32 columns; do the first 8 rows equal the same rows computed inside a batch of T rows?
+{8: True, 9: True, 16: False, 32: False, 64: False, 128: False, 256: False, 1024: False}
+# diag_mm.py: vLLM linear_batch_invariant (the mm used by shared_moe backward): batch invariant at every probed M (1..1024) for the three backward shapes.
+# diag_dx2.py: shared_moe dx, probe rows alone vs inside a 16 / 64 batch (runner inputs, seed 0 / 1):
+#   dx equal False, max abs diff 4.9e-4, differing probe rows [2]; repeat runs equal.
+#   experts-only dx path (route weights detached): rows equal for all 8 probe rows
+#   route-weight gradient rows: differ, because the autograd backward of combine_routes reduces over H with torch.sum
+#   routes (indices, weights) of the probe rows: equal

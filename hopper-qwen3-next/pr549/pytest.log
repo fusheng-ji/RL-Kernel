@@ -1,0 +1,43 @@
+........................................................................ [  9%]
+........................................................................ [ 18%]
+........................................................................ [ 27%]
+........................................................................ [ 36%]
+........................................................................ [ 45%]
+........................................................................ [ 54%]
+........................................................................ [ 64%]
+........................................................................ [ 73%]
+........................................................................ [ 82%]
+........................................................................ [ 91%]
+...................................................................      [100%]
+=============================== warnings summary ===============================
+<home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/jit/_script.py:365: 14 warnings
+  <home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+<home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/jit/_script.py:1488
+<home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/jit/_script.py:1488
+  <home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+<home>/datastorage/Megatron-LM/megatron/core/tensor_parallel/random.py:28
+  <home>/datastorage/Megatron-LM/megatron/core/tensor_parallel/random.py:28: DeprecationWarning: Using deprecated internal API from Transformer Engine. transformer_engine.pytorch.fp8 will be removed in a future release.
+    from transformer_engine.pytorch.fp8 import FP8GlobalStateManager, fp8_autocast
+
+<home>/datastorage/Megatron-LM/megatron/core/extensions/transformer_engine.py:2531
+  <home>/datastorage/Megatron-LM/megatron/core/extensions/transformer_engine.py:2531: DeprecationWarning: transformer_engine.pytorch.float8_tensor is deprecated and will be removed in a future release. Float8Tensor should be imported directly through `from transformer_engine.pytorch import Float8Tensor`
+    from transformer_engine.pytorch.float8_tensor import Float8Tensor
+
+<home>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:9
+  <home>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:9: DeprecationWarning: The following imports from `dynamic_context.py` will be removed in this file in `megatron-core` 0.14. The imports here result in a cyclic import issue that causes rotary embeddings to import from Apex rather than Transformer Engine.
+    warnings.warn(
+
+<home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/flashinfer/cute_dsl/availability.py:135
+  <home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/flashinfer/cute_dsl/availability.py:135: DeprecationWarning: Arch from arch.py is deprecated. Use Arch from enums.py instead.
+    from cutlass.base_dsl.arch import Arch
+
+tests/models/qwen3_next/check_qwen3_next_attention.py::test_d256_input_device_guard_and_nondefault_stream
+  <home>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/autograd/graph.py:979: UserWarning: The AccumulateGrad node's stream does not match the stream of the node that produced the incoming gradient. This may incur unnecessary synchronization and break CUDA graph capture if the AccumulateGrad node's stream is the default stream. This mismatch is caused by an AccumulateGrad node created prior to the current iteration being kept alive. This can happen if the autograd graph is still being kept alive by tensors such as the loss, or if you are using DDP, which will stash a reference to the node. To resolve the mismatch, delete all references to the autograd graph or ensure that DDP initialization is performed under the same stream as subsequent forwards. If the mismatch is intentional, you can use torch.autograd.graph.set_warn_on_accumulate_grad_stream_mismatch(False) to suppress this warning. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/input_buffer.cpp:310.)
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+787 passed, 21 warnings in 128.79s (0:02:08)

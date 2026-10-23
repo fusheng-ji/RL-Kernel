@@ -1,0 +1,408 @@
+{
+  "ep": 4,
+  "rank": 0,
+  "tokens": 1024,
+  "nccl_settings": {
+    "NCCL_ALGO": "allreduce:tree",
+    "NCCL_PROTO": "LL128",
+    "NCCL_MAX_NCHANNELS": null
+  },
+  "cublas_workspace_config": ":4096:8",
+  "input_sha256": "3a3e8b6a8a4510fb15be865e8679b273fda2bf2af05c850c8549ba5133c5286c",
+  "rl_kernel_commit": "77d59a5918a5f313722e8f03e6449f387b85ea0f",
+  "tracked_tree_dirty": false,
+  "provider": "qwen3-next-shared-cuda-forward-v1",
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "nccl": "2.29.7"
+  },
+  "candidates": {
+    "rl_kernel_ep": {
+      "output_sha256": "d55bee193fbc48a1a799bdf7d96bcf3110b8c5a9fca086bf0ac3e3fd04d989cd",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 1.7983585702528206e-05,
+      "mean_abs_vs_fp64": 6.872925038053382e-07,
+      "latency_us": {
+        "64": 2422.320008277893,
+        "256": 2423.375964164734,
+        "1024": 2774.272084236145,
+        "4096": 5134.912014007568
+      },
+      "backward": {
+        "dx_sha256": "06b9339d0485ab0e8ced9aa258eef5a87d6bd3c7e35a2acc28147d936970ccc8",
+        "d_gate_up_sha256": "7d2d2cc84b0f10aa6b024bc0af5f00d4cfd1e97b91b9883b77ad9216c740ea09",
+        "d_down_sha256": "c1f5b1e1dd862f4f84b7644156a3171f384164f353a042629e91980780c3d846",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": true,
+          "64@28": true,
+          "64@56": true,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": true,
+        "latency_us": 97075.93536376953
+      },
+      "max_abs_vs": {
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "vllm_ep": {
+      "output_sha256": "78e6c12b3e5f790323f622ce25ecca0a6ca11ec64d3aa53d7c08bef270a757f3",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.651640967688809e-06,
+      "latency_us": {
+        "64": 625.296026468277,
+        "256": 752.9599964618683,
+        "1024": 876.831978559494,
+        "4096": 1200.6880044937134
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "megatron_alltoall": 0.0008697509765625,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      }
+    },
+    "vllm_ep_bi": {
+      "output_sha256": "78e6c12b3e5f790323f622ce25ecca0a6ca11ec64d3aa53d7c08bef270a757f3",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.651640967688809e-06,
+      "latency_us": {
+        "64": 668.4959828853607,
+        "256": 816.0320222377777,
+        "1024": 985.6480062007904,
+        "4096": 1371.0560202598572
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep": 0.0,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "megatron_alltoall": 0.0008697509765625,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      }
+    },
+    "vllm_ep_nccl": {
+      "output_sha256": "e8a237ab1c8cbc966d8bea08148f8187c1cb84f97f7eb660bcf62a62e74fb606",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": false,
+        "64@56": true,
+        "256@0": true,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": true,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.729459907357422e-06,
+      "latency_us": {
+        "64": 660.0800156593323,
+        "256": 783.5679948329926,
+        "1024": 912.335991859436,
+        "4096": 1210.4479670524597
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep": 3.0517578125e-05,
+        "vllm_ep_bi": 3.0517578125e-05,
+        "megatron_alltoall": 0.0008697509765625,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      }
+    },
+    "flashinfer_cutlass_ep": {
+      "unavailable": "RuntimeError: Ninja build failed. Ninja output:\nninja: Entering directory `<home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90'\n[1/1] c++ <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_tma_warp_specialized_input.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp8_uint4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp8_fp8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp8_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp4_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp32_fp32.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_uint8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_uint4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_fp16.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_uint8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_uint4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_fp8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_bf16.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/fp8_blockscale_gemm_fp8_blockscale_gemm.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_mixed_utils.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_backend_flashinfer_cutlass_fused_moe_binding.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_backend_deepgemm_jit_setup.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_backend_cutlass_fused_moe_instantiation.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group30.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group31.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M16_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M64_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M128_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M32_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M32_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M64_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M16_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M16_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M128_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group31.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group32.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group41.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group70.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group67.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group57.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group47.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group59.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group32.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group71.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group30.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group65.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group37.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group66.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group30.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group46.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group68.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group50.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group38.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group62.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group58.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group35.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group61.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group54.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group48.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group31.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group55.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group63.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group44.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group36.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group45.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group42.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group56.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group53.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group60.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group51.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group33.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group52.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group43.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group40.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group69.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group34.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group64.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group39.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group49.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group34.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group33.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_envUtils.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_logger.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_stringUtils.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_tllmException.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_memoryUtils.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/kernels_preQuantScaleKernel.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_kernels_cutlass_heuristic.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/lora_lora.o -shared -L<home>/datastorage/cuda13_home/lib64 -L<home>/datastorage/cuda13_home/lib64/stubs -lcudart -lcuda -lnvrtc -o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/fused_moe_90.so\nFAILED: [code=1] <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/fused_moe_90.so \nc++ <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_tma_warp_specialized_input.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp8_uint4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp8_fp8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp8_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp4_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp32_fp32.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_uint8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_uint4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_fp16.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_uint8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_uint4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_fp8.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_bf16.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_bf16_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_kernels_fp16_fp4.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/fp8_blockscale_gemm_fp8_blockscale_gemm.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/moe_gemm_moe_gemm_mixed_utils.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_backend_flashinfer_cutlass_fused_moe_binding.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_backend_deepgemm_jit_setup.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_backend_cutlass_fused_moe_instantiation.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group30.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group31.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M128_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_sm90_M64_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M16_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M64_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M128_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M32_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M32_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M64_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M16_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M16_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/80_cutlass_kernel_file_gemm_grouped_sm80_M128_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group31.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group32.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group41.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group70.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group23.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group67.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group57.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group47.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group59.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group32.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group71.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group15.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group29.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group30.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group65.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group27.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group37.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group66.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group30.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group46.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group3.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group26.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group68.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group20.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group50.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group28.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group38.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group62.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group58.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group35.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group61.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group5.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group54.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group48.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group17.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group31.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group55.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group4.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group0.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group63.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group44.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group36.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group45.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group42.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group22.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group1.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group18.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group8.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group56.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group53.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group60.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group51.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group33.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group52.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group12.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group43.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group40.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group69.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group34.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group16.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group64.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group25.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group13.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group11.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group2.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group6.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group14.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group39.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group9.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group24.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group21.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M256_Mixed_group10.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M64_Mixed_group19.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group7.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group49.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_Mixed_group34.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/90_cutlass_kernel_file_gemm_grouped_sm90_M128_group33.generated.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_envUtils.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_logger.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_stringUtils.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_tllmException.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/common_memoryUtils.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/kernels_preQuantScaleKernel.cuda.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/cutlass_kernels_cutlass_heuristic.o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/lora_lora.o -shared -L<home>/datastorage/cuda13_home/lib64 -L<home>/datastorage/cuda13_home/lib64/stubs -lcudart -lcuda -lnvrtc -o <home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90/fused_moe_90.so\n/usr/bin/ld: cannot find -lnvrtc: No such file or directory\ncollect2: error: ld returned 1 exit status\nninja: build stopped: subcommand failed.\n"
+    },
+    "megatron_alltoall": {
+      "output_sha256": "a14ded037e71d1a6baa530661f67af1936a0349abb3159e5ea68470ba6a1f8ed",
+      "repeat_bitwise": false,
+      "batch_grid": {
+        "8@0": false,
+        "64@0": false,
+        "64@28": false,
+        "64@56": false,
+        "256@0": false,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 3.3453875582430907e-05,
+      "mean_abs_vs_fp64": 1.0673033422702871e-06,
+      "latency_us": {
+        "64": 26421.96750640869,
+        "256": 30958.847999572754,
+        "1024": 32245.759963989258,
+        "4096": 33007.408142089844
+      },
+      "backward": {
+        "dx_sha256": "aff5f3d74358171c6bb456068ae0dd1319ea5a440537dff8d254e9595731c7a3",
+        "d_gate_up_sha256": "3ece76ea0095e69976b798653816cf3429940383cebae7e13090d8a2100b650f",
+        "d_down_sha256": "9a649a91be844485b4e2afdc6839800307d21c55025cc5b027ec40d86c7d6c9d",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": false,
+        "batch_grid": {
+          "8@0": false,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": false,
+          "256@124": false,
+          "256@248": false,
+          "1024@0": false,
+          "1024@508": false,
+          "1024@1016": false
+        },
+        "batch_bitwise": false,
+        "latency_us": 89342.30041503906
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 6.103515625e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "megatron_allgather": {
+      "output_sha256": "303a753002bdad992a6c78acd6e2c263fc7c99c9689c8c89b23107f62fd61e85",
+      "repeat_bitwise": false,
+      "batch_grid": {
+        "8@0": false,
+        "64@0": false,
+        "64@28": false,
+        "64@56": false,
+        "256@0": false,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 2.4855467477558242e-05,
+      "mean_abs_vs_fp64": 9.219113519532346e-07,
+      "latency_us": {
+        "64": 24643.760681152344,
+        "256": 29519.56844329834,
+        "1024": 30418.62392425537,
+        "4096": 31367.536544799805
+      },
+      "backward": {
+        "dx_sha256": "db14bc2b705d1252f6c65d2418d37151b11e7d61ccc9cdb0ef07db2c8d489841",
+        "d_gate_up_sha256": "3ece76ea0095e69976b798653816cf3429940383cebae7e13090d8a2100b650f",
+        "d_down_sha256": "9a649a91be844485b4e2afdc6839800307d21c55025cc5b027ec40d86c7d6c9d",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": false,
+        "batch_grid": {
+          "8@0": false,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": false,
+          "256@124": false,
+          "256@248": false,
+          "1024@0": false,
+          "1024@508": false,
+          "1024@1016": false
+        },
+        "batch_bitwise": false,
+        "latency_us": 84764.0609741211
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 1.52587890625e-05
+      }
+    },
+    "megatron_alltoall_det": {
+      "output_sha256": "646078df9652585a3a7bb778598f90f33bdaf06068e53a610ae567a557ce3703",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 4.1981718139020435e-05,
+      "mean_abs_vs_fp64": 1.0694490482769653e-06,
+      "latency_us": {
+        "64": 28294.495582580566,
+        "256": 33805.39131164551,
+        "1024": 34877.79235839844,
+        "4096": 35627.05612182617
+      },
+      "backward": {
+        "dx_sha256": "3c52efdd7d5843fbcc013158728af3f56e0270191a7a2f1974515d4e15c9aa4b",
+        "d_gate_up_sha256": "3ece76ea0095e69976b798653816cf3429940383cebae7e13090d8a2100b650f",
+        "d_down_sha256": "9a649a91be844485b4e2afdc6839800307d21c55025cc5b027ec40d86c7d6c9d",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": true,
+          "64@28": true,
+          "64@56": true,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": true,
+        "latency_us": 94293.6019897461
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 6.103515625e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "megatron_allgather_det": {
+      "output_sha256": "bd70fde07701e5bd3d9cf2295b080b63fa1fbb6b2e9576382c516ffd5e1479af",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 2.4855467477558242e-05,
+      "mean_abs_vs_fp64": 9.216224976588811e-07,
+      "latency_us": {
+        "64": 26271.360397338867,
+        "256": 31853.839874267578,
+        "1024": 33099.51972961426,
+        "4096": 33910.112380981445
+      },
+      "backward": {
+        "dx_sha256": "2376230a7ce6ebca456550c941c09cb1a0f58b4609ab40380f8b000701d52609",
+        "d_gate_up_sha256": "3ece76ea0095e69976b798653816cf3429940383cebae7e13090d8a2100b650f",
+        "d_down_sha256": "9a649a91be844485b4e2afdc6839800307d21c55025cc5b027ec40d86c7d6c9d",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": false,
+          "256@124": false,
+          "256@248": false,
+          "1024@0": false,
+          "1024@508": false,
+          "1024@1016": false
+        },
+        "batch_bitwise": false,
+        "latency_us": 89402.3666381836
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 1.52587890625e-05,
+        "megatron_alltoall_det": 3.0517578125e-05
+      }
+    }
+  }
+}

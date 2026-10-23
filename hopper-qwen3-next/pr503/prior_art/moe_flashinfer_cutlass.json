@@ -1,0 +1,60 @@
+{
+  "kind": "qwen3_next_prior_art_report",
+  "rfc": 428,
+  "rl_kernel_commit": "77d59a5918a5f313722e8f03e6449f387b85ea0f",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "libraries": {
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "transformers": "5.17.0",
+      "triton": "3.7.1",
+      "sglang": null,
+      "sgl-kernel": null,
+      "megatron_core": "0.16.0rc0",
+      "megatron-core": "0.16.0rc0",
+      "transformer_engine": "2.18.0",
+      "vime": "0.3.0"
+    }
+  },
+  "op": "qwen3_next_routed_moe",
+  "shape": {
+    "hidden": 2048,
+    "experts": 512,
+    "top_k": 10,
+    "expert_width": 512
+  },
+  "probe_rows": 8,
+  "candidates": [
+    {
+      "key": "flashinfer_cutlass",
+      "name": "FlashInfer cutlass_fused_moe (routes from torch.topk)",
+      "source": "flashinfer 0.6.18.post1 fused_moe.cutlass_fused_moe",
+      "route_rows_bitwise": {
+        "16": true,
+        "64": true,
+        "256": true,
+        "1024": true
+      },
+      "failed": "RuntimeError: Ninja build failed. Ninja output:\nninja: Entering directory `<home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90'\n[1/108]  <home>/datastorage/cuda13_home/bin/nvcc --generate-dependencies-with-compile -MF <home>/.cache/flashinfer/0.6",
+      "batch_invariant": false
+    }
+  ],
+  "latency": {
+    "forward_us": {
+      "1": {},
+      "8": {},
+      "64": {},
+      "256": {},
+      "1024": {},
+      "4096": {}
+    },
+    "forward_plus_backward_us": {
+      "64": {},
+      "1024": {}
+    }
+  }
+}

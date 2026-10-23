@@ -1,0 +1,311 @@
+{
+  "kind": "qwen3_next_prior_art_report",
+  "rfc": 428,
+  "rl_kernel_commit": "77d59a5918a5f313722e8f03e6449f387b85ea0f",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "libraries": {
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "transformers": "5.17.0",
+      "triton": "3.7.1",
+      "sglang": null,
+      "megatron-core": "0.16.0rc0",
+      "megatron_core": "0.16.0rc0",
+      "transformer_engine": "2.18.0",
+      "vime": "0.3.0"
+    }
+  },
+  "op": "qwen3_next_tp4_attention",
+  "shape": {
+    "q_heads": 4,
+    "kv_heads": 1,
+    "head_dim": 256,
+    "scale": 0.0625
+  },
+  "target_tokens": 1000,
+  "companion_tokens": [
+    777,
+    1500,
+    64
+  ],
+  "candidates": [
+    {
+      "key": "rl_kernel_cuda",
+      "name": "RL-Kernel deterministic attention (one launch per sequence)",
+      "source": "rl_engine.models.qwen3_next.qwen3_next_forward.shared_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": true,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.001610144833412164,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "torch_sdpa",
+      "name": "torch SDPA (default backend, one launch per sequence)",
+      "source": "torch 2.13.0+cu130 scaled_dot_product_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": false,
+        "last_1": false
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": false,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002000017560035726,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "vllm_fa2_auto",
+      "name": "vLLM FlashAttention-2 varlen, num_splits=0",
+      "source": "vllm 0.30.0 vllm_flash_attn.flash_attn_varlen_func",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": false
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "vllm_fa2_split1",
+      "name": "vLLM FlashAttention-2 varlen, num_splits=1",
+      "source": "vllm 0.30.0 vllm_flash_attn.flash_attn_varlen_func",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "vllm_triton_2d",
+      "name": "vLLM Triton unified attention (2D kernel)",
+      "source": "vllm 0.30.0 v1/attention/ops/triton_unified_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.0020030409266623924,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "flashinfer",
+      "name": "FlashInfer BatchPrefillWithRaggedKVCache",
+      "source": "flashinfer 0.6.18.post1",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "fa4_cute",
+      "name": "FlashAttention-4 (CuTe DSL) varlen, vendored by vLLM",
+      "source": "vllm 0.30.0 vllm_flash_attn/cute (its head-dim-256 SM100 backward has no deterministic mode)",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": false,
+        "dk": false,
+        "dv": false
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002013933970487403,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "te_fused",
+      "name": "Transformer Engine DotProductAttention (THD), inference: cuDNN fused",
+      "source": "transformer-engine 2.18.0 (no fused head-dim-256 backward on SM100)",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.00202087613933077,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "te_training",
+      "name": "Transformer Engine DotProductAttention (THD), training: unfused fallback",
+      "source": "transformer-engine 2.18.0 (selected for head-dim-256 training on SM100)",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": false,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.00202087613933077,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "megatron_local",
+      "name": "Megatron-core DotProductAttention (local, one launch per sequence)",
+      "source": "megatron-core 0.16.0rc0",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": true,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.003575631766252745,
+        "max_abs_vs_fp64": 0.012889566535712937
+      },
+      "batch_invariant": true
+    }
+  ],
+  "latency": {
+    "prefill_us": {
+      "512": {
+        "rl_kernel_cuda": 824.5439827442169,
+        "torch_sdpa": 108.94399881362915,
+        "vllm_fa2_auto": 214.81600403785706,
+        "vllm_fa2_split1": 214.6719992160797,
+        "vllm_triton_2d": 411.9520038366318,
+        "flashinfer": 364.1439974308014,
+        "fa4_cute": 327.58399844169617,
+        "te_fused": 702.4639844894409,
+        "te_training": 665.3119921684265,
+        "megatron_local": 581.8879902362823
+      },
+      "2048": {
+        "rl_kernel_cuda": 11274.703979492188,
+        "torch_sdpa": 167.88800060749054,
+        "vllm_fa2_auto": 285.98399460315704,
+        "vllm_fa2_split1": 229.24800217151642,
+        "vllm_triton_2d": 526.7200171947479,
+        "flashinfer": 420.400008559227,
+        "fa4_cute": 349.66398775577545,
+        "te_fused": 784.4000160694122,
+        "te_training": 676.0320067405701,
+        "megatron_local": 632.5599849224091
+      },
+      "8192": {
+        "rl_kernel_cuda": 176067.16918945312,
+        "torch_sdpa": 864.9119734764099,
+        "vllm_fa2_auto": 926.0639846324921,
+        "vllm_fa2_split1": 798.1600165367126,
+        "vllm_triton_2d": 1949.2160081863403,
+        "flashinfer": 793.0399775505066,
+        "fa4_cute": 546.9439923763275,
+        "te_fused": 1206.2559723854065,
+        "te_training": 977.9680073261261,
+        "megatron_local": 5206.944227218628
+      }
+    },
+    "decode_us_kv8192": {
+      "rl_kernel_cuda": 856.5280139446259,
+      "torch_sdpa": 509.5039904117584,
+      "vllm_fa2_auto": 266.4639949798584,
+      "vllm_fa2_split1": 409.9680036306381,
+      "vllm_triton_2d": 677.6799857616425,
+      "flashinfer": 481.3919961452484,
+      "fa4_cute": 424.6240109205246,
+      "te_fused": 803.2959997653961,
+      "te_training": 777.648001909256,
+      "megatron_local": 544.5760190486908
+    },
+    "forward_plus_backward_us_2048": {
+      "rl_kernel_cuda": 31513.696670532227,
+      "torch_sdpa": 983.1680059432983,
+      "fa4_cute": 1276.3839960098267,
+      "te_training": 1774.6880054473877,
+      "megatron_local": 1975.0080108642578
+    }
+  }
+}

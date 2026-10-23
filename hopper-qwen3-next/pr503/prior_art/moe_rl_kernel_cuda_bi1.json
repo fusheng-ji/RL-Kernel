@@ -1,0 +1,100 @@
+{
+  "kind": "qwen3_next_prior_art_report",
+  "rfc": 428,
+  "rl_kernel_commit": "77d59a5918a5f313722e8f03e6449f387b85ea0f",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "libraries": {
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "transformers": "5.17.0",
+      "triton": "3.7.1",
+      "sglang": null,
+      "sgl-kernel": null,
+      "megatron_core": "0.16.0rc0",
+      "megatron-core": "0.16.0rc0",
+      "transformer_engine": "2.18.0",
+      "vime": "0.3.0"
+    }
+  },
+  "op": "qwen3_next_routed_moe",
+  "shape": {
+    "hidden": 2048,
+    "experts": 512,
+    "top_k": 10,
+    "expert_width": 512
+  },
+  "probe_rows": 8,
+  "candidates": [
+    {
+      "key": "rl_kernel_cuda",
+      "name": "rl-kernel shared_moe",
+      "source": "rl_engine.models.qwen3_next.qwen3_next_forward.shared_moe",
+      "route_rows_bitwise": {
+        "16": true,
+        "64": true,
+        "256": true,
+        "1024": true
+      },
+      "output_rows_bitwise": {
+        "16": true,
+        "64": true,
+        "256": true,
+        "1024": true
+      },
+      "repeatable": true,
+      "dx_rows_bitwise": {
+        "16": false,
+        "64": false,
+        "256": false,
+        "1024": false
+      },
+      "dweight_zero_rows_bitwise": {
+        "16": true,
+        "64": true,
+        "256": true,
+        "1024": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.0038859987724266572,
+        "max_abs_vs_fp64": 0.0017427153004088147,
+        "tokens_with_different_expert_set": 0,
+        "tokens": 256
+      },
+      "batch_invariant": false
+    }
+  ],
+  "latency": {
+    "forward_us": {
+      "1": {
+        "rl_kernel_cuda": 1771.2160348892212
+      },
+      "8": {
+        "rl_kernel_cuda": 1749.2799758911133
+      },
+      "64": {
+        "rl_kernel_cuda": 2696.255922317505
+      },
+      "256": {
+        "rl_kernel_cuda": 3360.527992248535
+      },
+      "1024": {
+        "rl_kernel_cuda": 3759.343981742859
+      },
+      "4096": {
+        "rl_kernel_cuda": 5391.695976257324
+      }
+    },
+    "forward_plus_backward_us": {
+      "64": {
+        "rl_kernel_cuda": 229835.63232421875
+      },
+      "1024": {
+        "rl_kernel_cuda": 343265.48767089844
+      }
+    }
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "status": "passed",
+  "scope": "tp4_moe_block_layer0",
+  "full_model_l2": "not_evaluated",
+  "rank": 3,
+  "provider_binary": {
+    "module": "rl_engine._C",
+    "path": "<home>/q3n/src/ws1-qwen3-next-distributed-logprob-tp/rl_engine/_C.cpython-312-x86_64-linux-gnu.so",
+    "sha256": "70ae561d85769088ee70b1e6dadbbb36297f46f7b0b6209d8060ce87c7036f48"
+  },
+  "rl_kernel_commit": "8e88cd82fbe12b2b2f83d4167452a7b2d5c3b731",
+  "tracked_tree_dirty": false,
+  "provider": "qwen3-next-shared-cuda-forward-v1",
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "nccl": "2.29.7"
+  },
+  "moe": {
+    "cases": [
+      "hf-load-export-all512experts",
+      "routes-replicated-8",
+      "full-chunk-reorder-8",
+      "routes-replicated-64",
+      "full-chunk-reorder-64",
+      "routes-replicated-256",
+      "full-chunk-reorder-256",
+      "routes-replicated-1024",
+      "full-chunk-reorder-1024",
+      "training-forward",
+      "all-parameter-gradient",
+      "replicated-router-gradient"
+    ],
+    "gradient_max_abs": {
+      "gate.weight": 1.9354047253727913e-09,
+      "experts.gate_up": 2.546585164964199e-09,
+      "experts.down": 5.296897143125534e-09,
+      "shared_expert.gate_proj.weight": 1.2665987014770508e-07,
+      "shared_expert.up_proj.weight": 2.644956111907959e-07,
+      "shared_expert.down_proj.weight": 2.998858690261841e-07,
+      "shared_expert_gate.weight": 5.513429641723633e-07
+    },
+    "forward_us": {
+      "8": 3308.9919090270996,
+      "64": 2762.5279426574707,
+      "256": 2720.479965209961,
+      "1024": 2636.1279487609863
+    }
+  }
+}
