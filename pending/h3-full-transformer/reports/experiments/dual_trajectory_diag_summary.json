@@ -1,11 +1,7 @@
 {
   "description": "strict single vs batched; diag arm uses --diag-video-projections (existing JSON, no GPU rerun for diag)",
-  "pr_assets_pin": "015fdd2a59cce54f7bd5d2548403c1f0e6c768ce",
-  "seeds": [
-    11,
-    22,
-    33
-  ],
+  "pr_assets_pin": "PLACEHOLDER",
+  "seeds": [11, 22, 33],
   "rlkernel_strict_bitwise_equal_all_steps_with_diag": {
     "h100": true,
     "b200": true
@@ -21,19 +17,35 @@
   "auditable_per_step_max": "pending/h3-full-transformer/reports/experiments/h3-full-transformer-h100/dual_trajectory_step_max.json",
   "mechanism_note": "Observed: unbound video proj_in/proj_out correlate with ~1e-6 layout drift; diag video-proj binding -> 0/16 on H100 and B200.",
   "euler_step3_probe": {
-    "conclusion": "step3_forward_amplification_not_euler_accumulation",
-    "conclusion_detail": "B200 seed 33: step-2 fp32 video fork 1.9e-06; arm A step-3 velocity 0.6215; arms B/C ~4\u20135e-06 with shared step-2 latent \u2014 not layout-only when inputs match; not Euler-history amplification. H100 seed 33: fp32 fork 2.6e-06 but 0/384 bf16-differing video cells at step-3 entry (see seed33_step3_entry_bf16_audit.json); arm A velocity 5.7e-06. Do not summarize cross-GPU as '~3 orders more input-sensitive on B200': H100 step-3 forward gain |\u0394v|/|\u0394latent| ~2x at natural fork; B200 ~3e5x on probe reports (~5 orders apart in gain, two devices, not one replicated sweep). H100 K=1000 latent inflation -> ~0.53 is sm90-only reference. Script conclusion_b200_style is a B<<A threshold only.",
+    "conclusion": "one_bf16_step_in_step3_input_then_spread_over_depth",
+    "conclusion_detail": "B200 seed 33: the FP32 step-2 video latents of the two layouts differ by 1.9e-06, and after the bfloat16 cast at the step-3 input exactly 1 of 384 video elements differs (index [0,1,8], 0.40625 vs 0.408203125, 1.95e-03); audio and every other checked entry latent are identical after the cast. That single bf16 step reproduces the whole step-3 gap (arm P = arm A on every block, velocity 0.6215 video / 0.305 audio); with identical inputs (arms B, C) the layouts agree to 4e-06 to 5e-06. The relative difference of the block outputs grows about 300x over the 50 blocks (7.1e-04 after block 0, 0.22 after block 49), spread over the depth with no single sensitive layer. H100 seed 33: fp32 fork 2.6e-06 but 0 of 384 video elements differ after the cast, so the step-3 inputs are identical and the 5.7e-06 gap (arms A, B, C alike) is the layout-only gap. The layout-only gap is of the same size on both devices (B200 4.3e-06 / 5.4e-06). Do not summarise as a device sensitivity difference: the B200 spike needs the input element that straddles a bf16 rounding boundary. Script field conclusion_b200_style is a B<<A threshold only.",
     "h100_seed33_step3_entry_bf16": {
       "audit_json": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/seed33_step3_entry_bf16_audit.json",
       "video_bf16_cells_differing": 0,
       "video_numel": 384,
       "max_abs_fp32_fork": 2.6226043701171875e-06
     },
-    "cross_report_forward_gain_video_seed33": {
-      "definition": "arm_A max_abs_velocity_video / max_abs_latent_video_at_step2 (probe reports)",
-      "h100_approx": 2.18,
-      "b200_approx": 326000,
-      "note": "Ratio of gains ~1.5e5 (~5 orders), not ~1e3 (~3 orders); not a calibrated input-sensitivity constant."
+    "b200_seed33_step3_entry_bf16": {
+      "video_elements_differing_after_bf16_cast": 1,
+      "video_numel": 384,
+      "element": {
+        "index": [0, 1, 8],
+        "single_bf16": 0.40625,
+        "batched_bf16": 0.408203125,
+        "difference": 0.001953125
+      },
+      "audio_elements_differing_after_bf16_cast": 0,
+      "audio_numel": 128,
+      "source": "h3-euler-step3-probe-b200/README.md (Correction) and layerwise_report.json"
+    },
+    "b200_layerwise": {
+      "report": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/layerwise_report.json",
+      "arm_P_relative_difference_block0": 0.000708,
+      "arm_P_relative_difference_block49": 0.2245,
+      "largest_single_block_growth": {
+        "block 39": 1.77,
+        "block 1": 1.74
+      }
     },
     "b200_seed33_arms": {
       "step2_latent_video_max_abs": 1.9073486328125e-06,
@@ -46,14 +58,15 @@
     "reports": {
       "h100": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/seed33_report.json",
       "b200": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/seed33_report.json",
-      "b200_readme": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/README.md"
+      "b200_readme": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/README.md",
+      "b200_layerwise": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/layerwise_report.json"
     },
     "limitations": [
       "single seed (33)",
       "one run per arm",
-      "amplifying layer/submodule not localized",
+      "one perturbation (the single bf16 element), layer by layer on B200 only",
       "H100 delta-scale K sweep not repeated on B200",
-      "cross-GPU gain comparison is not one experiment"
+      "H100 forward not run with the one-element perturbation"
     ]
   }
 }
