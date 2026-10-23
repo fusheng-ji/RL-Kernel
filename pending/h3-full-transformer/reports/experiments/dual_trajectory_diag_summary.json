@@ -1,6 +1,6 @@
 {
   "description": "strict single vs batched; diag arm uses --diag-video-projections (existing JSON, no GPU rerun for diag)",
-  "pr_assets_pin": "bad019c4a6453490e5f3b40ecc8ff3423c724baa",
+  "pr_assets_pin": "PLACEHOLDER",
   "seeds": [11, 22, 33],
   "rlkernel_strict_bitwise_equal_all_steps_with_diag": {
     "h100": true,
@@ -18,7 +18,19 @@
   "mechanism_note": "Observed: unbound video proj_in/proj_out correlate with ~1e-6 layout drift; diag video-proj binding -> 0/16 on H100 and B200.",
   "euler_step3_probe": {
     "conclusion": "step3_forward_amplification_not_euler_accumulation",
-    "conclusion_detail": "B200 seed 33 (eb7840bb, strict safetensors from dual trajectory): step-2 video latent fork 1.9e-06 (audio 0). Arm A step-3 video velocity max 0.6215 (audio 0.305). Arms B/C with shared step-2 latent: video ~4.3e-06 / ~5.4e-06 (audio 0) — not layout-only when inputs match. Euler integrator did not need to amplify prior steps; spike is step-3 forward sensitivity. H100 same probe: natural fork ~2.6e-06 -> ~5.7e-06 velocity; K=1000 latent inflation -> ~0.53. Cross-report: B200 ~3 orders more sensitive at ~2e-06 fork (not one replicated sweep on both GPUs). Script field conclusion_b200_style=supports_latent_accumulation is a B<<A threshold only — not a mechanism label.",
+    "conclusion_detail": "B200 seed 33: step-2 fp32 video fork 1.9e-06; arm A step-3 velocity 0.6215; arms B/C ~4–5e-06 with shared step-2 latent — not layout-only when inputs match; not Euler-history amplification. H100 seed 33: fp32 fork 2.6e-06 but 0/384 bf16-differing video cells at step-3 entry (see seed33_step3_entry_bf16_audit.json); arm A velocity 5.7e-06. Do not summarize cross-GPU as '~3 orders more input-sensitive on B200': H100 step-3 forward gain |Δv|/|Δlatent| ~2x at natural fork; B200 ~3e5x on probe reports (~5 orders apart in gain, two devices, not one replicated sweep). H100 K=1000 latent inflation -> ~0.53 is sm90-only reference. Script conclusion_b200_style is a B<<A threshold only.",
+    "h100_seed33_step3_entry_bf16": {
+      "audit_json": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/seed33_step3_entry_bf16_audit.json",
+      "video_bf16_cells_differing": 0,
+      "video_numel": 384,
+      "max_abs_fp32_fork": 2.6226043701171875e-06
+    },
+    "cross_report_forward_gain_video_seed33": {
+      "definition": "arm_A max_abs_velocity_video / max_abs_latent_video_at_step2 (probe reports)",
+      "h100_approx": 2.18,
+      "b200_approx": 326000,
+      "note": "Ratio of gains ~1.5e5 (~5 orders), not ~1e3 (~3 orders); not a calibrated input-sensitivity constant."
+    },
     "b200_seed33_arms": {
       "step2_latent_video_max_abs": 1.9073486328125e-06,
       "step2_latent_audio_max_abs": 0.0,
@@ -36,7 +48,8 @@
       "single seed (33)",
       "one run per arm",
       "amplifying layer/submodule not localized",
-      "H100 delta-scale K sweep not repeated on B200"
+      "H100 delta-scale K sweep not repeated on B200",
+      "cross-GPU gain comparison is not one experiment"
     ]
   }
 }
