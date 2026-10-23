@@ -50,3 +50,26 @@ not checked here).
 
 This file replaces the placeholder `seed33_report.json` that was staged here earlier (`arms_B_C_not_executed_on_this_cluster`, arm A
 replayed from the historical JSON); arms B and C and a fresh arm A were executed on a B200 for this version.
+
+## Layer by layer (`layerwise_report.json`, script `layerwise_probe.py`)
+Same B200 and commit; five forwards of the step-3 request, every block's output (and, for blocks 0 and 1, every graph node) compared:
+
+| arm | forwards compared | step-3 velocity difference, video / audio |
+|---|---|---|
+| A | (single, own latent) vs (batched, own latent) | 0.6215 / 0.3052 |
+| B | same latent in both layouts | 4.3e-06 / 0 |
+| E | same layout (single), the two latents | 0.6215 / 0.3052 |
+| P | same layout (single), latent identical except the one element that differs after the bf16 cast, set to the other value | 0.6215 / 0.3052 |
+
+- A, E and P agree on every block and node (not only on the final velocity), and B is exactly zero in every block. The single element
+  (video latent index `[0,1,8]`: FP32 0.4072261 against 0.4072277, bfloat16 0.40625 against 0.408203) is the whole difference.
+- Relative difference (norm of the difference over norm of the reference) of the block outputs in arm P: 7.1e-04 after block 0, 1.2e-03
+  after block 1, 5.5e-03 after block 10, 6.8e-03 after block 30, 4.8e-02 after block 39, 5.5e-02 after block 40, 0.22 after block 49: about
+  300 times between the first and the last block. Most blocks grow it by 1.1 to 1.3 times; the largest steps are block 39 (1.77 times, where the
+  largest activation also rises from about 4e+04 to 2e+05) and block 1 (1.74 times). The fraction of block-output elements that differ is
+  20% after block 0 and 99% after block 49.
+- In block 0, from the input embedding (2.1e-04) to the block output (7.1e-04) the largest node-level relative difference is at `ffn_down` (2.5e-03).
+- The final step-3 velocity differs by at most 0.62 against a reference maximum of 14.6 (video) and 0.31 against 4.8 (audio).
+
+What this does not show: a layer that is especially sensitive (the growth is spread over the depth), or what the H100 forward does with a
+perturbation of this exact kind (not run). One seed, one perturbation, one run.
