@@ -1,7 +1,9 @@
-# RFC #420 gap analysis (H3 × VeRL-Omni E2E)
+# RFC #420 gap analysis
 
-Reference: [issue #420](https://github.com/RL-Align/RL-Kernel/issues/420). This table tracks **our**
-rows and **experiment gates** relative to the VeRL-Omni end-to-end program (not Phase B encoder/VAE rows).
+Reference: [issue #420](https://github.com/RL-Align/RL-Kernel/issues/420).
+
+**RFC-first:** gates below are filled for **Diffusers strict stack** (#571) before VeRL-Omni Phase 2.
+Roadmap: [`rfc-closeout-roadmap.md`](rfc-closeout-roadmap.md). Tasks: [`RFC-TASKS.md`](RFC-TASKS.md).
 
 ## §6.4 experiment arms
 

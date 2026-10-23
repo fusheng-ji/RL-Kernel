@@ -1,8 +1,10 @@
 # H3 x VeRL-Omni end-to-end control experiment
 
-This directory is the **single coordination hub** for the MiniMax-H3 train/rollout consistency and
-performance program aligned with [RFC #420](https://github.com/RL-Align/RL-Kernel/issues/420) and the
-methodology of [PR #377](https://github.com/RL-Align/RL-Kernel/pull/377) (VIME Qwen3-8B P/P vs R/R).
+This directory is the **single coordination hub** for MiniMax-H3 work aligned with
+[RFC #420](https://github.com/RL-Align/RL-Kernel/issues/420).
+
+**Priority:** finish the **RFC closeout** first (PR stack, §6.3–§7 gates, maintainer proposal), then
+Phase 2 VeRL-Omni P/P vs R/R ([#377](https://github.com/RL-Align/RL-Kernel/pull/377) methodology).
 
 Branch `plan/h3-verl-omni-e2e` holds **documentation only** (no kernel code). Progress lives in
 [`TASKS.md`](TASKS.md). Do not open a PR from this branch unless explicitly requested.
@@ -32,7 +34,10 @@ clock, that is the community value proposition (same story as VIME + RL-Kernel).
 
 | File | Purpose |
 | --- | --- |
-| [`TASKS.md`](TASKS.md) | Blockers B1–B7, dependencies, status, evidence links |
+| [`RFC-TASKS.md`](RFC-TASKS.md) | **RFC-first** tracker R1–R8 (primary) |
+| [`rfc-closeout-roadmap.md`](rfc-closeout-roadmap.md) | What “RFC complete” means + merge order |
+| [`maintainer-proposal-outline.md`](maintainer-proposal-outline.md) | Draft for maintainer conversation (post-RFC) |
+| [`TASKS.md`](TASKS.md) | Phase 2 VeRL-Omni blockers B1–B7 |
 | [`rfc-gap.md`](rfc-gap.md) | RFC #420 rows, §6.3–6.4 arms, H-C0–H-C7, final gates |
 | [`experiment-design.md`](experiment-design.md) | Matched workload, metrics, matrix, artifacts |
 | [`stochastic-transition-contract-draft.md`](stochastic-transition-contract-draft.md) | B2 SDE/CPS draft for maintainer review |

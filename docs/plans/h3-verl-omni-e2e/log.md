@@ -12,3 +12,5 @@
 - B1: `run_minimax_h3_lora_sync_tp2.sh` PASS on 2×H100; weights 1/14 (quota TBD).
 - B4: `verl_omni/integrations/rl_kernel/` skeleton on local verl-omni `rl-kernel/h3`.
 - B7: `examples/minimax_h3_verl_omni_e2e/experiment_matrix.json` scaffold added.
+- User direction: **RFC closeout before maintainer proposal**; added `rfc-closeout-roadmap.md`,
+  `RFC-TASKS.md` (R1–R8), `maintainer-proposal-outline.md` (draft, do not post yet).
