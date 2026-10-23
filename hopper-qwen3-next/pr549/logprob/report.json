@@ -1,0 +1,89 @@
+{
+  "kind": "qwen3_next_logprob_prior_art",
+  "rfc": 428,
+  "rl_kernel_commit": "77d59a5918a5f313722e8f03e6449f387b85ea0f",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "nccl": "2.29.7"
+  },
+  "third_party": [],
+  "tokens": 1024,
+  "nccl_settings": [
+    {
+      "NCCL_ALGO": null,
+      "NCCL_PROTO": null,
+      "NCCL_MAX_NCHANNELS": null
+    }
+  ],
+  "candidates": {
+    "rl_kernel_ws2": {
+      "tp4_equals_tp1": true,
+      "nccl_setting_invariant": true,
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "reference": "shared_logits_fp64",
+      "max_abs_vs_fp64": 7.779263082596799e-07,
+      "max_abs_vs": {
+        "vllm_gather": 9.5367431640625e-07,
+        "megatron_ce": 9.5367431640625e-07,
+        "vime_default": 9.5367431640625e-07
+      },
+      "latency_us_tp4": 4597.007989883423
+    },
+    "vllm_gather": {
+      "tp4_equals_tp1": true,
+      "nccl_setting_invariant": true,
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "reference": "shared_logits_fp64",
+      "max_abs_vs_fp64": 8.081748923416399e-07,
+      "max_abs_vs": {
+        "rl_kernel_ws2": 9.5367431640625e-07,
+        "megatron_ce": 9.5367431640625e-07,
+        "vime_default": 9.5367431640625e-07
+      },
+      "latency_us_tp4": 3189.247965812683
+    },
+    "megatron_ce": {
+      "tp4_equals_tp1": false,
+      "nccl_setting_invariant": true,
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "reference": "shared_logits_fp64",
+      "max_abs_vs_fp64": 8.137928730889143e-07,
+      "max_abs_vs": {
+        "rl_kernel_ws2": 9.5367431640625e-07,
+        "vllm_gather": 9.5367431640625e-07,
+        "vime_default": 0.0
+      },
+      "latency_us_tp4": 862.3519837856293
+    },
+    "vime_default": {
+      "tp4_equals_tp1": false,
+      "nccl_setting_invariant": true,
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "reference": "shared_logits_fp64",
+      "max_abs_vs_fp64": 8.137928730889143e-07,
+      "max_abs_vs": {
+        "rl_kernel_ws2": 9.5367431640625e-07,
+        "vllm_gather": 9.5367431640625e-07,
+        "megatron_ce": 0.0
+      },
+      "latency_us_tp4": 872.7520108222961
+    },
+    "miles_fused": {
+      "unavailable": "ModuleNotFoundError: No module named 'miles'"
+    },
+    "verl_fused": {
+      "unavailable": "ModuleNotFoundError: No module named 'verl'"
+    }
+  }
+}

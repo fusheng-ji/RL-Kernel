@@ -47,10 +47,10 @@
       },
       "repeatable": true,
       "dx_rows_bitwise": {
-        "16": false,
-        "64": false,
-        "256": false,
-        "1024": false
+        "16": true,
+        "64": true,
+        "256": true,
+        "1024": true
       },
       "dweight_zero_rows_bitwise": {
         "16": true,
@@ -64,7 +64,7 @@
         "tokens_with_different_expert_set": 0,
         "tokens": 256
       },
-      "batch_invariant": false
+      "batch_invariant": true
     },
     {
       "key": "hf_transformers",
@@ -163,8 +163,20 @@
         "256": true,
         "1024": true
       },
-      "failed": "RuntimeError: Ninja build failed. Ninja output:\nninja: Entering directory `<home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90'\n[1/108]  <home>/datastorage/cuda13_home/bin/nvcc --generate-dependencies-with-compile -MF <home>/.cache/flashinfer/0.6",
-      "batch_invariant": false
+      "output_rows_bitwise": {
+        "16": true,
+        "64": true,
+        "256": true,
+        "1024": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.06307582385999687,
+        "max_abs_vs_fp64": 0.09599152459089554,
+        "tokens_with_different_expert_set": 11,
+        "tokens": 256
+      },
+      "batch_invariant": true
     },
     {
       "key": "megatron_te",
@@ -209,56 +221,62 @@
       "1": {
         "hf_transformers": 3709.328055381775,
         "megatron_te": 5753.80802154541,
-        "rl_kernel_cuda": 1768.2559490203857,
+        "rl_kernel_cuda": 1670.2719926834106,
         "vllm_bi0": 504.06399369239807,
-        "vllm_bi1": 504.720002412796
+        "vllm_bi1": 504.720002412796,
+        "flashinfer_cutlass": 501.47199630737305
       },
       "8": {
         "hf_transformers": 25776.095390319824,
         "megatron_te": 7476.224184036255,
-        "rl_kernel_cuda": 1737.504005432129,
+        "rl_kernel_cuda": 1669.8240041732788,
         "vllm_bi0": 589.2000198364258,
-        "vllm_bi1": 651.9680023193359
+        "vllm_bi1": 651.9680023193359,
+        "flashinfer_cutlass": 1307.151973247528
       },
       "64": {
         "hf_transformers": 125292.7017211914,
         "megatron_te": 14872.128009796143,
-        "rl_kernel_cuda": 2701.3760805130005,
+        "rl_kernel_cuda": 2638.9600038528442,
         "vllm_bi0": 1511.2959742546082,
-        "vllm_bi1": 1795.8720326423645
+        "vllm_bi1": 1795.8720326423645,
+        "flashinfer_cutlass": 3989.359974861145
       },
       "256": {
         "hf_transformers": 171193.79425048828,
         "megatron_te": 18176.591873168945,
-        "rl_kernel_cuda": 3334.191918373108,
+        "rl_kernel_cuda": 3285.45606136322,
         "vllm_bi0": 2000.0319480895996,
-        "vllm_bi1": 2340.6879901885986
+        "vllm_bi1": 2340.6879901885986,
+        "flashinfer_cutlass": 4906.816005706787
       },
       "1024": {
         "hf_transformers": 177220.61920166016,
         "megatron_te": 18268.76735687256,
-        "rl_kernel_cuda": 3787.5360250473022,
+        "rl_kernel_cuda": 3683.9040517807007,
         "vllm_bi0": 2135.4559659957886,
-        "vllm_bi1": 2609.0879440307617
+        "vllm_bi1": 2609.0879440307617,
+        "flashinfer_cutlass": 5091.984033584595
       },
       "4096": {
         "hf_transformers": 177596.52709960938,
         "megatron_te": 18413.80786895752,
-        "rl_kernel_cuda": 5578.3679485321045,
+        "rl_kernel_cuda": 5290.719985961914,
         "vllm_bi0": 2432.4159622192383,
-        "vllm_bi1": 3059.3119859695435
+        "vllm_bi1": 3059.3119859695435,
+        "flashinfer_cutlass": 4730.655908584595
       }
     },
     "forward_plus_backward_us": {
       "64": {
         "hf_transformers": 2187716.6748046875,
         "megatron_te": 69887.0735168457,
-        "rl_kernel_cuda": 231278.01513671875
+        "rl_kernel_cuda": 218908.98895263672
       },
       "1024": {
         "hf_transformers": 3182525.0244140625,
         "megatron_te": 82215.02304077148,
-        "rl_kernel_cuda": 353393.3868408203
+        "rl_kernel_cuda": 332016.73889160156
       }
     }
   }

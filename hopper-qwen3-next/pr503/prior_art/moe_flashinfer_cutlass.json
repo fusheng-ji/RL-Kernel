@@ -39,18 +39,42 @@
         "256": true,
         "1024": true
       },
-      "failed": "RuntimeError: Ninja build failed. Ninja output:\nninja: Entering directory `<home>/.cache/flashinfer/0.6.18.post1/90a/cached_ops/fused_moe_90'\n[1/108]  <home>/datastorage/cuda13_home/bin/nvcc --generate-dependencies-with-compile -MF <home>/.cache/flashinfer/0.6",
-      "batch_invariant": false
+      "output_rows_bitwise": {
+        "16": true,
+        "64": true,
+        "256": true,
+        "1024": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.06307582385999687,
+        "max_abs_vs_fp64": 0.09599152459089554,
+        "tokens_with_different_expert_set": 11,
+        "tokens": 256
+      },
+      "batch_invariant": true
     }
   ],
   "latency": {
     "forward_us": {
-      "1": {},
-      "8": {},
-      "64": {},
-      "256": {},
-      "1024": {},
-      "4096": {}
+      "1": {
+        "flashinfer_cutlass": 501.47199630737305
+      },
+      "8": {
+        "flashinfer_cutlass": 1307.151973247528
+      },
+      "64": {
+        "flashinfer_cutlass": 3989.359974861145
+      },
+      "256": {
+        "flashinfer_cutlass": 4906.816005706787
+      },
+      "1024": {
+        "flashinfer_cutlass": 5091.984033584595
+      },
+      "4096": {
+        "flashinfer_cutlass": 4730.655908584595
+      }
     },
     "forward_plus_backward_us": {
       "64": {},
