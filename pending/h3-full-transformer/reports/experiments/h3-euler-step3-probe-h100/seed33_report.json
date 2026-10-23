@@ -3,11 +3,12 @@
   "seed": 33,
   "commit": "eb7840bb6ad59c0025dc7c655a9dd9e22f950500",
   "rl_kernel_repo": "RL-Kernel-worktrees/h3-rebuild",
+  "execution_status": "complete",
   "device": "NVIDIA H100",
   "compute_capability": "sm90",
   "driver": "580.173.02",
   "torch": "2.13.0+cu130",
-  "load_model_seconds": 51.26376740075648,
+  "load_model_seconds": 50.788915812037885,
   "D_delta_at_step2": {
     "max_abs_latent_video_at_step2": 2.6226043701171875e-06,
     "max_abs_latent_audio_at_step2": 0.0
@@ -29,35 +30,17 @@
       "name": "C_shared_batched_step2_latent"
     }
   },
-  "optional_delta_scale_sweep": [
-    {
-      "max_abs_velocity_video": 5.7220458984375e-06,
-      "max_abs_velocity_audio": 0.0,
-      "delta_scale_k": 1.0
-    },
-    {
-      "max_abs_velocity_video": 0.5294687747955322,
-      "max_abs_velocity_audio": 0.47453486919403076,
-      "delta_scale_k": 1000.0
-    },
-    {
-      "max_abs_velocity_video": 3.755244255065918,
-      "max_abs_velocity_audio": 1.0189945697784424,
-      "delta_scale_k": 1000000.0
-    },
-    {
-      "max_abs_velocity_video": 52.79048156738281,
-      "max_abs_velocity_audio": 1.515001893043518,
-      "delta_scale_k": 1000000000.0
-    }
-  ],
+  "optional_delta_scale_sweep": [],
   "historical_b200_A_replay_from_pr_assets": {
     "max_abs_velocity_video_step3": 0.6215000152587891,
-    "source": "pending/h3-full-transformer/reports/experiments/h3-full-transformer-b200/dual_trajectory_seed33.json"
+    "source": "pending/h3-full-transformer/reports/experiments/h3-full-transformer-b200/dual_trajectory_seed33.json",
+    "note": "Use sm100 GPU run of this script to reproduce A/B on device; not substitutable with H100 forward."
   },
   "conclusion_b200_style": "inconclusive",
   "interpretation": {
     "supports_latent_accumulation": "B_shared max_abs << A_replay max_abs on video velocity at step 3",
     "supports_step3_layout_sensitivity": "B_shared max_abs still large (~same as A) with identical step-2 latent"
-  }
+  },
+  "retest_timestamp": "2026-10-23T15:24:00+02:00",
+  "retest_note": "H100 rerun on mcml; safetensors from full_runs/c_run/seed33"
 }

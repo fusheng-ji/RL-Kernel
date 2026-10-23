@@ -1,27 +1,33 @@
 {
   "experiment": "h3_step3_entry_bf16_audit",
   "seed": 33,
-  "device_audit_host": "H100 natural dual-trajectory safetensors (mcml)",
+  "device_audit_host": "H100 natural dual-trajectory safetensors (mcml retest 2026-10-23)",
   "latent_keys": "2.latent.{video,audio} (step-2 end = step-3 forward entry)",
-  "source_tensors": {
-    "single": "rlkernel_strict-single.safetensors",
-    "batched": "rlkernel_strict-batched.safetensors",
-    "directory_note": "same run as h3-euler-step3-probe-h100 seed33_report.json"
-  },
   "conversion": "torch.Tensor.bfloat16() on float32 clones (matches step3 probe forward)",
   "video": {
-    "shape": [1, 4, 96],
     "numel": 384,
-    "max_abs_fp32_single_minus_batched": 2.6226043701171875e-06,
-    "max_abs_after_bfloat16_roundtrip_fp32": 0.0,
-    "bf16_cells_differing_single_vs_batched": 0
+    "fp32_differing_elements": 337,
+    "bf16_differing_elements": 0,
+    "max_abs_fp32_delta": 2.6226043701171875e-06,
+    "max_abs_after_bf16_roundtrip": 0.0,
+    "sample_bf16_differences": []
   },
   "audio": {
-    "shape": [1, 4, 32],
     "numel": 128,
-    "max_abs_fp32_single_minus_batched": 0.0,
-    "max_abs_after_bfloat16_roundtrip_fp32": 0.0,
-    "bf16_cells_differing_single_vs_batched": 0
+    "fp32_differing_elements": 0,
+    "bf16_differing_elements": 0,
+    "max_abs_fp32_delta": 0.0,
+    "max_abs_after_bf16_roundtrip": 0.0,
+    "sample_bf16_differences": []
   },
-  "readout": "At step-3 entry on H100, the natural single/batched video latent fork in fp32 (~2.6e-06 max) does not produce any differing bf16 cell after conversion; arm-A velocity gap ~5.7e-06 is not explained by a one-cell bf16 latent fork at this boundary."
+  "per_step_video_bf16_differing": {
+    "0": 0,
+    "1": 0,
+    "2": 0
+  },
+  "per_step_video_fp32_differing": {
+    "0": 329,
+    "1": 335,
+    "2": 337
+  }
 }

@@ -25,9 +25,20 @@
     "conclusion_detail": "B200 seed 33: the FP32 step-2 video latents of the two layouts differ by 1.9e-06, and after the bfloat16 cast at the step-3 input exactly 1 of 384 video elements differs (index [0,1,8], 0.40625 vs 0.408203125, 1.95e-03); audio and every other checked entry latent are identical after the cast. That single bf16 step reproduces the whole step-3 gap (arm P = arm A on every block, velocity 0.6215 video / 0.305 audio); with identical inputs (arms B, C) the layouts agree to 4e-06 to 5e-06. The relative difference of the block outputs grows about 300x over the 50 blocks (7.1e-04 after block 0, 0.22 after block 49), spread over the depth with no single sensitive layer. H100 seed 33: fp32 fork 2.6e-06 but 0 of 384 video elements differ after the cast, so the step-3 inputs are identical and the 5.7e-06 gap (arms A, B, C alike) is the layout-only gap. The layout-only gap is of the same size on both devices (B200 4.3e-06 / 5.4e-06). Do not summarise as a device sensitivity difference: the B200 spike needs the input element that straddles a bf16 rounding boundary. Script field conclusion_b200_style is a B<<A threshold only.",
     "h100_seed33_step3_entry_bf16": {
       "audit_json": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/seed33_step3_entry_bf16_audit.json",
-      "video_bf16_cells_differing": 0,
+      "full_per_step_json": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/step_entry_bf16_audit_full.json",
+      "video_bf16_cells_differing_at_step3_entry": 0,
+      "video_fp32_differing_at_step3_entry": 337,
       "video_numel": 384,
-      "max_abs_fp32_fork": 2.6226043701171875e-06
+      "max_abs_fp32_fork": 2.6226043701171875e-06,
+      "retest": "2026-10-23 mcml H100"
+    },
+    "h100_layerwise": {
+      "report": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/layerwise_report.json",
+      "arm_A_velocity_video_max": 5.7220458984375e-06,
+      "arm_B_velocity_video_max": 5.7220458984375e-06,
+      "arm_E_velocity_video_max": 0.0,
+      "arm_P_velocity_video_max": 0.0,
+      "note": "E/P zero because 0 bf16 cells differ at step-3 entry; arm A equals layout-only gap"
     },
     "b200_seed33_step3_entry_bf16": {
       "video_elements_differing_after_bf16_cast": 1,
@@ -67,14 +78,14 @@
       "h100": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/seed33_report.json",
       "b200": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/seed33_report.json",
       "b200_readme": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/README.md",
-      "b200_layerwise": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/layerwise_report.json"
+      "b200_layerwise": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-b200/layerwise_report.json",
+      "h100_layerwise": "pending/h3-full-transformer/reports/experiments/h3-euler-step3-probe-h100/layerwise_report.json"
     },
     "limitations": [
       "single seed (33)",
       "one run per arm",
-      "one perturbation (the single bf16 element), layer by layer on B200 only",
-      "H100 delta-scale K sweep not repeated on B200",
-      "H100 forward not run with the one-element perturbation"
+      "B200 one-element bf16 perturbation (arm P); H100 has 0 bf16 cells to perturb at step-3 entry (arms E/P trivially zero)",
+      "H100 delta-scale K sweep not repeated on B200"
     ]
   }
 }
