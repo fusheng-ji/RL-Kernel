@@ -18,3 +18,4 @@
   `MiniMaxAI/MiniMax-H3` @ `42ed227e`); shard-1 sha256 matches `h3_manifest.json`.
 - Added CUDA ownership tables (unclaimed / contested / external deps) to `rfc-gap.md` for maintainer proposal.
 - Audio projection overlap: co-author invite to walker-ai on PR #568 (documented in `rfc-gap.md` §B).
+- verl-omni: cleaned false filemode drift (mcmlfs); pushed `rl-kernel/h3` to `fusheng-ji/verl-omni` (fork created).

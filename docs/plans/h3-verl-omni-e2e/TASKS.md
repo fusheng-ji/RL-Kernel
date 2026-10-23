@@ -97,7 +97,9 @@ Weights still 1/14 (blocked on quota).
 **Update 2026-10-23:** Skeleton package `verl_omni/integrations/rl_kernel/` on local `rl-kernel/h3` branch
 (manifest, metrics, actor/rollout patch stubs). Patches raise `NotImplementedError` until #575 adapter is wired.
 
-**Blocked on:** push to community `verl-omni` fork; #575 merged or manifest-pinned local build.
+**Update:** branch pushed to [`fusheng-ji/verl-omni`](https://github.com/fusheng-ji/verl-omni) `rl-kernel/h3` (integration skeleton + manifest). Transfer to `RL-Align/verl-omni` when community fork exists.
+
+**Blocked on:** wiring patches to RL-Kernel #575; not on remote push.
 
 **Outline:** [`verl-omni-integration-outline.md`](verl-omni-integration-outline.md).
 
