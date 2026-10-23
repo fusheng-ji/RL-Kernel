@@ -17,3 +17,4 @@
 - R3 weights: confirmed **14/14** shards already present under `hf_full/transformer` (pinned
   `MiniMaxAI/MiniMax-H3` @ `42ed227e`); shard-1 sha256 matches `h3_manifest.json`.
 - Added CUDA ownership tables (unclaimed / contested / external deps) to `rfc-gap.md` for maintainer proposal.
+- Audio projection overlap: co-author invite to walker-ai on PR #568 (documented in `rfc-gap.md` §B).

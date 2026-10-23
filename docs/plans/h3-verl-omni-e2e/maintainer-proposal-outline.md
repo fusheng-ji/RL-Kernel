@@ -53,6 +53,7 @@ Optional: [#576](https://github.com/RL-Align/RL-Kernel/pull/576) flash backend �
 We rely on merged or forthcoming rows from:
 
 - **RichApple123** — `h3_full_attention` (#553, merged).
+- **walker-ai** — co-author on [#568](https://github.com/RL-Align/RL-Kernel/pull/568) for `audio_*_projection_fp32` (video projections remain walker-ai’s rows).
 - **zzf2024** — `h3_attention_o_gemm`, `h3_ffn_gate_up_gemm`, `h3_ffn_down_gemm` (strict block uses interim GEMM until then).
 - **Jungle430** — QK norm, MM-RoPE, SwiGLU.
 - **fxyan / Jerry536-coco** — sigma schedule / ODE step for scheduler parity.

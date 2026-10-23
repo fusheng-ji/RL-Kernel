@@ -24,11 +24,11 @@ Use the three tables below when drafting the closeout message.
 | `ws2_pipeline_parallel` | Optional follow-up; **out of scope** for first closeout |
 | Phase B rows (`qwen3vl_*`, `*_vae_*`, `fl2va_*`, `ref2va_*`, `phase_b_full_chain`) | **N/A** for our VeRL-Omni CUDA path |
 
-### B. Contested or table out of sync (needs maintainer assign)
+### B. Overlap resolved via co-author (maintainer assign still helpful)
 
-| Row | Parties | Our PR / comment |
+| Row | Resolution | Notes |
 | --- | --- | --- |
-| `audio_input_projection_fp32`, `audio_output_projection_fp32` | **walker-ai** (2026-10-22) vs **fusheng-ji** [#568](https://github.com/RL-Align/RL-Kernel/pull/568) in [stack comment](https://github.com/RL-Align/RL-Kernel/issues/420#issuecomment-6340566107) | Resolve before merge; video projections stay with walker-ai |
+| `audio_input_projection_fp32`, `audio_output_projection_fp32` | **Co-author invite** on [#568](https://github.com/RL-Align/RL-Kernel/pull/568) to **walker-ai** (parallel #420 claim); stack listed in [comment #6340566107](https://github.com/RL-Align/RL-Kernel/issues/420#issuecomment-6340566107) | Video in/out remains **walker-ai**; no duplicate PR expected |
 
 ### C. Claimed by others — CUDA dependency (not unclaimed; blocks strict perf / parity)
 
