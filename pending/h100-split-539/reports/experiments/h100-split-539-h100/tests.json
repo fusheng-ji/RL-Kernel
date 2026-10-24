@@ -2,22 +2,37 @@
   "device": "NVIDIA H100 (sm90)",
   "driver": "580.173.02",
   "torch": "2.13.0+cu130",
-  "partition": "hopper-4gpu",
+  "gpus_visible": 4,
+  "measured_utc": "2026-10-24T23:32Z",
   "branches": {
     "539a": {
-      "head": "cbdf48b0",
+      "head": "193f079e",
       "pytest": "542 passed, 2 skipped"
     },
     "539b": {
-      "head": "70b57205",
+      "head": "5ecb92de",
       "pytest": "551 passed, 2 skipped"
     },
     "539c": {
-      "head": "44b7f832",
+      "head": "6fe346df",
       "pytest": "573 passed, 2 skipped"
     }
   },
-  "nccl_supplement_539a": "4 passed, 2 skipped (8-GPU not executed)",
-  "skips": "8-GPU NCCL parametrizations only; SGLang via EXTRA_PYTHONPATH=<HOME>/datastorage/sglang_probe/pkg",
-  "measured_utc": "2026-10-24T21:12Z"
+  "nccl_539a": {
+    "gpus_run": [
+      2,
+      4
+    ],
+    "gpus_skipped": [
+      8
+    ],
+    "pytest": "4 passed, 2 skipped, 44 deselected"
+  },
+  "skips": "Main H3: test_h3_sp_norm_adaln and test_h3_tp_adaln 8-GPU NCCL params (needs 8 GPUs). NCCL run: same 8-GPU skips; 2- and 4-GPU NCCL passed.",
+  "optional_packages": "sglang via EXTRA_PYTHONPATH=<HOME>/datastorage/sglang_probe/pkg overlay (timestep parity test enabled)",
+  "local_patches": [],
+  "deviations": [
+    "539 executed via run_539_recut_v2.sh (539-only) with CUDA_VISIBLE_DEVICES=0,1,2,3 for H3 per handoff v2 table; upstream run_split_tests.sh documents 2-GPU H3 slice",
+    "543 not re-run (heads unchanged)"
+  ]
 }
