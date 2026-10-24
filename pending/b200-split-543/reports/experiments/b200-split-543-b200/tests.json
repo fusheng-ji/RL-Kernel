@@ -1,0 +1,24 @@
+{
+  "device": "NVIDIA B200 (sm100)",
+  "driver": "580.126.20",
+  "torch": "2.13.0+cu130",
+  "gpus_visible": 2,
+  "branches": {
+    "543a": {
+      "head": "1ee46a34",
+      "pytest": "388 passed, 2 skipped"
+    },
+    "543b": {
+      "head": "5778bc88",
+      "pytest": "552 passed, 2 skipped"
+    },
+    "543c": {
+      "head": "ac902598",
+      "pytest": "644 passed, 2 skipped"
+    }
+  },
+  "measured_utc": "2026-10-24T22:36Z",
+  "optional_packages": "megatron-core 0.16.1 and sglang/matplotlib on the Python path (installed with --no-deps --target); megatron.core imported before pytest starts (see below)",
+  "skips": "2 per layer: the SM90 diagnostic path test (needs a Hopper device) and the distributed logprob test that needs four ROCm GPUs",
+  "note": "test_qwen3_next_training_checkpoint.py patches torch.cuda.device_count to 0; importing megatron.core (via flashinfer) after that fails with 'Invalid device id' on a CUDA host, so megatron.core is imported before pytest starts"
+}

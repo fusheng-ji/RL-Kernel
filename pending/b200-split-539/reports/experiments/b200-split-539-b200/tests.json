@@ -1,0 +1,25 @@
+{
+  "device": "NVIDIA B200 (sm100)",
+  "driver": "580.126.20",
+  "torch": "2.13.0+cu130",
+  "gpus_visible": 2,
+  "branches": {
+    "539a": {
+      "head": "193f079e",
+      "pytest": "540 passed, 4 skipped"
+    },
+    "539b": {
+      "head": "5ecb92de",
+      "pytest": "549 passed, 4 skipped"
+    },
+    "539c": {
+      "head": "6fe346df",
+      "pytest": "571 passed, 4 skipped"
+    }
+  },
+  "measured_utc": "2026-10-24T23:22Z",
+  "optional_packages": "sglang 0.5.22 and matplotlib on the Python path (installed with --no-deps --target)",
+  "nccl_supplement": "539a and 539c: 6 passed each (2 / 4 / 8 GPUs) on one 8 x B200 node, measured on the heads before the re-cut (cbdf48b0, 44b7f832); the code of the layers is identical to the re-cut heads, only nine docs files differ (commit-hash text); see logs/539a-539c-nccl-2-4-8gpu-b200.log",
+  "skips": "4 per layer: the 4- and 8-GPU NCCL parametrizations of test_h3_sp_norm_adaln.py and test_h3_tp_adaln.py (2 visible GPUs); they pass in the 8-GPU run above",
+  "recut_note": "the heads above are the re-cut layers on the rewritten #494 head 4ef511c9; log headers show the local working names recut/..., the same heads are published as feat/h3-one-block-replay, feat/h3-full-model-qualification and feat/h3-generation-gate"
+}
