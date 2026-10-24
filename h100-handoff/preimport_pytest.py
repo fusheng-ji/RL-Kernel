@@ -1,9 +1,10 @@
 """Run pytest with megatron.core imported first (when it is installed).
 
-`tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py` monkeypatches `torch.cuda.device_count`
-to 0 in its fixture. If `megatron.core` is imported for the first time after that, flashinfer (pulled in
-by megatron.core) reads the device count at import time and raises "Invalid device id", so 15 of the 25
-tests fail instead of passing. Importing megatron.core before pytest starts avoids that.
+test_qwen3_next_training_checkpoint.py monkeypatches `torch.cuda.device_count` to 0 in
+its fixture. If `megatron.core` is imported for the first time after that, flashinfer
+(pulled in by megatron.core) reads the device count at import time and raises
+"Invalid device id", so 15 of the 25 tests fail instead of passing. Importing
+megatron.core before pytest starts avoids that.
 """
 
 import sys
