@@ -1,0 +1,27 @@
+{
+  "device": "NVIDIA H100 (sm90)",
+  "driver": "580.173.02",
+  "torch": "2.13.0+cu130",
+  "partition": "hopper-4gpu",
+  "branches": {
+    "543a": {
+      "head": "1ee46a34",
+      "pytest_qn": "389 passed, 1 skipped",
+      "pytest_sm90": "1 passed"
+    },
+    "543b": {
+      "head": "5778bc88",
+      "pytest_qn": "553 passed, 1 skipped",
+      "pytest_sm90": "1 passed"
+    },
+    "543c": {
+      "head": "ac902598",
+      "pytest_qn": "645 passed, 1 skipped",
+      "pytest_sm90": "1 passed"
+    }
+  },
+  "megatron": "Megatron-LM 1dcf0dafa884ad52ffb243625717a3471643e087 editable; pytest -p pytest_h100_megatron_plugin",
+  "sm90_build": "KERNEL_ALIGN_FORCE_SM90=1 pip install -e . --no-build-isolation",
+  "skips": "ROCm 4-GPU distributed logprob only",
+  "measured_utc": "2026-10-24T11:08Z"
+}
