@@ -5,6 +5,9 @@
 #   [PY=python] [WT=<worktree parent>] [EXTRA_PYTHONPATH=<overlay with sglang + matplotlib>] \
 #   [SKIP_BUILD=1] [MAX_JOBS=32] bash run_split_tests.sh
 #
+# EXTRA_PYTHONPATH may also hold megatron-core (tested with 0.16.1, installed with `pip install --no-deps --target`);
+# without it the 4 megatron tests in 543b/543c skip.
+#
 # Needs ninja on PATH (about 1 minute per build; about 15 minutes without it) and a CUDA toolkit
 # matching the installed torch. Results and logs go to $WT/results.
 set -u
@@ -14,6 +17,7 @@ PY=${PY:-python}
 WT=${WT:-$(dirname "$REPO")/rl-kernel-h100-split}
 OUT=${OUT:-$WT/results}
 EXTRA=${EXTRA_PYTHONPATH:-}
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 mkdir -p "$WT" "$OUT"
 
 H3=(split/h3-539a-one-block split/h3-539b-full-model-qualification split/h3-539c-generation-gate)
@@ -45,7 +49,7 @@ run_pytest() { # dir tag -- pytest args...
   ( cd "$d" && echo "== $tag $(git rev-parse --short=8 HEAD)" \
     && PYTHONPATH=.:$EXTRA RL_KERNEL_H3_WEIGHTS=$WEIGHTS $PY -c \
        "import rl_engine.kernels.ops.base as b; print('_C', b._C.__file__)" \
-    && PYTHONPATH=.:$EXTRA RL_KERNEL_H3_WEIGHTS=$WEIGHTS $PY -m pytest "$@" -q --tb=short -p no:cacheprovider -rsf ) \
+    && PYTHONPATH=.:$EXTRA RL_KERNEL_H3_WEIGHTS=$WEIGHTS $PY "$HERE/preimport_pytest.py" "$@" -q --tb=short -p no:cacheprovider -rsf ) \
     > "$OUT/$tag.log" 2>&1
   echo "$tag: $(grep -E 'passed|failed|error' "$OUT/$tag.log" | tail -1)"
 }
