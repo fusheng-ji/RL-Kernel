@@ -20,8 +20,8 @@ EXTRA=${EXTRA_PYTHONPATH:-}
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 mkdir -p "$WT" "$OUT"
 
-H3=(split/h3-539a-one-block split/h3-539b-full-model-qualification split/h3-539c-generation-gate)
-QN=(split/qn-543a-foundation split/qn-543b-training-l2 split/qn-543c-rollout-runners)
+H3=(feat/h3-one-block-replay feat/h3-full-model-qualification feat/h3-generation-gate)
+QN=(feat/ws1-qwen3-next-chain-foundation feat/ws1-qwen3-next-chain-training-l2 feat/ws1-qwen3-next-chain-rollout-runners)
 
 {
   echo "host: $(hostname)  date: $(date -u +%FT%TZ)"
@@ -30,7 +30,7 @@ QN=(split/qn-543a-foundation split/qn-543b-training-l2 split/qn-543c-rollout-run
   echo "visible GPUs: $(nvidia-smi -L | wc -l)"
 } | tee "$OUT/env.txt"
 
-git -C "$REPO" fetch -q origin 'refs/heads/split/*:refs/remotes/origin/split/*' || { echo "fetch failed"; exit 2; }
+for b in "${H3[@]}" "${QN[@]}"; do git -C "$REPO" fetch -q origin "refs/heads/$b:refs/remotes/origin/$b" || { echo "fetch failed for $b"; exit 2; }; done
 
 wt() { # branch -> worktree path (created from the fetched remote branch)
   local d="$WT/$(echo "$1" | tr '/' '_')"
