@@ -4,6 +4,7 @@ PY=$HOME/miniconda3/envs/rlkernel/bin/python
 TORCHRUN=$HOME/miniconda3/envs/rlkernel/bin/torchrun
 export PATH=$GAPS/ninja-bin:$HOME/miniconda3/envs/rlkernel/bin:$PATH
 export CUDA_HOME=/usr/local/cuda-13.0
+export PATH=$CUDA_HOME/bin:$PATH
 export PYTHONPATH=$WT
 export PYTHONDONTWRITEBYTECODE=1
 mkdir -p "$OUT/tmp"
