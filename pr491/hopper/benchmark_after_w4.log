@@ -1,0 +1,69 @@
+# command: <repo>/... -m torch.distributed.run --standalone --nproc-per-node=4 benchmarks/benchmark_deterministic_collectives.py --output <repo>/...
+
+*****************************************
+Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+*****************************************
+<repo>/... FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<repo>/... FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<repo>/... FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<repo>/... FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+all_gather            1024 B/rank  deterministic     40.6 us  nccl     79.2 us
+all_gather_many       1024 B/rank  deterministic     82.5 us  nccl     93.0 us
+<repo>/... FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<repo>/... FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<repo>/... FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<repo>/... FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+reduce_scatter        4096 B/rank  deterministic     45.9 us  nccl     81.5 us
+all_reduce            1024 B/rank  deterministic     29.9 us  nccl     73.6 us
+all_gather            8192 B/rank  deterministic     35.6 us  nccl     58.3 us
+all_gather_many       8192 B/rank  deterministic     85.4 us  nccl     95.8 us
+reduce_scatter       32768 B/rank  deterministic     52.0 us  nccl     77.1 us
+all_reduce            8192 B/rank  deterministic     28.7 us  nccl     72.9 us
+all_gather           16384 B/rank  deterministic     40.7 us  nccl     58.9 us
+all_gather_many      16384 B/rank  deterministic     88.0 us  nccl     90.8 us
+reduce_scatter       65536 B/rank  deterministic     57.6 us  nccl     76.6 us
+all_reduce           16384 B/rank  deterministic     28.3 us  nccl     67.9 us
+all_gather           32768 B/rank  deterministic     40.5 us  nccl     62.7 us
+all_gather_many      32768 B/rank  deterministic     84.0 us  nccl     93.0 us
+reduce_scatter      131072 B/rank  deterministic     79.2 us  nccl     75.2 us
+all_reduce           32768 B/rank  deterministic     30.8 us  nccl     72.0 us
+all_gather           65536 B/rank  deterministic     44.3 us  nccl     60.4 us
+all_gather_many      65536 B/rank  deterministic     82.3 us  nccl     92.7 us
+reduce_scatter      262144 B/rank  deterministic    131.7 us  nccl     68.9 us
+all_reduce           65536 B/rank  deterministic     35.4 us  nccl     68.2 us
+all_gather           98304 B/rank  deterministic     45.3 us  nccl     60.2 us
+all_gather_many      98304 B/rank  deterministic     84.9 us  nccl     90.7 us
+reduce_scatter      393216 B/rank  deterministic     55.7 us  nccl     72.2 us
+all_reduce           98304 B/rank  deterministic     37.4 us  nccl     69.4 us
+all_gather          131072 B/rank  deterministic     46.7 us  nccl     60.4 us
+all_gather_many     131072 B/rank  deterministic     84.4 us  nccl     89.7 us
+reduce_scatter      524288 B/rank  deterministic     51.4 us  nccl     71.1 us
+all_reduce          131072 B/rank  deterministic     40.3 us  nccl     68.5 us
+all_gather          196608 B/rank  deterministic     50.6 us  nccl     61.2 us
+all_gather_many     196608 B/rank  deterministic     86.1 us  nccl     89.8 us
+reduce_scatter      786432 B/rank  deterministic     52.9 us  nccl     71.4 us
+all_reduce          196608 B/rank  deterministic     44.0 us  nccl     69.5 us
+all_gather          262144 B/rank  deterministic     53.5 us  nccl     60.6 us
+all_gather_many     262144 B/rank  deterministic     93.1 us  nccl     90.5 us
+reduce_scatter     1048576 B/rank  deterministic     59.7 us  nccl     69.3 us
+all_reduce          262144 B/rank  deterministic     50.0 us  nccl     69.5 us
+all_gather          524288 B/rank  deterministic     51.4 us  nccl     64.1 us
+all_gather_many     524288 B/rank  deterministic     98.2 us  nccl     89.8 us
+reduce_scatter     2097152 B/rank  deterministic     59.5 us  nccl     71.9 us
+all_reduce          524288 B/rank  deterministic     52.2 us  nccl     71.7 us
+all_gather         1048576 B/rank  deterministic     57.2 us  nccl     97.9 us
+all_gather_many    1048576 B/rank  deterministic    111.2 us  nccl    114.5 us
+reduce_scatter     4194304 B/rank  deterministic     57.6 us  nccl     99.5 us
+all_reduce         1048576 B/rank  deterministic     60.9 us  nccl     71.8 us
+all_gather         4194304 B/rank  deterministic    131.0 us  nccl    111.8 us
+all_gather_many    4194304 B/rank  deterministic    197.2 us  nccl    127.5 us
+reduce_scatter    16777216 B/rank  deterministic     94.1 us  nccl    111.2 us
+all_reduce         4194304 B/rank  deterministic     84.4 us  nccl     85.3 us

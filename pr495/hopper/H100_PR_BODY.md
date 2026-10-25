@@ -1,0 +1,1 @@
+**H100 (94 GB):** head `e612412c`; pytest **371 passed**, 34 skipped (15 SM90 kernel not in default `build_ext` build, 18 Ascend, 1 dispatch). `report.json` at 32768×151936 on H100-94GB. Evidence: `pr495/hopper/` @ `<EVIDENCE_SHA>`.

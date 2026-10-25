@@ -1,0 +1,696 @@
+# command: <repo>/... -m pytest -p no:cacheprovider -q -rs tests/ops/gemm/test_det_gemm.py
+.......................sssssssss................................FFFFFFFF [ 87%]
+FFFFFFFFFF                                                               [100%]
+=================================== FAILURES ===================================
+________ test_target_shapes_invariance[shape3-cuda-deterministic_gemm] _________
+
+name = 'cuda', gemm = <function deterministic_gemm at 0x7f81ffa4da80>
+shape = (4096, 14336, 4096)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+        torch.manual_seed(6)
+        M, K, N = shape
+        b = _rand(K, N)
+        row = _rand(1, K)
+        big = _rand(64, K)
+        big[0] = row[0]
+>       assert torch.equal(
+            gemm(row, b)[0], gemm(big, b)[0]
+        ), f"{name}: batch-invariance broken at shape {shape}"
+E       torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E       Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E       CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E       For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+tests/ops/gemm/test_det_gemm.py:491: AcceleratorError
+____ test_target_shapes_invariance[shape3-triton-deterministic_gemm_triton] ____
+
+name = 'triton', gemm = <function deterministic_gemm_triton at 0x7f81f4974220>
+shape = (4096, 14336, 4096)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+>       torch.manual_seed(6)
+
+tests/ops/gemm/test_det_gemm.py:485: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+________ test_target_shapes_invariance[shape4-cuda-deterministic_gemm] _________
+
+name = 'cuda', gemm = <function deterministic_gemm at 0x7f81ffa4da80>
+shape = (4096, 4096, 32000)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+>       torch.manual_seed(6)
+
+tests/ops/gemm/test_det_gemm.py:485: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+____ test_target_shapes_invariance[shape4-triton-deterministic_gemm_triton] ____
+
+name = 'triton', gemm = <function deterministic_gemm_triton at 0x7f81f4974220>
+shape = (4096, 4096, 32000)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+>       torch.manual_seed(6)
+
+tests/ops/gemm/test_det_gemm.py:485: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+____________________ test_triton_ragged_tiles_mask_all_axes ____________________
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    def test_triton_ragged_tiles_mask_all_axes():
+        """Non-multiple M/N/K tiles must not read or write past tensor bounds."""
+>       torch.manual_seed(7)
+
+tests/ops/gemm/test_det_gemm.py:499: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+______ test_triton_tree_matches_python_reference_forward_bitwise[shape0] _______
+
+shape = (4, 65, 129)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize("shape", ((4, 65, 129), (8, 4096, 128), (4, 12288, 64)))
+    def test_triton_tree_matches_python_reference_forward_bitwise(shape):
+        """Triton evaluates the canonical FP32-leaf/BF16-node tree exactly."""
+    
+>       torch.manual_seed(47)
+
+tests/ops/gemm/test_det_gemm.py:517: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+______ test_triton_tree_matches_python_reference_forward_bitwise[shape1] _______
+
+shape = (8, 4096, 128)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize("shape", ((4, 65, 129), (8, 4096, 128), (4, 12288, 64)))
+    def test_triton_tree_matches_python_reference_forward_bitwise(shape):
+        """Triton evaluates the canonical FP32-leaf/BF16-node tree exactly."""
+    
+>       torch.manual_seed(47)
+
+tests/ops/gemm/test_det_gemm.py:517: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+______ test_triton_tree_matches_python_reference_forward_bitwise[shape2] _______
+
+shape = (4, 12288, 64)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize("shape", ((4, 65, 129), (8, 4096, 128), (4, 12288, 64)))
+    def test_triton_tree_matches_python_reference_forward_bitwise(shape):
+        """Triton evaluates the canonical FP32-leaf/BF16-node tree exactly."""
+    
+>       torch.manual_seed(47)
+
+tests/ops/gemm/test_det_gemm.py:517: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+__________ test_triton_tree_matches_python_reference_backward_bitwise __________
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    def test_triton_tree_matches_python_reference_backward_bitwise():
+>       torch.manual_seed(48)
+
+tests/ops/gemm/test_det_gemm.py:533: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+___ test_triton_final_tree_level_direct_output_matches_legacy_copy_raw_bytes ___
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    def test_triton_final_tree_level_direct_output_matches_legacy_copy_raw_bytes():
+        """Changing the root destination must not change its BF16 bit pattern."""
+    
+        m_size, n_size = 3, 97
+>       workspace = _special_bf16((3, m_size, n_size), offset=5)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/gemm/test_det_gemm.py:554: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+shape = (3, 3, 97), offset = 5
+
+    def _special_bf16(shape: tuple[int, ...], *, offset: int = 0) -> torch.Tensor:
+        bits = torch.tensor(
+            (
+                0x0000,
+                0x8000,
+                0x0001,
+                0x8001,
+                0x007F,
+                0x807F,
+                0x0080,
+                0x8080,
+                0x3F80,
+                0xBF80,
+                0x7F7F,
+                0xFF7F,
+                0x7F80,
+                0xFF80,
+                0x7F81,
+                0x7FC1,
+                0xFF81,
+                0xFFFF,
+            ),
+            dtype=torch.uint16,
+        )
+        elements = 1
+        for size in shape:
+            elements *= size
+        indices = (torch.arange(elements, dtype=torch.int64) + offset) % bits.numel()
+>       return bits[indices].view(torch.bfloat16).reshape(shape).to(DEV)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E       Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E       CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E       For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+tests/ops/gemm/test_det_gemm.py:153: AcceleratorError
+_ test_triton_forward_out_buffer_preserves_identity_version_and_raw_bytes[31] __
+
+k_size = 31
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize("k_size", (31, 65))
+    def test_triton_forward_out_buffer_preserves_identity_version_and_raw_bytes(k_size):
+        """Caller storage works for both the leaf-root and reduced-root paths."""
+    
+>       torch.manual_seed(51 + k_size)
+
+tests/ops/gemm/test_det_gemm.py:597: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+_ test_triton_forward_out_buffer_preserves_identity_version_and_raw_bytes[65] __
+
+k_size = 65
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize("k_size", (31, 65))
+    def test_triton_forward_out_buffer_preserves_identity_version_and_raw_bytes(k_size):
+        """Caller storage works for both the leaf-root and reduced-root paths."""
+    
+>       torch.manual_seed(51 + k_size)
+
+tests/ops/gemm/test_det_gemm.py:597: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+__ test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes[shape0] __
+
+shape = (1, 1, 3)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize(
+        "shape",
+        (
+            (1, 1, 3),
+            (3, 31, 5),
+            (17, 32, 33),
+            (33, 33, 17),
+            (65, 65, 31),
+        ),
+    )
+    def test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes(shape):
+        """Root placement may transpose addresses, but never the BF16 values."""
+    
+>       torch.manual_seed(49)
+
+tests/ops/gemm/test_det_gemm.py:625: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+__ test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes[shape1] __
+
+shape = (3, 31, 5)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize(
+        "shape",
+        (
+            (1, 1, 3),
+            (3, 31, 5),
+            (17, 32, 33),
+            (33, 33, 17),
+            (65, 65, 31),
+        ),
+    )
+    def test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes(shape):
+        """Root placement may transpose addresses, but never the BF16 values."""
+    
+>       torch.manual_seed(49)
+
+tests/ops/gemm/test_det_gemm.py:625: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+__ test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes[shape2] __
+
+shape = (17, 32, 33)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize(
+        "shape",
+        (
+            (1, 1, 3),
+            (3, 31, 5),
+            (17, 32, 33),
+            (33, 33, 17),
+            (65, 65, 31),
+        ),
+    )
+    def test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes(shape):
+        """Root placement may transpose addresses, but never the BF16 values."""
+    
+>       torch.manual_seed(49)
+
+tests/ops/gemm/test_det_gemm.py:625: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+__ test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes[shape3] __
+
+shape = (33, 33, 17)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize(
+        "shape",
+        (
+            (1, 1, 3),
+            (3, 31, 5),
+            (17, 32, 33),
+            (33, 33, 17),
+            (65, 65, 31),
+        ),
+    )
+    def test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes(shape):
+        """Root placement may transpose addresses, but never the BF16 values."""
+    
+>       torch.manual_seed(49)
+
+tests/ops/gemm/test_det_gemm.py:625: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+__ test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes[shape4] __
+
+shape = (65, 65, 31)
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    @pytest.mark.parametrize(
+        "shape",
+        (
+            (1, 1, 3),
+            (3, 31, 5),
+            (17, 32, 33),
+            (33, 33, 17),
+            (65, 65, 31),
+        ),
+    )
+    def test_triton_tree_transposed_out_matches_legacy_root_copy_raw_bytes(shape):
+        """Root placement may transpose addresses, but never the BF16 values."""
+    
+>       torch.manual_seed(49)
+
+tests/ops/gemm/test_det_gemm.py:625: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+_______ test_triton_wgrad_reads_positive_stride_transpose_view_raw_bytes _______
+
+    @pytest.mark.skipif(not _HAS_TRITON, reason="Triton is unavailable")
+    def test_triton_wgrad_reads_positive_stride_transpose_view_raw_bytes():
+        """The copy-free a.T wgrad path must preserve the legacy GEMM bit graph."""
+    
+>       torch.manual_seed(50)
+
+tests/ops/gemm/test_det_gemm.py:654: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<repo>/... in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+<repo>/... in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+<repo>/... in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+<repo>/... in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+E           CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+E           For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+
+<repo>/... AcceleratorError
+=========================== short test summary info ============================
+SKIPPED [8] tests/ops/gemm/test_det_gemm.py:229: leaf specialization raw-byte tests require ROCm gfx942
+SKIPPED [1] tests/ops/gemm/test_det_gemm.py:253: leaf specialization raw-byte tests require ROCm gfx942
+18 failed, 55 passed, 9 skipped in 9.79s

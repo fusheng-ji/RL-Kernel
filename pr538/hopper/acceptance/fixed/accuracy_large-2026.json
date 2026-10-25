@@ -1,0 +1,1674 @@
+{
+  "mode": "fixed",
+  "phase": "accuracy_large",
+  "accuracy_seed": 2026,
+  "source": {
+    "base_sha": "2d9680d7b8b9c0f7d150bd7cb296cf496652963a",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "untracked_source_sha256": {},
+    "workspace_source_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "qwenimage_source_sha256": {
+      "csrc/cuda/model_specific/qwenimage/det_linear.cu": "859da456b0c776f3492b3197c252866e33d9a7088508b701b7c4a179ee709afb",
+      "csrc/cuda/model_specific/qwenimage/token_sum.cu": "1aace24523ff95520ab5d482e2e0f17d09a2efcf93efc8de865c7bcc157cf3ba",
+      "rl_engine/backends/cuda/model_specific/qwenimage/__init__.py": "95c46d40c4aed2d4c26a65bc0cc64331e42b237673293ea5ed45b79ebc11d4b4",
+      "rl_engine/backends/cuda/model_specific/qwenimage/adaln_mod_projection.py": "710df5416a2adf5b2576468ff63584b6699e6bdecd59906370049bf09f1b3286",
+      "rl_engine/backends/cuda/model_specific/qwenimage/final_adaln_out.py": "f6afe4b7568e2026c4b046a4fd0a02589f817d815198af33173d2dba61773f19",
+      "rl_engine/reference/model_specific/qwenimage/__init__.py": "95c46d40c4aed2d4c26a65bc0cc64331e42b237673293ea5ed45b79ebc11d4b4",
+      "rl_engine/reference/model_specific/qwenimage/adaln_mod_projection.py": "1ebc740ddff575055ee66ed714a8c7cc5c6cee2701d582a665289e9ad1a4fe3d",
+      "rl_engine/reference/model_specific/qwenimage/final_adaln_out.py": "60441610c04d04d0fb1cd7320be8584e76772c110a3cfed77ddf826dbde9b53c",
+      "benchmarks/models/qwenimage/__init__.py": "a63ebc79ed10d9ed98484565a353438bd13f5801a8f51d7505d0921bf6942742",
+      "benchmarks/models/qwenimage/adaln_evidence.py": "9dc9f3da0069d36c602baef07d687fb1aeba8fda0163d17fc446e0a543fe1f3e",
+      "benchmarks/models/qwenimage/adaln_parameter_screen.py": "05562ef30d09296c2ccd1cdeb44085568b8c877d01f5fb1df4b983e84945ec03",
+      "benchmarks/models/qwenimage/adaln_prior_art.py": "647aa9fc81e02bf3c7806ed6c2a3e578fb3e1a0b000b4388a12367ef86de3139",
+      "benchmarks/models/qwenimage/adaln_reuse_bi_audit.py": "88dd3d390e647bbc883b76622309fad54dac3618630dcca0785e555db329a671",
+      "benchmarks/models/qwenimage/adaln_reuse_candidate.py": "4598f6db94462ac30f3bdd3defae16f0ce7a34ac59eb1996d18e86f498c029b6",
+      "benchmarks/models/qwenimage/plot_adaln_audit.py": "6151e6abccca8f647c2fbeadf92f12e43ed1c07954db9f2db2f035284cbd407c",
+      "benchmarks/models/qwenimage/plot_adaln_evidence.py": "16d6bed0ee5b808814c5f7157145a730750d0b1aaf94762e6f72a256e942c1e2",
+      "benchmarks/models/qwenimage/streams.py": "bd27383eee59404df295f724f6c7d620db3d3d7074c19dd94d51a711b38acf02",
+      "benchmarks/models/qwenimage/validate_adaln_repair.py": "8b663191323b455470a2313cdfefd837657441b300ffd0e0767453f9f407db03"
+    },
+    "extension_sha256": "43518e82e437d668b8697376b68048288c730c55572ea3e68035886164e8f6e4",
+    "clean_commit": true
+  },
+  "cases": [
+    {
+      "stream": "image",
+      "dtype": "torch.bfloat16",
+      "weights": {
+        "transformer_blocks.0.img_mod.1.weight": {
+          "shape": [
+            18432,
+            3072
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "22ef33e6865806f3e1d2bc137bd1a41510cf0619ed0c85fba35a626cd7bad018",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        },
+        "transformer_blocks.0.img_mod.1.bias": {
+          "shape": [
+            18432
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "f4d2241820fa1a1895d7136bd5653ae0984a50bf0a0961a312b45e0e393d8218",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        }
+      },
+      "checks": [
+        {
+          "kind": "fp64_contract",
+          "batch": 256,
+          "sequence": 1,
+          "errors": {
+            "output": 0.001184834123222749,
+            "temb": 0.0036866773677095743,
+            "weight": 0.0020653415031237285,
+            "bias": 0.0030867879642664307
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.23923446238040924,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.2387542724609375,
+              "max_tolerance_ratio": 0.17112243175506592,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.125,
+              "max_tolerance_ratio": 0.16829895973205566,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.21319580078125,
+              "max_tolerance_ratio": 0.164648175239563,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.23923446238040924,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.2387542724609375,
+              "max_tolerance_ratio": 0.17112243175506592,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.125,
+              "max_tolerance_ratio": 0.16829895973205566,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.21319580078125,
+              "max_tolerance_ratio": 0.164648175239563,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.24038462340831757,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 5.702550333808176e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 8.763280493440107e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 3.814697265625e-06,
+              "max_tolerance_ratio": 9.171597412205301e-06,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          }
+        },
+        {
+          "kind": "fp64_contract",
+          "batch": 2048,
+          "sequence": 1,
+          "errors": {
+            "output": 0.002066115702479339,
+            "temb": 0.002806449196095267,
+            "weight": 0.0032294089373074548,
+            "bias": 0.0024699091864147757
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.125,
+              "max_tolerance_ratio": 0.33112582564353943,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.24566650390625,
+              "max_tolerance_ratio": 0.17240804433822632,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.4984893798828125,
+              "max_tolerance_ratio": 0.18670226633548737,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.49981689453125,
+              "max_tolerance_ratio": 0.18719759583473206,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.125,
+              "max_tolerance_ratio": 0.33112582564353943,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.24566650390625,
+              "max_tolerance_ratio": 0.17240804433822632,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.4984893798828125,
+              "max_tolerance_ratio": 0.18670226633548737,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.49981689453125,
+              "max_tolerance_ratio": 0.18719759583473206,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.2747252881526947,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 7.505065150326118e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.000205653122975491,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 4.3573250877670944e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          }
+        }
+      ]
+    },
+    {
+      "stream": "image",
+      "dtype": "torch.float32",
+      "weights": {
+        "transformer_blocks.0.img_mod.1.weight": {
+          "shape": [
+            18432,
+            3072
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "22ef33e6865806f3e1d2bc137bd1a41510cf0619ed0c85fba35a626cd7bad018",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        },
+        "transformer_blocks.0.img_mod.1.bias": {
+          "shape": [
+            18432
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "f4d2241820fa1a1895d7136bd5653ae0984a50bf0a0961a312b45e0e393d8218",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        }
+      },
+      "checks": [
+        {
+          "kind": "fp64_contract",
+          "batch": 256,
+          "sequence": 1,
+          "errors": {
+            "output": 1.4476683455517747e-07,
+            "temb": 9.707141860142671e-08,
+            "weight": 6.802736237265256e-08,
+            "bias": 3.737520220714937e-08
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.023151716217398643,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.014496179297566414,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 3.814697265625e-06,
+              "max_tolerance_ratio": 0.02345484495162964,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.0,
+              "max_tolerance_ratio": 0.0,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.053303927183151245,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.9073486328125e-05,
+              "max_tolerance_ratio": 0.09707292914390564,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 2.6702880859375e-05,
+              "max_tolerance_ratio": 0.1710503101348877,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.04047978296875954,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.03892400860786438,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.621246337890625e-05,
+              "max_tolerance_ratio": 0.09142421185970306,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 2.6702880859375e-05,
+              "max_tolerance_ratio": 0.16453005373477936,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.0404796227812767,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          }
+        },
+        {
+          "kind": "fp64_contract",
+          "batch": 2048,
+          "sequence": 1,
+          "errors": {
+            "output": 1.891185355265788e-07,
+            "temb": 1.0295526368771729e-07,
+            "weight": 6.668011299743455e-08,
+            "bias": 3.7590605573649886e-08
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 0.0323747843503952,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.015534110367298126,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.054823361337184906,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.0,
+              "max_tolerance_ratio": 0.0,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.9073486328125e-05,
+              "max_tolerance_ratio": 0.061114802956581116,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 2.288818359375e-05,
+              "max_tolerance_ratio": 0.10779768973588943,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 5.340576171875e-05,
+              "max_tolerance_ratio": 0.36403176188468933,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.1444326490163803,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.05098020285367966,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 2.288818359375e-05,
+              "max_tolerance_ratio": 0.11161675304174423,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 5.340576171875e-05,
+              "max_tolerance_ratio": 0.35856184363365173,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.14443473517894745,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          }
+        }
+      ]
+    },
+    {
+      "stream": "text",
+      "dtype": "torch.bfloat16",
+      "weights": {
+        "transformer_blocks.0.txt_mod.1.weight": {
+          "shape": [
+            18432,
+            3072
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "7fc5615cea51f21640ae26b29e4595fe96295113b1fd31b117664c1b85d360c2",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        },
+        "transformer_blocks.0.txt_mod.1.bias": {
+          "shape": [
+            18432
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "537d4e06e6fe7428a331637871fcf8c9c4899b296b5419e12abb3a3972adfc72",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        }
+      },
+      "checks": [
+        {
+          "kind": "fp64_contract",
+          "batch": 256,
+          "sequence": 1,
+          "errors": {
+            "output": 0.0011682242990654205,
+            "temb": 0.002450724189134699,
+            "weight": 0.0020653415031237285,
+            "bias": 0.0030867879642664307
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.03125,
+              "max_tolerance_ratio": 0.2369668334722519,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.08868789672851562,
+              "max_tolerance_ratio": 0.14835892617702484,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.125,
+              "max_tolerance_ratio": 0.16829895973205566,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.21319580078125,
+              "max_tolerance_ratio": 0.164648175239563,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.03125,
+              "max_tolerance_ratio": 0.23255813121795654,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.08868789672851562,
+              "max_tolerance_ratio": 0.14835892617702484,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.125,
+              "max_tolerance_ratio": 0.16829895973205566,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.21319580078125,
+              "max_tolerance_ratio": 0.164648175239563,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.03125,
+              "max_tolerance_ratio": 0.2369668334722519,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 5.7220458984375e-06,
+              "max_tolerance_ratio": 3.730764365172945e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 8.763280493440107e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 3.814697265625e-06,
+              "max_tolerance_ratio": 9.171597412205301e-06,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          }
+        },
+        {
+          "kind": "fp64_contract",
+          "batch": 2048,
+          "sequence": 1,
+          "errors": {
+            "output": 0.002074688796680498,
+            "temb": 0.0030517906583308217,
+            "weight": 0.0032294089373074548,
+            "bias": 0.0024699091864147757
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.23923446238040924,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.12432479858398438,
+              "max_tolerance_ratio": 0.16521863639354706,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.4984893798828125,
+              "max_tolerance_ratio": 0.18670226633548737,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.49981689453125,
+              "max_tolerance_ratio": 0.18719759583473206,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.03125,
+              "max_tolerance_ratio": 0.23923446238040924,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.12432861328125,
+              "max_tolerance_ratio": 0.16522368788719177,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.4984893798828125,
+              "max_tolerance_ratio": 0.18670226633548737,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.49981689453125,
+              "max_tolerance_ratio": 0.18719759583473206,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.23923446238040924,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 3.550342808011919e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.000205653122975491,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 4.3573250877670944e-05,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          }
+        }
+      ]
+    },
+    {
+      "stream": "text",
+      "dtype": "torch.float32",
+      "weights": {
+        "transformer_blocks.0.txt_mod.1.weight": {
+          "shape": [
+            18432,
+            3072
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "7fc5615cea51f21640ae26b29e4595fe96295113b1fd31b117664c1b85d360c2",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        },
+        "transformer_blocks.0.txt_mod.1.bias": {
+          "shape": [
+            18432
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "537d4e06e6fe7428a331637871fcf8c9c4899b296b5419e12abb3a3972adfc72",
+          "shard": "diffusion_pytorch_model-00001-of-00009.safetensors",
+          "download_etag": "9f33a59093af3abcc2836d4cf4b7bd122c238ca70a26c70f34fdde64646b3bcd"
+        }
+      },
+      "checks": [
+        {
+          "kind": "fp64_contract",
+          "batch": 256,
+          "sequence": 1,
+          "errors": {
+            "output": 1.783054605048769e-07,
+            "temb": 1.307487098470074e-07,
+            "weight": 6.802736237265256e-08,
+            "bias": 3.737520220714937e-08
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 4.76837158203125e-06,
+              "max_tolerance_ratio": 0.02412950061261654,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 3.814697265625e-06,
+              "max_tolerance_ratio": 0.008286898955702782,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 3.814697265625e-06,
+              "max_tolerance_ratio": 0.02345484495162964,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.0,
+              "max_tolerance_ratio": 0.0,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.03506088629364967,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.05521887168288231,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 2.6702880859375e-05,
+              "max_tolerance_ratio": 0.1710503101348877,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.04047978296875954,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 6.794929504394531e-06,
+              "max_tolerance_ratio": 0.030139103531837463,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.053317561745643616,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 2.6702880859375e-05,
+              "max_tolerance_ratio": 0.16453005373477936,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.0404796227812767,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          }
+        },
+        {
+          "kind": "fp64_contract",
+          "batch": 2048,
+          "sequence": 1,
+          "errors": {
+            "output": 1.5841994732726855e-07,
+            "temb": 1.4306675902531177e-07,
+            "weight": 6.668011299743455e-08,
+            "bias": 3.7590605573649886e-08
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 4.76837158203125e-06,
+              "max_tolerance_ratio": 0.02412950061261654,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 5.7220458984375e-06,
+              "max_tolerance_ratio": 0.012383597902953625,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.054823361337184906,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.0,
+              "max_tolerance_ratio": 0.0,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 8.58306884765625e-06,
+              "max_tolerance_ratio": 0.037074100226163864,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.33514404296875e-05,
+              "max_tolerance_ratio": 0.07154839485883713,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 5.340576171875e-05,
+              "max_tolerance_ratio": 0.36403176188468933,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.1444326490163803,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.03422145918011665,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 0.07037381082773209,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 5.340576171875e-05,
+              "max_tolerance_ratio": 0.35856184363365173,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.14443473517894745,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          }
+        }
+      ]
+    },
+    {
+      "stream": "final",
+      "dtype": "torch.bfloat16",
+      "weights": {
+        "norm_out.linear.weight": {
+          "shape": [
+            6144,
+            3072
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "613ffb1bfa5aeedcf38208f87ca420212706c6f4c6f527de1a6bab58e36c2afb",
+          "shard": "diffusion_pytorch_model-00009-of-00009.safetensors",
+          "download_etag": "ae0fef149890f61d54572baa1e806de97156c7ec5b7bbbbbbf27a2d87f33af61"
+        },
+        "norm_out.linear.bias": {
+          "shape": [
+            6144
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "06ef4a795107a9dd4bcb5ab387a63291fd934ea8e31ecb2a87c98fb0628c13fd",
+          "shard": "diffusion_pytorch_model-00009-of-00009.safetensors",
+          "download_etag": "ae0fef149890f61d54572baa1e806de97156c7ec5b7bbbbbbf27a2d87f33af61"
+        }
+      },
+      "checks": [
+        {
+          "kind": "fp64_contract",
+          "batch": 256,
+          "sequence": 3,
+          "errors": {
+            "output": 0.001282051282051282,
+            "x": 0.003387689475453447,
+            "temb": 0.002618235601021497,
+            "weight": 0.002342644479598789,
+            "bias": 0.0023161844201138367
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.30674847960472107,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 0.12152099609375,
+              "max_tolerance_ratio": 0.22569863498210907,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.11723709106445312,
+              "max_tolerance_ratio": 0.14421990513801575,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.249969482421875,
+              "max_tolerance_ratio": 0.17921732366085052,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.249481201171875,
+              "max_tolerance_ratio": 0.16977937519550323,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.30674847960472107,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 0.12151718139648438,
+              "max_tolerance_ratio": 0.22569863498210907,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.11723709106445312,
+              "max_tolerance_ratio": 0.14420635998249054,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.24996185302734375,
+              "max_tolerance_ratio": 0.2627618908882141,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.24947357177734375,
+              "max_tolerance_ratio": 0.1697739213705063,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.015625,
+              "max_tolerance_ratio": 0.235849067568779,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 0.015842914581298828,
+              "max_tolerance_ratio": 0.0970379039645195,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.0010666847229003906,
+              "max_tolerance_ratio": 0.005067866761237383,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.03547954559326172,
+              "max_tolerance_ratio": 0.26751628518104553,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.011350631713867188,
+              "max_tolerance_ratio": 0.05531466752290726,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          }
+        },
+        {
+          "kind": "fp64_contract",
+          "batch": 2048,
+          "sequence": 3,
+          "errors": {
+            "output": 0.0014124293785310734,
+            "x": 0.0027681622827836275,
+            "temb": 0.0021717093349347136,
+            "weight": 0.001847588221286195,
+            "bias": 0.0030203457120811165
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.42016810178756714,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 0.12345504760742188,
+              "max_tolerance_ratio": 0.24363189935684204,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.1241607666015625,
+              "max_tolerance_ratio": 0.15858343243598938,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.503448486328125,
+              "max_tolerance_ratio": 0.7023133635520935,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.856597900390625,
+              "max_tolerance_ratio": 0.1801450550556183,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.42016810178756714,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 0.12345504760742188,
+              "max_tolerance_ratio": 0.24363189935684204,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.12415695190429688,
+              "max_tolerance_ratio": 0.15858343243598938,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.5115509033203125,
+              "max_tolerance_ratio": 0.7022642493247986,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.8565673828125,
+              "max_tolerance_ratio": 0.180139422416687,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 0.0625,
+              "max_tolerance_ratio": 0.33112582564353943,
+              "violations": 0,
+              "atol": 0.05,
+              "rtol": 0.02
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 0.03638887405395508,
+              "max_tolerance_ratio": 0.15362024307250977,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 0.0053539276123046875,
+              "max_tolerance_ratio": 0.03245891258120537,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.06977081298828125,
+              "max_tolerance_ratio": 0.45284274220466614,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 0.019159317016601562,
+              "max_tolerance_ratio": 0.06724346429109573,
+              "violations": 0,
+              "atol": 0.1,
+              "rtol": 0.02
+            }
+          }
+        }
+      ]
+    },
+    {
+      "stream": "final",
+      "dtype": "torch.float32",
+      "weights": {
+        "norm_out.linear.weight": {
+          "shape": [
+            6144,
+            3072
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "613ffb1bfa5aeedcf38208f87ca420212706c6f4c6f527de1a6bab58e36c2afb",
+          "shard": "diffusion_pytorch_model-00009-of-00009.safetensors",
+          "download_etag": "ae0fef149890f61d54572baa1e806de97156c7ec5b7bbbbbbf27a2d87f33af61"
+        },
+        "norm_out.linear.bias": {
+          "shape": [
+            6144
+          ],
+          "dtype": "torch.bfloat16",
+          "sha256": "06ef4a795107a9dd4bcb5ab387a63291fd934ea8e31ecb2a87c98fb0628c13fd",
+          "shard": "diffusion_pytorch_model-00009-of-00009.safetensors",
+          "download_etag": "ae0fef149890f61d54572baa1e806de97156c7ec5b7bbbbbbf27a2d87f33af61"
+        }
+      },
+      "checks": [
+        {
+          "kind": "fp64_contract",
+          "batch": 256,
+          "sequence": 3,
+          "errors": {
+            "output": 1.1808930558843468e-07,
+            "x": 1.8561016694543973e-07,
+            "temb": 1.3466442100760073e-07,
+            "weight": 1.3300599826352435e-07,
+            "bias": 9.820363367006398e-08
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 5.7220458984375e-06,
+              "max_tolerance_ratio": 0.029481584206223488,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.02493424341082573,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.029529590159654617,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.08803212642669678,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.04113736376166344,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.049041748046875e-05,
+              "max_tolerance_ratio": 0.04087299108505249,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 0.03849251940846443,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.049041748046875e-05,
+              "max_tolerance_ratio": 0.061255790293216705,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 4.1961669921875e-05,
+              "max_tolerance_ratio": 0.2788587212562561,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 2.288818359375e-05,
+              "max_tolerance_ratio": 0.07254773378372192,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.04006742686033249,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.03742765635251999,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.06021010875701904,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 4.1961669921875e-05,
+              "max_tolerance_ratio": 0.28818023204803467,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 2.288818359375e-05,
+              "max_tolerance_ratio": 0.08635874092578888,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          }
+        },
+        {
+          "kind": "fp64_contract",
+          "batch": 2048,
+          "sequence": 3,
+          "errors": {
+            "output": 2.1627118884532034e-07,
+            "x": 2.4373393158114157e-07,
+            "temb": 1.5934153426322055e-07,
+            "weight": 9.200799148532986e-08,
+            "bias": 8.74328593952507e-08
+          },
+          "contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 9.5367431640625e-06,
+              "max_tolerance_ratio": 0.031253084540367126,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 0.034980855882167816,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 7.62939453125e-06,
+              "max_tolerance_ratio": 0.023000262677669525,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.15272754430770874,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 3.0517578125e-05,
+              "max_tolerance_ratio": 0.11928815394639969,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_contract": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 0.05290621519088745,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.06984789669513702,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.10044700652360916,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.0001068115234375,
+              "max_tolerance_ratio": 0.6404932737350464,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 4.57763671875e-05,
+              "max_tolerance_ratio": 0.15985846519470215,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          },
+          "cpu_fp32_vs_fp64": {
+            "output": {
+              "passed": true,
+              "max_abs": 1.1444091796875e-05,
+              "max_tolerance_ratio": 0.04589308798313141,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "x": {
+              "passed": true,
+              "max_abs": 1.33514404296875e-05,
+              "max_tolerance_ratio": 0.04989374056458473,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "temb": {
+              "passed": true,
+              "max_abs": 1.52587890625e-05,
+              "max_tolerance_ratio": 0.10229960829019547,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "weight": {
+              "passed": true,
+              "max_abs": 0.0001068115234375,
+              "max_tolerance_ratio": 0.6391915082931519,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            },
+            "bias": {
+              "passed": true,
+              "max_abs": 4.57763671875e-05,
+              "max_tolerance_ratio": 0.22987087070941925,
+              "violations": 0,
+              "atol": 0.0001,
+              "rtol": 0.0001
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "environment": {
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "gpu": "H100-94GB",
+    "workspace": {
+      "CUBLAS_WORKSPACE_CONFIG": null,
+      "CUBLASLT_WORKSPACE_SIZE": null
+    },
+    "tf32": false
+  },
+  "scope": "sample batch BI; final uses S=3 for large B, long S tested separately; shared parameter gradients: same ordered inputs, repeat only",
+  "packages": {
+    "torch": "2.13.0+cu130",
+    "triton": "3.7.1",
+    "diffusers": "0.41.0",
+    "vllm": "0.30.0",
+    "sglang": null,
+    "liger-kernel": null,
+    "transformer_engine": null,
+    "megatron-core": "0.16.0rc0"
+  }
+}
