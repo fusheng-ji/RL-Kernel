@@ -1,1 +1,1 @@
-**H100 (94 GB):** head `cc27cf5c`; all-gather pytest **40 passed**, 1 skipped (8 GPU). 2/4-GPU deterministic collective benchmarks vs merge base `5ba769f6`; **8-GPU not run**. Evidence: `pr491/hopper/` @ `e735176a5b33608a24bb13f0e21e29b4685b82b8`.
+**H100 (94 GB):** head `cc27cf5c`; all-gather pytest **40 passed**, 1 skipped (8 GPU). 2/4-GPU deterministic collective benchmarks vs merge base `5ba769f6`; **8-GPU not run**. Evidence: `pr491/hopper/` @ `d4da9fd8`.
