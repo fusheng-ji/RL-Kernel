@@ -1,6 +1,6 @@
 # H100 evidence: split stack #543 (543a–c)
 
-Fork branches `split/qn-543a-foundation`, `543b`, `543c`.
+Fork branches `feat/ws1-qwen3-next-chain-foundation` @ `1ee46a34` (543a), `feat/ws1-qwen3-next-chain-training-l2` @ `5778bc88` (543b), `feat/ws1-qwen3-next-chain-rollout-runners` @ `ac902598` (543c). Earlier working names `split/qn-543*` were deleted from the fork; the heads did not change.
 
 ## Commands (representative)
 

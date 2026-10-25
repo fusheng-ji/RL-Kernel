@@ -1,6 +1,6 @@
 # H100 evidence: split stack #539 (539a–c re-cut)
 
-Measured on 4× H100 (sm90). Fork branches `split/h3-539a-one-block` @ `193f079e`, `539b` @ `5ecb92de`, `539c` @ `6fe346df`.
+Measured on 4× H100 (sm90). Fork branches `feat/h3-one-block-replay` @ `193f079e` (539a), `feat/h3-full-model-qualification` @ `5ecb92de` (539b), `feat/h3-generation-gate` @ `6fe346df` (539c). Earlier working names `split/h3-539*` were deleted from the fork; the heads did not change.
 
 ## Commands
 
