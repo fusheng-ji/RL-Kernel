@@ -1,0 +1,244 @@
+W1025 14:12:53.906000 29531 <path>:874] 
+W1025 14:12:53.906000 29531 <path>:874] *****************************************
+W1025 14:12:53.906000 29531 <path>:874] Setting OMP_NUM_THREADS environment variable for each process to be 1 in default, to avoid your system being overloaded, please further tune the variable for optimal performance in your application as needed. 
+W1025 14:12:53.906000 29531 <path>:874] *****************************************
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.all_gather_into_tensor` is deprecated. Please use `torch.distributed.all_gather_single` instead.
+  return func(*args, **kwargs)
+all_gather            1024 B/rank  deterministic     92.8 us  nccl     35.4 us
+all_gather_many       1024 B/rank  deterministic     94.9 us  nccl     40.1 us
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+<env>/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: FutureWarning: `torch.distributed.reduce_scatter_tensor` is deprecated. Please use `torch.distributed.reduce_scatter_single` instead.
+  return func(*args, **kwargs)
+reduce_scatter        8192 B/rank  deterministic     50.8 us  nccl     32.7 us
+all_reduce            1024 B/rank  deterministic     22.6 us  nccl     37.6 us
+all_gather            8192 B/rank  deterministic    453.4 us  nccl     66.5 us
+all_gather_many       8192 B/rank  deterministic     98.6 us  nccl     42.7 us
+reduce_scatter       65536 B/rank  deterministic     96.0 us  nccl     38.4 us
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank1]:     main()
+[rank1]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank1]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank1]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank1]:     functions[index]()
+[rank1]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank1]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank1]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank1]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank1]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank6]: Traceback (most recent call last):
+[rank6]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank6]:     main()
+[rank6]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank6]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank6]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank6]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank6]:     functions[index]()
+[rank6]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank6]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank6]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank6]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank6]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank2]:     main()
+[rank2]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank2]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank2]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank2]:     functions[index]()
+[rank2]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank2]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank2]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank2]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank2]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank0]:     main()
+[rank0]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank0]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank0]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank0]:     functions[index]()
+[rank0]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank0]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank0]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank0]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank0]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank3]:     main()
+[rank3]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank3]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank3]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank3]:     functions[index]()
+[rank3]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank3]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank3]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank3]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank3]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank7]:     main()
+[rank7]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank7]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank7]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank7]:     functions[index]()
+[rank7]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank7]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank7]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank7]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank7]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank4]:     main()
+[rank4]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank4]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank4]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank4]:     functions[index]()
+[rank4]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank4]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank4]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank4]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank4]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank5]: Traceback (most recent call last):
+[rank5]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 210, in <module>
+[rank5]:     main()
+[rank5]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 164, in main
+[rank5]:     deterministic_samples, nccl_samples = _paired_samples_us(
+[rank5]:                                           ^^^^^^^^^^^^^^^^^^^
+[rank5]:   File "<repo>/benchmarks/benchmark_deterministic_collectives.py", line 92, in _paired_samples_us
+[rank5]:     functions[index]()
+[rank5]:   File "<repo>/rl_engine/distributed/algorithms/collectives.py", line 459, in all_reduce
+[rank5]:     self._extension.deterministic_collective_all_reduce_fused(self._handle, input, out)
+[rank5]: torch.AcceleratorError: CUDA error: too many resources requested for launch
+[rank5]: Search for `cudaErrorLaunchOutOfResources' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+[rank5]: For more detailed error information, run with CUDA_LOG_FILE=stderr
+
+[rank0]:[W1025 14:13:11.667724740 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W1025 14:13:12.340000 29531 <path>:1028] Sending process 29682 closing signal SIGTERM
+W1025 14:13:12.343000 29531 <path>:1028] Sending process 29683 closing signal SIGTERM
+W1025 14:13:12.343000 29531 <path>:1028] Sending process 29684 closing signal SIGTERM
+W1025 14:13:12.343000 29531 <path>:1028] Sending process 29685 closing signal SIGTERM
+W1025 14:13:12.343000 29531 <path>:1028] Sending process 29686 closing signal SIGTERM
+W1025 14:13:12.343000 29531 <path>:1028] Sending process 29687 closing signal SIGTERM
+W1025 14:13:12.343000 29531 <path>:1028] Sending process 29689 closing signal SIGTERM
+E1025 14:13:13.624000 29531 <path>:1002] failed (exitcode: 1) local_rank: 6 (pid: 29688) of binary: <env>/bin/python3.12
+Traceback (most recent call last):
+  File "<env>/bin/torchrun", line 6, in <module>
+    sys.exit(main())
+             ^^^^^^
+  File "<env>/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "<env>/lib/python3.12/site-packages/torch/distributed/run.py", line 1028, in main
+    run(args)
+  File "<env>/lib/python3.12/site-packages/torch/distributed/run.py", line 1019, in run
+    elastic_launch(
+  File "<env>/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
+    return launch_agent(
+           ^^^^^^^^^^^^^
+  File "<env>/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+<repo>/benchmarks/benchmark_deterministic_collectives.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-10-25_14:13:13
+  host      : <node>
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 29682) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-10-25_14:13:13
+  host      : <node>
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 29683) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2026-10-25_14:13:13
+  host      : <node>
+  rank      : 2 (local_rank: 2)
+  exitcode  : -15 (pid: 29684)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 29684
+[4]:
+  time      : 2026-10-25_14:13:13
+  host      : <node>
+  rank      : 3 (local_rank: 3)
+  exitcode  : 1 (pid: 29685) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[5]:
+  time      : 2026-10-25_14:13:13
+  host      : <node>
+  rank      : 4 (local_rank: 4)
+  exitcode  : -15 (pid: 29686)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 29686
+[6]:
+  time      : 2026-10-25_14:13:13
+  host      : <node>
+  rank      : 5 (local_rank: 5)
+  exitcode  : -15 (pid: 29687)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 29687
+[7]:
+  time      : 2026-10-25_14:13:13
+  host      : <node>
+  rank      : 7 (local_rank: 7)
+  exitcode  : -15 (pid: 29689)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 29689
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-10-25_14:13:12
+  host      : <node>
+  rank      : 6 (local_rank: 6)
+  exitcode  : 1 (pid: 29688) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

@@ -1,0 +1,9 @@
+gemm-off	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/ops/gemm/test_det_gemm.py
+gemm-on	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/ops/gemm/test_det_gemm.py
+hal-registry	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/platforms/test_persistent_autotuner.py tests/runtime/test_kernel_registry.py
+operator-cache-graph	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/ops/test_autotuning_gpu.py
+candidates	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/ops/test_autotuning_candidates.py
+benchmark-functional	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/benchmarks/test_autotuning_benchmark.py
+ops-head-off	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/ops
+ops-head-on	<env>/bin/python -m pytest -p no:cacheprovider -q -rs tests/ops
+performance	<env>/bin/python -m benchmarks.tuning.benchmark_autotuning --operator all --dtype bfloat16 --preset all --phase all --trials 5 --output <run-root>/out/pr536/issue50-performance.json

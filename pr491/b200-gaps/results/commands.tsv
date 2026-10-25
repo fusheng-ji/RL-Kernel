@@ -1,0 +1,7 @@
+pytest-8gpu-all-gather	<env>/bin/python -m pytest -p no:cacheprovider -v -rs tests/distributed/test_deterministic_all_gather_sizes.py tests/distributed/collectives/test_deterministic_all_gather.py tests/distributed/collectives/test_transport_deterministic_collective.py
+pytest-8gpu-reduce	<env>/bin/python -m pytest -p no:cacheprovider -v -rs tests/distributed/collectives/test_deterministic_all_reduce.py tests/distributed/collectives/test_deterministic_reduce_scatter.py
+pytest-2gpu-all-gather	<env>/bin/python -m pytest -p no:cacheprovider -v -rs tests/distributed/test_deterministic_all_gather_sizes.py tests/distributed/collectives/test_deterministic_all_gather.py tests/distributed/collectives/test_transport_deterministic_collective.py
+bench-after-w2	<env>/bin/torchrun --standalone --nproc-per-node=2 benchmarks/benchmark_deterministic_collectives.py --output <run-root>/out/pr491/after_w2.json
+bench-before-w2	torchrun benchmark (merge base)
+bench-after-w8	<env>/bin/torchrun --standalone --nproc-per-node=8 benchmarks/benchmark_deterministic_collectives.py --output <run-root>/out/pr491/after_w8.json
+bench-before-w8	torchrun benchmark (merge base)

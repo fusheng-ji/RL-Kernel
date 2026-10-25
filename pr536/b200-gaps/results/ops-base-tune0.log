@@ -1,0 +1,152 @@
+........................................................................ [  3%]
+............................................ssssssssssssssssssssssssssss [  7%]
+ssssssssssssssssssss...........................sssssssssssssssssssssssss [ 11%]
+sssssssssssssssssssssssssssssssssssssssssssssssssssssssss............... [ 14%]
+........................................................................ [ 18%]
+.................................................ss..................... [ 22%]
+........................................................................ [ 25%]
+........................................................................ [ 29%]
+........................................................................ [ 33%]
+........................................................................ [ 37%]
+........................................................................ [ 40%]
+........................................................................ [ 44%]
+........................................................................ [ 48%]
+........................................................................ [ 51%]
+......................sssssssssssssssssssssssssssss..................... [ 55%]
+..............................ssssssssssssssssssssssssssssssssssssssssss [ 59%]
+sssssssssssssssssssssssss.sss........................................... [ 62%]
+........................................................................ [ 66%]
+......................sssssssssssssssssssssssssssssssssss............... [ 70%]
+.......ssssssssssssss................................................... [ 74%]
+........................ssssssssssssssssssssssssssssss.................. [ 77%]
+........................................................................ [ 81%]
+s.....sssssssssssssssssss...............................s............... [ 85%]
+........................................................................ [ 88%]
+...............F................................ssssssssssssssssssssssss [ 92%]
+ssssssssssssssssssssssssssssssssssssssssssssssss........................ [ 96%]
+.....................sssssss....................................ss...... [ 99%]
+.                                                                        [100%]
+=================================== FAILURES ===================================
+______________________ test_registry_dispatches_rms_norm _______________________
+
+    def test_registry_dispatches_rms_norm():
+        from rl_engine.runtime.registry import kernel_registry
+    
+        op = kernel_registry.get_op("rms_norm")
+        if device_ctx.is_musa:
+            if _TRITON_AVAILABLE:
+                assert isinstance(op, RMSNormTritonOp)
+                assert hasattr(op, "forward")
+            else:
+                assert isinstance(op, NativeRMSNormOp)
+                assert hasattr(op, "forward") and hasattr(op, "forward_fp32")
+        elif torch.cuda.is_available() and _HAS_CUDA_RMSNORM:
+>           assert isinstance(op, RMSNormCudaOp)
+E           assert False
+E            +  where False = isinstance(<rl_engine.reference.norm.rms_norm.NativeRMSNormOp object at 0x7ffc4c3a6990>, RMSNormCudaOp)
+
+tests/ops/norm/test_rms_norm.py:263: AssertionError
+=========================== short test summary info ============================
+SKIPPED [39] tests/ops/activation/test_swiglu.py:787: Ascend NPU required
+SKIPPED [3] tests/ops/activation/test_swiglu.py:831: Ascend NPU required
+SKIPPED [3] tests/ops/activation/test_swiglu.py:849: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:872: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:889: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:905: Ascend NPU required
+SKIPPED [40] tests/ops/attention/test_attention_correctness.py:269: CUDA FlashAttentionOp is unavailable: Neither external flash_attn nor _C.flash_attn_forward is available.
+SKIPPED [40] tests/ops/attention/test_attention_correctness.py:310: current torch build is not ROCm platform
+SKIPPED [2] tests/ops/attention/test_attention_correctness.py:335: current torch build is not ROCm platform
+SKIPPED [1] tests/ops/attention/test_attention_preprocess.py:152: Hopper with compiled RMSNorm and RoPE CUDA kernels is required
+SKIPPED [1] tests/ops/attention/test_attention_preprocess.py:180: Hopper with compiled RMSNorm and RoPE CUDA kernels is required
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:751: ROCm-only acceptance check
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:770: ROCm-only acceptance check
+SKIPPED [8] tests/ops/attention/test_deterministic_attention_cuda.py:792: ROCm-only acceptance check
+SKIPPED [6] tests/ops/attention/test_deterministic_attention_cuda.py:823: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:862: ROCm-only acceptance check
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:903: ROCm-only acceptance check
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:943: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:983: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:1015: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:1046: ROCm-only acceptance check
+SKIPPED [3] tests/ops/attention/test_deterministic_attention_cuda.py:1061: ROCm-only acceptance check
+SKIPPED [30] tests/ops/attention/test_triton_deterministic_attention.py:100: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [30] tests/ops/attention/test_triton_deterministic_attention.py:115: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [2] tests/ops/attention/test_triton_deterministic_attention.py:136: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [1] tests/ops/attention/test_triton_deterministic_attention.py:163: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [1] tests/ops/attention/test_triton_deterministic_attention.py:177: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [2] tests/ops/attention/test_triton_deterministic_attention.py:189: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [1] tests/ops/attention/test_triton_deterministic_attention.py:211: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [3] tests/ops/attention/test_triton_deterministic_attention.py:265: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [23] tests/ops/gemm/test_det_gemm.py:178: Triton is unavailable
+SKIPPED [8] tests/ops/gemm/test_det_gemm.py:226: leaf specialization raw-byte tests require ROCm gfx942
+SKIPPED [1] tests/ops/gemm/test_det_gemm.py:250: leaf specialization raw-byte tests require ROCm gfx942
+SKIPPED [3] tests/ops/gemm/test_det_gemm.py:276: Triton is unavailable
+SKIPPED [1] tests/ops/gemm/test_det_gemm.py:493: Triton is unavailable
+SKIPPED [3] tests/ops/gemm/test_det_gemm.py:509: Triton is unavailable
+SKIPPED [1] tests/ops/gemm/test_det_gemm.py:528: Triton is unavailable
+SKIPPED [1] tests/ops/gemm/test_det_gemm.py:546: Triton is unavailable
+SKIPPED [2] tests/ops/gemm/test_det_gemm.py:589: Triton is unavailable
+SKIPPED [5] tests/ops/gemm/test_det_gemm.py:608: Triton is unavailable
+SKIPPED [1] tests/ops/gemm/test_det_gemm.py:647: Triton is unavailable
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:895: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:904: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:913: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:921: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:933: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:940: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:948: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:957: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:974: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:991: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1007: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1025: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1036: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1052: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1072: batch_invariant_logp_sm90 kernel not compiled (needs KERNEL_ALIGN_FORCE_SM90=1 on an SM90/Hopper device).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1096: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1105: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1114: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1122: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1130: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1139: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1146: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1168: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1185: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1201: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1221: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1232: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1250: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1263: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1286: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:620: Triton linear log-prob requires a MUSA device and Triton.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:707: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:721: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:732: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:769: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:808: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:833: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:863: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [2] tests/ops/logprob/test_linear_logp.py:896: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:926: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:953: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:978: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:1005: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:1030: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:1074: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:1086: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:1098: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:1121: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:1139: Fused linear log-prob SM90 kernel requires a Hopper (sm_90) GPU with the extension built KERNEL_ALIGN_FORCE_SM90=1.
+SKIPPED [1] tests/ops/logprob/test_logp.py:154: CUDA dispatch may select fused logp
+SKIPPED [12] tests/ops/norm/test_rms_norm.py:480: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [48] tests/ops/norm/test_rms_norm.py:498: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [6] tests/ops/norm/test_rms_norm.py:527: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [6] tests/ops/norm/test_rms_norm.py:551: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [3] tests/ops/rope/test_rope.py:390: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:406: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:413: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:420: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:433: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/test_op_accuracy.py:253: SM90 fused logp requires a Hopper GPU and the extension built with SM90 enabled.
+SKIPPED [1] tests/ops/test_op_accuracy.py:264: SM90 fused logp requires a Hopper GPU and the extension built with SM90 enabled.
+1 failed, 1532 passed, 412 skipped in 56.95s

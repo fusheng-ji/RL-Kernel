@@ -1,0 +1,52 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- <env>/bin/python
+rootdir: <repo>
+configfile: pyproject.toml
+plugins: platformdirs-4.12.2, anyio-4.15.1
+collecting ... collected 41 items
+
+tests/distributed/test_deterministic_all_gather_sizes.py::test_all_gather_is_exact_across_sizes_and_alignments PASSED [  2%]
+tests/distributed/collectives/test_deterministic_all_gather.py::test_deterministic_all_gather_cross_tp_cuda SKIPPED [  4%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_public_exports_use_canonical_collectives_module PASSED [  7%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_cuda_collective_has_stable_backend_identity PASSED [  9%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype0-1] PASSED [ 12%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype0-2] PASSED [ 14%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype0-4] PASSED [ 17%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype0-8] PASSED [ 19%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype1-1] PASSED [ 21%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype1-2] PASSED [ 24%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype1-4] PASSED [ 26%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype1-8] PASSED [ 29%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype2-1] PASSED [ 31%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype2-2] PASSED [ 34%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype2-4] PASSED [ 36%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_supports_fixed_world_sizes_and_dtypes[dtype2-8] PASSED [ 39%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_uses_balanced_not_rank_ordered_left_fold PASSED [ 41%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_reduce_stages_before_writing_in_place PASSED [ 43%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_gather_is_rank_ordered_and_transport_only PASSED [ 46%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_gather_many_packs_same_row_lanes_and_transports_once PASSED [ 48%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_rocm_all_gather_many_groups_large_lanes_without_repacking PASSED [ 51%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_nccl_backend_uses_all_gather_into_tensor_transport PASSED [ 53%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_all_gather_writes_directly_to_provided_output PASSED [ 56%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_reduction_workspace_grows_once_and_is_reused PASSED [ 58%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_matching_signature_is_validated_once_per_hot_path PASSED [ 60%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_latest_collective_api_can_skip_signature_handshakes PASSED [ 63%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_reduce_scatter_reduces_then_selects_local_leading_shard PASSED [ 65%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_reduce_scatter_many_packs_lanes_and_transports_once PASSED [ 68%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_reduce_scatter_many_rejects_oversized_packed_input PASSED [ 70%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_reduce_scatter_many_uses_separate_calls_for_large_payloads PASSED [ 73%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_matching_signature_is_checked_before_tensor_transport PASSED [ 75%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_capacity_must_match_on_every_rank PASSED [ 78%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_validation_fails_closed_before_transport PASSED [ 80%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_lifecycle_is_idempotent_and_context_manager_closes PASSED [ 82%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_unsupported_world_size_is_rejected[3] PASSED [ 85%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_unsupported_world_size_is_rejected[16] PASSED [ 87%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_rccl_class_requires_rocm_build PASSED [ 90%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_rccl_class_requires_nccl_process_group PASSED [ 92%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_rccl_class_rejects_cpu_before_process_group_exchange PASSED [ 95%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_factory_dispatches_rocm_to_rccl PASSED [ 97%]
+tests/distributed/collectives/test_transport_deterministic_collective.py::test_factory_preserves_existing_cuda_collective PASSED [100%]
+
+=========================== short test summary info ============================
+SKIPPED [1] tests/distributed/collectives/test_deterministic_all_gather.py:118: requires eight visible CUDA GPUs
+======================== 40 passed, 1 skipped in 10.49s ========================

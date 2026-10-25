@@ -1,0 +1,507 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- <env>/bin/python
+rootdir: <repo>
+configfile: pyproject.toml
+plugins: platformdirs-4.12.2, anyio-4.15.1
+collecting ... collected 2 items
+
+tests/distributed/collectives/test_deterministic_all_reduce.py::test_deterministic_all_reduce_cross_tp_cuda PASSED [ 50%]
+tests/distributed/collectives/test_deterministic_reduce_scatter.py::test_deterministic_reduce_scatter_cross_tp_cuda FAILED [100%]
+
+=================================== FAILURES ===================================
+_______________ test_deterministic_reduce_scatter_cross_tp_cuda ________________
+
+    def test_deterministic_reduce_scatter_cross_tp_cuda() -> None:
+>       mp.spawn(
+            _worker,
+            args=(_find_free_port(),),
+            nprocs=_MAX_WORLD_SIZE,
+            join=True,
+        )
+
+tests/distributed/collectives/test_deterministic_reduce_scatter.py:160: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<env>/lib/python3.12/site-packages/torch/multiprocessing/spawn.py:340: in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method="spawn")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<env>/lib/python3.12/site-packages/torch/multiprocessing/spawn.py:296: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x7ffff5c369f0>
+timeout = None, grace_period = None
+
+    def join(self, timeout: float | None = None, grace_period: float | None = None):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 0 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "<env>/lib/python3.12/site-packages/torch/multiprocessing/spawn.py", line 87, in _wrap
+E           fn(i, *args)
+E         File "<repo>/tests/distributed/collectives/test_deterministic_reduce_scatter.py", line 135, in _worker
+E           many_returned = collective.reduce_scatter_many(
+E                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: DeterministicCollective.reduce_scatter_many() got an unexpected keyword argument 'outs'
+
+<env>/lib/python3.12/site-packages/torch/multiprocessing/spawn.py:211: ProcessRaisedException
+----------------------------- Captured stderr call -----------------------------
+[rank4]:[W1025 14:11:37.017105712 TCPStore.cpp:138] [c10d] recvValueWithTimeout failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56034, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66ad16d (0x7fff5fcf916d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x66ae15b (0x7fff5fcfa15b in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0xc5 (0x7fff5fcf3625 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x7fff5fcf41fa in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x8e (0x7fff5fcf430e in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x7fff5fc814ae in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x684 (0x7fff41c644b4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #10: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x828 (0x7fff41c661e8 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #11: <unknown function> + 0xf6d93c (0x7fff41c6c93c in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #12: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0xf2 (0x7fff41c6d0d2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #13: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x547 (0x7fff41c7c537 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #14: <unknown function> + 0x6623cee (0x7fff5fc6fcee in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: <unknown function> + 0x662e697 (0x7fff5fc7a697 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: <unknown function> + 0x5b88da4 (0x7fff5f1d4da4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x6647d71 (0x7fff5fc93d71 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: <unknown function> + 0x664b226 (0x7fff5fc97226 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xf86b02 (0x7fff6f3dbb02 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x3f2bb2 (0x7fff6e847bb2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #21: <unknown function> + 0x214f3b (0x555555768f3b in <env>/bin/python)
+frame #22: PyObject_Vectorcall + 0x2e (0x555555768e0e in <env>/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xa45 (0x555555753b15 in <env>/bin/python)
+frame #24: PyEval_EvalCode + 0x9d (0x55555580c93d in <env>/bin/python)
+frame #25: <unknown function> + 0x2f463a (0x55555584863a in <env>/bin/python)
+frame #26: <unknown function> + 0x2ef2a5 (0x5555558432a5 in <env>/bin/python)
+frame #27: PyRun_StringFlags + 0x62 (0x55555583f442 in <env>/bin/python)
+frame #28: PyRun_SimpleStringFlags + 0x3c (0x55555583f31c in <env>/bin/python)
+frame #29: Py_RunMain + 0x462 (0x55555583c602 in <env>/bin/python)
+frame #30: Py_BytesMain + 0x37 (0x5555557f4637 in <env>/bin/python)
+frame #31: <unknown function> + 0x2a1ca (0x7ffff7c2a1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x8b (0x7ffff7c2a28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x2e (0x5555557f44ae in <env>/bin/python)
+
+[rank1]:[W1025 14:11:37.017419116 TCPStore.cpp:138] [c10d] recvValueWithTimeout failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56070, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66ad16d (0x7fff5fcf916d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x66ae15b (0x7fff5fcfa15b in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0xc5 (0x7fff5fcf3625 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x7fff5fcf41fa in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x8e (0x7fff5fcf430e in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x7fff5fc814ae in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x684 (0x7fff41c644b4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #10: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x828 (0x7fff41c661e8 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #11: <unknown function> + 0xf6d93c (0x7fff41c6c93c in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #12: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0xf2 (0x7fff41c6d0d2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #13: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x547 (0x7fff41c7c537 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #14: <unknown function> + 0x6623cee (0x7fff5fc6fcee in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: <unknown function> + 0x662e697 (0x7fff5fc7a697 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: <unknown function> + 0x5b88da4 (0x7fff5f1d4da4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x6647d71 (0x7fff5fc93d71 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: <unknown function> + 0x664b226 (0x7fff5fc97226 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xf86b02 (0x7fff6f3dbb02 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x3f2bb2 (0x7fff6e847bb2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #21: <unknown function> + 0x214f3b (0x555555768f3b in <env>/bin/python)
+frame #22: PyObject_Vectorcall + 0x2e (0x555555768e0e in <env>/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xa45 (0x555555753b15 in <env>/bin/python)
+frame #24: PyEval_EvalCode + 0x9d (0x55555580c93d in <env>/bin/python)
+frame #25: <unknown function> + 0x2f463a (0x55555584863a in <env>/bin/python)
+frame #26: <unknown function> + 0x2ef2a5 (0x5555558432a5 in <env>/bin/python)
+frame #27: PyRun_StringFlags + 0x62 (0x55555583f442 in <env>/bin/python)
+frame #28: PyRun_SimpleStringFlags + 0x3c (0x55555583f31c in <env>/bin/python)
+frame #29: Py_RunMain + 0x462 (0x55555583c602 in <env>/bin/python)
+frame #30: Py_BytesMain + 0x37 (0x5555557f4637 in <env>/bin/python)
+frame #31: <unknown function> + 0x2a1ca (0x7ffff7c2a1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x8b (0x7ffff7c2a28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x2e (0x5555557f44ae in <env>/bin/python)
+
+[rank6]:[W1025 14:11:37.017234362 TCPStore.cpp:138] [c10d] recvValueWithTimeout failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56056, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66ad16d (0x7fff5fcf916d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x66ae15b (0x7fff5fcfa15b in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0xc5 (0x7fff5fcf3625 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x7fff5fcf41fa in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x8e (0x7fff5fcf430e in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x7fff5fc814ae in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x684 (0x7fff41c644b4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #10: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x828 (0x7fff41c661e8 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #11: <unknown function> + 0xf6d93c (0x7fff41c6c93c in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #12: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0xf2 (0x7fff41c6d0d2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #13: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x547 (0x7fff41c7c537 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #14: <unknown function> + 0x6623cee (0x7fff5fc6fcee in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: <unknown function> + 0x662e697 (0x7fff5fc7a697 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: <unknown function> + 0x5b88da4 (0x7fff5f1d4da4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x6647d71 (0x7fff5fc93d71 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: <unknown function> + 0x664b226 (0x7fff5fc97226 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xf86b02 (0x7fff6f3dbb02 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x3f2bb2 (0x7fff6e847bb2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #21: <unknown function> + 0x214f3b (0x555555768f3b in <env>/bin/python)
+frame #22: PyObject_Vectorcall + 0x2e (0x555555768e0e in <env>/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xa45 (0x555555753b15 in <env>/bin/python)
+frame #24: PyEval_EvalCode + 0x9d (0x55555580c93d in <env>/bin/python)
+frame #25: <unknown function> + 0x2f463a (0x55555584863a in <env>/bin/python)
+frame #26: <unknown function> + 0x2ef2a5 (0x5555558432a5 in <env>/bin/python)
+frame #27: PyRun_StringFlags + 0x62 (0x55555583f442 in <env>/bin/python)
+frame #28: PyRun_SimpleStringFlags + 0x3c (0x55555583f31c in <env>/bin/python)
+frame #29: Py_RunMain + 0x462 (0x55555583c602 in <env>/bin/python)
+frame #30: Py_BytesMain + 0x37 (0x5555557f4637 in <env>/bin/python)
+frame #31: <unknown function> + 0x2a1ca (0x7ffff7c2a1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x8b (0x7ffff7c2a28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x2e (0x5555557f44ae in <env>/bin/python)
+
+[rank2]:[W1025 14:11:37.017235874 TCPStore.cpp:138] [c10d] recvValueWithTimeout failed on SocketImpl(fd=103, addr=[localhost.localdomain]:55998, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66ad16d (0x7fff5fcf916d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x66ae15b (0x7fff5fcfa15b in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0xc5 (0x7fff5fcf3625 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x7fff5fcf41fa in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x8e (0x7fff5fcf430e in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x7fff5fc814ae in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x684 (0x7fff41c644b4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #10: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x828 (0x7fff41c661e8 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #11: <unknown function> + 0xf6d93c (0x7fff41c6c93c in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #12: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0xf2 (0x7fff41c6d0d2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #13: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x547 (0x7fff41c7c537 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #14: <unknown function> + 0x6623cee (0x7fff5fc6fcee in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: <unknown function> + 0x662e697 (0x7fff5fc7a697 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: <unknown function> + 0x5b88da4 (0x7fff5f1d4da4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x6647d71 (0x7fff5fc93d71 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: <unknown function> + 0x664b226 (0x7fff5fc97226 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xf86b02 (0x7fff6f3dbb02 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x3f2bb2 (0x7fff6e847bb2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #21: <unknown function> + 0x214f3b (0x555555768f3b in <env>/bin/python)
+frame #22: PyObject_Vectorcall + 0x2e (0x555555768e0e in <env>/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xa45 (0x555555753b15 in <env>/bin/python)
+frame #24: PyEval_EvalCode + 0x9d (0x55555580c93d in <env>/bin/python)
+frame #25: <unknown function> + 0x2f463a (0x55555584863a in <env>/bin/python)
+frame #26: <unknown function> + 0x2ef2a5 (0x5555558432a5 in <env>/bin/python)
+frame #27: PyRun_StringFlags + 0x62 (0x55555583f442 in <env>/bin/python)
+frame #28: PyRun_SimpleStringFlags + 0x3c (0x55555583f31c in <env>/bin/python)
+frame #29: Py_RunMain + 0x462 (0x55555583c602 in <env>/bin/python)
+frame #30: Py_BytesMain + 0x37 (0x5555557f4637 in <env>/bin/python)
+frame #31: <unknown function> + 0x2a1ca (0x7ffff7c2a1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x8b (0x7ffff7c2a28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x2e (0x5555557f44ae in <env>/bin/python)
+
+[rank3]:[W1025 14:11:37.017342095 TCPStore.cpp:138] [c10d] recvValueWithTimeout failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56042, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66ad16d (0x7fff5fcf916d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x66ae15b (0x7fff5fcfa15b in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0xc5 (0x7fff5fcf3625 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x7fff5fcf41fa in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x8e (0x7fff5fcf430e in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x7fff5fc814ae in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x684 (0x7fff41c644b4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #10: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x828 (0x7fff41c661e8 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #11: <unknown function> + 0xf6d93c (0x7fff41c6c93c in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #12: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0xf2 (0x7fff41c6d0d2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #13: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x547 (0x7fff41c7c537 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #14: <unknown function> + 0x6623cee (0x7fff5fc6fcee in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: <unknown function> + 0x662e697 (0x7fff5fc7a697 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: <unknown function> + 0x5b88da4 (0x7fff5f1d4da4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x6647d71 (0x7fff5fc93d71 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: <unknown function> + 0x664b226 (0x7fff5fc97226 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xf86b02 (0x7fff6f3dbb02 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x3f2bb2 (0x7fff6e847bb2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #21: <unknown function> + 0x214f3b (0x555555768f3b in <env>/bin/python)
+frame #22: PyObject_Vectorcall + 0x2e (0x555555768e0e in <env>/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xa45 (0x555555753b15 in <env>/bin/python)
+frame #24: PyEval_EvalCode + 0x9d (0x55555580c93d in <env>/bin/python)
+frame #25: <unknown function> + 0x2f463a (0x55555584863a in <env>/bin/python)
+frame #26: <unknown function> + 0x2ef2a5 (0x5555558432a5 in <env>/bin/python)
+frame #27: PyRun_StringFlags + 0x62 (0x55555583f442 in <env>/bin/python)
+frame #28: PyRun_SimpleStringFlags + 0x3c (0x55555583f31c in <env>/bin/python)
+frame #29: Py_RunMain + 0x462 (0x55555583c602 in <env>/bin/python)
+frame #30: Py_BytesMain + 0x37 (0x5555557f4637 in <env>/bin/python)
+frame #31: <unknown function> + 0x2a1ca (0x7ffff7c2a1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x8b (0x7ffff7c2a28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x2e (0x5555557f44ae in <env>/bin/python)
+
+[rank7]:[W1025 14:11:37.017423224 TCPStore.cpp:138] [c10d] recvValueWithTimeout failed on SocketImpl(fd=103, addr=[localhost.localdomain]:56020, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66ad16d (0x7fff5fcf916d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x66ae15b (0x7fff5fcfa15b in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0xc5 (0x7fff5fcf3625 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x7fff5fcf41fa in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x8e (0x7fff5fcf430e in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x7fff5fc814ae in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x684 (0x7fff41c644b4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #10: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x828 (0x7fff41c661e8 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #11: <unknown function> + 0xf6d93c (0x7fff41c6c93c in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #12: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0xf2 (0x7fff41c6d0d2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #13: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x547 (0x7fff41c7c537 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #14: <unknown function> + 0x6623cee (0x7fff5fc6fcee in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: <unknown function> + 0x662e697 (0x7fff5fc7a697 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: <unknown function> + 0x5b88da4 (0x7fff5f1d4da4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x6647d71 (0x7fff5fc93d71 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: <unknown function> + 0x664b226 (0x7fff5fc97226 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xf86b02 (0x7fff6f3dbb02 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x3f2bb2 (0x7fff6e847bb2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #21: <unknown function> + 0x214f3b (0x555555768f3b in <env>/bin/python)
+frame #22: PyObject_Vectorcall + 0x2e (0x555555768e0e in <env>/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xa45 (0x555555753b15 in <env>/bin/python)
+frame #24: PyEval_EvalCode + 0x9d (0x55555580c93d in <env>/bin/python)
+frame #25: <unknown function> + 0x2f463a (0x55555584863a in <env>/bin/python)
+frame #26: <unknown function> + 0x2ef2a5 (0x5555558432a5 in <env>/bin/python)
+frame #27: PyRun_StringFlags + 0x62 (0x55555583f442 in <env>/bin/python)
+frame #28: PyRun_SimpleStringFlags + 0x3c (0x55555583f31c in <env>/bin/python)
+frame #29: Py_RunMain + 0x462 (0x55555583c602 in <env>/bin/python)
+frame #30: Py_BytesMain + 0x37 (0x5555557f4637 in <env>/bin/python)
+frame #31: <unknown function> + 0x2a1ca (0x7ffff7c2a1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x8b (0x7ffff7c2a28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x2e (0x5555557f44ae in <env>/bin/python)
+
+[rank5]:[W1025 14:11:37.017422532 TCPStore.cpp:138] [c10d] recvValueWithTimeout failed on SocketImpl(fd=103, addr=[localhost.localdomain]:56010, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66ad16d (0x7fff5fcf916d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: <unknown function> + 0x66ae15b (0x7fff5fcfa15b in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::TCPStore::doWait(c10::ArrayRef<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::chrono::duration<long, std::ratio<1l, 1000l> >) + 0xc5 (0x7fff5fcf3625 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #6: c10d::TCPStore::doGet(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x2a (0x7fff5fcf41fa in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #7: c10d::TCPStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x8e (0x7fff5fcf430e in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #8: c10d::PrefixStore::get(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) + 0x36e (0x7fff5fc814ae in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #9: c10d::ProcessGroupNCCL::broadcastUniqueNCCLID(ncclUniqueId*, bool, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, int) + 0x684 (0x7fff41c644b4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #10: c10d::ProcessGroupNCCL::initNCCLComm(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, c10::Device&, c10d::OpType, int, bool) + 0x828 (0x7fff41c661e8 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #11: <unknown function> + 0xf6d93c (0x7fff41c6c93c in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #12: c10d::ProcessGroupNCCL::allreduce_impl(at::Tensor&, char const*, c10d::AllreduceOptions const&) + 0xf2 (0x7fff41c6d0d2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #13: c10d::ProcessGroupNCCL::barrier(c10d::BarrierOptions const&) + 0x547 (0x7fff41c7c537 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #14: <unknown function> + 0x6623cee (0x7fff5fc6fcee in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #15: <unknown function> + 0x662e697 (0x7fff5fc7a697 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #16: <unknown function> + 0x5b88da4 (0x7fff5f1d4da4 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #17: <unknown function> + 0x6647d71 (0x7fff5fc93d71 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #18: <unknown function> + 0x664b226 (0x7fff5fc97226 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #19: <unknown function> + 0xf86b02 (0x7fff6f3dbb02 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #20: <unknown function> + 0x3f2bb2 (0x7fff6e847bb2 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_python.so)
+frame #21: <unknown function> + 0x214f3b (0x555555768f3b in <env>/bin/python)
+frame #22: PyObject_Vectorcall + 0x2e (0x555555768e0e in <env>/bin/python)
+frame #23: _PyEval_EvalFrameDefault + 0xa45 (0x555555753b15 in <env>/bin/python)
+frame #24: PyEval_EvalCode + 0x9d (0x55555580c93d in <env>/bin/python)
+frame #25: <unknown function> + 0x2f463a (0x55555584863a in <env>/bin/python)
+frame #26: <unknown function> + 0x2ef2a5 (0x5555558432a5 in <env>/bin/python)
+frame #27: PyRun_StringFlags + 0x62 (0x55555583f442 in <env>/bin/python)
+frame #28: PyRun_SimpleStringFlags + 0x3c (0x55555583f31c in <env>/bin/python)
+frame #29: Py_RunMain + 0x462 (0x55555583c602 in <env>/bin/python)
+frame #30: Py_BytesMain + 0x37 (0x5555557f4637 in <env>/bin/python)
+frame #31: <unknown function> + 0x2a1ca (0x7ffff7c2a1ca in /lib/x86_64-linux-gnu/libc.so.6)
+frame #32: __libc_start_main + 0x8b (0x7ffff7c2a28b in /lib/x86_64-linux-gnu/libc.so.6)
+frame #33: _start + 0x2e (0x5555557f44ae in <env>/bin/python)
+
+[rank4]:[W1025 14:11:37.024369769 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56034, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x7fff5fcf8f0d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x7fff5fcf23e3 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7fff41c5319d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x7fffc6cecdb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9caa4 (0x7ffff7c9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129c6c (0x7ffff7d29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[W1025 14:11:37.025917737 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 4] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+[rank1]:[W1025 14:11:37.024788445 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56070, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x7fff5fcf8f0d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x7fff5fcf23e3 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7fff41c5319d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x7fffc6cecdb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9caa4 (0x7ffff7c9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129c6c (0x7ffff7d29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank1]:[W1025 14:11:37.026360049 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 1] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+[rank6]:[W1025 14:11:37.024838287 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56056, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x7fff5fcf8f0d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x7fff5fcf23e3 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7fff41c5319d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x7fffc6cecdb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9caa4 (0x7ffff7c9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129c6c (0x7ffff7d29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[W1025 14:11:37.026387084 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 6] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+[rank2]:[W1025 14:11:37.024846800 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=103, addr=[localhost.localdomain]:55998, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x7fff5fcf8f0d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x7fff5fcf23e3 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7fff41c5319d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x7fffc6cecdb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9caa4 (0x7ffff7c9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129c6c (0x7ffff7d29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[W1025 14:11:37.026424440 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 2] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+[rank3]:[W1025 14:11:37.024910319 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=104, addr=[localhost.localdomain]:56042, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x7fff5fcf8f0d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x7fff5fcf23e3 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7fff41c5319d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x7fffc6cecdb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9caa4 (0x7ffff7c9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129c6c (0x7ffff7d29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[W1025 14:11:37.026474528 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 3] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+[rank7]:[W1025 14:11:37.024958084 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=103, addr=[localhost.localdomain]:56020, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x7fff5fcf8f0d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x7fff5fcf23e3 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7fff41c5319d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x7fffc6cecdb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9caa4 (0x7ffff7c9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129c6c (0x7ffff7d29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[W1025 14:11:37.026539818 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 7] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+[rank5]:[W1025 14:11:37.025048640 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=103, addr=[localhost.localdomain]:56010, remote=[localhost.localdomain]:59487): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x7ffff6763bfd in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6764bd2 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x7ffff6765092 in <env>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x7fff5fcf8f0d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x7fff5fcf23e3 in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x7fff41c5319d in <env>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x7fffc6cecdb4 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9caa4 (0x7ffff7c9caa4 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129c6c (0x7ffff7d29c6c in /lib/x86_64-linux-gnu/libc.so.6)
+
+[W1025 14:11:37.026620490 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 5] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+W1025 14:11:37.639000 25426 <path>:165] Terminating process 26699 via signal SIGTERM
+W1025 14:11:37.641000 25426 <path>:165] Terminating process 26700 via signal SIGTERM
+W1025 14:11:37.641000 25426 <path>:165] Terminating process 26701 via signal SIGTERM
+W1025 14:11:37.641000 25426 <path>:165] Terminating process 26702 via signal SIGTERM
+W1025 14:11:37.641000 25426 <path>:165] Terminating process 26703 via signal SIGTERM
+W1025 14:11:37.641000 25426 <path>:165] Terminating process 26704 via signal SIGTERM
+W1025 14:11:37.641000 25426 <path>:165] Terminating process 26705 via signal SIGTERM
+------------------------------ Captured log call -------------------------------
+WARNING  torch.multiprocessing.spawn:spawn.py:165 Terminating process 26699 via signal SIGTERM
+WARNING  torch.multiprocessing.spawn:spawn.py:165 Terminating process 26700 via signal SIGTERM
+WARNING  torch.multiprocessing.spawn:spawn.py:165 Terminating process 26701 via signal SIGTERM
+WARNING  torch.multiprocessing.spawn:spawn.py:165 Terminating process 26702 via signal SIGTERM
+WARNING  torch.multiprocessing.spawn:spawn.py:165 Terminating process 26703 via signal SIGTERM
+WARNING  torch.multiprocessing.spawn:spawn.py:165 Terminating process 26704 via signal SIGTERM
+WARNING  torch.multiprocessing.spawn:spawn.py:165 Terminating process 26705 via signal SIGTERM
+========================= 1 failed, 1 passed in 47.40s =========================

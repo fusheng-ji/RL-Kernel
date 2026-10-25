@@ -1,0 +1,39 @@
+running accuracy
+completed accuracy
+running row-invariance
+completed row-invariance
+running batch-size-sweep
+  sweep torch log_softmax + gather: 0 / 0 of 2232 differ
+  sweep previous VJP (full FP32 softmax): 0 / 0 of 2232 differ
+  sweep chunked fallback: 0 / 0 of 2232 differ
+  sweep fused kernel: 0 / 0 of 2232 differ
+  sweep Liger cross_entropy: 0 / 0 of 2232 differ
+  sweep FLA fused cross_entropy: 92 / 0 of 2232 differ
+  sweep flash-attn cross_entropy (verl): 0 / 0 of 2232 differ
+completed batch-size-sweep
+running train-rollout-invariance
+completed train-rollout-invariance
+running performance
+  N=8192 torch log_softmax + gather: {'step_ms': 11.197343826293945, 'peak_gib': 13.910186767578125, 'backward_ms': 5.077856063842773}
+  N=8192 previous VJP (full FP32 softmax): {'step_ms': 12.176863670349121, 'peak_gib': 11.591888427734375, 'backward_ms': 11.041664123535156}
+  N=8192 chunked fallback: {'step_ms': 16.068031311035156, 'peak_gib': 3.318526268005371, 'backward_ms': 15.051263809204102}
+  N=8192 fused kernel: {'step_ms': 8.606047630310059, 'peak_gib': 2.31842041015625, 'backward_ms': 7.444543838500977}
+  N=8192 Liger cross_entropy: {'step_ms': 4.235263824462891, 'peak_gib': 2.3184051513671875, 'backward_ms': 3.1409599781036377}
+  N=8192 FLA fused cross_entropy: {'step_ms': 1.9332799911499023, 'peak_gib': 2.3184814453125, 'backward_ms': 1.2066240310668945}
+  N=8192 flash-attn cross_entropy (verl): {'step_ms': 1.589568018913269, 'peak_gib': 2.3184814453125, 'backward_ms': 1.2168320417404175}
+  N=16384 torch log_softmax + gather: {'step_ms': 22.24617576599121, 'peak_gib': 27.82037353515625, 'backward_ms': 9.810976028442383}
+  N=16384 previous VJP (full FP32 softmax): {'step_ms': 24.127199172973633, 'peak_gib': 23.18377685546875, 'backward_ms': 21.731359481811523}
+  N=16384 chunked fallback: {'step_ms': 31.93916893005371, 'peak_gib': 5.637045860290527, 'backward_ms': 29.64134407043457}
+  N=16384 fused kernel: {'step_ms': 16.84931182861328, 'peak_gib': 4.6368408203125, 'backward_ms': 14.484800338745117}
+  N=16384 Liger cross_entropy: {'step_ms': 8.209312438964844, 'peak_gib': 4.636810302734375, 'backward_ms': 5.965280055999756}
+  N=16384 FLA fused cross_entropy: {'step_ms': 3.666559934616089, 'peak_gib': 4.636962890625, 'backward_ms': 2.039583921432495}
+  N=16384 flash-attn cross_entropy (verl): {'step_ms': 3.155103921890259, 'peak_gib': 4.636962890625, 'backward_ms': 2.1013760566711426}
+  N=32768 torch log_softmax + gather: {'step_ms': 44.3513298034668, 'peak_gib': 55.6407470703125, 'backward_ms': 19.375104904174805}
+  N=32768 previous VJP (full FP32 softmax): {'step_ms': 47.96006393432617, 'peak_gib': 46.3675537109375, 'backward_ms': 43.09455871582031}
+  N=32768 chunked fallback: {'step_ms': 63.67772674560547, 'peak_gib': 10.27408504486084, 'backward_ms': 58.90681457519531}
+  N=32768 fused kernel: {'step_ms': 33.2457275390625, 'peak_gib': 9.273681640625, 'backward_ms': 28.395423889160156}
+  N=32768 Liger cross_entropy: {'step_ms': 16.20787239074707, 'peak_gib': 9.27362060546875, 'backward_ms': 11.649824142456055}
+  N=32768 FLA fused cross_entropy: {'step_ms': 7.127711772918701, 'peak_gib': 9.27392578125, 'backward_ms': 3.755199909210205}
+  N=32768 flash-attn cross_entropy (verl): {'step_ms': 6.182015895843506, 'peak_gib': 9.27392578125, 'backward_ms': 3.673151969909668}
+completed performance
+wrote <run-root>/out/pr495/report.json (commit e612412, dirty=False)
