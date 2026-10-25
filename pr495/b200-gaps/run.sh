@@ -1,0 +1,16 @@
+#!/bin/bash
+# PR #495 on two B200: test set, multi-GPU/INT_MAX regressions, shared-gradient accuracy and timing rerun at the PR head.
+source "$(dirname "$0")/../../b200-gaps-common/common.sh"
+export PYTHONPATH=$WT:$GAPS/extlibs
+env_header
+TESTS="tests/backends/cuda/test_fused_logp_chunked_backward.py tests/backends/cuda/test_fused_logp_backward_indexing.py
+ tests/ops/logprob/test_logp.py tests/ops/logprob/test_deterministic_logp.py tests/ops/logprob/test_batch_invariant_logp.py
+ tests/ops/test_op_accuracy.py tests/e2e/test_rl_kernel_loss_step.py tests/validation/common/test_logprob_comparison.py
+ tests/validation/operators/test_gradient_invariance.py tests/validation/operators/test_ws1_gtest_gpu.py
+ tests/validation/models/test_ws1_chain_integration.py tests/contracts/test_tolerance_contract.py
+ tests/benchmarks/test_fused_logp_backward_evidence.py tests/benchmarks/test_fused_logp_provider_evidence.py"
+CUDA_VISIBLE_DEVICES=0,1 run pytest-two-gpu $PY -m pytest -p no:cacheprovider -q -rs $TESTS
+CUDA_VISIBLE_DEVICES=0 run pytest-one-gpu $PY -m pytest -p no:cacheprovider -q -rs $TESTS
+CUDA_VISIBLE_DEVICES=0 run evidence-runner $PY benchmarks/fused_logp_backward_evidence.py \
+  --flash-attn-src "$GAPS/flash-attn-src" --out "$OUT/report.json"
+finish
