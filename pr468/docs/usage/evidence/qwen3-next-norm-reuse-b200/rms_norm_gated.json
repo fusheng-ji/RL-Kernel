@@ -448,12 +448,17 @@
           "stderr_tail": []
         },
         "gradient": {
-          "returncode": 0,
-          "passed": true,
-          "failed_lines": [],
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=rms_norm_gated profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=4.76837158e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=5.72204590e-06 passed=False"
+          ],
           "singleton_aggregate": [
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=4.76837158e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=5.72204590e-06 passed=False"
           ],
           "stderr_tail": []
         }
@@ -597,12 +602,17 @@
           "stderr_tail": []
         },
         "gradient": {
-          "returncode": 0,
-          "passed": true,
-          "failed_lines": [],
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=rms_norm_gated profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=4.61935997e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
+          ],
           "singleton_aggregate": [
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
           ],
           "stderr_tail": []
         }
@@ -746,12 +756,17 @@
           "stderr_tail": []
         },
         "gradient": {
-          "returncode": 0,
-          "passed": true,
-          "failed_lines": [],
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=rms_norm_gated profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=4.61935997e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
+          ],
           "singleton_aggregate": [
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
           ],
           "stderr_tail": []
         }
@@ -883,6 +898,7 @@
     }
   },
   "evidence_corrections": [
-    "Annotated historical sub-batch sampling coverage and regenerated the figure labels. Measurements were not rerun; batch_invariant records only whether the measured checks passed, not exhaustive full-batch coverage at every sub-batch size."
+    "Annotated historical sub-batch sampling coverage and regenerated the figure labels. Measurements were not rerun; batch_invariant records only whether the measured checks passed, not exhaustive full-batch coverage at every sub-batch size.",
+    "Replaced contract_gates with rms_norm_gated_gates.json, rerun at 339bc3ff after the swapped implementations stopped inheriting rl-kernel's parameter_vjp_contributions_fp32: the earlier C4 dweight checks measured rl-kernel's row contributions, not the library's own dweight. Regenerated the figure. Batch-invariance, accuracy and latency measurements were not rerun."
   ]
 }

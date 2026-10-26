@@ -1,0 +1,148 @@
+{
+  "kind": "qwen3_next_norm_reuse_check",
+  "rfc": "RL-Align/RL-Kernel#428",
+  "op": "rms_norm_gated",
+  "rl_kernel_commit": "339bc3ff29c25b3550075f70d9d43f9ff253c016",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA B200",
+    "capability": [
+      10,
+      0
+    ],
+    "cuda": "13.0",
+    "libraries": {
+      "torch": "2.13.0",
+      "triton": "3.7.1",
+      "transformers": "5.17.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "liger-kernel": "0.8.4",
+      "fla-core": "0.5.2",
+      "transformer_engine": "2.20.2",
+      "megatron-core": null
+    },
+    "megatron_source_commit": "52fbcbc18"
+  },
+  "quick": false,
+  "checks": [
+    "gates"
+  ],
+  "results": {
+    "rl_kernel": {
+      "source": "rl-kernel Qwen3NextRMSNormGatedCudaOp",
+      "backward": "full",
+      "contract_gates": {
+        "forward": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [],
+          "stderr_tail": []
+        },
+        "gradient": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+          ],
+          "stderr_tail": []
+        }
+      }
+    },
+    "reference": {
+      "source": "rl-kernel PyTorch reference",
+      "backward": "full"
+    },
+    "transformers": {
+      "source": "transformers 5.17.0 Qwen3NextRMSNormGated",
+      "backward": "full",
+      "contract_gates": {
+        "forward": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [],
+          "stderr_tail": []
+        },
+        "gradient": {
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=rms_norm_gated profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=4.76837158e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=5.72204590e-06 passed=False"
+          ],
+          "singleton_aggregate": [
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=4.76837158e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=5.72204590e-06 passed=False"
+          ],
+          "stderr_tail": []
+        }
+      }
+    },
+    "fla_layernorm_gated": {
+      "source": "FLA 0.5.2 layernorm_gated.rmsnorm_fn",
+      "backward": "full",
+      "contract_gates": {
+        "forward": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [],
+          "stderr_tail": []
+        },
+        "gradient": {
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=rms_norm_gated profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=4.61935997e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
+          ],
+          "singleton_aggregate": [
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
+          ],
+          "stderr_tail": []
+        }
+      }
+    },
+    "fla_fused_norm_gate": {
+      "source": "FLA 0.5.2 fused_norm_gate.rms_norm_gated",
+      "backward": "full",
+      "contract_gates": {
+        "forward": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [],
+          "stderr_tail": []
+        },
+        "gradient": {
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=rms_norm_gated profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=4.61935997e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
+          ],
+          "singleton_aggregate": [
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=5.72204590e-06 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=4.61935997e-06 passed=False"
+          ],
+          "stderr_tail": []
+        }
+      }
+    },
+    "vllm": {
+      "source": "vLLM 0.30.0 RMSNormGated.forward_cuda",
+      "backward": "none"
+    }
+  }
+}

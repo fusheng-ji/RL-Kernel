@@ -2,7 +2,7 @@
   "kind": "qwen3_next_norm_reuse_check",
   "rfc": "RL-Align/RL-Kernel#428",
   "op": "qwen3_next_rms_norm",
-  "rl_kernel_commit": "88f59f7d06741ba533a7b9b718b331ee885b93b7",
+  "rl_kernel_commit": "339bc3ff29c25b3550075f70d9d43f9ff253c016",
   "tracked_tree_dirty": false,
   "environment": {
     "gpu": "NVIDIA B200",
@@ -22,7 +22,7 @@
       "transformer_engine": "2.20.2",
       "megatron-core": null
     },
-    "megatron_source_commit": "52fbcbc"
+    "megatron_source_commit": "52fbcbc18"
   },
   "quick": false,
   "checks": [
@@ -71,14 +71,17 @@
           "returncode": 1,
           "passed": false,
           "failed_lines": [
-            "op=qwen3_next_rms_norm profile=cuda_bf16 candidate=__main__._gate_child.<locals>.Swapped::cuda passed=False",
+            "op=qwen3_next_rms_norm profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
             "invariance pair=('BN/full', 'BN/chunked') tensor=dx transform=chunk max_abs=1.52587891e-05 passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=1.81198120e-04 passed=False",
             "invariance pair=('BN/full', 'B1-singleton_aggregate/full/s2') tensor=dx transform=batch_size max_abs=1.52587891e-05 passed=False",
-            "invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s2') tensor=dx transform=chunk max_abs=1.52587891e-05 passed=False"
+            "invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s2') tensor=dx transform=chunk max_abs=1.52587891e-05 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=1.83105469e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=1.81198120e-04 passed=False"
           ],
           "singleton_aggregate": [
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=1.83105469e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=1.81198120e-04 passed=False"
           ],
           "stderr_tail": []
         }
@@ -96,12 +99,17 @@
           "stderr_tail": []
         },
         "gradient": {
-          "returncode": 0,
-          "passed": true,
-          "failed_lines": [],
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=qwen3_next_rms_norm profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=1.81198120e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=1.83105469e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=1.81198120e-04 passed=False"
+          ],
           "singleton_aggregate": [
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=1.83105469e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=1.81198120e-04 passed=False"
           ],
           "stderr_tail": []
         }
@@ -119,12 +127,17 @@
           "stderr_tail": []
         },
         "gradient": {
-          "returncode": 0,
-          "passed": true,
-          "failed_lines": [],
+          "returncode": 1,
+          "passed": false,
+          "failed_lines": [
+            "op=qwen3_next_rms_norm profile=cuda_bf16 candidate=__main__._swapped_operator.<locals>.Swapped::cuda passed=False",
+            "invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=1.81198120e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=1.83105469e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=1.81198120e-04 passed=False"
+          ],
           "singleton_aggregate": [
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
-            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=1.83105469e-04 passed=False",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=1.81198120e-04 passed=False"
           ],
           "stderr_tail": []
         }
@@ -135,7 +148,7 @@
       "backward": "x-only"
     },
     "megatron": {
-      "unavailable": "Excluded: Megatron 52fbcbc accepts zero_centered_gamma=True but uses the original weight instead of weight_eff in forward."
+      "unavailable": "RuntimeError: Megatron zero_centered_gamma=True failed the zero-weight probe; excluded from the zero-centered comparison"
     },
     "flashinfer": {
       "source": "FlashInfer 0.6.18.post1 gemma_rmsnorm",
@@ -145,8 +158,5 @@
       "source": "vLLM 0.30.0 GemmaRMSNorm.forward_cuda",
       "backward": "none"
     }
-  },
-  "evidence_corrections": [
-    "Removed the invalid Megatron 52fbcbc zero-centered gate comparison. All other gate measurements and original run provenance are unchanged; gates were not rerun."
-  ]
+  }
 }
