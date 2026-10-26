@@ -1,0 +1,264 @@
+{
+  "kind": "h3_prior_art",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "final_adaln_out",
+  "rl_kernel_commit": "337ee6041a96d5f8691a58d2b4eeea27420c8fc0",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": "0.16.0rc0"
+    },
+    "megatron_source_commit": null,
+    "mode_environment": {
+      "plain": {}
+    }
+  },
+  "quick": false,
+  "results": {
+    "plain": {
+      "diffusers": {
+        "source": "diffusers MiniMaxH3AdaLayerNormOut (op-for-op replay)",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "2048": {
+              "rows": 6144,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": false,
+          "full_vs_sub_batches": {
+            "full_batch": 131072,
+            "sub_batch_sizes": [
+              1,
+              7,
+              4097,
+              32768,
+              65536
+            ],
+            "sub_batches": 2124,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025,
+              2047,
+              2048
+            ],
+            "probe_rows": [
+              0,
+              259,
+              515,
+              771,
+              1027,
+              1283,
+              1539,
+              2047
+            ],
+            "comparisons": 2256,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": false
+        },
+        "accuracy_latency": {
+          "4097": {
+            "fwd_rel_err": 0.008084709332857248,
+            "grad_rel_err": {
+              "x": 0.006801934530299061,
+              "nw": 0.005140533365412188,
+              "temb": 0.04915457204293546,
+              "w": 0.08302500398560828,
+              "b": 0.05297489421239462
+            },
+            "fwd_us": 351.1839956045151,
+            "fwd_bwd_us": 1174.6880412101746
+          },
+          "32768": {
+            "fwd_rel_err": 0.006954307785910494,
+            "grad_rel_err": {
+              "x": 0.006674406897661473,
+              "nw": 0.0044573082645508605,
+              "temb": 0.11628270322582888,
+              "w": 0.2022380578478373,
+              "b": 0.1717014659110123
+            },
+            "fwd_us": 2143.9520120620728,
+            "fwd_bwd_us": 7613.231897354126
+          }
+        }
+      },
+      "rl_kernel": {
+        "source": "rl-kernel H3FinalAdaLNOutCudaOp",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "2048": {
+              "rows": 6144,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 131072,
+            "sub_batch_sizes": [
+              1,
+              7,
+              4097,
+              32768,
+              65536
+            ],
+            "sub_batches": 2124,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025,
+              2047,
+              2048
+            ],
+            "probe_rows": [
+              0,
+              259,
+              515,
+              771,
+              1027,
+              1283,
+              1539,
+              2047
+            ],
+            "comparisons": 2256,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "4097": {
+            "fwd_rel_err": 0.008084709332857248,
+            "grad_rel_err": {
+              "x": 0.005403348359234729,
+              "nw": 0.0045231216854862985,
+              "temb": 0.001169988026482884,
+              "w": 0.0043302006191675,
+              "b": 0.0025194071619590724
+            },
+            "fwd_us": 260.9280049800873,
+            "fwd_bwd_us": 2240.6240701675415
+          },
+          "32768": {
+            "fwd_rel_err": 0.006954307785910494,
+            "grad_rel_err": {
+              "x": 0.005817941553495488,
+              "nw": 0.0034911747605488714,
+              "temb": 0.001343205431943007,
+              "w": 0.003956338846366998,
+              "b": 0.0028587228825327745
+            },
+            "fwd_us": 633.4559917449951,
+            "fwd_bwd_us": 4418.240070343018
+          }
+        }
+      }
+    }
+  }
+}
