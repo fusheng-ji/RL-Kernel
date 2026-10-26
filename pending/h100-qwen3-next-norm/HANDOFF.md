@@ -37,7 +37,7 @@ pending/h100-qwen3-next-norm/
 | PR | Pin（测量） | A pytest | B | C | D | F |
 |---|---|---|---|---|---|---|
 | **#467** | `d42c8357` | **203 / 0 / 73** | ok | `qwen3_next_rms_norm` reuse ok | — | — |
-| **#468** | `1e2eaec0` | **300 / 0 / 73** | ok | qwen3 + gated reuse ok | **3× check_operator pass_rate=1.0** | — |
+| **#468** | **`5aa9aa1c`** (B/C; pytest/D @ `1e2eaec0`) | **300 / 0 / 73** | ok @ 5aa9aa1c | qwen3 + gated reuse ok @ 5aa9aa1c | **3× check_operator pass_rate=1.0** @ 1e2eaec0 | — |
 | **#469** | A: `836c483d`；F: **`d1129d9f`** | **304 / 0 / 73** | — | — | — | **ok**（`git_dirty: false`） |
 
 - **Skips（三 PR 相同类）：** 1× 需 2 CUDA；67× Ascend `rmsnorm_ascend` 未编（与 B200 正文 Ascend skip 同类）。
