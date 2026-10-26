@@ -1,0 +1,400 @@
+{
+  "kind": "qwen3_next_norm_evidence",
+  "rfc": "RL-Align/RL-Kernel#428",
+  "git_commit": "5aa9aa1cf446c11bd4374c57c9ab81e0fb7b59a7",
+  "git_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "transformers": "5.13.1",
+    "vllm": "0.30.0",
+    "flashinfer": "0.6.18.post1"
+  },
+  "eps": 1e-06,
+  "dtype": "bfloat16",
+  "ops": {
+    "zero_centred_rmsnorm": {
+      "hidden": 2048,
+      "accuracy": {
+        "257": {
+          "rl-kernel CUDA": {
+            "dx_max_abs_over_absmax": 0.002701418159021442,
+            "dweight_max_abs_over_absmax": 0.002108115322221059,
+            "forward_max_abs": 0.01552825644384992,
+            "forward_correctly_rounded_fraction": 0.9999942779541016
+          },
+          "rl-kernel PyTorch reference": {
+            "dx_max_abs_over_absmax": 0.002701418159021442,
+            "dweight_max_abs_over_absmax": 0.002108115322221059,
+            "forward_max_abs": 0.01552825644384992,
+            "forward_correctly_rounded_fraction": 0.9999905228614807
+          },
+          "transformers Qwen3NextRMSNorm": {
+            "dx_max_abs_over_absmax": 0.002701418159021442,
+            "dweight_max_abs_over_absmax": 0.002108115322221059,
+            "forward_max_abs": 0.01552825644384992,
+            "forward_correctly_rounded_fraction": 0.9999923706054688
+          },
+          "vLLM GemmaRMSNorm (forward only)": {
+            "forward_max_abs": 0.01552825644384992,
+            "forward_correctly_rounded_fraction": 0.9999923706054688
+          },
+          "FlashInfer gemma_rmsnorm (forward only)": {
+            "forward_max_abs": 0.01552825644384992,
+            "forward_correctly_rounded_fraction": 0.9999886155128479
+          }
+        },
+        "4096": {
+          "rl-kernel CUDA": {
+            "dx_max_abs_over_absmax": 0.00279661219285938,
+            "dweight_max_abs_over_absmax": 0.0022864099179975483,
+            "forward_max_abs": 0.01561349826128211,
+            "forward_correctly_rounded_fraction": 0.9999933242797852
+          },
+          "rl-kernel PyTorch reference": {
+            "dx_max_abs_over_absmax": 0.00279661219285938,
+            "dweight_max_abs_over_absmax": 0.0022864099179975483,
+            "forward_max_abs": 0.01561349826128211,
+            "forward_correctly_rounded_fraction": 0.9999946355819702
+          },
+          "transformers Qwen3NextRMSNorm": {
+            "dx_max_abs_over_absmax": 0.00279661219285938,
+            "dweight_max_abs_over_absmax": 0.0022864099179975483,
+            "forward_max_abs": 0.01561349826128211,
+            "forward_correctly_rounded_fraction": 0.9999946355819702
+          },
+          "vLLM GemmaRMSNorm (forward only)": {
+            "forward_max_abs": 0.01561349826128211,
+            "forward_correctly_rounded_fraction": 0.9999946355819702
+          },
+          "FlashInfer gemma_rmsnorm (forward only)": {
+            "forward_max_abs": 0.01561349826128211,
+            "forward_correctly_rounded_fraction": 0.9999938011169434
+          }
+        }
+      },
+      "row_invariance": {
+        "rl-kernel CUDA": {
+          "rows_checked": 768,
+          "forward_rows_differing": 0,
+          "dx_rows_differing": 0,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        },
+        "rl-kernel PyTorch reference": {
+          "rows_checked": 768,
+          "forward_rows_differing": 0,
+          "dx_rows_differing": 8,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        },
+        "transformers Qwen3NextRMSNorm": {
+          "rows_checked": 768,
+          "forward_rows_differing": 1,
+          "dx_rows_differing": 9,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        },
+        "vLLM GemmaRMSNorm (forward only)": {
+          "rows_checked": 768,
+          "forward_rows_differing": 1,
+          "dx_rows_differing": null,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        },
+        "FlashInfer gemma_rmsnorm (forward only)": {
+          "rows_checked": 768,
+          "forward_rows_differing": 0,
+          "dx_rows_differing": null,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "latency": {
+        "rl-kernel CUDA": {
+          "1024": {
+            "forward_us": 49.15199987590313,
+            "backward_us": 431.2319904565811
+          },
+          "4096": {
+            "forward_us": 60.495998710393906,
+            "backward_us": 1660.5759859085083
+          },
+          "16384": {
+            "forward_us": 156.43200278282166,
+            "backward_us": 7352.880001068115
+          },
+          "65536": {
+            "forward_us": 519.2480087280273,
+            "backward_us": 28635.647773742676
+          }
+        },
+        "rl-kernel PyTorch reference": {
+          "1024": {
+            "forward_us": 197.9680061340332,
+            "backward_us": 563.6799931526184
+          },
+          "4096": {
+            "forward_us": 228.17599773406982,
+            "backward_us": 541.1840081214905
+          },
+          "16384": {
+            "forward_us": 874.6240139007568,
+            "backward_us": 1711.1680507659912
+          },
+          "65536": {
+            "forward_us": 3370.6239461898804,
+            "backward_us": 6428.960084915161
+          }
+        },
+        "transformers Qwen3NextRMSNorm": {
+          "1024": {
+            "forward_us": 210.11200547218323,
+            "backward_us": 504.4640004634857
+          },
+          "4096": {
+            "forward_us": 197.88800179958344,
+            "backward_us": 519.3119943141937
+          },
+          "16384": {
+            "forward_us": 734.9599897861481,
+            "backward_us": 1839.5679593086243
+          },
+          "65536": {
+            "forward_us": 2729.1040420532227,
+            "backward_us": 6934.336185455322
+          }
+        },
+        "vLLM GemmaRMSNorm (forward only)": {
+          "1024": {
+            "forward_us": 218.09599548578262
+          },
+          "4096": {
+            "forward_us": 217.20000356435776
+          },
+          "16384": {
+            "forward_us": 750.1920163631439
+          },
+          "65536": {
+            "forward_us": 2749.1040229797363
+          }
+        },
+        "FlashInfer gemma_rmsnorm (forward only)": {
+          "1024": {
+            "forward_us": 38.83200138807297
+          },
+          "4096": {
+            "forward_us": 27.408000081777573
+          },
+          "16384": {
+            "forward_us": 79.1039988398552
+          },
+          "65536": {
+            "forward_us": 269.7120010852814
+          }
+        }
+      }
+    },
+    "gated_rmsnorm": {
+      "hidden": 128,
+      "accuracy": {
+        "257": {
+          "rl-kernel CUDA": {
+            "dx_max_abs_over_absmax": 0.0018348192997423702,
+            "dweight_max_abs_over_absmax": 0.0021439847223899285,
+            "dgate_max_abs_over_absmax": 0.0027467772330278155,
+            "forward_max_abs": 0.01814649124332668,
+            "forward_correctly_rounded_fraction": 0.9999392032623291
+          },
+          "rl-kernel PyTorch reference": {
+            "dx_max_abs_over_absmax": 0.0018348192997423702,
+            "dweight_max_abs_over_absmax": 0.0021439847223899285,
+            "dgate_max_abs_over_absmax": 0.0027467772330278155,
+            "forward_max_abs": 0.01814649124332668,
+            "forward_correctly_rounded_fraction": 0.9999392032623291
+          },
+          "transformers Qwen3NextRMSNormGated (cast-first)": {
+            "dx_max_abs_over_absmax": 0.004283006956510838,
+            "dweight_max_abs_over_absmax": 0.0053612828842400685,
+            "dgate_max_abs_over_absmax": 0.004464247864523204,
+            "forward_max_abs": 0.041932799726739134,
+            "forward_correctly_rounded_fraction": 0.6546084880828857
+          },
+          "vLLM RMSNormGated (forward only)": {
+            "forward_max_abs": 0.01814649124332668,
+            "forward_correctly_rounded_fraction": 0.9999392032623291
+          }
+        },
+        "4096": {
+          "rl-kernel CUDA": {
+            "dx_max_abs_over_absmax": 0.0028905074752616756,
+            "dweight_max_abs_over_absmax": 0.001831090012893575,
+            "dgate_max_abs_over_absmax": 0.002440494893713147,
+            "forward_max_abs": 0.028763107099734952,
+            "forward_correctly_rounded_fraction": 0.9999942779541016
+          },
+          "rl-kernel PyTorch reference": {
+            "dx_max_abs_over_absmax": 0.0028905074752616756,
+            "dweight_max_abs_over_absmax": 0.001831090012893575,
+            "dgate_max_abs_over_absmax": 0.002440494893713147,
+            "forward_max_abs": 0.028763107099734952,
+            "forward_correctly_rounded_fraction": 0.9999942779541016
+          },
+          "transformers Qwen3NextRMSNormGated (cast-first)": {
+            "dx_max_abs_over_absmax": 0.004112781810553874,
+            "dweight_max_abs_over_absmax": 0.0028130123570483537,
+            "dgate_max_abs_over_absmax": 0.003959744684751284,
+            "forward_max_abs": 0.06659807537061546,
+            "forward_correctly_rounded_fraction": 0.6558799743652344
+          },
+          "vLLM RMSNormGated (forward only)": {
+            "forward_max_abs": 0.028763107099734952,
+            "forward_correctly_rounded_fraction": 0.9999923706054688
+          }
+        }
+      },
+      "row_invariance": {
+        "rl-kernel CUDA": {
+          "rows_checked": 768,
+          "forward_rows_differing": 0,
+          "dx_rows_differing": 0,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        },
+        "rl-kernel PyTorch reference": {
+          "rows_checked": 768,
+          "forward_rows_differing": 0,
+          "dx_rows_differing": 0,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        },
+        "transformers Qwen3NextRMSNormGated (cast-first)": {
+          "rows_checked": 768,
+          "forward_rows_differing": 0,
+          "dx_rows_differing": 0,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        },
+        "vLLM RMSNormGated (forward only)": {
+          "rows_checked": 768,
+          "forward_rows_differing": 0,
+          "dx_rows_differing": null,
+          "batch_rows": 4096,
+          "seeds": [
+            3,
+            4,
+            5
+          ]
+        }
+      },
+      "latency": {
+        "rl-kernel CUDA": {
+          "4096": {
+            "forward_us": 38.256000727415085,
+            "backward_us": 1030.9119820594788
+          },
+          "16384": {
+            "forward_us": 62.17600032687187,
+            "backward_us": 3501.8240213394165
+          },
+          "65536": {
+            "forward_us": 88.73599767684937,
+            "backward_us": 22087.279319763184
+          },
+          "262144": {
+            "forward_us": 274.0959972143173,
+            "backward_us": 102273.76174926758
+          }
+        },
+        "rl-kernel PyTorch reference": {
+          "4096": {
+            "forward_us": 175.1200035214424,
+            "backward_us": 568.4319734573364
+          },
+          "16384": {
+            "forward_us": 157.82399475574493,
+            "backward_us": 560.8959794044495
+          },
+          "65536": {
+            "forward_us": 328.575998544693,
+            "backward_us": 677.9199838638306
+          },
+          "262144": {
+            "forward_us": 1311.7280006408691,
+            "backward_us": 2596.992015838623
+          }
+        },
+        "transformers Qwen3NextRMSNormGated (cast-first)": {
+          "4096": {
+            "forward_us": 251.8399953842163,
+            "backward_us": 543.3759987354279
+          },
+          "16384": {
+            "forward_us": 175.24799704551697,
+            "backward_us": 529.9199819564819
+          },
+          "65536": {
+            "forward_us": 307.13599920272827,
+            "backward_us": 709.7760140895844
+          },
+          "262144": {
+            "forward_us": 1210.1600170135498,
+            "backward_us": 2706.511974334717
+          }
+        },
+        "vLLM RMSNormGated (forward only)": {
+          "4096": {
+            "forward_us": 136.44800335168839
+          },
+          "16384": {
+            "forward_us": 140.9120038151741
+          },
+          "65536": {
+            "forward_us": 93.40800344944
+          },
+          "262144": {
+            "forward_us": 156.47999942302704
+          }
+        }
+      }
+    }
+  }
+}

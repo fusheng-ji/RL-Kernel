@@ -1,0 +1,46 @@
+op=qwen3_next_rms_norm profile=cuda_bf16 candidate=rl_engine.kernels.ops.cuda.norm.rmsnorm.Qwen3NextRMSNormCudaOp::cuda passed=True
+  device=cuda:0:NVIDIA H100 cc=sm90 seed=20260812 provenance_valid=True denom=27
+  accuracy config=BN/full tensor=dx max_abs=4.40321863e-04 passed=True
+  accuracy config=BN/full tensor=dweight max_abs=5.94248995e-05 passed=True
+  accuracy config=BN/chunked tensor=dx max_abs=4.40329313e-04 passed=True
+  accuracy config=BN/chunked tensor=dweight max_abs=5.94258308e-05 passed=True
+  accuracy config=B1-singleton_aggregate/full/s0 tensor=dx max_abs=4.28318977e-04 passed=True
+  accuracy config=B1-singleton_aggregate/full/s0 tensor=dweight max_abs=3.66526656e-05 passed=True
+  accuracy config=B1-singleton_aggregate/full/s1 tensor=dx max_abs=4.15101647e-04 passed=True
+  accuracy config=B1-singleton_aggregate/full/s1 tensor=dweight max_abs=4.58145514e-05 passed=True
+  accuracy config=B1-singleton_aggregate/full/s2 tensor=dx max_abs=4.10318375e-04 passed=True
+  accuracy config=B1-singleton_aggregate/full/s2 tensor=dweight max_abs=3.90568748e-05 passed=True
+  accuracy config=B1-singleton_aggregate/full/s3 tensor=dx max_abs=4.40321863e-04 passed=True
+  accuracy config=B1-singleton_aggregate/full/s3 tensor=dweight max_abs=4.61554155e-05 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s0 tensor=dx max_abs=4.28318977e-04 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s0 tensor=dweight max_abs=3.66526656e-05 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s1 tensor=dx max_abs=4.15101647e-04 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s1 tensor=dweight max_abs=4.58136201e-05 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s2 tensor=dx max_abs=4.10318375e-04 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s2 tensor=dweight max_abs=3.90568748e-05 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s3 tensor=dx max_abs=4.40329313e-04 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s3 tensor=dweight max_abs=4.61563468e-05 passed=True
+  accuracy config=BN/permuted tensor=dx max_abs=4.40321863e-04 passed=True
+  accuracy config=BN/permuted tensor=dweight max_abs=5.94248995e-05 passed=True
+  accuracy config=BN/padded_right tensor=dx max_abs=4.40321863e-04 passed=True
+  accuracy config=BN/padded_right tensor=dweight max_abs=5.94258308e-05 passed=True
+  accuracy config=BN/padded_left tensor=dx max_abs=4.40321863e-04 passed=True
+  accuracy config=BN/padded_left tensor=dweight max_abs=5.94258308e-05 passed=True
+  invariance pair=('BN/full', 'BN/chunked') tensor=dx transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/chunked') tensor=dweight transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s0') tensor=dx transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s1') tensor=dx transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s2') tensor=dx transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s3') tensor=dx transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s0') tensor=dx transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s1') tensor=dx transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s2') tensor=dx transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s3') tensor=dx transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/permuted') tensor=dx transform=permutation max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/permuted') tensor=dweight transform=permutation max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/padded_right') tensor=dx transform=padding max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/padded_right') tensor=dweight transform=padding max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/padded_left') tensor=dx transform=padding max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/padded_left') tensor=dweight transform=padding max_abs=0.00000000e+00 passed=True
+  singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True
+  singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True

@@ -1,0 +1,16 @@
+INFO 10-26 00:57:57 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 10-26 00:57:57 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+[zero_centred_rmsnorm] candidates: rl-kernel CUDA, rl-kernel PyTorch reference, transformers Qwen3NextRMSNorm, vLLM GemmaRMSNorm (forward only), FlashInfer gemma_rmsnorm (forward only)
+WARNING 10-26 00:57:58 [op.py:338] Priority not set for op rms_norm, using native implementation.
+  BI rl-kernel CUDA: {'rows_checked': 768, 'forward_rows_differing': 0, 'dx_rows_differing': 0, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+  BI rl-kernel PyTorch reference: {'rows_checked': 768, 'forward_rows_differing': 0, 'dx_rows_differing': 8, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+  BI transformers Qwen3NextRMSNorm: {'rows_checked': 768, 'forward_rows_differing': 1, 'dx_rows_differing': 9, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+  BI vLLM GemmaRMSNorm (forward only): {'rows_checked': 768, 'forward_rows_differing': 1, 'dx_rows_differing': None, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+  BI FlashInfer gemma_rmsnorm (forward only): {'rows_checked': 768, 'forward_rows_differing': 0, 'dx_rows_differing': None, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+INFO 10-26 00:58:04 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+[gated_rmsnorm] candidates: rl-kernel CUDA, rl-kernel PyTorch reference, transformers Qwen3NextRMSNormGated (cast-first), vLLM RMSNormGated (forward only)
+  BI rl-kernel CUDA: {'rows_checked': 768, 'forward_rows_differing': 0, 'dx_rows_differing': 0, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+  BI rl-kernel PyTorch reference: {'rows_checked': 768, 'forward_rows_differing': 0, 'dx_rows_differing': 0, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+  BI transformers Qwen3NextRMSNormGated (cast-first): {'rows_checked': 768, 'forward_rows_differing': 0, 'dx_rows_differing': 0, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+  BI vLLM RMSNormGated (forward only): {'rows_checked': 768, 'forward_rows_differing': 0, 'dx_rows_differing': None, 'batch_rows': 4096, 'seeds': [3, 4, 5]}
+wrote <HOME>/h100_norm_handoff/scratch/head-update/h100-pr468-head-5aa9aa1c-h100/report.json (commit 5aa9aa1, dirty=False)
