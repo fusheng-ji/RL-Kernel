@@ -1,0 +1,13 @@
+INFO 10-26 01:35:42 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 10-26 01:35:42 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['native'], fused_add_rms_norm=['native'], gelu_and_mul_sparse=['triton', 'native'])
+rl_kernel: {"backward": "full", "batch_invariance": {"all_rows": {"64": {"rows": 192, "fwd_differ": 0, "rowgrad_differ": 0}, "257": {"rows": 771, "fwd_differ": 0, "rowgrad_differ": 0}, "2048": {"rows": 6144, "fwd_differ": 0, "rowgrad_differ": 0}}, "dweight_repeatable": true, "full_vs_sub_batches": {"full_batch
+reference: {"backward": "full", "batch_invariance": {"all_rows": {"64": {"rows": 192, "fwd_differ": 0, "rowgrad_differ": 2}, "257": {"rows": 771, "fwd_differ": 0, "rowgrad_differ": 7}, "2048": {"rows": 6144, "fwd_differ": 0, "rowgrad_differ": 40}}, "dweight_repeatable": true, "full_vs_sub_batches": {"full_batc
+transformers: {"backward": "full", "batch_invariance": {"all_rows": {"64": {"rows": 192, "fwd_differ": 0, "rowgrad_differ": 3}, "257": {"rows": 771, "fwd_differ": 0, "rowgrad_differ": 10}, "2048": {"rows": 6144, "fwd_differ": 16, "rowgrad_differ": 61}}, "dweight_repeatable": true, "full_vs_sub_batches": {"full_ba
+liger: unavailable (ModuleNotFoundError: No module named 'liger_kernel')
+fla: unavailable (ModuleNotFoundError: No module named 'fla')
+transformer_engine: unavailable (ModuleNotFoundError: No module named 'transformer_engine')
+megatron: unavailable (ModuleNotFoundError: No module named 'megatron')
+flashinfer: {"backward": "none", "batch_invariance": {"all_rows": {"64": {"rows": 192, "fwd_differ": 0, "rowgrad_differ": 0}, "257": {"rows": 771, "fwd_differ": 0, "rowgrad_differ": 0}, "2048": {"rows": 6144, "fwd_differ": 0, "rowgrad_differ": 0}}, "dweight_repeatable": null, "full_vs_sub_batches": {"full_batch
+WARNING 10-26 01:41:51 [op.py:338] Priority not set for op rms_norm, using native implementation.
+vllm: {"backward": "none", "batch_invariance": {"all_rows": {"64": {"rows": 192, "fwd_differ": 0, "rowgrad_differ": 0}, "257": {"rows": 771, "fwd_differ": 0, "rowgrad_differ": 0}, "2048": {"rows": 6144, "fwd_differ": 16, "rowgrad_differ": 0}}, "dweight_repeatable": null, "full_vs_sub_batches": {"full_batc
+wrote <run-root>/out/pr468-head-idle/qwen3_next_rms_norm_reuse.json (commit 5aa9aa1, dirty=False)

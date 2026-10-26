@@ -1,0 +1,27 @@
+op=rms_norm_gated profile=cuda_bf16 candidate=rl_engine.kernels.ops.cuda.norm.rmsnorm.Qwen3NextRMSNormGatedCudaOp::cuda passed=True
+  device=cuda:0:NVIDIA B200 cc=sm100 seed=20260812 provenance_valid=True
+  accuracy config=BN/full max_abs=3.02018598e-05 max_rel=3.76688037e-03 passed=True
+  accuracy config=BN/chunked max_abs=3.02018598e-05 max_rel=3.76688037e-03 passed=True
+  accuracy config=B1-singleton_aggregate/full/s0 max_abs=2.63955444e-05 max_rel=3.53139965e-03 passed=True
+  accuracy config=B1-singleton_aggregate/full/s1 max_abs=3.02018598e-05 max_rel=3.76688037e-03 passed=True
+  accuracy config=B1-singleton_aggregate/full/s2 max_abs=2.81361863e-05 max_rel=3.66315478e-03 passed=True
+  accuracy config=B1-singleton_aggregate/full/s3 max_abs=2.94391066e-05 max_rel=3.73962475e-03 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s0 max_abs=2.63955444e-05 max_rel=3.53139965e-03 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s1 max_abs=3.02018598e-05 max_rel=3.76688037e-03 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s2 max_abs=2.81361863e-05 max_rel=3.66315478e-03 passed=True
+  accuracy config=B1-singleton_aggregate/chunked/s3 max_abs=2.94391066e-05 max_rel=3.73962475e-03 passed=True
+  accuracy config=BN/permuted max_abs=3.02018598e-05 max_rel=3.76688037e-03 passed=True
+  accuracy config=BN/padded_right max_abs=3.02018598e-05 max_rel=3.76688037e-03 passed=True
+  accuracy config=BN/padded_left max_abs=3.02018598e-05 max_rel=3.76688037e-03 passed=True
+  invariance pair=('BN/full', 'BN/chunked') transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s0') transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s1') transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s2') transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/full/s3') transform=batch_size max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s0') transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s1') transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s2') transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'B1-singleton_aggregate/chunked/s3') transform=chunk max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/permuted') transform=permutation max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/padded_right') transform=padding max_abs=0.00000000e+00 passed=True
+  invariance pair=('BN/full', 'BN/padded_left') transform=padding max_abs=0.00000000e+00 passed=True

@@ -1,0 +1,485 @@
+{
+  "kind": "qwen3_next_norm_reuse_check",
+  "rfc": "RL-Align/RL-Kernel#428",
+  "op": "rms_norm_gated",
+  "rl_kernel_commit": "5aa9aa1cf446c11bd4374c57c9ab81e0fb7b59a7",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA B200",
+    "capability": [
+      10,
+      0
+    ],
+    "cuda": "13.0",
+    "libraries": {
+      "torch": "2.13.0",
+      "triton": "3.7.1",
+      "transformers": "5.17.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "liger-kernel": null,
+      "fla-core": null,
+      "transformer_engine": null,
+      "megatron-core": null
+    },
+    "megatron_source_commit": null
+  },
+  "quick": false,
+  "checks": [
+    "bi",
+    "gates",
+    "perf"
+  ],
+  "results": {
+    "rl_kernel": {
+      "source": "rl-kernel Qwen3NextRMSNormGatedCudaOp",
+      "backward": "full",
+      "batch_invariance": {
+        "all_rows": {
+          "64": {
+            "rows": 192,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "257": {
+            "rows": 771,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "4097": {
+            "rows": 12291,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          }
+        },
+        "dweight_repeatable": true,
+        "full_vs_sub_batches": {
+          "full_batch": 262144,
+          "sub_batch_sizes": [
+            1,
+            7,
+            4097,
+            65536,
+            131072
+          ],
+          "coverage": "every_row_per_sub_batch_size",
+          "sub_batches": 599328,
+          "fwd_differ": 0,
+          "rowgrad_differ": 0
+        },
+        "batch_size_sweep": {
+          "batch_sizes": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            15,
+            16,
+            17,
+            31,
+            32,
+            33,
+            63,
+            64,
+            65,
+            127,
+            128,
+            129,
+            255,
+            256,
+            257,
+            511,
+            512,
+            513,
+            1023,
+            1024,
+            1025,
+            2047,
+            2048,
+            2049,
+            4095,
+            4096,
+            4097
+          ],
+          "probe_rows": [
+            0,
+            515,
+            1027,
+            1539,
+            2051,
+            2563,
+            3075,
+            4096
+          ],
+          "comparisons": 2520,
+          "differ": 0
+        },
+        "batch_invariant": true
+      },
+      "accuracy_latency": {
+        "rows": 262144,
+        "fwd_correctly_rounded": 0.9999886155128479,
+        "fwd_max_abs_err": 0.031235785491551482,
+        "fwd_us": 237.47199773788452,
+        "grad_rel_err": {
+          "x": 0.0020048456424744273,
+          "z": 0.002181870606557371,
+          "w": 0.002359713325541337
+        },
+        "fwd_bwd_us": 115213.84048461914
+      },
+      "contract_gates": {
+        "forward": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [],
+          "stderr_tail": []
+        },
+        "gradient": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+          ],
+          "stderr_tail": []
+        }
+      }
+    },
+    "reference": {
+      "source": "rl-kernel PyTorch reference",
+      "backward": "full",
+      "batch_invariance": {
+        "all_rows": {
+          "64": {
+            "rows": 192,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "257": {
+            "rows": 771,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "4097": {
+            "rows": 12291,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          }
+        },
+        "dweight_repeatable": true,
+        "full_vs_sub_batches": {
+          "full_batch": 262144,
+          "sub_batch_sizes": [
+            1,
+            7,
+            4097,
+            65536,
+            131072
+          ],
+          "coverage": "every_row_per_sub_batch_size",
+          "sub_batches": 599328,
+          "fwd_differ": 0,
+          "rowgrad_differ": 0
+        },
+        "batch_size_sweep": {
+          "batch_sizes": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            15,
+            16,
+            17,
+            31,
+            32,
+            33,
+            63,
+            64,
+            65,
+            127,
+            128,
+            129,
+            255,
+            256,
+            257,
+            511,
+            512,
+            513,
+            1023,
+            1024,
+            1025,
+            2047,
+            2048,
+            2049,
+            4095,
+            4096,
+            4097
+          ],
+          "probe_rows": [
+            0,
+            515,
+            1027,
+            1539,
+            2051,
+            2563,
+            3075,
+            4096
+          ],
+          "comparisons": 2520,
+          "differ": 0
+        },
+        "batch_invariant": true
+      },
+      "accuracy_latency": {
+        "rows": 262144,
+        "fwd_correctly_rounded": 0.9999895691871643,
+        "fwd_max_abs_err": 0.031235785491551482,
+        "fwd_us": 784.8000228404999,
+        "grad_rel_err": {
+          "x": 0.0020048456424744273,
+          "z": 0.002181870606557371,
+          "w": 0.002359713325541337
+        },
+        "fwd_bwd_us": 2018.895983695984
+      }
+    },
+    "transformers": {
+      "source": "transformers 5.17.0 Qwen3NextRMSNormGated",
+      "backward": "full",
+      "batch_invariance": {
+        "all_rows": {
+          "64": {
+            "rows": 192,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "257": {
+            "rows": 771,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "4097": {
+            "rows": 12291,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          }
+        },
+        "dweight_repeatable": true,
+        "full_vs_sub_batches": {
+          "full_batch": 262144,
+          "sub_batch_sizes": [
+            1,
+            7,
+            4097,
+            65536,
+            131072
+          ],
+          "coverage": "every_row_per_sub_batch_size",
+          "sub_batches": 599328,
+          "fwd_differ": 0,
+          "rowgrad_differ": 0
+        },
+        "batch_size_sweep": {
+          "batch_sizes": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            15,
+            16,
+            17,
+            31,
+            32,
+            33,
+            63,
+            64,
+            65,
+            127,
+            128,
+            129,
+            255,
+            256,
+            257,
+            511,
+            512,
+            513,
+            1023,
+            1024,
+            1025,
+            2047,
+            2048,
+            2049,
+            4095,
+            4096,
+            4097
+          ],
+          "probe_rows": [
+            0,
+            515,
+            1027,
+            1539,
+            2051,
+            2563,
+            3075,
+            4096
+          ],
+          "comparisons": 2520,
+          "differ": 0
+        },
+        "batch_invariant": true
+      },
+      "accuracy_latency": {
+        "rows": 262144,
+        "fwd_correctly_rounded": 0.6547477841377258,
+        "fwd_max_abs_err": 0.08551652812757382,
+        "fwd_us": 708.8639736175537,
+        "grad_rel_err": {
+          "x": 0.005555031181417614,
+          "z": 0.0051996228630245295,
+          "w": 0.004407626951010427
+        },
+        "fwd_bwd_us": 2121.3600635528564
+      },
+      "contract_gates": {
+        "forward": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [],
+          "stderr_tail": []
+        },
+        "gradient": {
+          "returncode": 0,
+          "passed": true,
+          "failed_lines": [],
+          "singleton_aggregate": [
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/full') tensor=dweight max_abs=0.00000000e+00 passed=True",
+            "singleton_aggregate pair=('BN/full', 'B1-singleton_aggregate/chunked') tensor=dweight max_abs=0.00000000e+00 passed=True"
+          ],
+          "stderr_tail": []
+        }
+      }
+    },
+    "fla_layernorm_gated": {
+      "unavailable": "ModuleNotFoundError: No module named 'fla'"
+    },
+    "fla_fused_norm_gate": {
+      "unavailable": "ModuleNotFoundError: No module named 'fla'"
+    },
+    "vllm": {
+      "source": "vLLM 0.30.0 RMSNormGated.forward_cuda",
+      "backward": "none",
+      "batch_invariance": {
+        "all_rows": {
+          "64": {
+            "rows": 192,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "257": {
+            "rows": 771,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "4097": {
+            "rows": 12291,
+            "fwd_differ": 3,
+            "rowgrad_differ": 0
+          }
+        },
+        "dweight_repeatable": null,
+        "full_vs_sub_batches": {
+          "full_batch": 262144,
+          "sub_batch_sizes": [
+            1,
+            7,
+            4097,
+            65536,
+            131072
+          ],
+          "coverage": "every_row_per_sub_batch_size",
+          "sub_batches": 599328,
+          "fwd_differ": 314,
+          "rowgrad_differ": 0
+        },
+        "batch_size_sweep": {
+          "batch_sizes": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            15,
+            16,
+            17,
+            31,
+            32,
+            33,
+            63,
+            64,
+            65,
+            127,
+            128,
+            129,
+            255,
+            256,
+            257,
+            511,
+            512,
+            513,
+            1023,
+            1024,
+            1025,
+            2047,
+            2048,
+            2049,
+            4095,
+            4096,
+            4097
+          ],
+          "probe_rows": [
+            0,
+            515,
+            1027,
+            1539,
+            2051,
+            2563,
+            3075,
+            4096
+          ],
+          "comparisons": 2520,
+          "differ": 0
+        },
+        "batch_invariant": false
+      },
+      "accuracy_latency": {
+        "rows": 262144,
+        "fwd_correctly_rounded": 0.9999884366989136,
+        "fwd_max_abs_err": 0.031235785491551482,
+        "fwd_us": 85.83999797701836
+      }
+    }
+  }
+}
