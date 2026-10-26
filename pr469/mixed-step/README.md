@@ -8,3 +8,9 @@ Findings (the JSON has every case):
 - Repeating A gives the same bytes.
 
 So the difference is the kernel choice (packed decode vs the general fused kernel), which the layer makes depend on whether a prefill shares the step; it is not an effect of the prefill's tokens.
+
+## Seed sweep of the single-decode-row case
+
+`probe_mixed_step_seeds.py` runs the one-decode-row case (path A against path C) over 200 random fixtures for each shape and state dtype (`results-seeds-b200.json`, one idle B200, same software as above). The counts depend on the fixture, so a single number is not a property of the kernels:
+- State elements of the one decode row that differ, out of 524,288 (TP1 shapes) or 131,072 (TP4 per-rank shapes): fp32 state, TP1: minimum 22,181, median 83,588, maximum 164,510 (200 of 200 fixtures differ); fp32 state, TP4 per-rank: 59 / 18,102 / 55,226; bf16 state: median 6 (TP1) and 1 (TP4 per-rank), maximum 18 and 7.
+- bf16 output elements that differ, out of 4,096 (TP1) or 1,024 (TP4 per-rank): at TP1 shapes 38 of 200 fixtures with fp32 state (34 with exactly one element, 4 with two) and 42 with bf16 state (39 with one, 3 with two); at TP4 per-rank shapes 11 of 200 with fp32 state and 15 with bf16 state, every one with exactly one element.
