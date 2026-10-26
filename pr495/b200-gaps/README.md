@@ -27,3 +27,17 @@ Peak memory is unchanged (9.27 GiB). The unchanged rows show the run was not dis
 Draft addition for the PR body Results:
 
 > **Re-measured at head `e612412c` (B200, torch 2.13).** After the device guard and the 64-bit loop counters, the fused backward takes 28.4 ms (backward only) and 33.2 ms (forward + backward) at 32768 rows, against 12.5 / 27.2 ms before; memory is unchanged at 9.27 GiB. The chunked fallback (63.7 ms), torch (44.4 ms), Liger (16.2 ms), FLA (7.1 ms) and flash-attn (6.2 ms) rows reproduce the earlier numbers. Tests: 371 passed / 34 skipped on two GPUs (369 / 36 on one), including the multi-GPU device-guard and INT_MAX regressions. Shared-gradient accuracy is unchanged. Raw data: `pr_assets` `pr495/b200-gaps/` @ `<EVIDENCE_SHA>`.
+
+
+## Re-run at the post-review head `61d30a0c`
+
+`results-61d30a0c/`: same runner, clean tree at `61d30a0c` (the head after the OpenCodeReview fixes and the `main` merge), extension rebuilt `TORCH_CUDA_ARCH_LIST=10.0`, two idle B200, driver 580.126.20, CUDA 13.0, torch 2.13.0+cu130. The sibling `results/` directory is the earlier run at `e612412c`.
+
+| Run | passed | failed | skipped |
+|---|---:|---:|---:|
+| 14 test files, 2 GPUs visible | 371 | 0 | 34 |
+| same, 1 GPU visible | 369 | 0 | 36 |
+
+Timing at 32768 rows x 151936, BF16, forward + backward / backward only: fused kernel 33.2 / 28.4 ms, chunked fallback 63.6 / 58.9 ms, torch 44.3 / 19.3 ms, Liger 16.2 / 11.6 ms, FLA 7.1 / 3.7 ms, flash-attn 6.2 / 3.7 ms; peak memory 9.27 GiB for the fused kernel. These match the `e612412c` run, so the fused backward timing is unchanged by the review fixes and the merge of `main`.
+
+A first attempt of this run on a shared GPU, while another job used the same devices, gave 69 ms for the fused kernel and is not reported; only the run on idle devices is kept.
