@@ -8,7 +8,7 @@ Why: the earlier B200 set at the head (`b200-pr468-head-5aa9aa1c-b200`) covers t
 |---|---|
 | unit suite (five paths in the PR's Tests) | 307 passed, 0 failed, 73 skipped |
 | `check_operator` `rms_norm` / `rms_norm_gated` / `qwen3_next_rms_norm` | `pass_rate=1.0000` each |
-| C3/C4 forward and gradient gates, both ops | 0 failed; the 25 / 44 / 25 / 69 invariance lines are identical to the earlier head run |
+| C3/C4 forward and gradient gates, both ops | 0 failed; 68 invariance pairs (12 + 16 for `qwen3_next_rms_norm` forward and gradient, 12 + 28 for `rms_norm_gated`), all `passed=True` with `max_abs=0`, identical to the earlier head run |
 | norm report (`report.json`), comparison reports (`*_reuse.json`) | `git_commit` = head, tree not dirty |
 
 Against the reports at `1e2eaec0`, the only differing fields are timings, commit ids and paths (filtered by field name; the filter is crude).
