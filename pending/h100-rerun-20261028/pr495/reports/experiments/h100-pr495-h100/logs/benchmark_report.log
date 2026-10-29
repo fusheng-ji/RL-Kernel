@@ -1,0 +1,32 @@
+# command: fused_logp_backward_evidence benchmark (GPU idle)
+running accuracy
+completed accuracy
+running row-invariance
+completed row-invariance
+running batch-size-sweep
+  sweep torch log_softmax + gather: 0 / 0 of 2232 differ
+  sweep previous VJP (full FP32 softmax): 0 / 0 of 2232 differ
+  sweep chunked fallback: 0 / 0 of 2232 differ
+  sweep fused kernel: 0 / 0 of 2232 differ
+  sweep flash-attn cross_entropy (verl): 0 / 0 of 2232 differ
+completed batch-size-sweep
+running train-rollout-invariance
+completed train-rollout-invariance
+running performance
+  N=8192 torch log_softmax + gather: {'step_ms': 28.017215728759766, 'peak_gib': 13.910186767578125, 'backward_ms': 14.92841625213623}
+  N=8192 previous VJP (full FP32 softmax): {'step_ms': 25.984384536743164, 'peak_gib': 11.591888427734375, 'backward_ms': 21.97270393371582}
+  N=8192 chunked fallback: {'step_ms': 31.67638397216797, 'peak_gib': 3.318526268005371, 'backward_ms': 27.923328399658203}
+  N=8192 fused kernel: {'step_ms': 9.62399959564209, 'peak_gib': 2.31842041015625, 'backward_ms': 5.609536170959473}
+  N=8192 flash-attn cross_entropy (verl): {'step_ms': 3.6263680458068848, 'peak_gib': 2.3184814453125, 'backward_ms': 2.773184061050415}
+  N=16384 torch log_softmax + gather: {'step_ms': 55.90764617919922, 'peak_gib': 27.82037353515625, 'backward_ms': 29.67228889465332}
+  N=16384 previous VJP (full FP32 softmax): {'step_ms': 51.797664642333984, 'peak_gib': 23.18377685546875, 'backward_ms': 43.62598419189453}
+  N=16384 chunked fallback: {'step_ms': 63.2465934753418, 'peak_gib': 5.637045860290527, 'backward_ms': 55.36396789550781}
+  N=16384 fused kernel: {'step_ms': 19.16636848449707, 'peak_gib': 4.6368408203125, 'backward_ms': 11.004063606262207}
+  N=16384 flash-attn cross_entropy (verl): {'step_ms': 7.183839797973633, 'peak_gib': 4.636962890625, 'backward_ms': 5.2302398681640625}
+  N=32768 torch log_softmax + gather: {'step_ms': 111.72611236572266, 'peak_gib': 55.6407470703125, 'backward_ms': 59.167137145996094}
+  N=32768 previous VJP (full FP32 softmax): {'step_ms': 103.23273468017578, 'peak_gib': 46.3675537109375, 'backward_ms': 86.94879913330078}
+  N=32768 chunked fallback: {'step_ms': 126.10297393798828, 'peak_gib': 10.27408504486084, 'backward_ms': 110.27078247070312}
+  N=32768 fused kernel: {'step_ms': 38.10780715942383, 'peak_gib': 9.273681640625, 'backward_ms': 21.810880661010742}
+  N=32768 flash-attn cross_entropy (verl): {'step_ms': 14.23100757598877, 'peak_gib': 9.27392578125, 'backward_ms': 10.09500789642334}
+completed performance
+wrote <HOME>/pending/h100-rerun-20261028/pr495/reports/experiments/h100-pr495-h100/logs/report.json (commit a320e65, dirty=False)

@@ -1,0 +1,675 @@
+# command: tests/ops (excluding det_gemm run)
+........................................................................ [  2%]
+..................ss........................ssssssssssssssssssssssssssss [  5%]
+ssssssssssssssssssss...........................sssssssssssssssssssssssss [  8%]
+sssssssssssssssssssssssssssssssssssssssssssssssssssssssss............... [ 11%]
+........................................................................ [ 14%]
+........................................................................ [ 17%]
+........................................................................ [ 20%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+........................................................................ [ 32%]
+........................................................................ [ 35%]
+........................................................................ [ 38%]
+........................................................................ [ 40%]
+......................sssssssssssssssssssssssssssss..................... [ 43%]
+..............................ssssssssssssssssssssssssssssssssssssssssss [ 46%]
+sssssssssssssssssssssssss.sss........................................... [ 49%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................sssssssssssssss................. [ 58%]
+........................................................................ [ 61%]
+.s....................................ss.................s.............. [ 64%]
+........................................................................ [ 67%]
+........................................................................ [ 70%]
+...............FsFFFFFF..................F.............................. [ 73%]
+..ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 76%]
+ss.............................................sssssss.................. [ 78%]
+s....................s........s....................s........s........... [ 81%]
+.........s........s....................s........s....................s.. [ 84%]
+......s....................s........s....................s........s..... [ 87%]
+...............s........s....................s........s................. [ 90%]
+...s........s....................s........s....................s........ [ 93%]
+.s........s........s.................................................s.. [ 96%]
+................s....................................................... [ 99%]
+..............                                                           [100%]
+=================================== FAILURES ===================================
+__________ test_accelerator_bins_preserve_exact_sum_under_repartition __________
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    def test_accelerator_bins_preserve_exact_sum_under_repartition():
+        generator = torch.Generator(device="cuda").manual_seed(71)
+        values = torch.randn(32769, generator=generator, device="cuda")
+        values[:4] = torch.tensor([2.0**-149, -(2.0**-126), 2.0**127, 0.0], device="cuda")
+>       full = integer_square_bins([values])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x7d7565ddf2c0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+_______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[1] _______
+
+length = 1
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x7d7565d788f0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[31] _______
+
+length = 31
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x7d7565c83b60>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[32] _______
+
+length = 32
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x7d7565c82cf0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[33] _______
+
+length = 33
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x7d7565ddf6b0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[257] ______
+
+length = 257
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x7d7565c82d80>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+_____ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[32771] _____
+
+length = 32771
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x7d7565c83ec0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______________________ test_registry_dispatches_rms_norm _______________________
+
+    def test_registry_dispatches_rms_norm():
+        from rl_engine.runtime.registry import kernel_registry
+    
+        op = kernel_registry.get_op("rms_norm")
+        if device_ctx.is_musa:
+            if _TRITON_AVAILABLE:
+                assert isinstance(op, RMSNormTritonOp)
+                assert hasattr(op, "forward")
+            else:
+                assert isinstance(op, NativeRMSNormOp)
+                assert hasattr(op, "forward") and hasattr(op, "forward_fp32")
+        elif torch.cuda.is_available() and _HAS_CUDA_RMSNORM:
+>           assert isinstance(op, RMSNormCudaOp)
+E           assert False
+E            +  where False = isinstance(<rl_engine.reference.norm.rms_norm.NativeRMSNormOp object at 0x7d7565d5bec0>, RMSNormCudaOp)
+
+tests/ops/norm/test_rms_norm.py:263: AssertionError
+=============================== warnings summary ===============================
+tests/ops/attention/test_attention_preprocess.py::test_h100_preprocessor_executes_cuda_qk_norm_and_zigzag_rope
+tests/ops/attention/test_attention_preprocess.py::test_h100_preprocessor_executes_cuda_qk_norm_and_zigzag_rope
+  <SCRATCH>/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/ops/embedding/test_canonical_lm_head_backward.py: 14 warnings
+  <SCRATCH>/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/ops/embedding/test_canonical_lm_head_backward.py::test_qkv_installed_forward_uses_canonical_backward[False]
+  <SCRATCH>/Megatron-LM/megatron/core/tensor_parallel/random.py:28: DeprecationWarning: Using deprecated internal API from Transformer Engine. transformer_engine.pytorch.fp8 will be removed in a future release.
+    from transformer_engine.pytorch.fp8 import FP8GlobalStateManager, fp8_autocast
+
+tests/ops/embedding/test_canonical_lm_head_backward.py::test_qkv_installed_forward_uses_canonical_backward[False]
+  <SCRATCH>/Megatron-LM/megatron/core/extensions/transformer_engine.py:2531: DeprecationWarning: transformer_engine.pytorch.float8_tensor is deprecated and will be removed in a future release. Float8Tensor should be imported directly through `from transformer_engine.pytorch import Float8Tensor`
+    from transformer_engine.pytorch.float8_tensor import Float8Tensor
+
+tests/ops/embedding/test_canonical_lm_head_backward.py::test_qkv_installed_forward_uses_canonical_backward[False]
+  <SCRATCH>/Megatron-LM/megatron/core/inference/contexts/__init__.py:9: DeprecationWarning: The following imports from `dynamic_context.py` will be removed in this file in `megatron-core` 0.14. The imports here result in a cyclic import issue that causes rotary embeddings to import from Apex rather than Transformer Engine.
+    warnings.warn(
+
+tests/ops/embedding/test_canonical_lm_head_backward.py::test_qkv_installed_forward_uses_canonical_backward[False]
+  <SCRATCH>/conda_envs/rlk_ep4/lib/python3.12/site-packages/flashinfer/cute_dsl/availability.py:135: DeprecationWarning: Arch from arch.py is deprecated. Use Arch from enums.py instead.
+    from cutlass.base_dsl.arch import Arch
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [2] tests/ops/activation/test_swiglu.py:598: requires at least two CUDA devices
+SKIPPED [39] tests/ops/activation/test_swiglu.py:790: Ascend NPU required
+SKIPPED [3] tests/ops/activation/test_swiglu.py:834: Ascend NPU required
+SKIPPED [3] tests/ops/activation/test_swiglu.py:852: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:875: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:892: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:908: Ascend NPU required
+SKIPPED [40] tests/ops/attention/test_attention_correctness.py:269: CUDA FlashAttentionOp is unavailable: Neither external flash_attn nor _C.flash_attn_forward is available.
+SKIPPED [40] tests/ops/attention/test_attention_correctness.py:310: current torch build is not ROCm platform
+SKIPPED [2] tests/ops/attention/test_attention_correctness.py:335: current torch build is not ROCm platform
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:751: ROCm-only acceptance check
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:770: ROCm-only acceptance check
+SKIPPED [8] tests/ops/attention/test_deterministic_attention_cuda.py:792: ROCm-only acceptance check
+SKIPPED [6] tests/ops/attention/test_deterministic_attention_cuda.py:823: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:862: ROCm-only acceptance check
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:903: ROCm-only acceptance check
+SKIPPED [1] tests/ops/attention/test_deterministic_attention_cuda.py:943: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:983: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:1015: ROCm-only acceptance check
+SKIPPED [2] tests/ops/attention/test_deterministic_attention_cuda.py:1046: ROCm-only acceptance check
+SKIPPED [3] tests/ops/attention/test_deterministic_attention_cuda.py:1061: ROCm-only acceptance check
+SKIPPED [30] tests/ops/attention/test_triton_deterministic_attention.py:100: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [30] tests/ops/attention/test_triton_deterministic_attention.py:115: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [2] tests/ops/attention/test_triton_deterministic_attention.py:136: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [1] tests/ops/attention/test_triton_deterministic_attention.py:163: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [1] tests/ops/attention/test_triton_deterministic_attention.py:177: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [2] tests/ops/attention/test_triton_deterministic_attention.py:189: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [1] tests/ops/attention/test_triton_deterministic_attention.py:211: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [3] tests/ops/attention/test_triton_deterministic_attention.py:265: bitwise expf/logf sequence is only ported for ROCm
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1096: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1105: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1114: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1122: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1130: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1139: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1146: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1168: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1185: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1201: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1221: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1232: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1250: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1263: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_batch_invariant_logp.py:1286: batch_invariant_logp_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [1] tests/ops/logprob/test_linear_logp.py:620: Triton linear log-prob requires a MUSA device and Triton.
+SKIPPED [2] tests/ops/logprob/test_linear_logp.py:1665: strict TP test needs two GPUs
+SKIPPED [1] tests/ops/logprob/test_logp.py:154: CUDA dispatch may select fused logp
+SKIPPED [1] tests/ops/norm/test_reproducible_norm.py:61: two accelerators required
+SKIPPED [12] tests/ops/norm/test_rms_norm.py:480: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [48] tests/ops/norm/test_rms_norm.py:498: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [6] tests/ops/norm/test_rms_norm.py:527: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [6] tests/ops/norm/test_rms_norm.py:551: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [3] tests/ops/rope/test_rope.py:390: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:406: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:413: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:420: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [1] tests/ops/rope/test_rope.py:433: rope_apply_ascend is not compiled (requires an Ascend NPU build).
+SKIPPED [24] tests/ops/test_autotuning_candidates.py:105: Existing unsupported dtype
+SKIPPED [3] tests/ops/test_autotuning_candidates.py:201: Existing unsupported dtype
+SKIPPED [2] tests/ops/test_autotuning_gpu.py:95: Existing operator does not support this dtype
+8 failed, 2095 passed, 359 skipped, 20 warnings in 37.68s
