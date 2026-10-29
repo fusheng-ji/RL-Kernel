@@ -1,0 +1,45 @@
+From 6cc8cb1d567516e0a3823394ba4c084768f56d2b Mon Sep 17 00:00:00 2001
+From: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+Date: Thu, 29 Oct 2026 17:07:15 +0000
+Subject: [PATCH 3/3] fix(qwen3-next): list the current parametrized ids of the
+ gated parameter-VJP fold test
+
+test_cuda_gated_parameter_vjp_contributions_match_the_fold gained a shape
+parameter in a2037197, so its ids are [shapeN-activation-dtypeM] (8 of them),
+but the operator case manifest still listed the four old [activation-dtypeM]
+ids. The operator gate passes the manifest ids to pytest, which reported
+'not found' and marked all 233 mandatory cases missing, so the preflight
+operators step failed on any GPU. Replace the four ids by the eight current
+ones.
+
+Signed-off-by: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+---
+ .../models/qwen3_next/qwen3_next_operator_cases.json | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/rl_engine/validation/models/qwen3_next/qwen3_next_operator_cases.json b/rl_engine/validation/models/qwen3_next/qwen3_next_operator_cases.json
+index 1d8582f8..59aa454d 100644
+--- a/rl_engine/validation/models/qwen3_next/qwen3_next_operator_cases.json
++++ b/rl_engine/validation/models/qwen3_next/qwen3_next_operator_cases.json
+@@ -40,10 +40,14 @@
+       "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_dweight_is_batch_invariant[64]",
+       "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_dweight_is_batch_invariant[8]",
+       "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_matches_golden_within_contract",
+-      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[sigmoid-dtype0]",
+-      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[sigmoid-dtype1]",
+-      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[silu-dtype0]",
+-      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[silu-dtype1]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape0-sigmoid-dtype0]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape0-sigmoid-dtype1]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape0-silu-dtype0]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape0-silu-dtype1]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape1-sigmoid-dtype0]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape1-sigmoid-dtype1]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape1-silu-dtype0]",
++      "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_parameter_vjp_contributions_match_the_fold[shape1-silu-dtype1]",
+       "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_rejects_bad_activation",
+       "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_rejects_mismatched_gate",
+       "tests/models/qwen3_next/test_qwen3_next_norm.py::test_cuda_gated_rstd_is_bitwise_identical_to_plain_kernel[bf16-128-sigmoid-0.0]",
+-- 
+2.51.1
+
