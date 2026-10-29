@@ -1,0 +1,180 @@
+# command: check_tp_ppo_rollout framework=megatron shared critic-tp=1
+WARNING 10-29 00:34:54 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+WARNING 10-29 00:34:54 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+WARNING 10-29 00:34:54 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+WARNING 10-29 00:34:54 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 10-29 00:34:55 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 10-29 00:34:55 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 10-29 00:34:56 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 10-29 00:34:56 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 10-29 00:34:56 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 10-29 00:34:56 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 10-29 00:34:56 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 10-29 00:34:56 [RL-Kernel]: KernelRegistry initialized for cuda
+<SCRATCH>/Megatron-LM/megatron/core/models/backends.py:21: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+<SCRATCH>/Megatron-LM/megatron/core/models/backends.py:21: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+<SCRATCH>/Megatron-LM/megatron/core/models/backends.py:21: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+<SCRATCH>/Megatron-LM/megatron/core/models/gpt/gpt_layer_specs.py:70: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+<SCRATCH>/Megatron-LM/megatron/core/models/gpt/gpt_layer_specs.py:70: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+<SCRATCH>/Megatron-LM/megatron/core/models/gpt/gpt_layer_specs.py:70: UserWarning: Apex is not installed. Falling back to Torch Norm
+  warnings.warn("Apex is not installed. Falling back to Torch Norm")
+<SCRATCH>/Megatron-LM/megatron/core/transformer/transformer_config.py:1731: UserWarning: full scope is deprecated. Use empty cuda_graph_scope to capture the whole layer.
+  warnings.warn(
+<SCRATCH>/Megatron-LM/megatron/core/transformer/transformer_config.py:1731: UserWarning: full scope is deprecated. Use empty cuda_graph_scope to capture the whole layer.
+  warnings.warn(
+<SCRATCH>/Megatron-LM/megatron/core/transformer/transformer_config.py:1731: UserWarning: full scope is deprecated. Use empty cuda_graph_scope to capture the whole layer.
+  warnings.warn(
+[rank3]: Traceback (most recent call last):
+[rank3]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank3]:   File "<frozen runpy>", line 88, in _run_code
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 360, in <module>
+[rank3]:     main()
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 356, in main
+[rank3]:     run(args)
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 268, in run
+[rank3]:     metrics = coordinator.run_round()
+[rank3]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 330, in run_round
+[rank3]:     return self._run_round()
+[rank3]:            ^^^^^^^^^^^^^^^^^
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 343, in _run_round
+[rank3]:     self._install_actor(self.actor_version)
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 323, in _install_actor
+[rank3]:     self._phase(install, active=self.groups.role == "rollout")
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 246, in _phase
+[rank3]:     synchronize_validation(error, group=self.groups.control, device=self.transport_device)
+[rank3]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/weights.py", line 2691, in synchronize_validation
+[rank3]:     raise ValueError(bytes(payload.cpu().tolist()).decode("utf-8", errors="replace"))
+[rank3]: ValueError: ValueError: unsupported Megatron checkpoint keys: {'decoder.final_layernorm._extra_state'}
+[rank0]: Traceback (most recent call last):
+[rank0]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank0]:   File "<frozen runpy>", line 88, in _run_code
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 360, in <module>
+[rank0]:     main()
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 356, in main
+[rank0]:     run(args)
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 268, in run
+[rank0]:     metrics = coordinator.run_round()
+[rank0]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 330, in run_round
+[rank0]:     return self._run_round()
+[rank0]:            ^^^^^^^^^^^^^^^^^
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 343, in _run_round
+[rank0]:     self._install_actor(self.actor_version)
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 323, in _install_actor
+[rank0]:     self._phase(install, active=self.groups.role == "rollout")
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 246, in _phase
+[rank0]:     synchronize_validation(error, group=self.groups.control, device=self.transport_device)
+[rank0]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/weights.py", line 2691, in synchronize_validation
+[rank0]:     raise ValueError(bytes(payload.cpu().tolist()).decode("utf-8", errors="replace"))
+[rank0]: ValueError: ValueError: unsupported Megatron checkpoint keys: {'decoder.final_layernorm._extra_state'}
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank2]:   File "<frozen runpy>", line 88, in _run_code
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 360, in <module>
+[rank2]:     main()
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 356, in main
+[rank2]:     run(args)
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 268, in run
+[rank2]:     metrics = coordinator.run_round()
+[rank2]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 330, in run_round
+[rank2]:     return self._run_round()
+[rank2]:            ^^^^^^^^^^^^^^^^^
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 343, in _run_round
+[rank2]:     self._install_actor(self.actor_version)
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 323, in _install_actor
+[rank2]:     self._phase(install, active=self.groups.role == "rollout")
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 246, in _phase
+[rank2]:     synchronize_validation(error, group=self.groups.control, device=self.transport_device)
+[rank2]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/weights.py", line 2691, in synchronize_validation
+[rank2]:     raise ValueError(bytes(payload.cpu().tolist()).decode("utf-8", errors="replace"))
+[rank2]: ValueError: ValueError: unsupported Megatron checkpoint keys: {'decoder.final_layernorm._extra_state'}
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "<frozen runpy>", line 198, in _run_module_as_main
+[rank1]:   File "<frozen runpy>", line 88, in _run_code
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 360, in <module>
+[rank1]:     main()
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 356, in main
+[rank1]:     run(args)
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/tests/distributed/tp/check_tp_ppo_rollout.py", line 268, in run
+[rank1]:     metrics = coordinator.run_round()
+[rank1]:               ^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 330, in run_round
+[rank1]:     return self._run_round()
+[rank1]:            ^^^^^^^^^^^^^^^^^
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 343, in _run_round
+[rank1]:     self._install_actor(self.actor_version)
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 323, in _install_actor
+[rank1]:     self._phase(install, active=self.groups.role == "rollout")
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/ppo_coordinator.py", line 246, in _phase
+[rank1]:     synchronize_validation(error, group=self.groups.control, device=self.transport_device)
+[rank1]:   File "<HOME>/<WORKTREE_ROOT>/rl_engine/integrations/common/weights.py", line 2691, in synchronize_validation
+[rank1]:     raise ValueError(bytes(payload.cpu().tolist()).decode("utf-8", errors="replace"))
+[rank1]: ValueError: ValueError: unsupported Megatron checkpoint keys: {'decoder.final_layernorm._extra_state'}
+[rank1]:[W1029 00:38:13.865333342 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank2]:[W1029 00:38:13.904610802 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank3]:[W1029 00:38:13.915450049 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank0]:[W1029 00:38:13.934979414 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+W1029 00:38:15.448000 3609317 <SCRATCH> Sending process 3609351 closing signal SIGTERM
+W1029 00:38:15.451000 3609317 <SCRATCH> Sending process 3609352 closing signal SIGTERM
+W1029 00:38:15.451000 3609317 <SCRATCH> Sending process 3609353 closing signal SIGTERM
+E1029 00:38:15.687000 3609317 <SCRATCH> failed (exitcode: 1) local_rank: 0 (pid: 3609350) of binary: <ENV>/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<ENV>/lib/python3.12/site-packages/torch/distributed/run.py", line 1032, in <module>
+    main()
+  File "<ENV>/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "<ENV>/lib/python3.12/site-packages/torch/distributed/run.py", line 1028, in main
+    run(args)
+  File "<ENV>/lib/python3.12/site-packages/torch/distributed/run.py", line 1019, in run
+    elastic_launch(
+  File "<ENV>/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
+    return launch_agent(
+           ^^^^^^^^^^^^^
+  File "<ENV>/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+tests.distributed.tp.check_tp_ppo_rollout FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-10-29_00:38:15
+  host      : node-h100-a
+  rank      : 1 (local_rank: 1)
+  exitcode  : 1 (pid: 3609351) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[2]:
+  time      : 2026-10-29_00:38:15
+  host      : node-h100-a
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 3609352) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+[3]:
+  time      : 2026-10-29_00:38:15
+  host      : node-h100-a
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 3609353)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 3609353
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-10-29_00:38:15
+  host      : node-h100-a
+  rank      : 0 (local_rank: 0)
+  exitcode  : 1 (pid: 3609350) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================

@@ -1,0 +1,1451 @@
+{
+  "source": {
+    "base_sha": "e23c4a97c0ce3038a08943d7fa150077e4a5c707",
+    "tracked_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "untracked_source_sha256": {},
+    "workspace_source_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "qwenimage_source_sha256": {
+      "csrc/cuda/model_specific/qwenimage/det_linear.cu": "e0efa43aa3d807d6700031e590c3b9d00e7932461ffbabf1d76f50d617391564",
+      "csrc/cuda/model_specific/qwenimage/token_sum.cu": "e14708ab92a02597b140d1c2dbb05ad58d4a16f76b3ff152f38eb561fb71f0cb",
+      "rl_engine/backends/cuda/model_specific/qwenimage/__init__.py": "95c46d40c4aed2d4c26a65bc0cc64331e42b237673293ea5ed45b79ebc11d4b4",
+      "rl_engine/backends/cuda/model_specific/qwenimage/adaln_mod_projection.py": "d4d12ca84a9cd9fa60fdab73482c08a288291105e33d9db96fab881f05b0cae5",
+      "rl_engine/backends/cuda/model_specific/qwenimage/final_adaln_out.py": "d0e584621b76df52e6e99c191bc7e67109cd873cdd8a8d6c3fccb87a2f458278",
+      "rl_engine/reference/model_specific/qwenimage/__init__.py": "95c46d40c4aed2d4c26a65bc0cc64331e42b237673293ea5ed45b79ebc11d4b4",
+      "rl_engine/reference/model_specific/qwenimage/adaln_mod_projection.py": "1ebc740ddff575055ee66ed714a8c7cc5c6cee2701d582a665289e9ad1a4fe3d",
+      "rl_engine/reference/model_specific/qwenimage/final_adaln_out.py": "60441610c04d04d0fb1cd7320be8584e76772c110a3cfed77ddf826dbde9b53c",
+      "benchmarks/models/qwenimage/__init__.py": "a63ebc79ed10d9ed98484565a353438bd13f5801a8f51d7505d0921bf6942742",
+      "benchmarks/models/qwenimage/adaln_evidence.py": "9dc9f3da0069d36c602baef07d687fb1aeba8fda0163d17fc446e0a543fe1f3e",
+      "benchmarks/models/qwenimage/adaln_parameter_screen.py": "05562ef30d09296c2ccd1cdeb44085568b8c877d01f5fb1df4b983e84945ec03",
+      "benchmarks/models/qwenimage/adaln_prior_art.py": "647aa9fc81e02bf3c7806ed6c2a3e578fb3e1a0b000b4388a12367ef86de3139",
+      "benchmarks/models/qwenimage/adaln_reuse_bi_audit.py": "88dd3d390e647bbc883b76622309fad54dac3618630dcca0785e555db329a671",
+      "benchmarks/models/qwenimage/adaln_reuse_candidate.py": "4598f6db94462ac30f3bdd3defae16f0ce7a34ac59eb1996d18e86f498c029b6",
+      "benchmarks/models/qwenimage/plot_adaln_audit.py": "6151e6abccca8f647c2fbeadf92f12e43ed1c07954db9f2db2f035284cbd407c",
+      "benchmarks/models/qwenimage/plot_adaln_evidence.py": "16d6bed0ee5b808814c5f7157145a730750d0b1aaf94762e6f72a256e942c1e2",
+      "benchmarks/models/qwenimage/streams.py": "bd27383eee59404df295f724f6c7d620db3d3d7074c19dd94d51a711b38acf02",
+      "benchmarks/models/qwenimage/validate_adaln_repair.py": "8b663191323b455470a2313cdfefd837657441b300ffd0e0767453f9f407db03"
+    },
+    "extension_sha256": "3d8de4c2d90e1ebbfa01718c7c8ba96ea8100fdd93a9cf15983a38dde4ff3f36",
+    "clean_commit": true
+  },
+  "cases": [
+    {
+      "stream": "image",
+      "dtype": "torch.bfloat16",
+      "implementation": "native",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.1228799968957901,
+        0.10224000364542007,
+        0.09772799909114838,
+        0.09401600062847137,
+        0.09510400146245956,
+        0.10707200318574905,
+        0.09657599776983261,
+        0.0939520001411438,
+        0.0942080020904541,
+        0.09465599805116653,
+        0.0947519987821579,
+        0.09539200365543365,
+        0.09433600306510925,
+        0.09312000125646591,
+        0.09430400282144547
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "image",
+      "dtype": "torch.bfloat16",
+      "implementation": "fixed_gemv",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.08163200318813324,
+        0.07942400127649307,
+        0.07440000027418137,
+        0.0735040009021759,
+        0.07327999919652939,
+        0.07407999783754349,
+        0.07568000257015228,
+        0.07276800274848938,
+        0.07494399696588516,
+        0.07526399940252304,
+        0.07516799867153168,
+        0.0740479975938797,
+        0.07327999919652939,
+        0.0737600028514862,
+        0.07388799637556076
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "image",
+      "dtype": "torch.float32",
+      "implementation": "native",
+      "batch_invariance_violations": [
+        {
+          "batch": 2,
+          "position": 0,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 2,
+          "position": 1,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 3,
+          "position": 0,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 3,
+          "position": 1,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 3,
+          "position": 2,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 4,
+          "position": 0,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 4,
+          "position": 2,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 4,
+          "position": 3,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 7,
+          "position": 0,
+          "differing_bytes": 18062
+        },
+        {
+          "batch": 7,
+          "position": 3,
+          "differing_bytes": 18062
+        },
+        {
+          "batch": 7,
+          "position": 6,
+          "differing_bytes": 18062
+        },
+        {
+          "batch": 8,
+          "position": 0,
+          "differing_bytes": 18503
+        },
+        {
+          "batch": 8,
+          "position": 4,
+          "differing_bytes": 18503
+        },
+        {
+          "batch": 8,
+          "position": 7,
+          "differing_bytes": 18503
+        },
+        {
+          "batch": 9,
+          "position": 0,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 9,
+          "position": 4,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 9,
+          "position": 8,
+          "differing_bytes": 14866
+        },
+        {
+          "batch": 16,
+          "position": 0,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 16,
+          "position": 8,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 16,
+          "position": 15,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 33,
+          "position": 0,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 33,
+          "position": 16,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 33,
+          "position": 32,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 64,
+          "position": 0,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 64,
+          "position": 32,
+          "differing_bytes": 19310
+        },
+        {
+          "batch": 64,
+          "position": 63,
+          "differing_bytes": 19310
+        }
+      ],
+      "forward_b1_ms": [
+        0.10969600081443787,
+        0.13593600690364838,
+        0.13264000415802002,
+        0.13279999792575836,
+        0.1311360001564026,
+        0.13420799374580383,
+        0.1305599957704544,
+        0.1316480040550232,
+        0.1311360001564026,
+        0.1332480013370514,
+        0.13043199479579926,
+        0.13040000200271606,
+        0.13475200533866882,
+        0.1318719983100891,
+        0.13308799266815186
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "image",
+      "dtype": "torch.float32",
+      "implementation": "fixed_gemv",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.11843200027942657,
+        0.11763200163841248,
+        0.11612799763679504,
+        0.11830399930477142,
+        0.11286400258541107,
+        0.11955200135707855,
+        0.11311999708414078,
+        0.11833599954843521,
+        0.11590400338172913,
+        0.11868800222873688,
+        0.11273600161075592,
+        0.11795199662446976,
+        0.11292800307273865,
+        0.11657600104808807,
+        0.11273600161075592
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "text",
+      "dtype": "torch.bfloat16",
+      "implementation": "native",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.06483200192451477,
+        0.10012800246477127,
+        0.09603200107812881,
+        0.09907200187444687,
+        0.09641599655151367,
+        0.09468799829483032,
+        0.09523200243711472,
+        0.09353599697351456,
+        0.09923200309276581,
+        0.09388799965381622,
+        0.09468799829483032,
+        0.09577599912881851,
+        0.0950080007314682,
+        0.09696000069379807,
+        0.09443199634552002
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "text",
+      "dtype": "torch.bfloat16",
+      "implementation": "fixed_gemv",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.07807999849319458,
+        0.0748480036854744,
+        0.07487999647855759,
+        0.07321599870920181,
+        0.07452800124883652,
+        0.0745600014925003,
+        0.07363200187683105,
+        0.07347200065851212,
+        0.07407999783754349,
+        0.07398399710655212,
+        0.07302399724721909,
+        0.07420799881219864,
+        0.08502399921417236,
+        0.07516799867153168,
+        0.07356800138950348
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "text",
+      "dtype": "torch.float32",
+      "implementation": "native",
+      "batch_invariance_violations": [
+        {
+          "batch": 2,
+          "position": 0,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 2,
+          "position": 1,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 3,
+          "position": 0,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 3,
+          "position": 1,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 3,
+          "position": 2,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 4,
+          "position": 0,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 4,
+          "position": 2,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 4,
+          "position": 3,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 7,
+          "position": 0,
+          "differing_bytes": 18247
+        },
+        {
+          "batch": 7,
+          "position": 3,
+          "differing_bytes": 18247
+        },
+        {
+          "batch": 7,
+          "position": 6,
+          "differing_bytes": 18247
+        },
+        {
+          "batch": 8,
+          "position": 0,
+          "differing_bytes": 18629
+        },
+        {
+          "batch": 8,
+          "position": 4,
+          "differing_bytes": 18629
+        },
+        {
+          "batch": 8,
+          "position": 7,
+          "differing_bytes": 18629
+        },
+        {
+          "batch": 9,
+          "position": 0,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 9,
+          "position": 4,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 9,
+          "position": 8,
+          "differing_bytes": 15082
+        },
+        {
+          "batch": 16,
+          "position": 0,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 16,
+          "position": 8,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 16,
+          "position": 15,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 33,
+          "position": 0,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 33,
+          "position": 16,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 33,
+          "position": 32,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 64,
+          "position": 0,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 64,
+          "position": 32,
+          "differing_bytes": 19376
+        },
+        {
+          "batch": 64,
+          "position": 63,
+          "differing_bytes": 19376
+        }
+      ],
+      "forward_b1_ms": [
+        0.11513599753379822,
+        0.1391039937734604,
+        0.13872000575065613,
+        0.13286399841308594,
+        0.13391999900341034,
+        0.13785600662231445,
+        0.13091200590133667,
+        0.1337919980287552,
+        0.13391999900341034,
+        0.1345919966697693,
+        0.13072000443935394,
+        0.13232000172138214,
+        0.1313920021057129,
+        0.13411200046539307,
+        0.13206399977207184
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "text",
+      "dtype": "torch.float32",
+      "implementation": "fixed_gemv",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.12054400146007538,
+        0.1165120005607605,
+        0.11523199826478958,
+        0.11744000017642975,
+        0.11180800199508667,
+        0.11587200313806534,
+        0.11327999830245972,
+        0.11680000275373459,
+        0.11206399649381638,
+        0.11910399794578552,
+        0.11190400272607803,
+        0.11686400324106216,
+        0.11369600147008896,
+        0.11523199826478958,
+        0.11212799698114395
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "final",
+      "dtype": "torch.bfloat16",
+      "implementation": "native",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.05907199904322624,
+        0.05110400170087814,
+        0.04927999898791313,
+        0.05820799991488457,
+        0.049215998500585556,
+        0.04492799937725067,
+        0.048287998884916306,
+        0.04543999955058098,
+        0.04598399996757507,
+        0.044415999203920364,
+        0.045471999794244766,
+        0.052671998739242554,
+        0.04732799902558327,
+        0.04598399996757507,
+        0.046751998364925385
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "final",
+      "dtype": "torch.bfloat16",
+      "implementation": "fixed_gemv",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.052191998809576035,
+        0.04707200080156326,
+        0.05040000006556511,
+        0.045632001012563705,
+        0.04912000149488449,
+        0.04531199857592583,
+        0.04864000156521797,
+        0.04553600028157234,
+        0.04800000041723251,
+        0.045504000037908554,
+        0.048928000032901764,
+        0.044863998889923096,
+        0.049247998744249344,
+        0.04508800059556961,
+        0.048928000032901764
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "final",
+      "dtype": "torch.float32",
+      "implementation": "native",
+      "batch_invariance_violations": [
+        {
+          "batch": 2,
+          "position": 0,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 2,
+          "position": 1,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 3,
+          "position": 0,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 3,
+          "position": 1,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 3,
+          "position": 2,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 4,
+          "position": 0,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 4,
+          "position": 2,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 4,
+          "position": 3,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 7,
+          "position": 0,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 7,
+          "position": 3,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 7,
+          "position": 6,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 8,
+          "position": 0,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 8,
+          "position": 4,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 8,
+          "position": 7,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 9,
+          "position": 0,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 9,
+          "position": 4,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 9,
+          "position": 8,
+          "differing_bytes": 4318
+        },
+        {
+          "batch": 16,
+          "position": 0,
+          "differing_bytes": 5976
+        },
+        {
+          "batch": 16,
+          "position": 8,
+          "differing_bytes": 5976
+        },
+        {
+          "batch": 16,
+          "position": 15,
+          "differing_bytes": 5976
+        },
+        {
+          "batch": 33,
+          "position": 0,
+          "differing_bytes": 6287
+        },
+        {
+          "batch": 33,
+          "position": 16,
+          "differing_bytes": 6287
+        },
+        {
+          "batch": 33,
+          "position": 32,
+          "differing_bytes": 6287
+        },
+        {
+          "batch": 64,
+          "position": 0,
+          "differing_bytes": 6287
+        },
+        {
+          "batch": 64,
+          "position": 32,
+          "differing_bytes": 6287
+        },
+        {
+          "batch": 64,
+          "position": 63,
+          "differing_bytes": 6287
+        }
+      ],
+      "forward_b1_ms": [
+        0.042047999799251556,
+        0.06537599861621857,
+        0.06518399715423584,
+        0.06761600077152252,
+        0.06355199962854385,
+        0.06425599753856659,
+        0.06307200342416763,
+        0.06384000182151794,
+        0.06377600133419037,
+        0.06217600032687187,
+        0.06716799736022949,
+        0.06348799914121628,
+        0.0626240000128746,
+        0.06297600269317627,
+        0.062144000083208084
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    },
+    {
+      "stream": "final",
+      "dtype": "torch.float32",
+      "implementation": "fixed_gemv",
+      "batch_invariance_violations": [],
+      "forward_b1_ms": [
+        0.05164799839258194,
+        0.05455999821424484,
+        0.0480320006608963,
+        0.05344000086188316,
+        0.04742399975657463,
+        0.0530879981815815,
+        0.046271998435258865,
+        0.052928000688552856,
+        0.04652800038456917,
+        0.053119998425245285,
+        0.047648001462221146,
+        0.05241600051522255,
+        0.04601600021123886,
+        0.051872000098228455,
+        0.04601600021123886
+      ],
+      "timing_order": [
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ],
+        [
+          "fixed_gemv",
+          "native"
+        ],
+        [
+          "native",
+          "fixed_gemv"
+        ]
+      ]
+    }
+  ],
+  "tf32": false,
+  "environment": {
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA H100"
+  }
+}

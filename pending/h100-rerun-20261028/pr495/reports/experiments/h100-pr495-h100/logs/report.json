@@ -1,0 +1,672 @@
+{
+  "kind": "fused_logp_backward_evidence",
+  "issue": "RL-Align/RL-Kernel#174",
+  "git_commit": "a320e65ab5d0bc6ce43f70ba6943a5df9878ba92",
+  "git_dirty": false,
+  "runner_sha256": "a4ab128c7ee77ceb01b804b05e4c18a1334e7bd59fe3f0c4ac8663e0343f5b16",
+  "run_utc": "2026-10-28T22:51:00.058804+00:00",
+  "command": [
+    "<ENV>/bin/python",
+    "benchmarks/fused_logp_backward_evidence.py",
+    "--flash-attn-src",
+    "<SCRATCH>/rl-kernel-h100-split/hopper_handoff/deps495/flash-attention",
+    "--out",
+    "<HOME>/pending/h100-rerun-20261028/pr495/reports/experiments/h100-pr495-h100/logs/report.json"
+  ],
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "triton": "3.7.1",
+    "external": {
+      "flash-attn cross_entropy (verl)": "flash-attention source 94e22c90, cross_entropy.py sha256 cb9ea79ae3ada5237133bb0365c512817288b0811ac9fbafad4f1b015a20fe7c"
+    },
+    "extension_build_note": null,
+    "extension_sha256": "e9a27ee7e6249bed44dfbdef117d85e80fab17eeccb89e308826778e94d2dc46"
+  },
+  "vocab": 151936,
+  "dtype": "bfloat16",
+  "accuracy_contract": {
+    "rows": 257,
+    "seed": 1,
+    "upstream": "one shared random gradient quantized to BF16, promoted losslessly to FP32",
+    "reference": "one FP64 VJP from BF16 logits and the shared upstream, for every candidate",
+    "identical_effective_upstream_asserted": true
+  },
+  "train_rollout_contract": {
+    "rollout_provider": "existing _C.fused_logp, _C.fused_logp_forward_fp32 and _C.fused_logp_forward_out; separate vLLM WS2 provider not exercised",
+    "input_regimes": "BF16 logits and the same logits losslessly upcast to FP32",
+    "fp32_boundary": "training output promoted to FP32 vs existing FP32 rollout",
+    "bf16_boundary": "training output quantized to BF16 vs existing BF16 rollout",
+    "same_provider_no_grad": "training vs torch.no_grad() using the same candidate"
+  },
+  "accuracy": {
+    "torch log_softmax + gather": {
+      "output_dtype": "torch.float32",
+      "logp_max_abs": 1.2386028345190425e-06,
+      "grad_max_abs": 0.00038700232915767074,
+      "grad_max_abs_over_absmax": 0.0001238411241668655,
+      "grad_correctly_rounded_fraction": 0.9999603304196893
+    },
+    "previous VJP (full FP32 softmax)": {
+      "output_dtype": "torch.bfloat16",
+      "logp_max_abs": 0.06077329649733443,
+      "grad_max_abs": 0.00038700232915767074,
+      "grad_max_abs_over_absmax": 0.0001238411241668655,
+      "grad_correctly_rounded_fraction": 0.999993904867583
+    },
+    "chunked fallback": {
+      "output_dtype": "torch.bfloat16",
+      "logp_max_abs": 0.06077329649733443,
+      "grad_max_abs": 0.00038700232915767074,
+      "grad_max_abs_over_absmax": 0.0001238411241668655,
+      "grad_correctly_rounded_fraction": 0.999993904867583
+    },
+    "fused kernel": {
+      "output_dtype": "torch.bfloat16",
+      "logp_max_abs": 0.06077329649733443,
+      "grad_max_abs": 0.00038700232915767074,
+      "grad_max_abs_over_absmax": 0.0001238411241668655,
+      "grad_correctly_rounded_fraction": 0.9999906524229739
+    },
+    "flash-attn cross_entropy (verl)": {
+      "output_dtype": "torch.float32",
+      "logp_max_abs": 1.1900655323415776e-06,
+      "grad_max_abs": 0.00038700232915767074,
+      "grad_max_abs_over_absmax": 0.0001238411241668655,
+      "grad_correctly_rounded_fraction": 0.9999560791928774
+    }
+  },
+  "row_invariance": {
+    "torch log_softmax + gather": {
+      "rows_checked": 768,
+      "logp_rows_differing": 0,
+      "grad_rows_differing": 0,
+      "batch_rows": 4096,
+      "seeds": [
+        3,
+        4,
+        5
+      ]
+    },
+    "previous VJP (full FP32 softmax)": {
+      "rows_checked": 768,
+      "logp_rows_differing": 0,
+      "grad_rows_differing": 0,
+      "batch_rows": 4096,
+      "seeds": [
+        3,
+        4,
+        5
+      ]
+    },
+    "chunked fallback": {
+      "rows_checked": 768,
+      "logp_rows_differing": 0,
+      "grad_rows_differing": 0,
+      "batch_rows": 4096,
+      "seeds": [
+        3,
+        4,
+        5
+      ]
+    },
+    "fused kernel": {
+      "rows_checked": 768,
+      "logp_rows_differing": 0,
+      "grad_rows_differing": 0,
+      "batch_rows": 4096,
+      "seeds": [
+        3,
+        4,
+        5
+      ]
+    },
+    "flash-attn cross_entropy (verl)": {
+      "rows_checked": 768,
+      "logp_rows_differing": 0,
+      "grad_rows_differing": 0,
+      "batch_rows": 4096,
+      "seeds": [
+        3,
+        4,
+        5
+      ]
+    }
+  },
+  "batch_size_sweep": {
+    "torch log_softmax + gather": {
+      "comparisons": 2232,
+      "logp_differing": 0,
+      "grad_differing": 0,
+      "batch_sizes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        15,
+        16,
+        17,
+        31,
+        32,
+        33,
+        63,
+        64,
+        65,
+        127,
+        128,
+        129,
+        255,
+        256,
+        257,
+        511,
+        512,
+        513,
+        1023,
+        1024,
+        1025,
+        2047,
+        2048
+      ],
+      "probe_rows": [
+        0,
+        259,
+        515,
+        771,
+        1027,
+        1283,
+        1539,
+        2047
+      ],
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "first_failures": []
+    },
+    "previous VJP (full FP32 softmax)": {
+      "comparisons": 2232,
+      "logp_differing": 0,
+      "grad_differing": 0,
+      "batch_sizes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        15,
+        16,
+        17,
+        31,
+        32,
+        33,
+        63,
+        64,
+        65,
+        127,
+        128,
+        129,
+        255,
+        256,
+        257,
+        511,
+        512,
+        513,
+        1023,
+        1024,
+        1025,
+        2047,
+        2048
+      ],
+      "probe_rows": [
+        0,
+        259,
+        515,
+        771,
+        1027,
+        1283,
+        1539,
+        2047
+      ],
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "first_failures": []
+    },
+    "chunked fallback": {
+      "comparisons": 2232,
+      "logp_differing": 0,
+      "grad_differing": 0,
+      "batch_sizes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        15,
+        16,
+        17,
+        31,
+        32,
+        33,
+        63,
+        64,
+        65,
+        127,
+        128,
+        129,
+        255,
+        256,
+        257,
+        511,
+        512,
+        513,
+        1023,
+        1024,
+        1025,
+        2047,
+        2048
+      ],
+      "probe_rows": [
+        0,
+        259,
+        515,
+        771,
+        1027,
+        1283,
+        1539,
+        2047
+      ],
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "first_failures": []
+    },
+    "fused kernel": {
+      "comparisons": 2232,
+      "logp_differing": 0,
+      "grad_differing": 0,
+      "batch_sizes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        15,
+        16,
+        17,
+        31,
+        32,
+        33,
+        63,
+        64,
+        65,
+        127,
+        128,
+        129,
+        255,
+        256,
+        257,
+        511,
+        512,
+        513,
+        1023,
+        1024,
+        1025,
+        2047,
+        2048
+      ],
+      "probe_rows": [
+        0,
+        259,
+        515,
+        771,
+        1027,
+        1283,
+        1539,
+        2047
+      ],
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "first_failures": []
+    },
+    "flash-attn cross_entropy (verl)": {
+      "comparisons": 2232,
+      "logp_differing": 0,
+      "grad_differing": 0,
+      "batch_sizes": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        15,
+        16,
+        17,
+        31,
+        32,
+        33,
+        63,
+        64,
+        65,
+        127,
+        128,
+        129,
+        255,
+        256,
+        257,
+        511,
+        512,
+        513,
+        1023,
+        1024,
+        1025,
+        2047,
+        2048
+      ],
+      "probe_rows": [
+        0,
+        259,
+        515,
+        771,
+        1027,
+        1283,
+        1539,
+        2047
+      ],
+      "seeds": [
+        3,
+        4,
+        5
+      ],
+      "first_failures": []
+    }
+  },
+  "train_rollout_invariance": {
+    "torch.bfloat16": {
+      "torch log_softmax + gather": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 41,
+        "project_rollout_fp32_out_rows_differing": 41,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 1.9073486328125e-06,
+        "project_rollout_fp32_out_max_abs": 1.9073486328125e-06,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "previous VJP (full FP32 softmax)": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 771,
+        "project_rollout_fp32_out_rows_differing": 771,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 0.061367034912109375,
+        "project_rollout_fp32_out_max_abs": 0.061367034912109375,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "chunked fallback": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 771,
+        "project_rollout_fp32_out_rows_differing": 771,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 0.061367034912109375,
+        "project_rollout_fp32_out_max_abs": 0.061367034912109375,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "fused kernel": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 771,
+        "project_rollout_fp32_out_rows_differing": 771,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 0.061367034912109375,
+        "project_rollout_fp32_out_max_abs": 0.061367034912109375,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "flash-attn cross_entropy (verl)": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 59,
+        "project_rollout_fp32_out_rows_differing": 59,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 1.9073486328125e-06,
+        "project_rollout_fp32_out_max_abs": 1.9073486328125e-06,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      }
+    },
+    "torch.float32": {
+      "torch log_softmax + gather": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 41,
+        "project_rollout_fp32_out_rows_differing": 41,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 1.9073486328125e-06,
+        "project_rollout_fp32_out_max_abs": 1.9073486328125e-06,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "previous VJP (full FP32 softmax)": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 0,
+        "project_rollout_fp32_out_rows_differing": 0,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 0.0,
+        "project_rollout_fp32_out_max_abs": 0.0,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "chunked fallback": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 0,
+        "project_rollout_fp32_out_rows_differing": 0,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 0.0,
+        "project_rollout_fp32_out_max_abs": 0.0,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "fused kernel": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 0,
+        "project_rollout_fp32_out_rows_differing": 0,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 0.0,
+        "project_rollout_fp32_out_max_abs": 0.0,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      },
+      "flash-attn cross_entropy (verl)": {
+        "rows_checked": 771,
+        "same_provider_no_grad_rows_differing": 0,
+        "project_rollout_fp32_rows_differing": 65,
+        "project_rollout_fp32_out_rows_differing": 65,
+        "project_rollout_bf16_rows_differing": 0,
+        "project_rollout_fp32_max_abs": 1.9073486328125e-06,
+        "project_rollout_fp32_out_max_abs": 1.9073486328125e-06,
+        "project_rollout_bf16_max_abs": 0.0,
+        "batch_rows": 257,
+        "seeds": [
+          3,
+          4,
+          5
+        ]
+      }
+    }
+  },
+  "performance": {
+    "torch log_softmax + gather": {
+      "8192": {
+        "step_ms": 28.017215728759766,
+        "peak_gib": 13.910186767578125,
+        "backward_ms": 14.92841625213623
+      },
+      "16384": {
+        "step_ms": 55.90764617919922,
+        "peak_gib": 27.82037353515625,
+        "backward_ms": 29.67228889465332
+      },
+      "32768": {
+        "step_ms": 111.72611236572266,
+        "peak_gib": 55.6407470703125,
+        "backward_ms": 59.167137145996094
+      }
+    },
+    "previous VJP (full FP32 softmax)": {
+      "8192": {
+        "step_ms": 25.984384536743164,
+        "peak_gib": 11.591888427734375,
+        "backward_ms": 21.97270393371582
+      },
+      "16384": {
+        "step_ms": 51.797664642333984,
+        "peak_gib": 23.18377685546875,
+        "backward_ms": 43.62598419189453
+      },
+      "32768": {
+        "step_ms": 103.23273468017578,
+        "peak_gib": 46.3675537109375,
+        "backward_ms": 86.94879913330078
+      }
+    },
+    "chunked fallback": {
+      "8192": {
+        "step_ms": 31.67638397216797,
+        "peak_gib": 3.318526268005371,
+        "backward_ms": 27.923328399658203
+      },
+      "16384": {
+        "step_ms": 63.2465934753418,
+        "peak_gib": 5.637045860290527,
+        "backward_ms": 55.36396789550781
+      },
+      "32768": {
+        "step_ms": 126.10297393798828,
+        "peak_gib": 10.27408504486084,
+        "backward_ms": 110.27078247070312
+      }
+    },
+    "fused kernel": {
+      "8192": {
+        "step_ms": 9.62399959564209,
+        "peak_gib": 2.31842041015625,
+        "backward_ms": 5.609536170959473
+      },
+      "16384": {
+        "step_ms": 19.16636848449707,
+        "peak_gib": 4.6368408203125,
+        "backward_ms": 11.004063606262207
+      },
+      "32768": {
+        "step_ms": 38.10780715942383,
+        "peak_gib": 9.273681640625,
+        "backward_ms": 21.810880661010742
+      }
+    },
+    "flash-attn cross_entropy (verl)": {
+      "8192": {
+        "step_ms": 3.6263680458068848,
+        "peak_gib": 2.3184814453125,
+        "backward_ms": 2.773184061050415
+      },
+      "16384": {
+        "step_ms": 7.183839797973633,
+        "peak_gib": 4.636962890625,
+        "backward_ms": 5.2302398681640625
+      },
+      "32768": {
+        "step_ms": 14.23100757598877,
+        "peak_gib": 9.27392578125,
+        "backward_ms": 10.09500789642334
+      }
+    }
+  }
+}
