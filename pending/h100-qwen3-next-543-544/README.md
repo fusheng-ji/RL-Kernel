@@ -16,4 +16,4 @@ pending/h100-qwen3-next-543-544/
 ```
 
 Run B operators failure: pytest collection requested unparametrized `match_the_fold` nodeid; see `operators/operators_collection_pytest_errors.txt`.
-**Git pin:** `pr_assets` @ `fb97a853`
+**Git pin:** `pr_assets` @ `acb551cd` (full: `acb551cdfa3a61033b0b00374ec916b3c8a7ca33`)
