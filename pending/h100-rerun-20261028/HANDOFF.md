@@ -1,7 +1,9 @@
 # HANDOFF-RERUN-20261028 — §6 总报告（Hopper agent → Wenbo）
 
 **生成时间（UTC）**: 2026-10-29T09:57:34Z  
-**committed**: no（产物仅在 login 节点 `~/pending/h100-rerun-20261028/`，未 push `pr_assets` / 未改 PR 评论）  
+**Git（已 push）**: `https://github.com/fusheng-ji/RL-Kernel` branch **`h100-rerun-20261028`**, commit **`70160557`**  
+**路径**: `pending/h100-rerun-20261028/`（**未**覆盖仓库根下 legacy `pr537/` … `pr548/`）  
+**PR 评论 / 正文**: 未改（由 Wenbo 决定是否 merge → `pr_assets` 并更新 PR 链接）  
 **编排**: `run_all.sh` 首轮结束 `2026-10-29T00:38:43+01:00`；#537/#538 验收补跑 `2026-10-29T01:45:57+01:00`；全树脱敏+校验 `finalize_all_evidence.sh` 见 `evidence_finalize_summary.txt`。
 
 ## 6.1 运行环境（可发布占位符版）
