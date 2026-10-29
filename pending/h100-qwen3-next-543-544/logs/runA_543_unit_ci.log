@@ -1,0 +1,78 @@
+# step=runA_543_unit_ci start_utc=2026-10-29T16:04:06Z worktree=<SCRATCH>
+# command: export PYTHONPATH=. && $PY -m pytest -q -p no:cacheprovider $(grep -oE "tests/models/qwen3_next/test_[a-z0-9_]+\.py" .github/workflows/ci.yml | sort -u)
+........................................................................ [ 13%]
+...............................F........................................ [ 27%]
+.....................................................................sss [ 41%]
+...................sssssssssssssssssssssssssssssssssssssssssssssssssssss [ 55%]
+ssssssssssssssssssssssssss.ss.....sssssssssss...ssssssssssss............ [ 69%]
+........................................................................ [ 83%]
+........................................................................ [ 97%]
+..............                                                           [100%]
+=================================== FAILURES ===================================
+________ test_timeout_kills_ignoring_grandchild_even_after_leader_exits ________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-0/test_timeout_kills_ignoring_gr0')
+
+    def test_timeout_kills_ignoring_grandchild_even_after_leader_exits(tmp_path):
+        import os
+        import signal
+        import time
+    
+        from qwen3_next_l2 import run_process
+    
+        pid_file = tmp_path / "grandchild.pid"
+        grandchild = (
+            "import os,pathlib,signal,time; "
+            "signal.signal(signal.SIGTERM, signal.SIG_IGN); "
+            f"pathlib.Path({str(pid_file)!r}).write_text(str(os.getpid())); time.sleep(60)"
+        )
+        leader = (
+            "import subprocess,sys,time; "
+            f"subprocess.Popen([sys.executable, '-c', {grandchild!r}]); time.sleep(60)"
+        )
+        pid = None
+        try:
+            with pytest.raises(subprocess.TimeoutExpired) as caught:
+                run_process(
+                    [sys.executable, "-c", leader],
+                    log_path=tmp_path / "family.log",
+                    timeout=0.5,
+                    cleanup_grace_seconds=0.15,
+                )
+            assert failure_kind(caught.value) == "time_limit"
+>           pid = int(pid_file.read_text())
+                      ^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_failure.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/tmp/pytest-of-<USER>/pytest-0/test_timeout_kills_ignoring_gr0/grandchild.pid')
+mode = 'r', buffering = -1, encoding = 'locale', errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/tmp/pytest-of-<USER>/pytest-0/test_timeout_kills_ignoring_gr0/grandchild.pid'
+
+../../../../datastorage/conda_envs/rlk_ep4/lib/python3.12/pathlib.py:1013: FileNotFoundError
+=============================== warnings summary ===============================
+tests/models/qwen3_next/test_qwen3_next_training_audit.py::test_rng_restores_python_numpy_torch_exactly
+  <SCRATCH> UserWarning: Can't initialize NVML
+    raw_cnt = _raw_device_count_nvml()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/models/qwen3_next/test_qwen3_next_failure.py::test_timeout_kills_ignoring_grandchild_even_after_leader_exits
+1 failed, 410 passed, 107 skipped, 1 warning in 186.63s (0:03:06)
+# end_utc=2026-10-29T16:07:19Z exit_code=1
