@@ -1,0 +1,55 @@
+........................................................................ [  4%]
+........................................................................ [  9%]
+........................................................................ [ 14%]
+........................................................................ [ 19%]
+........................................................................ [ 24%]
+........................................................................ [ 29%]
+........................................................................ [ 34%]
+........................................................................ [ 38%]
+........................................................................ [ 43%]
+........................................................................ [ 48%]
+................s....................................................... [ 53%]
+................s......................................................s [ 58%]
+........................................................................ [ 63%]
+........................................................................ [ 68%]
+.................................s...................................... [ 72%]
+........................................................................ [ 77%]
+.............................s.............s............................ [ 82%]
+........................................................................ [ 87%]
+........................................................................ [ 92%]
+....................................................................F... [ 97%]
+.........................................                                [100%]
+=================================== FAILURES ===================================
+____________ test_ws1_cuda_and_triton_candidate_runtime_provenance _____________
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="WS1 candidate evidence requires CUDA")
+    def test_ws1_cuda_and_triton_candidate_runtime_provenance():
+        proc = subprocess.run(
+            [sys.executable, str(EVIDENCE_SCRIPT), "--emit-json", "-"],
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            timeout=600,
+        )
+>       assert proc.returncode == 0, proc.stderr
+E       AssertionError: error: strict RL-Kernel SM90 GEMM was requested, but the extension was built without KERNEL_ALIGN_DET_GEMM_SM90=1; refusing naive fallback
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['<HOME>/venvs/rlk_h3_venv/bin/python', <HOME>/worktree').returncode
+
+tests/validation/operators/test_ws1_candidate_evidence.py:30: AssertionError
+=============================== warnings summary ===============================
+tests/validation/cross_config/test_cross_config_runner.py: 20 warnings
+  <HOME>/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=4166041) is multi-threaded, use of fork() may lead to deadlocks in the child.
+    self.pid = os.fork()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/models/minimax_h3/test_h3_sp_norm_adaln.py:288: needs 8 GPUs
+SKIPPED [1] tests/models/minimax_h3/test_h3_timestep_sinusoid.py:129: could not import 'sglang.kernels.ops.diffusion.modulate.timestep_embedding_jit': No module named 'sglang'
+SKIPPED [1] tests/models/minimax_h3/test_h3_tp_adaln.py:208: needs 8 GPUs
+SKIPPED [1] tests/build/test_extension_smoke.py:22: extension enforcement is CI-only (orchestrator sets RL_KERNEL_REQUIRE_EXT=1)
+SKIPPED [1] tests/validation/common/test_distributed_logprob_comparison.py:319: requires a ROCm PyTorch build
+SKIPPED [1] tests/validation/common/test_logprob_comparison.py:289: cuda-sm90 backend is unavailable: batch_invariant_logp_sm90 is not compiled into the extension. Rebuild with KERNEL_ALIGN_FORCE_SM90=1 on an SM90 (Hopper) device: 'pip install -e .'
+1 failed, 1474 passed, 6 skipped, 20 warnings in 601.66s (0:10:01)

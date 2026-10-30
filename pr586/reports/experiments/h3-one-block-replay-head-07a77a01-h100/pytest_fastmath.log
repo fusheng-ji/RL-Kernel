@@ -1,0 +1,128 @@
+..sssssssssssssssssssss.sssssssss......sssssssssssssssssssssssssss...... [  5%]
+.......ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss..... [ 10%]
+..................................................ssssssssssssssssssssss [ 15%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss [ 20%]
+sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss..... [ 25%]
+......sssssssssssssF.sssssssssssssssssssssssssssssssssssssssssssssssssss [ 31%]
+ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss.....s [ 36%]
+..................ssssssssssssssssssssssssssssssssssssssssss...sssssssss [ 41%]
+ssssssssssssssssssssssssssssssssssssssssssssssssss.......sssssssssssssss [ 46%]
+.s..............sssssssssssssssssssssssssssssssss..............sssssssss [ 51%]
+sssssssssssssssssssssssssss...............sssssssssssss................. [ 56%]
+........................................................................ [ 62%]
+........................................................................ [ 67%]
+................s....................................................... [ 72%]
+........................................................................ [ 77%]
+............s.............s............................................. [ 82%]
+........................................................................ [ 87%]
+........................................................................ [ 93%]
+...................................................F.................... [ 98%]
+........................                                                 [100%]
+=================================== FAILURES ===================================
+_________ TestCuda.test_unsupported_device_is_refused_at_construction __________
+
+self = <tests.models.minimax_h3.test_h3_final_adaln_out.TestCuda object at 0x7e6ca34984a0>
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e6c95f6a330>
+
+    def test_unsupported_device_is_refused_at_construction(self, monkeypatch):
+        from rl_engine.backends.cuda.model_specific.minimax_h3 import final_adaln_out as module
+    
+        monkeypatch.setattr(module, "det_linear_device_supported", lambda *args: False)
+>       with pytest.raises(RuntimeError, match="SM80"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AssertionError: Regex pattern did not match.
+E         Expected regex: 'SM80'
+E         Actual message: 'rl_engine._C lacks the h3_det_linear_* / h3_rmsnorm_* ops'
+
+tests/models/minimax_h3/test_h3_final_adaln_out.py:163: AssertionError
+____________ test_ws1_cuda_and_triton_candidate_runtime_provenance _____________
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="WS1 candidate evidence requires CUDA")
+    def test_ws1_cuda_and_triton_candidate_runtime_provenance():
+        proc = subprocess.run(
+            [sys.executable, str(EVIDENCE_SCRIPT), "--emit-json", "-"],
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            timeout=600,
+        )
+>       assert proc.returncode == 0, proc.stderr
+E       AssertionError: error: strict RL-Kernel SM90 GEMM was requested, but the extension was built without KERNEL_ALIGN_DET_GEMM_SM90=1; refusing naive fallback
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['<HOME>/venvs/rlk_h3_venv/bin/python', <HOME>/worktree').returncode
+
+tests/validation/operators/test_ws1_candidate_evidence.py:30: AssertionError
+=============================== warnings summary ===============================
+tests/validation/cross_config/test_cross_config_runner.py: 20 warnings
+  <HOME>/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/popen_fork.py:66: DeprecationWarning: This process (pid=4129900) is multi-threaded, use of fork() may lead to deadlocks in the child.
+    self.pid = os.fork()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [16] tests/models/minimax_h3/test_h3_adaln_gate_residual.py:37: rl_engine._C lacks h3_gate_residual_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_adaln_gate_residual.py:239: rl_engine._C lacks h3_gate_residual_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_adaln_gate_residual.py:300: rl_engine._C lacks h3_gate_residual_*
+SKIPPED [9] tests/models/minimax_h3/test_h3_adaln_modulation.py:35: rl_engine._C lacks the H3 kernels
+SKIPPED [27] tests/models/minimax_h3/test_h3_adaln_projection.py:40: rl_engine._C lacks h3_det_linear_*
+SKIPPED [60] tests/models/minimax_h3/test_h3_adaln_row_gather.py:42: rl_engine._C lacks h3_adaln_row_gather_*
+SKIPPED [3] tests/models/minimax_h3/test_h3_conditioning_e2e.py:48: rl_engine._C has no H3 kernels (not built, or a fast-math build)
+SKIPPED [2] tests/models/minimax_h3/test_h3_conditioning_e2e.py:67: rl_engine._C has no H3 kernels (not built, or a fast-math build)
+SKIPPED [2] tests/models/minimax_h3/test_h3_det_linear.py:28: rl_engine._C lacks h3_det_linear_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_det_linear.py:38: rl_engine._C lacks h3_det_linear_*
+SKIPPED [12] tests/models/minimax_h3/test_h3_det_linear.py:49: rl_engine._C lacks h3_det_linear_*
+SKIPPED [24] tests/models/minimax_h3/test_h3_det_linear.py:62: rl_engine._C lacks h3_det_linear_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_det_linear.py:79: rl_engine._C lacks h3_det_linear_*
+SKIPPED [5] tests/models/minimax_h3/test_h3_det_linear.py:95: rl_engine._C lacks h3_det_linear_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_det_linear.py:102: rl_engine._C lacks h3_det_linear_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_det_linear.py:107: rl_engine._C lacks h3_det_linear_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_det_linear.py:115: rl_engine._C lacks h3_det_linear_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_det_linear.py:120: rl_engine._C lacks h3_det_linear_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_det_linear.py:133: rl_engine._C lacks h3_det_linear_*
+SKIPPED [48] tests/models/minimax_h3/test_h3_det_linear_odd_width.py:56: rl_engine._C lacks h3_det_linear_*
+SKIPPED [16] tests/models/minimax_h3/test_h3_det_linear_odd_width.py:71: rl_engine._C lacks h3_det_linear_*
+SKIPPED [36] tests/models/minimax_h3/test_h3_det_linear_odd_width.py:98: rl_engine._C lacks h3_det_linear_*
+SKIPPED [17] tests/models/minimax_h3/test_h3_final_adaln_out.py:34: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [12] tests/models/minimax_h3/test_h3_native_validation.py:70: rl_engine._C lacks native H3 entrypoints
+SKIPPED [16] tests/models/minimax_h3/test_h3_native_validation.py:89: rl_engine._C lacks native H3 entrypoints
+SKIPPED [2] tests/models/minimax_h3/test_h3_native_validation.py:103: rl_engine._C lacks native H3 entrypoints
+SKIPPED [1] tests/models/minimax_h3/test_h3_native_validation.py:190: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [2] tests/models/minimax_h3/test_h3_native_validation.py:202: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [2] tests/models/minimax_h3/test_h3_native_validation.py:210: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [10] tests/models/minimax_h3/test_h3_native_validation.py:219: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [20] tests/models/minimax_h3/test_h3_native_validation.py:230: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_native_validation.py:240: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_native_validation.py:248: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [9] tests/models/minimax_h3/test_h3_native_validation.py:256: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [10] tests/models/minimax_h3/test_h3_native_validation.py:280: rl_engine._C lacks native H3 entrypoints
+SKIPPED [4] tests/models/minimax_h3/test_h3_native_validation.py:334: rl_engine._C lacks native H3 entrypoints
+SKIPPED [8] tests/models/minimax_h3/test_h3_native_validation.py:350: rl_engine._C lacks native H3 entrypoints
+SKIPPED [1] tests/models/minimax_h3/test_h3_native_validation.py:387: rl_engine._C lacks native H3 entrypoints
+SKIPPED [1] tests/models/minimax_h3/test_h3_native_validation.py:399: rl_engine._C lacks native H3 entrypoints
+SKIPPED [7] tests/models/minimax_h3/test_h3_native_validation.py:477: rl_engine._C lacks native H3 entrypoints
+SKIPPED [1] tests/models/minimax_h3/test_h3_one_block.py:95: rl_engine._C has no H3 kernels (not built, or a fast-math build)
+SKIPPED [42] tests/models/minimax_h3/test_h3_rmsnorm.py:45: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:85: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [2] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:96: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [2] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:103: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [10] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:111: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [20] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:121: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:130: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:137: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [9] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:144: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [4] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:167: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:212: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:221: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_rmsnorm_native_validation.py:276: rl_engine._C lacks h3_rmsnorm_*
+SKIPPED [15] tests/models/minimax_h3/test_h3_sp_norm_adaln.py:46: rl_engine._C lacks the H3 SP symbols
+SKIPPED [1] tests/models/minimax_h3/test_h3_sp_norm_adaln.py:288: needs 8 GPUs
+SKIPPED [33] tests/models/minimax_h3/test_h3_timestep_mlp.py:35: rl_engine._C lacks h3_det_linear_*
+SKIPPED [35] tests/models/minimax_h3/test_h3_timestep_sinusoid.py:39: rl_engine._C lacks h3_timestep_sinusoid_forward
+SKIPPED [1] tests/models/minimax_h3/test_h3_timestep_sinusoid.py:129: could not import 'sglang.kernels.ops.diffusion.modulate.timestep_embedding_jit': No module named 'sglang'
+SKIPPED [12] tests/models/minimax_h3/test_h3_tp_adaln.py:43: rl_engine._C lacks h3_det_linear_*
+SKIPPED [1] tests/models/minimax_h3/test_h3_tp_adaln.py:208: needs 8 GPUs
+SKIPPED [1] tests/build/test_extension_smoke.py:22: extension enforcement is CI-only (orchestrator sets RL_KERNEL_REQUIRE_EXT=1)
+SKIPPED [1] tests/validation/common/test_distributed_logprob_comparison.py:319: requires a ROCm PyTorch build
+SKIPPED [1] tests/validation/common/test_logprob_comparison.py:289: cuda-sm90 backend is unavailable: batch_invariant_logp_sm90 is not compiled into the extension. Rebuild with KERNEL_ALIGN_FORCE_SM90=1 on an SM90 (Hopper) device: 'pip install -e .'
+2 failed, 779 passed, 611 skipped, 20 warnings in 148.71s (0:02:28)
