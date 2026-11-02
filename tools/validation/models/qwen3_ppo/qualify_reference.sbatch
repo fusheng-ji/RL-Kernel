@@ -27,25 +27,25 @@ nvidia-smi -q > "$result_dir/device.txt"
 git rev-parse HEAD > "$result_dir/commit.txt"
 "$python_bin" -m pip freeze > "$result_dir/dependencies.txt"
 "$vllm_python" -c 'from importlib.metadata import distributions; print("\n".join(sorted("{}=={}".format(d.metadata["Name"], d.version) for d in distributions())))' > "$result_dir/vllm-dependencies.txt"
-"$python_bin" -m examples.post_training.tp_ppo.capture_qwen3 --checkpoint "$checkpoint" \
+"$python_bin" -m tools.validation.models.qwen3_ppo.capture_qwen3 --checkpoint "$checkpoint" \
   --vllm-python "$vllm_python" --calibration "$calibration" --output "$result_dir/rollout" \
   > "$result_dir/capture.log" 2>&1
-"$python_bin" -m examples.post_training.tp_ppo.hf_ppo_reference --checkpoint "$checkpoint" \
+"$python_bin" -m tools.validation.models.qwen3_ppo.hf_ppo_reference --checkpoint "$checkpoint" \
   --rollout "$result_dir/rollout" --score-only --output "$result_dir/targets" > "$result_dir/targets.log" 2>&1
 for role in actor critic; do
   for precision in fp32 bf16; do
     for repeat in 0 1; do
       run="$result_dir/$role-$precision-$repeat"
-      "$python_bin" -m examples.post_training.tp_ppo.hf_ppo_reference --checkpoint "$checkpoint" \
+      "$python_bin" -m tools.validation.models.qwen3_ppo.hf_ppo_reference --checkpoint "$checkpoint" \
         --rollout "$result_dir/rollout" --targets "$result_dir/targets" --role "$role" \
         --precision "$precision" --output "$run" > "$run.log" 2>&1
     done
-    "$python_bin" -m examples.post_training.tp_ppo.compare_fixed --reference "$result_dir/$role-$precision-0" \
+    "$python_bin" -m tools.validation.models.qwen3_ppo.compare_fixed --reference "$result_dir/$role-$precision-0" \
       --other "$result_dir/$role-$precision-1" --output "$result_dir/$role-$precision-repeat-bounds.json"
   done
-  "$python_bin" -m examples.post_training.tp_ppo.compare_fixed --reference "$result_dir/$role-fp32-0" \
+  "$python_bin" -m tools.validation.models.qwen3_ppo.compare_fixed --reference "$result_dir/$role-fp32-0" \
     --other "$result_dir/$role-bf16-0" --output "$result_dir/$role-cross-precision-bounds.json"
 done
 # Bounds and evidence manifests must be committed before any formal candidate.
 
-"$python_bin" -m examples.post_training.tp_ppo.freeze_fixed_reference --reference-root "$result_dir" --output "$result_dir/acceptance.json"
+"$python_bin" -m tools.validation.models.qwen3_ppo.freeze_fixed_reference --reference-root "$result_dir" --output "$result_dir/acceptance.json"

@@ -7,8 +7,8 @@ from pathlib import Path
 import torch
 from safetensors.torch import load_file
 
-from examples.post_training.tp_ppo.fixed_contract import identity, sha, verify_checkpoint
 from tests.distributed.tp.vllm_ppo_client import VllmPPOClient
+from tools.validation.models.qwen3_ppo.fixed_contract import identity, sha, verify_checkpoint
 
 
 def main():

@@ -29,7 +29,7 @@ nvidia-smi -q > "$result_dir/device.txt"
 git rev-parse HEAD > "$result_dir/commit.txt"
 "$python_bin" -m pip freeze > "$result_dir/dependencies.txt"
 "$python_bin" -m pip list --path "$framework_overlay" --format=json > "$result_dir/framework-dependencies.json"
-"$python_bin" -c 'from pathlib import Path; import sys; from examples.post_training.tp_ppo.fixed_contract import verify_reference; verify_reference(Path(sys.argv[1]),Path(sys.argv[2]))' "$reference_root" "$acceptance_manifest"
+"$python_bin" -c 'from pathlib import Path; import sys; from tools.validation.models.qwen3_ppo.fixed_contract import verify_reference; verify_reference(Path(sys.argv[1]),Path(sys.argv[2]))' "$reference_root" "$acceptance_manifest"
 for engine in megatron deepspeed; do
   for precision in fp32 bf16; do
     for role in actor critic; do
@@ -42,11 +42,11 @@ for engine in megatron deepspeed; do
           --output "$run" > "$run.log" 2>&1
         bounds="$reference_root/$role-fp32-repeat-bounds.json"
         if [[ "$precision" == bf16 ]]; then bounds="$reference_root/$role-cross-precision-bounds.json"; fi
-        "$python_bin" -m examples.post_training.tp_ppo.compare_fixed --reference "$reference_root/$role-fp32-0" \
+        "$python_bin" -m tools.validation.models.qwen3_ppo.compare_fixed --reference "$reference_root/$role-fp32-0" \
           --other "$run" --thresholds "$bounds" --acceptance-manifest "$acceptance_manifest" \
           --reference-root "$reference_root" --output "$run/comparison.json"
       done
-      "$python_bin" -m examples.post_training.tp_ppo.compare_fixed --tp-comparison \
+      "$python_bin" -m tools.validation.models.qwen3_ppo.compare_fixed --tp-comparison \
         --reference "$result_dir/$engine-$precision-$role-tp1" --other "$result_dir/$engine-$precision-$role-tp2" \
         --thresholds "$reference_root/$role-$precision-repeat-bounds.json" --acceptance-manifest "$acceptance_manifest" \
         --reference-root "$reference_root" --output "$result_dir/$engine-$precision-$role-tp-comparison.json"

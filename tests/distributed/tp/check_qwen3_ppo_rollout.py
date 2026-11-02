@@ -92,7 +92,7 @@ def run(args):
         intra_dist_opt=singleton,
     )
     device = torch.device("cuda", torch.cuda.current_device())
-    from examples.post_training.tp_ppo.fixed_contract import CONFIG, OPTIMIZER
+    from tools.validation.models.qwen3_ppo.fixed_contract import CONFIG, OPTIMIZER
 
     config = CONFIG
     services = PPOServices()
@@ -338,12 +338,13 @@ def main():
     )
     parser.add_argument("--gpu-layout", choices=["shared", "dedicated"], default="shared")
     args = parser.parse_args()
-    from examples.post_training.tp_ppo.calibrate_qwen3 import sha
+    from tools.validation.models.qwen3_ppo.calibrate_qwen3 import sha
 
     if subprocess.check_output(["git", "status", "--porcelain"], text=True).strip():
         raise ValueError("formal Qwen3 execution requires clean source")
     manifest_path = (
-        Path(__file__).resolve().parents[3] / "examples/post_training/tp_ppo/qwen3-8b-manifest.json"
+        Path(__file__).resolve().parents[3]
+        / "tools/validation/models/qwen3_ppo/qwen3-8b-manifest.json"
     )
     for record in json.loads(manifest_path.read_text())["files"]:
         artifact = args.checkpoint / record["path"]

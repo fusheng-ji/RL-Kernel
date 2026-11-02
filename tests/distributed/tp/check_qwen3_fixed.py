@@ -12,17 +12,6 @@ from pathlib import Path
 import torch
 import torch.distributed as dist
 
-from examples.post_training.tp_ppo.fixed_contract import (
-    CONFIG,
-    OPTIMIZER,
-    identity,
-    load_packet,
-    load_targets,
-    save_report,
-    sha,
-    verify_checkpoint,
-    write_tensor,
-)
 from rl_engine.integrations.common.ppo import PPOBatch, PPORollout, PPOTrainingWorker
 from rl_engine.integrations.common.tp_scalar import TPScalarExecutor
 from rl_engine.integrations.engines.train.deepspeed.ppo import deepspeed_ppo_worker
@@ -33,6 +22,17 @@ from rl_engine.integrations.engines.train.megatron.qwen3_checkpoint import (
     megatron_to_hf,
 )
 from tests.distributed.tp.check_tp_ppo_frameworks import initialize_engine
+from tools.validation.models.qwen3_ppo.fixed_contract import (
+    CONFIG,
+    OPTIMIZER,
+    identity,
+    load_packet,
+    load_targets,
+    save_report,
+    sha,
+    verify_checkpoint,
+    write_tensor,
+)
 
 
 def canonical(model, group, config, role, buffers=None):

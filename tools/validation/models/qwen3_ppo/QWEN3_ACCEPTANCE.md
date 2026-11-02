@@ -1,5 +1,9 @@
 # Qwen3-8B acceptance (in progress)
 
+Run these tools from the checkout root as modules, for example
+`python -m tools.validation.models.qwen3_ppo.compare_fixed`. The batch scripts in
+this directory take the source checkout as their first argument.
+
 The previous random-GPT FP32 four-GPU result remains a smoke test. No production
 model, BF16 or vLLM TP2 acceptance is claimed yet.
 

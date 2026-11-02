@@ -10,7 +10,7 @@ from pathlib import Path
 
 import torch
 
-from examples.post_training.tp_ppo.fixed_contract import (
+from tools.validation.models.qwen3_ppo.fixed_contract import (
     CONFIG,
     OPTIMIZER,
     identity,

@@ -4,7 +4,12 @@ import argparse
 import json
 from pathlib import Path
 
-from examples.post_training.tp_ppo.fixed_contract import REVISION, load_packet, load_targets, sha
+from tools.validation.models.qwen3_ppo.fixed_contract import (
+    REVISION,
+    load_packet,
+    load_targets,
+    sha,
+)
 
 
 def main():

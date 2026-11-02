@@ -287,3 +287,10 @@ The first submitted allocation is recorded in
 root. This still uses the numerical-validation model and eager FP32 settings.
 A production throughput experiment needs the actual deployment model, precision
 and workload distribution in addition to this dedicated-GPU setup.
+
+## Qwen3-8B qualification tooling
+
+The pretrained Qwen3-8B fixed-rollout qualification (HF reference capture,
+threshold freezing, candidate comparison and their batch scripts) lives in
+`tools/validation/models/qwen3_ppo/`, following the #497 layout for validation
+commands. See `tools/validation/models/qwen3_ppo/QWEN3_ACCEPTANCE.md`.

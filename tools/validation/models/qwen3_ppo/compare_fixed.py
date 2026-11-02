@@ -8,7 +8,7 @@ from pathlib import Path
 
 import torch
 
-from examples.post_training.tp_ppo.fixed_contract import read_tensor, sha
+from tools.validation.models.qwen3_ppo.fixed_contract import read_tensor, sha
 
 
 def errors(x, y):
@@ -98,7 +98,7 @@ def main():
     if contract:
         if not a.acceptance_manifest or not a.reference_root:
             raise ValueError("candidate comparison requires committed acceptance manifest")
-        from examples.post_training.tp_ppo.fixed_contract import verify_reference
+        from tools.validation.models.qwen3_ppo.fixed_contract import verify_reference
 
         frozen = verify_reference(a.reference_root, a.acceptance_manifest, metadata_only=True)
         if right.get("acceptance_manifest_sha256") != sha(a.acceptance_manifest):

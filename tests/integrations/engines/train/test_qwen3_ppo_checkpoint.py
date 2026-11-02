@@ -163,7 +163,7 @@ def test_actor_snapshot_preserves_gate_up_weights_and_gradients(tmp_path, tp):
 
 def test_reference_report_preserves_loading_diagnostics():
     """``report_json_default`` writes sets as sorted lists and rejects other unknown objects."""
-    from examples.post_training.tp_ppo.calibrate_qwen3 import report_json_default
+    from tools.validation.models.qwen3_ppo.calibrate_qwen3 import report_json_default
 
     report = {
         "status": "failed",
@@ -183,10 +183,13 @@ def test_independent_hf_targets_and_losses_match_handled_termination():
 
     Covers the fixture's terminated and length-cut-off rows.
     """
-    from examples.post_training.tp_ppo.fixed_contract import CONFIG
-    from examples.post_training.tp_ppo.hf_ppo_reference import independent_loss, independent_targets
     from rl_engine.integrations.common.ppo import build_ppo_batch, ppo_policy_loss, ppo_value_loss
     from tests.integrations.common.test_ppo import rollout_fixture
+    from tools.validation.models.qwen3_ppo.fixed_contract import CONFIG
+    from tools.validation.models.qwen3_ppo.hf_ppo_reference import (
+        independent_loss,
+        independent_targets,
+    )
 
     rollout = rollout_fixture()
     values = (
@@ -216,8 +219,8 @@ def test_independent_hf_targets_and_losses_match_handled_termination():
 
 def test_independent_hf_targets_reject_a_row_without_action_tokens():
     """``independent_targets`` raises ``ValueError`` for a row with no action tokens."""
-    from examples.post_training.tp_ppo.hf_ppo_reference import independent_targets
     from tests.integrations.common.test_ppo import rollout_fixture
+    from tools.validation.models.qwen3_ppo.hf_ppo_reference import independent_targets
 
     rollout = rollout_fixture()
     packet = dict(rollout.packet())
@@ -230,7 +233,7 @@ def test_independent_hf_targets_reject_a_row_without_action_tokens():
 
 def test_fixed_evidence_rejects_corruption_and_inventory_shape(tmp_path):
     """Evidence tensors round-trip; a wrong manifest shape or altered file bytes is rejected."""
-    from examples.post_training.tp_ppo.fixed_contract import read_tensor, write_tensor
+    from tools.validation.models.qwen3_ppo.fixed_contract import read_tensor, write_tensor
 
     row = write_tensor(tmp_path, "gradient", torch.arange(4.0))
     torch.testing.assert_close(read_tensor(tmp_path, row), torch.arange(4.0))

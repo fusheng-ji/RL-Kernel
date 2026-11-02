@@ -24,6 +24,6 @@ scontrol show job "$SLURM_JOB_ID" > "$result_dir/slurm.txt"
 nvidia-smi -q > "$result_dir/device.txt"
 git rev-parse HEAD > "$result_dir/commit.txt"
 "$python_bin" -m pip freeze > "$result_dir/dependencies.txt"
-"$python_bin" examples/post_training/tp_ppo/calibrate_qwen3.py --checkpoint "$checkpoint" \
-  --manifest examples/post_training/tp_ppo/qwen3-8b-manifest.json --output "$result_dir/reference" \
+"$python_bin" tools/validation/models/qwen3_ppo/calibrate_qwen3.py --checkpoint "$checkpoint" \
+  --manifest tools/validation/models/qwen3_ppo/qwen3-8b-manifest.json --output "$result_dir/reference" \
   > "$result_dir/reference.log" 2>&1
