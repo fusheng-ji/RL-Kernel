@@ -31,7 +31,11 @@ example's width constraint.
   and `use_cache=False`. `replicated` means that the model already completed
   head communication. `local_sum` means additive rank-local head contributions;
   include the bias on exactly one rank. This layout must be identical throughout
-  a TP group. Reward pooling happens before reducing only `[B]` to its leader.
+  a TP group. Reward pooling happens before reducing only `[B]`. Every TP
+  reduction (head outputs, rewards, the gradient norm and `partial` gradients)
+  uses the v0.1.0 fixed balanced tree (`DeterministicCollective` on CUDA).
+  `MegatronScalarAdapter` reduces its canonical FP32 head leaves itself, adds the
+  bias afterwards and is wrapped with `output_layout="replicated"`.
 - Critic `values()` keeps autograd enabled. `sum_tp_contributions()` performs
   SUM in forward and identity in backward because **every TP rank evaluates the
   same loss**. It is not a general-purpose distributed-autograd SUM. Adapters
@@ -50,9 +54,13 @@ example's width constraint.
   synthetic-logprob or synthetic-reward fallback. `sample_ids` preserve ordering;
   Actor/Critic version scalars must match the coordinator.
 - `PPOTrainingWorker` takes an explicit optimizer, a score callback, and a
-  `sharded`/`replicated` layout for every trainable parameter. Replicated gradients
-  must already be synchronized by the adapter; they count once in the global
-  clipping norm. The optimizer must own exactly those trainable parameters.
+  `sharded`/`replicated`/`partial` layout for every trainable parameter. Replicated
+  gradients must already be synchronized by the adapter; they count once in the
+  global clipping norm. `partial` marks replicated parameters whose gradients are
+  TP partial sums (Megatron Q/K RMSNorm weights act on local heads only): the
+  worker sums them with the fixed-tree all-reduce in the optimizer's actual
+  buffers, FP32 masters included, before clipping and stepping. The optimizer
+  must own exactly those trainable parameters.
   Models run in eval mode with autograd enabled to avoid changing the behavior
   policy through dropout. Caller model modes are restored afterward.
 - `PPOProcessGroups` describes three disjoint role groups, their leaders, a
@@ -118,8 +126,9 @@ end-to-end speedup is claimed without a representative model benchmark.
 ## Real Megatron Core / DeepSpeed checks
 
 `rl_engine/integrations/engines/train/{megatron,deepspeed}/ppo.py` adds explicit adapters for a real
-Megatron `GPTModel`, vocabulary-parallel selected logprobs and a feature-sharded
-scalar head. `DeepSpeedTPGroups` supplies the legacy MPU methods required by
+Megatron `GPTModel`, vocabulary-parallel selected logprobs (RL-Kernel's
+deterministic tiled vocab-parallel logp, not Megatron's cross entropy) and a
+feature-sharded scalar head. `DeepSpeedTPGroups` supplies the legacy MPU methods required by
 DeepSpeed using actual TP and singleton DP groups. `deepspeed_ppo_worker()` uses
 the engine's `backward()` and `step()` hooks; passing a DeepSpeed engine through
 the plain PyTorch optimizer path is not sufficient.

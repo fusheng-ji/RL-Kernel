@@ -5,7 +5,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Literal
+from typing import Literal, Sequence
 
 import torch
 import torch.distributed as dist
@@ -47,6 +47,48 @@ class TPModelInputs:
         )
 
 
+def balanced_tree_sum(parts: Sequence[torch.Tensor]) -> torch.Tensor:
+    """Sum ``parts`` pairwise in the v0.1.0 fixed balanced tree, lower subtree first.
+
+    For four inputs this is ``(p0 + p1) + (p2 + p3)``: the order used by
+    ``DeterministicCollective.all_reduce`` across ranks. Contiguous leaf blocks
+    therefore reduce to the same value whether one rank or several hold them.
+    """
+    nodes = list(parts)
+    if not nodes:
+        raise ValueError("balanced tree sum requires at least one input")
+    stride = 1
+    while stride < len(nodes):
+        for index in range(0, len(nodes) - stride, 2 * stride):
+            nodes[index] = nodes[index] + nodes[index + stride]
+        stride *= 2
+    return nodes[0]
+
+
+def deterministic_tp_all_reduce_(tensor: torch.Tensor, group: dist.ProcessGroup) -> torch.Tensor:
+    """Replace ``tensor`` with its fixed-tree SUM over ``group`` on every rank.
+
+    CUDA FP32/BF16/FP16 tensors use RL-Kernel's ``DeterministicCollective``
+    (via the shared linear-logp helper). Other tensors, including FP64 norm
+    partials and CPU tensors, are all-gathered (bit-exact transport) and summed
+    locally in the same balanced tree, so every rank and every backend agrees.
+    """
+    world = dist.get_world_size(group)
+    if world == 1:
+        return tensor
+    if tensor.is_cuda and tensor.dtype in (torch.float32, torch.bfloat16, torch.float16):
+        from rl_engine.reference.logprob.linear_logp import _deterministic_tp_all_reduce_
+
+        if tensor.is_contiguous():
+            return _deterministic_tp_all_reduce_(tensor, group)
+        reduced = _deterministic_tp_all_reduce_(tensor.contiguous(), group)
+        return tensor.copy_(reduced)
+    gathered = [torch.empty_like(tensor) for _ in range(world)]
+    dist.all_gather(gathered, tensor.contiguous(), group=group)
+    with torch.no_grad():
+        return tensor.copy_(balanced_tree_sum(gathered))
+
+
 class _SumLocalHead(torch.autograd.Function):
     """SUM forward, identity backward for a replicated loss on every TP rank.
 
@@ -56,10 +98,8 @@ class _SumLocalHead(torch.autograd.Function):
 
     @staticmethod
     def forward(ctx, value: torch.Tensor, group: dist.ProcessGroup) -> torch.Tensor:
-        """All-reduce (SUM) a clone of ``value`` over ``group``, leaving the input unchanged."""
-        result = value.clone()
-        dist.all_reduce(result, group=group)
-        return result
+        """Fixed-tree SUM of a clone of ``value`` over ``group``, leaving the input unchanged."""
+        return deterministic_tp_all_reduce_(value.clone(), group)
 
     @staticmethod
     def backward(ctx, gradient: torch.Tensor):
@@ -68,10 +108,51 @@ class _SumLocalHead(torch.autograd.Function):
 
 
 def sum_tp_contributions(value: torch.Tensor, group: dist.ProcessGroup) -> torch.Tensor:
-    """Sum additive outputs for identical losses on all ranks (identity backward)."""
+    """Sum additive outputs for identical losses on all ranks (identity backward).
+
+    The cross-rank combine is the v0.1.0 fixed tree. Bitwise TP invariance also
+    requires each rank's input to be its canonical subtree root (see
+    ``canonical_feature_dot``).
+    """
     if group is None or dist.get_rank(group) < 0:
         raise ValueError("an explicit TP group containing this rank is required")
     return _SumLocalHead.apply(value, group) if dist.get_world_size(group) > 1 else value
+
+
+def canonical_chunks(tp_world: int, canonical_tp: int | None) -> int:
+    """Return the canonical leaf count per rank; ``None`` means one leaf per rank."""
+    canonical = tp_world if canonical_tp is None else canonical_tp
+    if tp_world < 1 or canonical < tp_world or canonical % tp_world:
+        raise ValueError("canonical TP must be a positive multiple of physical TP")
+    chunks = canonical // tp_world
+    if chunks & (chunks - 1):
+        raise ValueError("canonical TP chunks must form a balanced binary tree")
+    return chunks
+
+
+def canonical_feature_dot(
+    features: torch.Tensor, weight: torch.Tensor, *, tp_world: int, canonical_tp: int
+) -> torch.Tensor:
+    """FP32 ``features @ weight`` over this rank's feature shard as a canonical subtree root.
+
+    The shard is split into ``canonical_tp / tp_world`` equal leaves, each an FP32
+    product-sum over the same leaf width at every TP size, and the leaves are
+    tree-summed. Followed by ``sum_tp_contributions`` the result is the same
+    balanced tree over ``canonical_tp`` leaves at TP 1, 2, 4 or 8.
+    """
+    chunks = canonical_chunks(tp_world, canonical_tp)
+    if weight.ndim != 1 or features.shape[-1] != weight.shape[0] or weight.shape[0] % chunks:
+        raise ValueError("feature shard does not divide the canonical TP leaves")
+    width = weight.shape[0] // chunks
+    return balanced_tree_sum(
+        [
+            (
+                features[..., i * width : (i + 1) * width].float()
+                * weight[i * width : (i + 1) * width].float()
+            ).sum(-1)
+            for i in range(chunks)
+        ]
+    )
 
 
 class TPScalarExecutor:
@@ -163,14 +244,39 @@ class TPScalarExecutor:
                 last = positions.expand_as(rewards).masked_fill(~inputs.attention_mask, -1)
                 rewards = rewards.gather(1, last.max(dim=1).values[:, None]).squeeze(1)
             if self.output_layout == "local_sum" and dist.get_world_size(self.group) > 1:
-                rewards = rewards.clone()
-                dist.reduce(rewards, dst=self.leader, group=self.group)
+                rewards = deterministic_tp_all_reduce_(rewards.clone(), self.group)
                 self.head_metrics["reduce_calls"] += 1
                 self.head_metrics["payload_bytes"] += rewards.numel() * rewards.element_size()
             return rewards if dist.get_rank() == self.leader else None
         finally:
             for module, training in modes:
                 module.training = training
+
+
+def _canonical_square_sums(
+    grad: torch.Tensor, parameter: torch.nn.Parameter, chunks: int
+) -> list[torch.Tensor]:
+    """FP64 squared sums of a sharded gradient's canonical leaves, in leaf order.
+
+    The shard is cut along Megatron's ``partition_dim`` into ``chunks`` pieces
+    per ``partition_stride`` block; leaf ``i`` concatenates piece ``i`` of every
+    block, so leaf contents and shapes are independent of the TP size.
+    """
+    if chunks == 1:
+        return [grad.detach().to(torch.float64).square().sum()]
+    dim = getattr(parameter, "partition_dim", None)
+    stride = int(getattr(parameter, "partition_stride", 1))
+    if dim is None or grad.shape[dim] % (stride * chunks):
+        raise ValueError("canonical TP clipping requires divisible Megatron partition_dim shards")
+    blocks = grad.detach().chunk(stride, dim=dim)
+    sums = []
+    for i in range(chunks):
+        leaf = [block.chunk(chunks, dim=dim)[i].contiguous().to(torch.float64) for block in blocks]
+        total = leaf[0].square().sum()
+        for piece in leaf[1:]:
+            total = total + piece.square().sum()
+        sums.append(total)
+    return sums
 
 
 def clip_tp_grad_norm_(
@@ -180,11 +286,20 @@ def clip_tp_grad_norm_(
     max_norm: float,
     device: torch.device,
     gradients: list[torch.Tensor | None] | None = None,
+    canonical_tp: int | None = None,
 ) -> torch.Tensor:
-    """Clip TP gradients; layouts are 'sharded' or already-synchronized 'replicated'.
+    """Clip TP gradients; layouts are 'sharded' or already-synchronized 'replicated'/'partial'.
 
     Replicated gradients contribute once to the global norm, but are scaled on
     every rank. This function never synchronizes model parameter gradients.
+
+    The squared norm follows the v0.1.0 reduction tree: every rank forms
+    ``canonical_tp / TP`` FP64 leaves (sharded gradients split along their
+    Megatron ``partition_dim``; replicated ones added to global leaf 0 once),
+    sums each leaf over parameters in order, tree-sums its leaves and combines
+    ranks with the fixed tree. With a fixed ``canonical_tp`` and identical full
+    gradients the norm is bitwise identical at every TP size; ``None`` uses one
+    leaf per rank.
     """
     if group is None or dist.get_rank(group) < 0:
         raise ValueError("an explicit TP group containing this rank is required")
@@ -196,19 +311,35 @@ def clip_tp_grad_norm_(
         error = "gradient buffer shapes must match parameters"
     if max_norm <= 0:
         error = "max_norm must be positive"
-    if any(layout not in ("sharded", "replicated") for _, layout in parameters):
-        error = "parameter layout must be sharded or replicated"
+    if any(layout not in ("sharded", "replicated", "partial") for _, layout in parameters):
+        error = "parameter layout must be sharded, replicated or partial"
     if any(
         g is not None and (g.is_sparse or g.device != device or not g.is_floating_point())
         for g in grads
     ):
         error = "gradients must be dense and on the configured device"
+    try:
+        chunks = canonical_chunks(dist.get_world_size(group), canonical_tp)
+    except ValueError as exc:
+        error, chunks = str(exc), 1
     synchronize_validation(error, group=group, device=device)
-    squared = torch.zeros((), dtype=torch.float64, device=device)
-    for grad, (_, layout) in zip(grads, parameters):
-        if grad is not None and (layout == "sharded" or dist.get_rank(group) == 0):
-            squared += grad.detach().to(torch.float64).square().sum()
-    dist.all_reduce(squared, group=group)
+    zero = torch.zeros((), dtype=torch.float64, device=device)
+    leaves = [zero.clone() for _ in range(chunks)]
+    first_rank = dist.get_rank(group) == 0
+    error = None
+    try:
+        for grad, (parameter, layout) in zip(grads, parameters):
+            if grad is None:
+                continue
+            if layout == "sharded":
+                for i, value in enumerate(_canonical_square_sums(grad, parameter, chunks)):
+                    leaves[i] = leaves[i] + value
+            elif first_rank:
+                leaves[0] = leaves[0] + grad.detach().to(torch.float64).square().sum()
+    except ValueError as exc:
+        error = str(exc)
+    synchronize_validation(error, group=group, device=device)
+    squared = deterministic_tp_all_reduce_(balanced_tree_sum(leaves).reshape(1), group)[0]
     norm = squared.sqrt()
     if not torch.isfinite(norm):
         raise ValueError("non-finite TP gradient norm")

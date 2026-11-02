@@ -199,10 +199,10 @@ def run(args):
             services.export = lambda: snapshot(trainable.model, local)
         else:
             services.critic = TPScalarExecutor(
-                training_model, group=local, leader=2, output_layout="local_sum"
+                training_model, group=local, leader=2, output_layout="replicated"
             )
             services.reward = TPScalarExecutor(
-                frozen, group=local, leader=2, output_layout="local_sum"
+                frozen, group=local, leader=2, output_layout="replicated"
             )
             forward = services.critic.values
         services.worker = (

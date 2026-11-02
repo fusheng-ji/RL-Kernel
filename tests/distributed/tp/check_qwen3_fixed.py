@@ -159,7 +159,7 @@ def main():
             trainable
             if a.role == "actor"
             else TPScalarExecutor(
-                trainable, group=group, leader=0, output_layout="local_sum"
+                trainable, group=group, leader=0, output_layout="replicated"
             ).values
         )
         if engine is not None:

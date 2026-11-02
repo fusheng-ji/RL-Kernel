@@ -105,7 +105,7 @@ def make_model(
     )
     group = backbone.pg_collection.tp
     if policy:
-        return MegatronPolicyAdapter(backbone).eval()
+        return MegatronPolicyAdapter(backbone, num_vocab_tiles=8).eval()
     head = torch.nn.Linear(hidden_size // tp, 1, bias=False, device="cuda")
     generator = torch.Generator().manual_seed(144)
     master = torch.randn(1, hidden_size, generator=generator) * 0.05
@@ -239,11 +239,11 @@ def run(framework: str, tp: int):
     reward_model = make_model(tp, policy=False).requires_grad_(False)
     reward_initial = snapshot(reward_model, group)
     reward_executor = TPScalarExecutor(
-        reward_model, group=group, leader=leader, output_layout="local_sum"
+        reward_model, group=group, leader=leader, output_layout="replicated"
     )
     engine = initialize_engine(scalar) if framework == "deepspeed" else None
     model = engine if engine is not None else scalar
-    executor = TPScalarExecutor(model, group=group, leader=leader, output_layout="local_sum")
+    executor = TPScalarExecutor(model, group=group, leader=leader, output_layout="replicated")
     reward = reward_executor.rewards(sample.inputs)
     if reward is None:
         reward = torch.empty(2, device=device)

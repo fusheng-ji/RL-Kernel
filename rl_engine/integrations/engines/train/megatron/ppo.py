@@ -11,7 +11,12 @@ from __future__ import annotations
 import torch
 import torch.distributed as dist
 
-from rl_engine.integrations.common.tp_scalar import TPModelInputs
+from rl_engine.integrations.common.tp_scalar import (
+    TPModelInputs,
+    canonical_feature_dot,
+    sum_tp_contributions,
+)
+from rl_engine.reference.logprob.vocab_parallel_logp import DEFAULT_NUM_VOCAB_TILES
 
 
 def megatron_attention_mask(attention_mask: torch.Tensor) -> torch.Tensor:
@@ -29,12 +34,15 @@ def megatron_attention_mask(attention_mask: torch.Tensor) -> torch.Tensor:
 
 
 class MegatronScalarAdapter(torch.nn.Module):
-    """GPTModel(post_process=False) plus an additive feature-sharded scalar head.
+    """GPTModel(post_process=False) plus a feature-sharded scalar head.
 
     head is a Linear(H/TP, 1, bias=False); bias is held only on the TP leader.
     The head's full input is scattered using Megatron's autograd mapping, so
     its backward gathers all feature-gradient shards before the backbone.
-    Use TPScalarExecutor(output_layout='local_sum') around this adapter.
+    The head output follows the v0.1.0 reduction tree: FP32 leaves over
+    ``H / canonical_tp`` features, a local subtree, the fixed-tree TP
+    all-reduce, then the bias. Outputs are replicated; use
+    TPScalarExecutor(output_layout='replicated') around this adapter.
     """
 
     def __init__(
@@ -44,14 +52,16 @@ class MegatronScalarAdapter(torch.nn.Module):
         *,
         group: dist.ProcessGroup,
         leader: int,
+        canonical_tp: int = 8,
     ) -> None:
         """Validate the TP layout, mark ``head.weight`` TP-sharded on dim 1 and create the bias.
 
         ``head.weight`` is annotated ``partition_dim=1`` (sharded over input features).
         ``leader`` is a global rank in ``group``; only it holds a trainable zero bias, while the
-        other ranks hold a zero buffer. Raises ``ValueError`` for a missing group or leader, a
-        backbone on another TP group, with ``post_process`` or with SP/PP, or a head that is
-        not ``Linear(hidden_size / TP, 1, bias=False)``.
+        other ranks hold a zero buffer. ``canonical_tp`` fixes the head's leaf count and
+        must be the same for every TP size whose results are compared. Raises ``ValueError``
+        for a missing group or leader, a backbone on another TP group, with ``post_process``
+        or with SP/PP, or a head that is not ``Linear(hidden_size / TP, 1, bias=False)``.
         """
         super().__init__()
         if group is None or dist.get_rank(group) < 0:
@@ -71,6 +81,13 @@ class MegatronScalarAdapter(torch.nn.Module):
         ):
             raise ValueError("head must be Linear(hidden_size/TP, 1, bias=False)")
         self.backbone, self.head, self.group = backbone, head, group
+        self.canonical_tp = canonical_tp
+        canonical_feature_dot(
+            head.weight.new_zeros(head.in_features),
+            head.weight[0],
+            tp_world=dist.get_world_size(group),
+            canonical_tp=canonical_tp,
+        )
         head.weight.tensor_model_parallel = True
         head.weight.partition_dim = 1
         head.weight.partition_stride = 1
@@ -84,10 +101,10 @@ class MegatronScalarAdapter(torch.nn.Module):
             )
 
     def forward(self, input_ids, attention_mask, position_ids, use_cache=False):
-        """Return this rank's additive share of the per-token scalar as a ``[B, S]`` tensor.
+        """Return the replicated FP32 per-token scalar as a ``[B, S]`` tensor.
 
-        Summing the shares over the TP group gives the full head output plus the leader's bias.
         ``attention_mask`` is the bool token-validity mask; ``use_cache=True`` is rejected.
+        The leader's bias is added after the TP reduction, outside the tree.
         """
         from megatron.core.tensor_parallel.mappings import scatter_to_tensor_model_parallel_region
 
@@ -99,18 +116,39 @@ class MegatronScalarAdapter(torch.nn.Module):
             attention_mask=megatron_attention_mask(attention_mask),
         )
         local = scatter_to_tensor_model_parallel_region(hidden, group=self.group)
-        return (self.head(local).squeeze(-1) + self.bias).transpose(0, 1).contiguous()
+        partial = canonical_feature_dot(
+            local,
+            self.head.weight[0],
+            tp_world=dist.get_world_size(self.group),
+            canonical_tp=self.canonical_tp,
+        )
+        values = sum_tp_contributions(partial, self.group)
+        bias = sum_tp_contributions(self.bias.float(), self.group)
+        return (values + bias).transpose(0, 1).contiguous()
 
 
 class MegatronPolicyAdapter(torch.nn.Module):
-    """Selected-token logprobs from GPTModel's vocabulary-parallel output."""
+    """Selected-token logprobs from GPTModel's vocabulary-parallel output.
 
-    def __init__(self, model: torch.nn.Module, *, real_vocab_size: int | None = None) -> None:
+    Logprobs use RL-Kernel's deterministic vocab-parallel logp: FP32 per-tile
+    ``(max, sumexp)`` partials over ``num_vocab_tiles`` fixed tiles move by
+    all-gather and are merged in global tile order, so the result does not
+    depend on the TP size when the padded vocabulary and tile count match.
+    """
+
+    def __init__(
+        self,
+        model: torch.nn.Module,
+        *,
+        real_vocab_size: int | None = None,
+        num_vocab_tiles: int = DEFAULT_NUM_VOCAB_TILES,
+    ) -> None:
         """Wrap a vocabulary-parallel GPTModel (``post_process`` and ``parallel_output`` set).
 
         Raises ``ValueError`` if the model uses SP/PP or its TP group is not
-        ``parallel_state``'s tensor-model-parallel group, which the vocab-parallel CE uses.
+        ``parallel_state``'s tensor-model-parallel group.
         ``real_vocab_size``, when given, excludes padded vocabulary entries from the logprobs.
+        ``num_vocab_tiles`` must divide the padded vocabulary with tile-aligned TP shards.
         """
         from megatron.core import parallel_state
 
@@ -120,40 +158,79 @@ class MegatronPolicyAdapter(torch.nn.Module):
         if model.config.sequence_parallel or model.config.pipeline_model_parallel_size != 1:
             raise ValueError("policy adapter requires no SP/PP")
         if model.pg_collection.tp is not parallel_state.get_tensor_model_parallel_group():
-            raise ValueError("policy CE and model must use the same Megatron TP group")
+            raise ValueError("policy logp and model must use the same Megatron TP group")
         self.model = model
         self.real_vocab_size = real_vocab_size
+        self.num_vocab_tiles = num_vocab_tiles
 
     def forward(self, inputs: TPModelInputs) -> torch.Tensor:
         """Return FP32 logprobs of each next input token as a ``[B, S-1]`` tensor.
 
-        Vocabulary entries at or beyond ``real_vocab_size`` are masked to ``-inf`` first.
+        Vocabulary entries at or beyond ``real_vocab_size`` are excluded.
         """
-        from megatron.core.tensor_parallel.cross_entropy import vocab_parallel_cross_entropy
+        from rl_engine.contracts.operators.logprob import (
+            LogprobContract,
+            LogprobDType,
+            LogprobRole,
+            MaskSpec,
+            ReductionSpec,
+            ShardingSpec,
+        )
+        from rl_engine.reference.logprob.vocab_parallel_logp import VocabParallelLogprobOp
 
         logits = self.model(
             input_ids=inputs.input_ids,
             position_ids=inputs.position_ids,
             attention_mask=megatron_attention_mask(inputs.attention_mask),
         )
-        if self.real_vocab_size is not None:
-            start = dist.get_rank(self.model.pg_collection.tp) * logits.shape[-1]
-            padding = torch.arange(logits.shape[-1], device=logits.device) + start
-            logits = logits.masked_fill(padding >= self.real_vocab_size, float("-inf"))
-        # Megatron CE owns the vocabulary collectives and their backward semantics.
-        return -vocab_parallel_cross_entropy(
-            logits[:, :-1].float().contiguous(), inputs.input_ids[:, 1:].contiguous()
+        group = self.model.pg_collection.tp
+        rank, world = dist.get_rank(group), dist.get_world_size(group)
+        batch, width, local_vocab = logits.shape[0], logits.shape[1] - 1, logits.shape[-1]
+        padded = local_vocab * world
+        local_logits = logits[:, :-1].float().reshape(batch * width, local_vocab)
+        contract = LogprobContract(
+            role=LogprobRole.TRAIN,
+            dtype=LogprobDType.FP32,
+            mask=MaskSpec(num_tokens=batch * width, active_mask=(True,) * (batch * width)),
+            sharding=ShardingSpec(
+                tp_rank=rank,
+                tp_world_size=world,
+                vocab_shard_bounds=tuple(
+                    (r * local_vocab, (r + 1) * local_vocab) for r in range(world)
+                ),
+                real_vocab_size=self.real_vocab_size or padded,
+                padded_vocab_size=padded,
+            ),
+            reduction=ReductionSpec(),
         )
+        logps, _ = VocabParallelLogprobOp()(
+            local_logits,
+            inputs.input_ids[:, 1:].reshape(-1),
+            contract=contract,
+            tp_group=group,
+            num_vocab_tiles=self.num_vocab_tiles,
+        )
+        return logps.reshape(batch, width)
+
+
+_PARTIAL_GRADIENT_MODULES = ("q_layernorm", "k_layernorm")
 
 
 def megatron_parameter_layouts(model: torch.nn.Module) -> dict[str, str]:
-    """Use Megatron's parameter annotations; a leader-only scalar bias is sharded."""
+    """Use Megatron's parameter annotations; a leader-only scalar bias is sharded.
+
+    Q/K RMSNorm weights are replicated but normalize only this rank's heads,
+    so their gradients are TP partial sums: they get the ``partial`` layout.
+    """
     layouts = {}
     for name, parameter in model.named_parameters():
         if parameter.requires_grad:
-            layouts[name] = (
-                "sharded" if getattr(parameter, "tensor_model_parallel", False) else "replicated"
-            )
+            if getattr(parameter, "tensor_model_parallel", False):
+                layouts[name] = "sharded"
+            elif set(name.split(".")).intersection(_PARTIAL_GRADIENT_MODULES):
+                layouts[name] = "partial"
+            else:
+                layouts[name] = "replicated"
     for module_name, module in model.named_modules():
         if (
             isinstance(module, MegatronScalarAdapter)

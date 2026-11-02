@@ -10,7 +10,11 @@ from typing import Callable, Literal, Mapping
 import torch
 import torch.distributed as dist
 
-from rl_engine.integrations.common.tp_scalar import TPModelInputs, clip_tp_grad_norm_
+from rl_engine.integrations.common.tp_scalar import (
+    TPModelInputs,
+    clip_tp_grad_norm_,
+    deterministic_tp_all_reduce_,
+)
 from rl_engine.integrations.common.weights import synchronize_validation
 
 
@@ -25,6 +29,7 @@ class PPOConfig:
     minibatch_size: int = 8
     max_grad_norm: float = 1.0
     microbatch_size: int | None = None
+    canonical_tp: int | None = None
 
     def __post_init__(self) -> None:
         """Raise ``ValueError`` on a non-finite float field or an out-of-range value.
@@ -36,6 +41,8 @@ class PPOConfig:
 
         if self.microbatch_size is not None and self.microbatch_size < 1:
             raise ValueError("microbatch_size must be positive")
+        if self.canonical_tp is not None and self.canonical_tp < 1:
+            raise ValueError("canonical_tp must be positive")
 
         numeric = (
             self.gamma,
@@ -308,6 +315,13 @@ class PPOTrainingWorker:
     Frameworks may supply paired backward/step callbacks; clipping still acts
     on the explicitly supplied unscaled optimizer buffers between those calls.
     update_observer, when used, must be set on every TP rank of the group.
+
+    Layouts: ``sharded`` (TP-partitioned), ``replicated`` (identical gradient on
+    every rank) or ``partial`` (replicated parameter whose gradient is a TP
+    partial sum, e.g. Q/K RMSNorm weights applied to local heads). Partial
+    gradients are summed with the deterministic fixed-tree all-reduce in the
+    optimizer's actual buffers (FP32 masters included) before observation,
+    clipping and step, so every replica applies the same update.
     """
 
     def __init__(
@@ -329,8 +343,8 @@ class PPOTrainingWorker:
 
         ``backward`` and ``step`` must be given together. The optimized parameters (from
         ``gradient_state.parameters`` when given) must be unique and exactly the trainable
-        ones, each with a ``sharded`` or ``replicated`` layout. Without framework callbacks,
-        ``backward`` is ``torch.Tensor.backward`` and ``step`` is ``optimizer.step``.
+        ones, each with a ``sharded``, ``replicated`` or ``partial`` layout. Without framework
+        callbacks, ``backward`` is ``torch.Tensor.backward`` and ``step`` is ``optimizer.step``.
         """
         if role not in ("actor", "critic"):
             raise ValueError("role must be actor or critic")
@@ -348,7 +362,10 @@ class PPOTrainingWorker:
             raise ValueError("parameter_layouts must cover every trainable parameter")
         if {id(p) for p in optimized} != {id(p) for p in named.values() if p.requires_grad}:
             raise ValueError("optimizer must own exactly the trainable model parameters")
-        if any(layout not in ("sharded", "replicated") for layout in parameter_layouts.values()):
+        if any(
+            layout not in ("sharded", "replicated", "partial")
+            for layout in parameter_layouts.values()
+        ):
             raise ValueError("unknown parameter layout")
         self.role, self.model, self.forward = role, model, forward
         self.optimizer, self.group, self.config = optimizer, group, config
@@ -368,6 +385,32 @@ class PPOTrainingWorker:
         except Exception as exc:
             error = f"PPO evidence observer failed: {type(exc).__name__}: {exc}"
         synchronize_validation(error, group=self.group, device=device)
+
+    def _synchronize_partial_gradients(
+        self, gradients: list[torch.Tensor | None] | None, device: torch.device
+    ) -> None:
+        """Sum ``partial`` gradients over TP in the buffers that clipping and step consume.
+
+        A rank without a local contribution reduces zeros, so the collective
+        sequence stays aligned across the group.
+        """
+        if dist.get_world_size(self.group) == 1:
+            return
+        buffers = [p.grad for p, _ in self.parameters] if gradients is None else list(gradients)
+        error = None
+        for index, ((parameter, layout), grad) in enumerate(zip(self.parameters, buffers)):
+            if layout != "partial" or grad is not None:
+                continue
+            if gradients is not None:
+                error = "partial-layout optimizer gradient buffer is missing"
+                break
+            parameter.grad = torch.zeros_like(parameter)
+            buffers[index] = parameter.grad
+        synchronize_validation(error, group=self.group, device=device)
+        with torch.no_grad():
+            for (_, layout), grad in zip(self.parameters, buffers):
+                if layout == "partial" and grad is not None:
+                    deterministic_tp_all_reduce_(grad, self.group)
 
     def train(self, batch: PPOBatch) -> dict[str, float | int]:
         """Update this role on identical TP minibatches with token-weighted accumulation.
@@ -470,6 +513,7 @@ class PPOTrainingWorker:
                     except (ValueError, RuntimeError, KeyError) as exc:
                         error = str(exc)
                     synchronize_validation(error, group=self.group, device=indices.device)
+                    self._synchronize_partial_gradients(gradients, indices.device)
                     self._observe(
                         observer, "before_clip", len(losses), gradients, loss_value, indices.device
                     )
@@ -479,6 +523,7 @@ class PPOTrainingWorker:
                         group=self.group,
                         max_norm=self.config.max_grad_norm,
                         device=indices.device,
+                        canonical_tp=self.config.canonical_tp,
                     )
                     self._observe(
                         observer, "after_clip", len(losses), gradients, float(norm), indices.device

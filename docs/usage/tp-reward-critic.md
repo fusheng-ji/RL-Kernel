@@ -15,8 +15,8 @@ building blocks are in `rl_engine/integrations/common/weights.py` and
    contains the rollout leader and every rank of the Reward TP group.
 2. **TP forward.** Each TP rank runs `TPScalarExecutor.rewards()` on the same
    tokens. Rewards are pooled at the last valid token **before** any
-   communication, so a `local_sum` model needs one reduce of `B` scalars to the
-   TP leader. No hidden states or vocabulary logits are gathered.
+   communication, so a `local_sum` model needs one fixed-tree all-reduce of `B`
+   scalars (the v0.1.0 reduction tree; `DeterministicCollective` on CUDA). No hidden states or vocabulary logits are gathered.
 3. **Rewards back to rollout.** The TP leader broadcasts the `[B]` rewards with
    another `TensorPacketBridge` whose group contains the TP leader and the
    rollout ranks.
@@ -49,6 +49,8 @@ rewards = back.broadcast(("rewards",), {"rewards": rewards} if rank == reward_le
   - It returns `[B, S]` values, or `[B]` or `[B, S]` rewards.
   - `output_layout="replicated"` means the model has already completed its own head communication.
   - `output_layout="local_sum"` means each rank returns an additive contribution. Include any bias on exactly one rank.
+    The contributions are summed with the fixed balanced tree. Results are bitwise identical across TP sizes only
+    when each rank returns its canonical subtree root (see `canonical_feature_dot`).
   - The layout must be the same on every rank of a TP group.
 - **`rewards()`:**
   - Runs without gradients, in eval mode, and restores the caller's module modes afterwards.
@@ -58,9 +60,14 @@ rewards = back.broadcast(("rewards",), {"rewards": rewards} if rank == reward_le
   - Its `local_sum` reduction (`sum_tp_contributions`) is SUM in forward and identity in backward, because every TP rank evaluates the same loss. It is not a general distributed-autograd SUM.
 - **`clip_tp_grad_norm_`:**
   - Clips Critic gradients by the TP-global norm.
-  - Takes a layout per parameter: `sharded`, or `replicated` if the gradient is already synchronized.
+  - Takes a layout per parameter: `sharded`, or `replicated`/`partial` if the gradient is already synchronized.
   - Replicated gradients count once in the norm.
-- **Equivalence:** native PyTorch reductions give numerical, not bitwise, equivalence across TP sizes.
+  - The squared norm follows the v0.1.0 tree: FP64 leaves per canonical shard
+    (`canonical_tp`, split along Megatron's `partition_dim`), a local subtree and the
+    fixed-tree cross-rank combine.
+- **Equivalence:** with a fixed `canonical_tp` and canonical subtree inputs, head outputs and
+  gradient norms are bitwise identical across TP sizes; otherwise the fixed tree still makes
+  each TP size deterministic.
 
 `TPScalarExecutor.head_metrics` and `TensorPacketBridge.metrics` count reduce
 calls and payload bytes, excluding the small validation collectives.
