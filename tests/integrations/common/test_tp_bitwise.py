@@ -129,13 +129,20 @@ def _reduction_worker(rank, size, rendezvous, backend):
 
         # 3. Gradient norm and clipping with column, fused gate/up, row and replicated params.
         specs = (("column", (16, 8), 0, 1), ("gate_up", (32, 8), 0, 2), ("row", (8, 16), 1, 1))
-        full_grads = {
+        random_grads = {
             name: wide_range(*shape, seed=20 + i, device=device)
             for i, (name, shape, _, _) in enumerate(specs)
         }
-        full_grads["norm"] = wide_range(8, seed=30, device=device)
+        random_grads["norm"] = wide_range(8, seed=30, device=device)
+        # Canonical leaves [2**54, 2, 2, 2, 2, 2, 2, 2]: the balanced tree keeps the twos
+        # (2**54 + 12) while a left fold rounds every two away (2**54), on any backend.
+        crafted_grads = {name: torch.zeros(shape, device=device) for name, shape, _, _ in specs}
+        crafted_grads["norm"] = torch.zeros(8, device=device)
+        crafted_grads["column"][0, 0] = 2.0**27
+        for leaf in range(1, CANONICAL_TP):
+            crafted_grads["column"][2 * leaf, :2] = 1.0
 
-        def parameters(tp_rank, tp_size):
+        def parameters(full_grads, tp_rank, tp_size):
             out = []
             for name, shape, dim, stride in specs:
                 grad = _shard(full_grads[name], tp_rank, tp_size, dim, stride).clone()
@@ -148,28 +155,31 @@ def _reduction_worker(rank, size, rendezvous, backend):
             out.append((norm, "replicated"))
             return out
 
-        reference_params = parameters(0, 1)
-        reference_norm = clip_tp_grad_norm_(
-            reference_params,
-            group=single,
-            max_norm=1.0,
-            device=device,
-            canonical_tp=CANONICAL_TP,
-        )
-        naive = torch.stack([g.double().square().sum() for g in full_grads.values()]).sum().sqrt()
-        assert not torch.equal(_bits(naive), _bits(reference_norm)), "data cannot detect order"
-        tp_params = parameters(rank, size)
-        tp_norm = clip_tp_grad_norm_(
-            tp_params, group=group, max_norm=1.0, device=device, canonical_tp=CANONICAL_TP
-        )
-        assert_bitwise(tp_norm, reference_norm)
-        for (parameter, _), (reference_parameter, _), (_, _, dim, stride) in zip(
-            tp_params, reference_params, specs
-        ):
-            assert_bitwise(
-                parameter.grad, _shard(reference_parameter.grad, rank, size, dim, stride)
+        for full_grads in (random_grads, crafted_grads):
+            reference_params = parameters(full_grads, 0, 1)
+            reference_norm = clip_tp_grad_norm_(
+                reference_params,
+                group=single,
+                max_norm=1.0,
+                device=device,
+                canonical_tp=CANONICAL_TP,
             )
-        assert_bitwise(tp_params[-1][0].grad, reference_params[-1][0].grad)
+            tp_params = parameters(full_grads, rank, size)
+            tp_norm = clip_tp_grad_norm_(
+                tp_params, group=group, max_norm=1.0, device=device, canonical_tp=CANONICAL_TP
+            )
+            assert_bitwise(tp_norm, reference_norm)
+            for (parameter, _), (reference_parameter, _), (_, _, dim, stride) in zip(
+                tp_params, reference_params, specs
+            ):
+                assert_bitwise(
+                    parameter.grad, _shard(reference_parameter.grad, rank, size, dim, stride)
+                )
+            assert_bitwise(tp_params[-1][0].grad, reference_params[-1][0].grad)
+        tree = torch.tensor(2.0**54 + 12, dtype=torch.float64, device=device).sqrt()
+        left_fold = torch.tensor(2.0**54, dtype=torch.float64, device=device).sqrt()
+        assert_bitwise(reference_norm, tree)
+        assert not torch.equal(_bits(tree), _bits(left_fold)), "data cannot detect order"
     finally:
         dist.destroy_process_group()
 
