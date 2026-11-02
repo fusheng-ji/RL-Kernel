@@ -1,0 +1,336 @@
+From 6bd3fe743565a26b91a095694400116375498d9a Mon Sep 17 00:00:00 2001
+From: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+Date: Sun, 1 Nov 2026 23:53:20 +0000
+Subject: [PATCH] perf(h3): build the backward segment tiles once per row index
+
+The stable sort and tile metadata behind the deterministic gate, shift and
+scale gradients depend only on the row index, but every norm, gated residual
+and gather rebuilt them in backward (about ten small torch ops, two of which
+synchronise with the host). A block backward does that four times for one
+index.
+
+Keep the last eight results keyed by the source tensors' storage, shape and
+autograd version, and have the five callers (rmsnorm, gate_residual,
+final_adaln_out, adaln_row_gather, adaln_modulation) go through it. An
+in-place edit of the index bumps its version and builds again; the entry keeps
+its sources alive so a freed address cannot alias another index; a rejected
+repeat count is never cached. The metadata is read-only in every kernel and the
+kernels are unchanged, so the gradients are bitwise what they were.
+
+Tests: build-once, no aliasing of an equal index in other storage, in-place
+invalidation, bounded size, a rejected repeat is rejected on every call, and a
+CUDA check that cached and uncached gate/norm gradients are bitwise equal.
+
+Signed-off-by: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+---
+ .../minimax_h3/adaln_modulation.py            |   9 +-
+ .../minimax_h3/adaln_row_gather.py            |  62 +++++++++-
+ .../minimax_h3/final_adaln_out.py             |   6 +-
+ .../minimax_h3/gate_residual.py               |   6 +-
+ .../cuda/model_specific/minimax_h3/rmsnorm.py |   6 +-
+ .../minimax_h3/test_h3_adaln_row_gather.py    | 106 ++++++++++++++++++
+ 6 files changed, 179 insertions(+), 16 deletions(-)
+
+diff --git a/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_modulation.py b/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_modulation.py
+index 4c42eb60..d4e9765a 100644
+--- a/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_modulation.py
++++ b/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_modulation.py
+@@ -17,6 +17,7 @@ import torch
+ import torch.nn.functional as F
+ 
+ from rl_engine.backends.cuda.model_specific.minimax_h3.adaln_row_gather import (
++    _cached_segment_tiles,
+     _segment_tiles,
+     adaln_row_gather_available,
+ )
+@@ -70,8 +71,12 @@ class _H3AdaLNModulationCuda(torch.autograd.Function):
+         temb, act, weight, timestep_indices, token_tags = ctx.saved_tensors
+         need_temb, need_weight, need_bias = ctx.needs_input_grad[:3]
+         num_timesteps, width = ctx.table_shape
+-        index = h3_adaln_indices(timestep_indices, token_tags)
+-        tiles = _segment_tiles(index, num_timesteps * H3_MODALITY_NUM)
++        num_rows = num_timesteps * H3_MODALITY_NUM
++        tiles = _cached_segment_tiles(
++            (timestep_indices, token_tags),
++            ("gather", num_rows),
++            lambda: _segment_tiles(h3_adaln_indices(timestep_indices, token_tags), num_rows),
++        )
+         d_rows = _C.h3_adaln_row_gather_backward(grad_packed.contiguous(), *tiles, torch.float32)
+         d_table = d_rows.view(num_timesteps, width)
+         d_temb = dw = db = None
+diff --git a/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_row_gather.py b/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_row_gather.py
+index 2298ad29..c5b74c72 100644
+--- a/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_row_gather.py
++++ b/rl_engine/backends/cuda/model_specific/minimax_h3/adaln_row_gather.py
+@@ -5,6 +5,9 @@
+ 
+ from __future__ import annotations
+ 
++import threading
++from collections import OrderedDict
++
+ import torch
+ 
+ from rl_engine.backends.extension import _C, _EXT_AVAILABLE
+@@ -46,6 +49,58 @@ def _segment_tiles(index: torch.Tensor, num_rows: int):
+     return sorted_pos, tile_begin.contiguous(), tile_end.contiguous(), seg_first_tile
+ 
+ 
++# Backward metadata of the last few row indices. Every norm and gated residual of a block (and of
++# every block of a forward pass that shares its index) reduces over the same segments, and building
++# the metadata costs a device sync (``bincount``, ``repeat_interleave``) per call.
++_TILE_CACHE_SIZE = 8
++_tile_cache: OrderedDict = OrderedDict()
++_tile_cache_lock = threading.Lock()
++
++
++def _cached_segment_tiles(sources, tag, build):
++    """``build()`` once per ``(sources, tag)``; the metadata is a function of their contents only.
++
++    ``sources`` are the tensors the metadata is computed from. An entry is valid while every source
++    is the same storage at the same autograd version, so an in-place edit (which bumps the version)
++    builds the metadata again. The entry keeps its sources alive, which stops the allocator from
++    reusing a freed address for a different index. The result is read-only for every consumer.
++    """
++
++    key = (
++        tag,
++        tuple(
++            (t.data_ptr(), t._version, tuple(t.shape), tuple(t.stride()), t.dtype, t.device)
++            for t in sources
++        ),
++    )
++    with _tile_cache_lock:
++        entry = _tile_cache.get(key)
++        if entry is not None:
++            _tile_cache.move_to_end(key)
++            return entry[1]
++    tiles = build()
++    with _tile_cache_lock:
++        _tile_cache[key] = (tuple(sources), tiles)
++        while len(_tile_cache) > _TILE_CACHE_SIZE:
++            _tile_cache.popitem(last=False)
++    return tiles
++
++
++def clear_segment_tiles_cache() -> None:
++    with _tile_cache_lock:
++        _tile_cache.clear()
++
++
++def _repeated_segment_tiles(index: torch.Tensor, rows: int, num_rows: int):
++    """``_segment_tiles`` of ``index`` repeated over ``rows`` rows, built once per index."""
++
++    return _cached_segment_tiles(
++        (index,),
++        ("repeat", rows, num_rows),
++        lambda: _segment_tiles(_repeat_positions(index, rows), num_rows),
++    )
++
++
+ def _repeat_positions(index: torch.Tensor, rows: int) -> torch.Tensor:
+     """Table row of every flattened position: ``index`` repeated ``rows // len(index)`` times.
+ 
+@@ -75,8 +130,11 @@ class _H3AdaLNRowGatherCuda(torch.autograd.Function):
+     def backward(ctx, grad_out):
+         timestep_indices, token_tags = ctx.saved_tensors
+         num_rows, rows_dtype = ctx.rows_meta
+-        index = h3_adaln_indices(timestep_indices, token_tags)
+-        tiles = _segment_tiles(index, num_rows)
++        tiles = _cached_segment_tiles(
++            (timestep_indices, token_tags),
++            ("gather", num_rows),
++            lambda: _segment_tiles(h3_adaln_indices(timestep_indices, token_tags), num_rows),
++        )
+         grad_rows = _C.h3_adaln_row_gather_backward(grad_out.contiguous(), *tiles, rows_dtype)
+         record_backward(
+             "adaln_row_gather", kernel_id=BACKWARD_KERNEL_ID, impl=BACKWARD_IMPL, family="cuda"
+diff --git a/rl_engine/backends/cuda/model_specific/minimax_h3/final_adaln_out.py b/rl_engine/backends/cuda/model_specific/minimax_h3/final_adaln_out.py
+index 042e50f7..3e01baf9 100644
+--- a/rl_engine/backends/cuda/model_specific/minimax_h3/final_adaln_out.py
++++ b/rl_engine/backends/cuda/model_specific/minimax_h3/final_adaln_out.py
+@@ -9,8 +9,7 @@ import torch
+ import torch.nn.functional as F
+ 
+ from rl_engine.backends.cuda.model_specific.minimax_h3.adaln_row_gather import (
+-    _repeat_positions,
+-    _segment_tiles,
++    _repeated_segment_tiles,
+ )
+ from rl_engine.backends.cuda.model_specific.minimax_h3.det_linear import (
+     det_linear_available,
+@@ -59,8 +58,7 @@ class _H3FinalAdaLNOutCuda(torch.autograd.Function):
+         x2, norm_weight, rstd, temb, act, weight, table, timestep_indices = ctx.saved_tensors
+         need_x, need_norm_weight, need_temb, need_weight, need_bias = ctx.needs_input_grad[:5]
+         shift, scale = table.chunk(2, dim=-1)
+-        positions = _repeat_positions(timestep_indices, x2.shape[0])
+-        tiles = _segment_tiles(positions, table.shape[0])
++        tiles = _repeated_segment_tiles(timestep_indices, x2.shape[0], table.shape[0])
+         dx, d_norm_weight, d_shift, d_scale = _C.h3_rmsnorm_backward(
+             grad.contiguous().view_as(x2),
+             x2,
+diff --git a/rl_engine/backends/cuda/model_specific/minimax_h3/gate_residual.py b/rl_engine/backends/cuda/model_specific/minimax_h3/gate_residual.py
+index f39cf351..c2312f30 100644
+--- a/rl_engine/backends/cuda/model_specific/minimax_h3/gate_residual.py
++++ b/rl_engine/backends/cuda/model_specific/minimax_h3/gate_residual.py
+@@ -8,8 +8,7 @@ from __future__ import annotations
+ import torch
+ 
+ from rl_engine.backends.cuda.model_specific.minimax_h3.adaln_row_gather import (
+-    _repeat_positions,
+-    _segment_tiles,
++    _repeated_segment_tiles,
+ )
+ from rl_engine.backends.extension import _C, _EXT_AVAILABLE
+ from rl_engine.ops.autograd.backward_runtime import record_backward
+@@ -45,8 +44,7 @@ class _H3GateResidualCuda(torch.autograd.Function):
+     def backward(ctx, grad):
+         y2, gate, index = ctx.saved_tensors
+         g2 = grad.contiguous().view_as(y2)
+-        positions = _repeat_positions(index, y2.shape[0])
+-        tiles = _segment_tiles(positions, gate.shape[0])
++        tiles = _repeated_segment_tiles(index, y2.shape[0], gate.shape[0])
+         dy, dgate = _C.h3_gate_residual_backward(g2, y2, gate, index, *tiles)
+         record_backward(
+             "adaln_gate_residual", kernel_id=BACKWARD_KERNEL_ID, impl=BACKWARD_IMPL, family="cuda"
+diff --git a/rl_engine/backends/cuda/model_specific/minimax_h3/rmsnorm.py b/rl_engine/backends/cuda/model_specific/minimax_h3/rmsnorm.py
+index 61e4a17b..80b85f71 100644
+--- a/rl_engine/backends/cuda/model_specific/minimax_h3/rmsnorm.py
++++ b/rl_engine/backends/cuda/model_specific/minimax_h3/rmsnorm.py
+@@ -8,8 +8,7 @@ from __future__ import annotations
+ import torch
+ 
+ from rl_engine.backends.cuda.model_specific.minimax_h3.adaln_row_gather import (
+-    _repeat_positions,
+-    _segment_tiles,
++    _repeated_segment_tiles,
+ )
+ from rl_engine.backends.extension import _C, _EXT_AVAILABLE
+ from rl_engine.ops.autograd.backward_runtime import record_backward
+@@ -49,8 +48,7 @@ class _H3RMSNormCuda(torch.autograd.Function):
+             dx, dweight = _C.h3_rmsnorm_backward(g2, x2, weight.contiguous(), rstd)
+             d_shift = d_scale = None
+         else:
+-            positions = _repeat_positions(index, x2.shape[0])
+-            tiles = _segment_tiles(positions, shift.shape[0])
++            tiles = _repeated_segment_tiles(index, x2.shape[0], shift.shape[0])
+             dx, dweight, d_shift, d_scale = _C.h3_rmsnorm_backward(
+                 g2, x2, weight.contiguous(), rstd, shift, scale, index, *tiles
+             )
+diff --git a/tests/models/minimax_h3/test_h3_adaln_row_gather.py b/tests/models/minimax_h3/test_h3_adaln_row_gather.py
+index 183ebbf6..cd4e9569 100644
+--- a/tests/models/minimax_h3/test_h3_adaln_row_gather.py
++++ b/tests/models/minimax_h3/test_h3_adaln_row_gather.py
+@@ -527,3 +527,109 @@ class TestNativeBackwardMetadata:
+         args[name] = args[name].to("cuda:1")
+         with pytest.raises(RuntimeError, match="tile metadata"):
+             _C.h3_adaln_row_gather_backward(**args)
++
++
++@pytest.fixture
++def tile_cache():
++    from rl_engine.backends.cuda.model_specific.minimax_h3 import adaln_row_gather as mod
++
++    mod.clear_segment_tiles_cache()
++    yield mod
++    mod.clear_segment_tiles_cache()
++
++
++def _same_tiles(a, b):
++    return len(a) == len(b) and all(torch.equal(x, y) for x, y in zip(a, b))
++
++
++def test_segment_tiles_are_built_once_per_index_tensor(tile_cache, monkeypatch):
++    built = []
++    real = tile_cache._segment_tiles
++    monkeypatch.setattr(tile_cache, "_segment_tiles", lambda *a: built.append(1) or real(*a))
++    index = torch.tensor([2, 0, 1, 0, 2, 2, 1])
++    first = tile_cache._repeated_segment_tiles(index, 14, 3)
++    assert tile_cache._repeated_segment_tiles(index, 14, 3) is first
++    assert len(built) == 1
++    assert _same_tiles(first, real(index.repeat(2), 3))
++    # another repeat count or table size is another reduction
++    assert _same_tiles(tile_cache._repeated_segment_tiles(index, 7, 3), real(index, 3))
++    assert _same_tiles(tile_cache._repeated_segment_tiles(index, 14, 4), real(index.repeat(2), 4))
++    assert len(built) == 3
++
++
++def test_an_equal_index_in_other_storage_is_not_aliased_to_the_cached_one(tile_cache):
++    index = torch.tensor([1, 1, 0, 2])
++    first = tile_cache._repeated_segment_tiles(index, 4, 3)
++    twin = tile_cache._repeated_segment_tiles(index.clone(), 4, 3)
++    assert twin is not first and _same_tiles(twin, first)
++
++
++def test_an_index_edited_in_place_gets_fresh_tiles(tile_cache):
++    index = torch.tensor([0, 1, 1, 2, 0, 2])
++    before = tile_cache._repeated_segment_tiles(index, 6, 3)
++    index[0] = 2
++    after = tile_cache._repeated_segment_tiles(index, 6, 3)
++    assert not _same_tiles(after, before)
++    assert _same_tiles(after, tile_cache._segment_tiles(index, 3))
++
++
++def test_a_rejected_repeat_is_rejected_every_time_and_never_cached(tile_cache):
++    index = torch.tensor([0, 1, 2])
++    for _ in range(2):
++        with pytest.raises(ValueError, match="whole number of repeats"):
++            tile_cache._repeated_segment_tiles(index, 7, 3)
++    assert not tile_cache._tile_cache
++
++
++def test_the_tile_cache_stays_bounded(tile_cache):
++    index = torch.tensor([0, 1, 2, 1])
++    for rows in range(tile_cache._TILE_CACHE_SIZE + 5):
++        tile_cache._repeated_segment_tiles(index, 4, 3 + rows)
++    assert len(tile_cache._tile_cache) == tile_cache._TILE_CACHE_SIZE
++
++
++def _bf16(*shape, seed):
++    g = torch.Generator(device="cpu").manual_seed(seed)
++    return torch.randn(*shape, generator=g).to(torch.bfloat16).cuda().requires_grad_()
++
++
++@requires_cuda
++def test_cached_tiles_leave_the_norm_and_gate_gradients_bitwise_unchanged(tile_cache, monkeypatch):
++    from rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual import (
++        H3GateResidualCudaOp,
++        h3_gate_residual_available,
++    )
++    from rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm import (
++        H3RMSNormCudaOp,
++        h3_rmsnorm_available,
++    )
++
++    if not (h3_gate_residual_available() and h3_rmsnorm_available()):
++        pytest.skip("rl_engine._C lacks the H3 gate-residual / rmsnorm kernels")
++    seq, hidden, table_rows = 600, 256, 6
++    index = (torch.arange(seq, device="cuda") * 7 % table_rows).contiguous()
++    gate_op, norm_op = H3GateResidualCudaOp(), H3RMSNormCudaOp()
++    x, y, w = _bf16(1, seq, hidden, seed=1), _bf16(1, seq, hidden, seed=2), _bf16(hidden, seed=3)
++    gate, shift, scale = (_bf16(table_rows, hidden, seed=s) for s in (4, 5, 6))
++
++    def run():
++        inputs = (x, y, w, gate, shift, scale)
++        for t in inputs:
++            t.grad = None
++        out = gate_op(x, y, gate, index) + norm_op.forward_modulated(x, w, shift, scale, index)
++        out.backward(torch.ones_like(out))
++        return [t.grad.clone() for t in inputs]
++
++    built = []
++    real = tile_cache._segment_tiles
++    monkeypatch.setattr(tile_cache, "_segment_tiles", lambda *a: built.append(1) or real(*a))
++    cached = run()
++    assert len(built) == 1  # the gate and the norm share one build
++    cached_again = run()
++    assert len(built) == 1
++    uncached = []
++    for _ in range(2):
++        tile_cache.clear_segment_tiles_cache()
++        uncached.append(run())
++    for grads in (cached_again, *uncached):
++        assert all(torch.equal(a, b) for a, b in zip(cached, grads))
+-- 
+2.51.1
+
