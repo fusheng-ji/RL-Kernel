@@ -1,0 +1,13 @@
+[2026-11-14T15:56:44Z] START build :: python setup.py build_ext --inplace
+[2026-11-14T15:57:51Z] END build rc=0
+[2026-11-14T15:58:35Z] START pytest :: python -m pytest -p no:cacheprovider -q -rfs tests/models/qwen3_next/check_gdn_recurrent_golden.py tests/models/qwen3_next/check_qwen3_next_forward.py tests/models/qwen3_next/check_qwen3_next_norm_providers.py tests/models/qwen3_next/test_gdn_state_contract.py tests/models/qwen3_next/test_qwen3_next_forward_contract.py tests/models/qwen3_next/test_qwen3_next_norm.py tests/models/qwen3_next/test_qwen3_next_norm_reuse_check.py tests/models/qwen3_next/test_qwen3_next_tp_blocks.py tests/models/qwen3_next/test_qwen3_next_workload.py --junitxml <out>/pytest.xml
+[2026-11-14T15:59:51Z] END pytest rc=0
+[2026-11-14T15:59:51Z] START regression :: python -m pytest -p no:cacheprovider -q -rfs tests/models/qwen3_next/check_qwen3_next_forward.py -k combine_gradients
+[2026-11-14T16:00:02Z] END regression rc=0
+[2026-11-14T16:00:02Z] START tp_moe :: python -m torch.distributed.run --standalone --nproc-per-node 4 tools/validation/models/qwen3_next/qwen3_next_tp_moe_check.py --checkpoint <Qwen3-Next-80B-A3B-Instruct> --output <out>/tp_moe
+[2026-11-14T16:00:18Z] END tp_moe rc=1
+[2026-11-14T16:00:18Z] START probe :: python probe_combine.py
+[2026-11-14T16:00:27Z] END probe rc=0
+# first tp_moe attempt above failed: checkpoint path missing (FileNotFoundError on model.safetensors.index.json); superseded by the gate job below
+gate-job [2026-11-14T16:16:30Z] START tp_moe
+gate-job [2026-11-14T16:17:54Z] END tp_moe rc=0
