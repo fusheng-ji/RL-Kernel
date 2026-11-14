@@ -8,3 +8,5 @@ Each run folder holds `commit.txt`, `environment.txt` (GPUs, `_C` / `_H3_C` path
 - `01-head/fulltrans/`: `h3_full_transformer.py`, strict (`full-transformer/`, `trace.boundary_bindings`: all eight modules `row`) and `--provider-boundaries`. Every compared value equals the run at `89cbd77f` (`../h3-strict-boundaries-h100/fulltrans/`) exactly.
 - `01-head/dual/`: `h3_dual_trajectory.py`, seeds 11 / 22 / 33: strict 0/16, provider 16/16; equal to the run at `89cbd77f` exactly.
 - `02-fast-math/`: `pytest tests/models/minimax_h3` with `KERNEL_ALIGN_USE_FAST_MATH=1` (and `RL_KERNEL_H3_STRICT=0`, which the build requires with fast math). The H3 extension `_H3_C` is not built in this mode, so its tests skip. `base-fm` is `test-h3` `07533aee` in the same build, the baseline for this row. `base-fm` 511 / 594 / 0, `pr700-fm` 531 / 594 / 0.
+
+Each stage's stdout / stderr is next to its outputs as `<stage>.log` (added in a second commit). `01-head/mypy/mypy.log` is `mypy --ignore-missing-imports rl_engine/` in this environment, with torch installed: 36 errors in 12 files, the same set as `test-h3` `07533aee` with the same torch 2.13.0 and mypy 2.4.0. This PR adds none.
