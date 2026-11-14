@@ -1,0 +1,178 @@
+WARNING 11-14 04:15:23 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-14 04:15:26 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-14 04:15:26 [RL-Kernel]: KernelRegistry initialized for cuda
+Loading checkpoint shards:   0%|          | 0/14 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 14/14 [00:00<00:00, 179.05it/s]
+<SRC>/followup/tools/validation/models/h3_full_transformer.py:118: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:822.)
+  loss=float(loss),
+INFO 11-14 04:17:20 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 04:17:20 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-14 04:17:20 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-14 04:17:20 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+INFO 11-14 04:17:35 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 04:17:35 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-14 04:17:35 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-14 04:17:35 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+[W1114 04:17:46.896295862 Context.cpp:597] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+{
+  "status": "execution_complete",
+  "device": "NVIDIA H100",
+  "torch": "2.13.0+cu130",
+  "parameters": 33122992896,
+  "load_seconds": 50.983410778455436,
+  "strict_boundaries": false,
+  "candidate_vs_provider": {
+    "video_rel": 0.002211133901288184,
+    "audio_rel": 0.0205296936635163,
+    "input_grad_rel": {
+      "hidden_states": 0.14155156376701947,
+      "audio_hidden_states": 0.14636215656534238,
+      "encoder_hidden_states": 0.2465773520946604
+    },
+    "param_grad_rel_max": 0.9237342013672196,
+    "param_grad_rel_median": 0.2821387395311563,
+    "param_grad_count": 638
+  },
+  "provider_repeat_vs_provider": {
+    "video_rel": 0.0,
+    "audio_rel": 0.0,
+    "input_grad_rel": {
+      "hidden_states": 0.0,
+      "audio_hidden_states": 0.0,
+      "encoder_hidden_states": 0.0
+    },
+    "param_grad_rel_max": null,
+    "param_grad_rel_median": null,
+    "param_grad_count": 638
+  },
+  "provider_variants_vs_provider": {
+    "sdpa-efficient": {
+      "video_rel": 0.0018776456585692298,
+      "audio_rel": 0.0156534179813605,
+      "input_grad_rel": {
+        "hidden_states": 0.18526373486508718,
+        "audio_hidden_states": 0.15998901604499033,
+        "encoder_hidden_states": 0.19647365948270687
+      },
+      "param_grad_rel_max": 0.5094279216847147,
+      "param_grad_rel_median": 0.12847096324809396,
+      "param_grad_count": 638
+    },
+    "blas-cublaslt": {
+      "video_rel": 0.0,
+      "audio_rel": 0.0,
+      "input_grad_rel": {
+        "hidden_states": 2.1473449443527121e-07,
+        "audio_hidden_states": 2.4065259674405234e-07,
+        "encoder_hidden_states": 0.0
+      },
+      "param_grad_rel_max": 0.0,
+      "param_grad_rel_median": 0.0,
+      "param_grad_count": 638
+    }
+  },
+  "provider_bitwise_repeatable": true,
+  "candidate_bitwise_repeatable": true,
+  "seconds": {
+    "provider": 48.71547103021294,
+    "candidate": 15.080529991537333,
+    "provider_forward": 1.1254481133073568,
+    "candidate_forward": 2.6512381210923195
+  },
+  "peak_allocated_bytes": 73276446720,
+  "trace": {
+    "bindings": {
+      "adaln_projection": {
+        "rfc_row": "adaln_projection_3mod",
+        "status": "row",
+        "backend": "H3AdaLNProjectionCudaOp"
+      },
+      "norm1": {
+        "rfc_row": "h3_rmsnorm",
+        "status": "row",
+        "backend": "H3RMSNormCudaOp.forward_modulated"
+      },
+      "q_proj": {
+        "rfc_row": "h3_qkv_gemm",
+        "status": "row",
+        "backend": "H3QKVGemmCudaOp.forward"
+      },
+      "k_proj": {
+        "rfc_row": "h3_qkv_gemm",
+        "status": "row",
+        "backend": "H3QKVGemmCudaOp.forward"
+      },
+      "v_proj": {
+        "rfc_row": "h3_qkv_gemm",
+        "status": "row",
+        "backend": "H3QKVGemmCudaOp.forward"
+      },
+      "q_norm": {
+        "rfc_row": "h3_qk_rmsnorm_d128",
+        "status": "interim",
+        "backend": "H3RMSNormCudaOp.forward"
+      },
+      "k_norm": {
+        "rfc_row": "h3_qk_rmsnorm_d128",
+        "status": "interim",
+        "backend": "H3RMSNormCudaOp.forward"
+      },
+      "rope_q": {
+        "rfc_row": "h3_mm_rope_3axis_partial",
+        "status": "reference",
+        "backend": "provider_apply_rotary"
+      },
+      "rope_k": {
+        "rfc_row": "h3_mm_rope_3axis_partial",
+        "status": "reference",
+        "backend": "provider_apply_rotary"
+      },
+      "attention": {
+        "rfc_row": "h3_full_attention",
+        "status": "interim",
+        "backend": "DeterministicAttentionOp(causal=False)"
+      },
+      "o_proj": {
+        "rfc_row": "h3_attention_o_gemm",
+        "status": "interim",
+        "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)"
+      },
+      "residual_attn": {
+        "rfc_row": "adaln_gate_residual",
+        "status": "row",
+        "backend": "H3GateResidualCudaOp"
+      },
+      "norm2": {
+        "rfc_row": "h3_rmsnorm",
+        "status": "row",
+        "backend": "H3RMSNormCudaOp.forward_modulated"
+      },
+      "ffn_gate_up": {
+        "rfc_row": "h3_ffn_gate_up_gemm",
+        "status": "interim",
+        "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)"
+      },
+      "swiglu": {
+        "rfc_row": "h3_swiglu",
+        "status": "interim",
+        "backend": "SwiGLUCudaOp"
+      },
+      "ffn_down": {
+        "rfc_row": "h3_ffn_down_gemm",
+        "status": "interim",
+        "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)"
+      },
+      "residual_mlp": {
+        "rfc_row": "adaln_gate_residual",
+        "status": "row",
+        "backend": "H3GateResidualCudaOp"
+      }
+    },
+    "boundary_bindings": {},
+    "candidate_calls": 850
+  },
+  "loss": {
+    "provider": 98542.3671875,
+    "candidate": 98404.1328125
+  }
+}

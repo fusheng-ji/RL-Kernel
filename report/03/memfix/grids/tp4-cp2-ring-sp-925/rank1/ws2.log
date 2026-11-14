@@ -1,0 +1,16 @@
+WARNING 11-14 06:14:34 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-14 06:14:38 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-14 06:14:38 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 06:16:10 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 06:16:10 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-14 06:16:10 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-14 06:16:10 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+[rank1]: Traceback (most recent call last):
+[rank1]:   File "<SRC>/ws2mem/tools/validation/models/h3_parallel_full_model.py", line 257, in <module>
+[rank1]:     main()
+[rank1]:   File "<SRC>/ws2mem/tools/validation/models/h3_parallel_full_model.py", line 147, in main
+[rank1]:     spans = pm.rank_spans(args.tp, args.cp, length, args.sp)
+[rank1]:             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank1]:   File "<SRC>/ws2mem/rl_engine/validation/models/h3_parallel_model.py", line 67, in rank_spans
+[rank1]:     raise ValueError(
+[rank1]: ValueError: sequence parallelism needs the 463 rows of CP rank 0 divisible by tp=4 (length 925, cp=2)
