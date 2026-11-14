@@ -1,0 +1,12 @@
+# nvidia-smi (all 4 GPUs of the node; GPU 1 used; GPU 0 busy with an unrelated job)
+index, name, driver_version, memory.used [MiB], utilization.gpu [%]
+0, NVIDIA H100, 580.173.02, 22069 MiB, 0 %
+1, NVIDIA H100, 580.173.02, 533 MiB, 0 %
+2, NVIDIA H100, 580.173.02, 531 MiB, 0 %
+3, NVIDIA H100, 580.173.02, 531 MiB, 0 %
+6
+2.13.0+cu130 13.0 3.7.1
+b19061591b6f43214c4b0339637e0808fc5cafa4
+head_sha: b19061591b6f43214c4b0339637e0808fc5cafa4 (detached, clean)
+build: TORCH_CUDA_ARCH_LIST=9.0 MAX_JOBS=32 python setup.py build_ext --inplace
+runner cmd: CUDA_VISIBLE_DEVICES=1 PYTHONPATH=. python benchmarks/operators/logprob/fused_logp_backward_evidence.py --out h100-perf-b1906159.json --checks performance [--flash-attn-src <flash-attention @ 94e22c9>]
