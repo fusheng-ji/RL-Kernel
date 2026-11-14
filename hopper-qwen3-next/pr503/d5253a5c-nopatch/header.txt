@@ -1,0 +1,14 @@
+node_other_jobs: 0 other python procs
+index, name, driver_version, memory.used [MiB], utilization.gpu [%]
+0, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+1, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+2, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+3, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+python 3.12.15 torch 2.13.0+cu130 cuda 13.0 triton 3.7.1 vllm 0.30.0 transformers 5.17.0
+head: d5253a5c307485abe867db864fc3d2df5936cd31
+git status:
+ext: <worktree>/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+flags: KERNEL_ALIGN_FORCE_SM90=1 KERNEL_ALIGN_DET_GEMM_SM90=1 TORCH_CUDA_ARCH_LIST=9.0 MAX_JOBS=32 TRITON_F32_DEFAULT=ieee
+cmd1: python -m pytest -p no:cacheprovider -q -rs tests/models/qwen3_next/check_gdn_recurrent_golden.py tests/models/qwen3_next/check_qwen3_next_forward.py tests/models/qwen3_next/check_qwen3_next_norm_providers.py tests/models/qwen3_next/test_gdn_state_contract.py tests/models/qwen3_next/test_qwen3_next_forward_contract.py tests/models/qwen3_next/test_qwen3_next_norm.py tests/models/qwen3_next/test_qwen3_next_norm_reuse_check.py tests/models/qwen3_next/test_qwen3_next_tp_blocks.py tests/models/qwen3_next/test_qwen3_next_workload.py 
+cmd2: torchrun --nproc-per-node 4 tools/validation/models/qwen3_next/qwen3_next_tp_moe_check.py --checkpoint <Qwen3-Next-80B-A3B-Instruct> --output tp_moe
+git status after:
