@@ -1,0 +1,8 @@
+[2026-11-14T13:31:51Z] START pytest :: python -m pytest -p no:cacheprovider -q -rs tests/models/qwen3_next/check_gdn_recurrent_golden.py tests/models/qwen3_next/check_qwen3_next_forward.py tests/models/qwen3_next/check_qwen3_next_norm_providers.py tests/models/qwen3_next/test_gdn_state_contract.py tests/models/qwen3_next/test_qwen3_next_forward_contract.py tests/models/qwen3_next/test_qwen3_next_norm.py tests/models/qwen3_next/test_qwen3_next_norm_reuse_check.py tests/models/qwen3_next/test_qwen3_next_tp_blocks.py tests/models/qwen3_next/test_qwen3_next_workload.py
+[2026-11-14T13:32:31Z] END pytest rc=0
+[2026-11-14T13:32:31Z] START regression :: python -m pytest -p no:cacheprovider -q -rs tests/models/qwen3_next/check_qwen3_next_forward.py -k combine_gradients
+[2026-11-14T13:32:36Z] END regression rc=0
+[2026-11-14T13:32:36Z] START tp_moe :: torchrun --nproc-per-node 4 tools/validation/models/qwen3_next/qwen3_next_tp_moe_check.py --checkpoint <Qwen3-Next-80B-A3B-Instruct> --output tp_moe
+[2026-11-14T13:33:32Z] END tp_moe rc=0
+[2026-11-14T13:33:32Z] START probe :: python probe_combine.py
+[2026-11-14T13:33:36Z] END probe rc=0
