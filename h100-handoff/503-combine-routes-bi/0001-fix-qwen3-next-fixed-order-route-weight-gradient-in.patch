@@ -1,0 +1,140 @@
+From e514d42f3d4f07b5b8d271442f49b31d933093f4 Mon Sep 17 00:00:00 2001
+From: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+Date: Sat, 14 Nov 2026 13:07:36 +0000
+Subject: [PATCH] fix(qwen3-next): fixed-order route-weight gradient in
+ combine_routes
+
+The autograd backward of combine_routes summed grad * expert_output over H
+with torch.sum, whose reduction order depends on the batch shape, so the
+route-weight gradient stopped being batch-invariant from 16 rows up. Add a
+custom autograd Function that sums H with fixed_order_row_sum, and a test that
+compares the first 8 rows alone against the same rows inside larger batches.
+
+Signed-off-by: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+---
+ .../operators/qwen3-next-moe-route-combine.md |  8 ++-
+ .../models/qwen3_next/qwen3_next_forward.py   | 57 +++++++++++++------
+ .../qwen3_next/check_qwen3_next_forward.py    | 19 +++++++
+ 3 files changed, 66 insertions(+), 18 deletions(-)
+
+diff --git a/docs/operators/qwen3-next-moe-route-combine.md b/docs/operators/qwen3-next-moe-route-combine.md
+index 06d84e87..38fcf9f9 100644
+--- a/docs/operators/qwen3-next-moe-route-combine.md
++++ b/docs/operators/qwen3-next-moe-route-combine.md
+@@ -58,8 +58,12 @@ different instruction stream), and IEEE Triton FP32.
+ grouped kernel, then visits experts in ascending id. Each expert's `dgate_up`
+ and `ddown` slice is one pinned GEMM written once into a dense buffer; `dx` is
+ accumulated per token in ascending expert order (a token's ten experts are
+-distinct, so each launch has unique rows). Router-weight gradients flow through
+-the selected probabilities; the indices are discrete.
++distinct, so each launch has unique rows). `combine_routes` has its own backward:
++the expert-output gradient is `grad * weight` per route, and the route-weight
++gradient sums `grad * expert_output` over H with `fixed_order_row_sum`, because
++`torch.sum` picks its reduction order from the batch shape and made that gradient
++batch-variant from 16 rows up. Router-weight gradients then flow through the
++selected probabilities; the indices are discrete.
+ 
+ ## Reuse decision
+ 
+diff --git a/rl_engine/models/qwen3_next/qwen3_next_forward.py b/rl_engine/models/qwen3_next/qwen3_next_forward.py
+index b5a1e20e..4109e724 100644
+--- a/rl_engine/models/qwen3_next/qwen3_next_forward.py
++++ b/rl_engine/models/qwen3_next/qwen3_next_forward.py
+@@ -226,23 +226,48 @@ def stable_top10_routes(router_logits):
+     return Routing(selected / fixed_order_row_sum(selected), indices)
+ 
+ 
+-def combine_routes(expert_outputs, route_weights):
+-    """Combine [T, 10, H] BF16 outputs by ten ordered FP32 multiply-adds.
++class _CombineRoutes(torch.autograd.Function):
++    """Ten ordered FP32 multiply-adds; route-weight gradients sum H with fixed_order_row_sum."""
+ 
+-    There are no atomic sums. Each route's product and each addition is a
+-    separate eager operation; the single BF16 cast follows the final route.
+-    """
+-    _cuda_tensors(expert_outputs, route_weights)
+-    if expert_outputs.ndim != 3 or expert_outputs.shape[1] != 10:
+-        raise ValueError("Qwen3-Next expert outputs must have shape [T, 10, H]")
+-    if route_weights.shape != expert_outputs.shape[:2]:
+-        raise ValueError("Route weights must have shape [T, 10]")
+-    if expert_outputs.dtype != torch.bfloat16 or route_weights.dtype != torch.float32:
+-        raise ValueError("Combine requires BF16 expert outputs and FP32 route weights")
+-    output = expert_outputs[:, 0].float() * route_weights[:, 0, None]
+-    for slot in range(1, 10):
+-        output = output + expert_outputs[:, slot].float() * route_weights[:, slot, None]
+-    return output.to(torch.bfloat16)
++    @staticmethod
++    def forward(ctx, expert_outputs, route_weights):
++        _cuda_tensors(expert_outputs, route_weights)
++        if expert_outputs.ndim != 3 or expert_outputs.shape[1] != 10:
++            raise ValueError("Qwen3-Next expert outputs must have shape [T, 10, H]")
++        if route_weights.shape != expert_outputs.shape[:2]:
++            raise ValueError("Route weights must have shape [T, 10]")
++        if expert_outputs.dtype != torch.bfloat16 or route_weights.dtype != torch.float32:
++            raise ValueError("Combine requires BF16 expert outputs and FP32 route weights")
++        ctx.save_for_backward(expert_outputs, route_weights)
++        output = expert_outputs[:, 0].float() * route_weights[:, 0, None]
++        for slot in range(1, 10):
++            output = output + expert_outputs[:, slot].float() * route_weights[:, slot, None]
++        return output.to(torch.bfloat16)
++
++    @staticmethod
++    @once_differentiable
++    def backward(ctx, grad_output):
++        expert_outputs, route_weights = ctx.saved_tensors
++        grad_expert = grad_weight = None
++        grad_f = grad_output.float()
++        if ctx.needs_input_grad[0]:
++            grad_expert = torch.zeros_like(expert_outputs)
++            for slot in range(10):
++                grad_expert[:, slot] = (grad_f * route_weights[:, slot, None]).to(
++                    expert_outputs.dtype
++                )
++        if ctx.needs_input_grad[1]:
++            grad_weight = route_weights.new_zeros(route_weights.shape)
++            for slot in range(10):
++                grad_weight[:, slot] = fixed_order_row_sum(
++                    grad_f * expert_outputs[:, slot].float()
++                ).reshape(route_weights.shape[0])
++        return grad_expert, grad_weight
++
++
++def combine_routes(expert_outputs, route_weights):
++    """Combine [T, 10, H] BF16 outputs by ten ordered FP32 multiply-adds."""
++    return _CombineRoutes.apply(expert_outputs, route_weights)
+ 
+ 
+ def _expert_activation(gate_up_rows):
+diff --git a/tests/models/qwen3_next/check_qwen3_next_forward.py b/tests/models/qwen3_next/check_qwen3_next_forward.py
+index 29ae4438..7ae46fdb 100644
+--- a/tests/models/qwen3_next/check_qwen3_next_forward.py
++++ b/tests/models/qwen3_next/check_qwen3_next_forward.py
+@@ -103,6 +103,25 @@ def test_combine_has_fixed_route_order_and_differentiable_weights():
+         )
+ 
+ 
++def test_combine_gradients_are_batch_invariant():
++    gen = torch.Generator(device="cuda").manual_seed(803)
++    outputs = (torch.randn(256, 10, 2048, generator=gen, device="cuda") * 0.02).bfloat16()
++    weights = torch.rand(256, 10, generator=gen, device="cuda")
++    grad_out = (torch.randn(256, 2048, generator=gen, device="cuda") * 0.02).bfloat16()
++
++    def run(rows):
++        e = outputs[:rows].clone().requires_grad_()
++        w = weights[:rows].clone().requires_grad_()
++        out = combine_routes(e, w)
++        d_e, d_w = torch.autograd.grad(out, [e, w], grad_out[:rows])
++        return out.detach(), d_e, d_w
++
++    reference = run(8)
++    for rows in (9, 16, 32, 64, 256):
++        for got, want in zip(run(rows), reference):
++            exact(got[:8], want)
++
++
+ def test_qwen_moe_actual_tp4_shapes_and_independent_training_forward():
+     x = random((4, 2048), grad=True)
+     router = random((512, 2048), 802, grad=True)
+-- 
+2.51.1
+
