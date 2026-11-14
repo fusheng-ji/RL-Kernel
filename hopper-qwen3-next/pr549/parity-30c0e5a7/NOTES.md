@@ -1,0 +1,2 @@
+#549 head `30c0e5a7a432abcc4c03bed98c1c2ee914467f22`, 4 x H100, no patch, detached worktree, own build.
+TP4 parity (`qwen3_next_logprob_parity.py`) under 13 NCCL settings (`default`, `{ring,tree}-{ll,ll128,simple}-{c1,cdefault}`), merged with `qwen3_next_logprob_parity_compare.py` (`parity/report.json`): `passed`, `deterministic_points_invariant`, `tp4_equals_tp1` true; `nccl_all_reduce_varies` true (negative control); `entropy_tp4_equals_tp1` false (documented); `full_logits_match_gathered` true.

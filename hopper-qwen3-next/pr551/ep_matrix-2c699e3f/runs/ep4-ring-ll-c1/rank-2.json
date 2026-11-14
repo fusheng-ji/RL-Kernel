@@ -1,0 +1,448 @@
+{
+  "ep": 4,
+  "rank": 2,
+  "tokens": 1024,
+  "nccl_settings": {
+    "NCCL_ALGO": "Ring",
+    "NCCL_PROTO": "LL",
+    "NCCL_MAX_NCHANNELS": "1"
+  },
+  "cublas_workspace_config": ":4096:8",
+  "input_sha256": "3a3e8b6a8a4510fb15be865e8679b273fda2bf2af05c850c8549ba5133c5286c",
+  "rl_kernel_commit": "2c699e3f7cb30665b8e7dafe48508b5dc94b3ef4",
+  "tracked_tree_dirty": false,
+  "provider": "qwen3-next-shared-cuda-forward-v1",
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "nccl": "2.29.7"
+  },
+  "candidates": {
+    "rl_kernel_ep": {
+      "output_sha256": "d55bee193fbc48a1a799bdf7d96bcf3110b8c5a9fca086bf0ac3e3fd04d989cd",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 1.7983585702528206e-05,
+      "mean_abs_vs_fp64": 6.872925038053382e-07,
+      "latency_us": {
+        "64": 2479.2639017105103,
+        "256": 2469.360113143921,
+        "1024": 2816.1120414733887,
+        "4096": 5196.415901184082
+      },
+      "backward": {
+        "dx_sha256": "06b9339d0485ab0e8ced9aa258eef5a87d6bd3c7e35a2acc28147d936970ccc8",
+        "d_gate_up_sha256": "2dd8e400c8612be166c591c8407c0f077aecce7defdc9cae1013235d1df37df1",
+        "d_down_sha256": "f82fc82d4ed22f7cc0e55508d6c6e5f377d412565bd5542e6eba910911c95796",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": true,
+          "64@28": true,
+          "64@56": true,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": true,
+        "latency_us": 94416.80145263672
+      },
+      "max_abs_vs": {
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "flashinfer_cutlass_ep": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "vllm_ep": {
+      "output_sha256": "78e6c12b3e5f790323f622ce25ecca0a6ca11ec64d3aa53d7c08bef270a757f3",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.651640967688809e-06,
+      "latency_us": {
+        "64": 731.9360077381134,
+        "256": 837.0560109615326,
+        "1024": 954.5760154724121,
+        "4096": 5267.551898956299
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "flashinfer_cutlass_ep": 3.0517578125e-05,
+        "megatron_alltoall": 0.00087738037109375,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      }
+    },
+    "vllm_ep_bi": {
+      "output_sha256": "78e6c12b3e5f790323f622ce25ecca0a6ca11ec64d3aa53d7c08bef270a757f3",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.651640967688809e-06,
+      "latency_us": {
+        "64": 721.7279970645905,
+        "256": 891.6159868240356,
+        "1024": 1066.864013671875,
+        "4096": 5440.432071685791
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep": 0.0,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "flashinfer_cutlass_ep": 3.0517578125e-05,
+        "megatron_alltoall": 0.00087738037109375,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      }
+    },
+    "vllm_ep_nccl": {
+      "output_sha256": "e4b433726cf7fa387cdae19a8bb5f0956d321d80c444da1b144e2c8afb3da5df",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": false,
+        "64@28": false,
+        "64@56": false,
+        "256@0": false,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.7298459360776555e-06,
+      "latency_us": {
+        "64": 758.3039999008179,
+        "256": 1044.111967086792,
+        "1024": 1782.0159792900085,
+        "4096": 5122.6561069488525
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep": 3.0517578125e-05,
+        "vllm_ep_bi": 3.0517578125e-05,
+        "flashinfer_cutlass_ep": 3.0517578125e-05,
+        "megatron_alltoall": 0.00087738037109375,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      }
+    },
+    "flashinfer_cutlass_ep": {
+      "output_sha256": "e8a4954e6a0a23b1022985076942d79950319d21e86defe6dd59e3e592a92a03",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.60078391354098e-06,
+      "latency_us": {
+        "64": 1325.8880376815796,
+        "256": 1629.0559768676758,
+        "1024": 1675.9679913520813,
+        "4096": 5638.303995132446
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep": 3.0517578125e-05,
+        "vllm_ep_bi": 3.0517578125e-05,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "megatron_alltoall": 0.00087738037109375,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      }
+    },
+    "megatron_alltoall": {
+      "output_sha256": "7d1807e9a706e4b2f48896d6bf09768f7cfc1a2931bccffa1dd7a0f7eb3bbee2",
+      "repeat_bitwise": false,
+      "batch_grid": {
+        "8@0": false,
+        "64@0": false,
+        "64@28": false,
+        "64@56": false,
+        "256@0": false,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 2.7581280667569093e-05,
+      "mean_abs_vs_fp64": 1.0694729675143988e-06,
+      "latency_us": {
+        "64": 27518.70346069336,
+        "256": 31971.63200378418,
+        "1024": 34945.08934020996,
+        "4096": 40294.5613861084
+      },
+      "backward": {
+        "dx_sha256": "58e02346db2bd9758bf3116b0956ff2044e8cc1b1b3f0112def70dd64ff6bf1c",
+        "d_gate_up_sha256": "6906225e1312cc144341a0f24adedadb9dbf46758a28b075b60a4cf8eb8da90e",
+        "d_down_sha256": "a4ce0bfb6f495be62d571fbb26a39ecefdd260b20a4a41c305bdc1df66fbb2dd",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": false,
+        "batch_grid": {
+          "8@0": false,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": false,
+          "256@124": false,
+          "256@248": false,
+          "1024@0": false,
+          "1024@508": false,
+          "1024@1016": false
+        },
+        "batch_bitwise": false,
+        "latency_us": 93923.8052368164
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.00087738037109375,
+        "vllm_ep_bi": 0.00087738037109375,
+        "vllm_ep_nccl": 0.00087738037109375,
+        "flashinfer_cutlass_ep": 0.00087738037109375,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 4.57763671875e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "megatron_allgather": {
+      "output_sha256": "0fd82a864270eaa2f57bb9fb12cf78051bd251bde809f85248830971c87494a8",
+      "repeat_bitwise": false,
+      "batch_grid": {
+        "8@0": false,
+        "64@0": false,
+        "64@28": false,
+        "64@56": false,
+        "256@0": false,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 2.4855467477558242e-05,
+      "mean_abs_vs_fp64": 9.220929316845835e-07,
+      "latency_us": {
+        "64": 25787.904739379883,
+        "256": 31062.400817871094,
+        "1024": 38178.59077453613,
+        "4096": 64188.01498413086
+      },
+      "backward": {
+        "dx_sha256": "daf6b1a9e3fc107fc3177c2de85b87f0d4aff9e6d82d039b8d9a00e2cb67e6a8",
+        "d_gate_up_sha256": "6906225e1312cc144341a0f24adedadb9dbf46758a28b075b60a4cf8eb8da90e",
+        "d_down_sha256": "a4ce0bfb6f495be62d571fbb26a39ecefdd260b20a4a41c305bdc1df66fbb2dd",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": false,
+        "batch_grid": {
+          "8@0": false,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": false,
+          "256@124": false,
+          "256@248": false,
+          "1024@0": false,
+          "1024@508": false,
+          "1024@1016": false
+        },
+        "batch_bitwise": false,
+        "latency_us": 92179.93927001953
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "flashinfer_cutlass_ep": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 1.52587890625e-05
+      }
+    },
+    "megatron_alltoall_det": {
+      "output_sha256": "646078df9652585a3a7bb778598f90f33bdaf06068e53a610ae567a557ce3703",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 4.1981718139020435e-05,
+      "mean_abs_vs_fp64": 1.0694490482769653e-06,
+      "latency_us": {
+        "64": 28919.60048675537,
+        "256": 33646.64077758789,
+        "1024": 36262.25662231445,
+        "4096": 41806.25534057617
+      },
+      "backward": {
+        "dx_sha256": "3c52efdd7d5843fbcc013158728af3f56e0270191a7a2f1974515d4e15c9aa4b",
+        "d_gate_up_sha256": "6906225e1312cc144341a0f24adedadb9dbf46758a28b075b60a4cf8eb8da90e",
+        "d_down_sha256": "a4ce0bfb6f495be62d571fbb26a39ecefdd260b20a4a41c305bdc1df66fbb2dd",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": true,
+          "64@28": true,
+          "64@56": true,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": true,
+        "latency_us": 98956.70318603516
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "flashinfer_cutlass_ep": 0.0008697509765625,
+        "megatron_alltoall": 4.57763671875e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "megatron_allgather_det": {
+      "output_sha256": "bd70fde07701e5bd3d9cf2295b080b63fa1fbb6b2e9576382c516ffd5e1479af",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 2.4855467477558242e-05,
+      "mean_abs_vs_fp64": 9.216224976588811e-07,
+      "latency_us": {
+        "64": 27091.184616088867,
+        "256": 33607.872009277344,
+        "1024": 40818.9754486084,
+        "4096": 66599.05624389648
+      },
+      "backward": {
+        "dx_sha256": "01bfa96c41d8422f68ef32e2bd327b48f3c22c13cf5e4c9e0a7c2ac7c75c1b07",
+        "d_gate_up_sha256": "6906225e1312cc144341a0f24adedadb9dbf46758a28b075b60a4cf8eb8da90e",
+        "d_down_sha256": "a4ce0bfb6f495be62d571fbb26a39ecefdd260b20a4a41c305bdc1df66fbb2dd",
+        "d_gate_up_slice_sha256": null,
+        "d_down_slice_sha256": null,
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": true,
+          "64@28": true,
+          "64@56": true,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": true,
+        "latency_us": 95587.32604980469
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "flashinfer_cutlass_ep": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 1.52587890625e-05,
+        "megatron_alltoall_det": 3.0517578125e-05
+      }
+    }
+  }
+}

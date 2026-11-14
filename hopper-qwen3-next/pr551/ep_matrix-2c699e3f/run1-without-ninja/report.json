@@ -1,0 +1,444 @@
+{
+  "kind": "qwen3_next_moe_ep_prior_art",
+  "schema_version": 2,
+  "rfc": 428,
+  "rl_kernel_commit": "2c699e3f7cb30665b8e7dafe48508b5dc94b3ef4",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "nccl": "2.29.7"
+  },
+  "tokens": 1024,
+  "batches": [
+    8,
+    64,
+    256,
+    1024
+  ],
+  "latency_tokens": [
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "nccl_settings": [
+    {
+      "NCCL_ALGO": null,
+      "NCCL_PROTO": null,
+      "NCCL_MAX_NCHANNELS": null
+    },
+    {
+      "NCCL_ALGO": "Ring",
+      "NCCL_PROTO": "LL128",
+      "NCCL_MAX_NCHANNELS": "1"
+    },
+    {
+      "NCCL_ALGO": "Ring",
+      "NCCL_PROTO": "LL128",
+      "NCCL_MAX_NCHANNELS": null
+    },
+    {
+      "NCCL_ALGO": "Ring",
+      "NCCL_PROTO": "LL",
+      "NCCL_MAX_NCHANNELS": "1"
+    },
+    {
+      "NCCL_ALGO": "Ring",
+      "NCCL_PROTO": "LL",
+      "NCCL_MAX_NCHANNELS": null
+    },
+    {
+      "NCCL_ALGO": "Ring",
+      "NCCL_PROTO": "Simple",
+      "NCCL_MAX_NCHANNELS": "1"
+    },
+    {
+      "NCCL_ALGO": "Ring",
+      "NCCL_PROTO": "Simple",
+      "NCCL_MAX_NCHANNELS": null
+    },
+    {
+      "NCCL_ALGO": "allreduce:tree",
+      "NCCL_PROTO": "LL128",
+      "NCCL_MAX_NCHANNELS": "1"
+    },
+    {
+      "NCCL_ALGO": "allreduce:tree",
+      "NCCL_PROTO": "LL128",
+      "NCCL_MAX_NCHANNELS": null
+    },
+    {
+      "NCCL_ALGO": "allreduce:tree",
+      "NCCL_PROTO": "LL",
+      "NCCL_MAX_NCHANNELS": "1"
+    },
+    {
+      "NCCL_ALGO": "allreduce:tree",
+      "NCCL_PROTO": "LL",
+      "NCCL_MAX_NCHANNELS": null
+    },
+    {
+      "NCCL_ALGO": "allreduce:tree",
+      "NCCL_PROTO": "Simple",
+      "NCCL_MAX_NCHANNELS": "1"
+    },
+    {
+      "NCCL_ALGO": "allreduce:tree",
+      "NCCL_PROTO": "Simple",
+      "NCCL_MAX_NCHANNELS": null
+    }
+  ],
+  "candidates": {
+    "rl_kernel_ep": {
+      "ranks_agree": true,
+      "ep4_equals_ep1": true,
+      "nccl_setting_invariant": true,
+      "distinct_ep4_results": 1,
+      "repeat_bitwise": true,
+      "batch_bitwise": true,
+      "batch_cells_failed": [],
+      "max_abs_vs_fp64": 1.7983585702528206e-05,
+      "mean_abs_vs_fp64": 6.872925038053382e-07,
+      "max_abs_vs_fp64_ep1": 1.7983585702528206e-05,
+      "max_abs_vs": {
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      },
+      "latency_us_ep4": {
+        "64": 2478.0800342559814,
+        "256": 2447.487950325012,
+        "1024": 2773.2800245285034,
+        "4096": 5162.928104400635
+      },
+      "latency_us_ep1": {
+        "64": 2551.85604095459,
+        "256": 3286.687970161438,
+        "1024": 3809.1999292373657,
+        "4096": 5465.58403968811
+      },
+      "backward": {
+        "ranks_agree_dx": true,
+        "dx_ep4_equals_ep1": true,
+        "dw_ep4_equals_ep1": true,
+        "nccl_setting_invariant": true,
+        "repeat_bitwise": true,
+        "batch_bitwise": true,
+        "latency_us_ep4": 92732.86437988281,
+        "latency_us_ep1": 345075.5615234375
+      }
+    },
+    "vllm_ep": {
+      "ranks_agree": true,
+      "ep4_equals_ep1": false,
+      "nccl_setting_invariant": true,
+      "distinct_ep4_results": 1,
+      "repeat_bitwise": true,
+      "batch_bitwise": true,
+      "batch_cells_failed": [],
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.651640967688809e-06,
+      "max_abs_vs_fp64_ep1": 0.0008842003429995516,
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "megatron_alltoall": 0.0008697509765625,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      },
+      "latency_us_ep4": {
+        "64": 650.2560079097748,
+        "256": 757.5680017471313,
+        "1024": 872.4800050258636,
+        "4096": 1164.687991142273
+      },
+      "latency_us_ep1": {
+        "64": 1295.583963394165,
+        "256": 1826.1600136756897,
+        "1024": 2060.6240034103394,
+        "4096": 2374.191999435425
+      }
+    },
+    "vllm_ep_bi": {
+      "ranks_agree": true,
+      "ep4_equals_ep1": false,
+      "nccl_setting_invariant": true,
+      "distinct_ep4_results": 1,
+      "repeat_bitwise": true,
+      "batch_bitwise": true,
+      "batch_cells_failed": [],
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.651640967688809e-06,
+      "max_abs_vs_fp64_ep1": 0.0008842003429995516,
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep": 0.0,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "megatron_alltoall": 0.0008697509765625,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      },
+      "latency_us_ep4": {
+        "64": 682.1599900722504,
+        "256": 822.9120075702667,
+        "1024": 969.3759977817535,
+        "4096": 1340.5600190162659
+      },
+      "latency_us_ep1": {
+        "64": 1516.3519978523254,
+        "256": 2188.207983970642,
+        "1024": 2549.567937850952,
+        "4096": 3044.111967086792
+      }
+    },
+    "vllm_ep_nccl": {
+      "ranks_agree": true,
+      "ep4_equals_ep1": false,
+      "nccl_setting_invariant": false,
+      "distinct_ep4_results": 8,
+      "repeat_bitwise": true,
+      "batch_bitwise": false,
+      "batch_cells_failed": [
+        "1024@0",
+        "1024@1016",
+        "1024@508",
+        "256@0",
+        "256@124",
+        "256@248",
+        "64@0",
+        "64@28",
+        "64@56"
+      ],
+      "max_abs_vs_fp64": 0.0008689415539370516,
+      "mean_abs_vs_fp64": 5.729845737840843e-06,
+      "max_abs_vs_fp64_ep1": 0.0008842003429995516,
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.0008697509765625,
+        "vllm_ep": 3.0517578125e-05,
+        "vllm_ep_bi": 3.0517578125e-05,
+        "megatron_alltoall": 0.0008697509765625,
+        "megatron_allgather": 0.0008697509765625,
+        "megatron_alltoall_det": 0.0008697509765625,
+        "megatron_allgather_det": 0.0008697509765625
+      },
+      "latency_us_ep4": {
+        "64": 652.6719927787781,
+        "256": 769.0080106258392,
+        "1024": 901.4720022678375,
+        "4096": 1176.0640144348145
+      },
+      "latency_us_ep1": {
+        "64": 1289.3120050430298,
+        "256": 1823.5999941825867,
+        "1024": 2064.0159845352173,
+        "4096": 2372.6240396499634
+      }
+    },
+    "flashinfer_cutlass_ep": {
+      "unavailable": "FileNotFoundError: [Errno 2] No such file or directory: 'ninja'"
+    },
+    "megatron_alltoall": {
+      "ranks_agree": false,
+      "ep4_equals_ep1": false,
+      "nccl_setting_invariant": false,
+      "distinct_ep4_results": 13,
+      "repeat_bitwise": false,
+      "batch_bitwise": false,
+      "batch_cells_failed": [
+        "1024@0",
+        "1024@1016",
+        "1024@508",
+        "256@0",
+        "256@124",
+        "256@248",
+        "64@0",
+        "64@28",
+        "64@56",
+        "8@0"
+      ],
+      "max_abs_vs_fp64": 3.1858270595983614e-05,
+      "mean_abs_vs_fp64": 1.0693975166864484e-06,
+      "max_abs_vs_fp64_ep1": 2.8076776863223633e-05,
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      },
+      "latency_us_ep4": {
+        "64": 27227.648735046387,
+        "256": 32636.945724487305,
+        "1024": 34021.50535583496,
+        "4096": 34469.953536987305
+      },
+      "latency_us_ep1": {
+        "64": 116059.3147277832,
+        "256": 136198.57025146484,
+        "1024": 141866.88232421875,
+        "4096": 144291.75567626953
+      },
+      "backward": {
+        "ranks_agree_dx": false,
+        "dx_ep4_equals_ep1": false,
+        "dw_ep4_equals_ep1": false,
+        "nccl_setting_invariant": false,
+        "repeat_bitwise": false,
+        "batch_bitwise": false,
+        "latency_us_ep4": 87696.31958007812,
+        "latency_us_ep1": 358692.19970703125
+      }
+    },
+    "megatron_allgather": {
+      "ranks_agree": false,
+      "ep4_equals_ep1": false,
+      "nccl_setting_invariant": false,
+      "distinct_ep4_results": 13,
+      "repeat_bitwise": false,
+      "batch_bitwise": false,
+      "batch_cells_failed": [
+        "1024@0",
+        "1024@1016",
+        "1024@508",
+        "256@0",
+        "256@124",
+        "256@248",
+        "64@0",
+        "64@28",
+        "64@56",
+        "8@0"
+      ],
+      "max_abs_vs_fp64": 2.4855467477558242e-05,
+      "mean_abs_vs_fp64": 9.217780505847156e-07,
+      "max_abs_vs_fp64_ep1": 3.172844718429867e-05,
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      },
+      "latency_us_ep4": {
+        "64": 25070.544242858887,
+        "256": 30445.4402923584,
+        "1024": 31721.503257751465,
+        "4096": 32497.695922851562
+      },
+      "latency_us_ep1": {
+        "64": 116351.23443603516,
+        "256": 137390.54107666016,
+        "1024": 142915.45867919922,
+        "4096": 144313.65966796875
+      },
+      "backward": {
+        "ranks_agree_dx": false,
+        "dx_ep4_equals_ep1": false,
+        "dw_ep4_equals_ep1": false,
+        "nccl_setting_invariant": false,
+        "repeat_bitwise": false,
+        "batch_bitwise": false,
+        "latency_us_ep4": 82514.84680175781,
+        "latency_us_ep1": 356975.2502441406
+      }
+    },
+    "megatron_alltoall_det": {
+      "ranks_agree": true,
+      "ep4_equals_ep1": true,
+      "nccl_setting_invariant": true,
+      "distinct_ep4_results": 1,
+      "repeat_bitwise": true,
+      "batch_bitwise": true,
+      "batch_cells_failed": [],
+      "max_abs_vs_fp64": 4.1981718139020435e-05,
+      "mean_abs_vs_fp64": 1.0694490482769653e-06,
+      "max_abs_vs_fp64_ep1": 4.1981718139020435e-05,
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      },
+      "latency_us_ep4": {
+        "64": 28546.879768371582,
+        "256": 34351.96876525879,
+        "1024": 35705.007553100586,
+        "4096": 36323.34518432617
+      },
+      "latency_us_ep1": {
+        "64": 121234.78317260742,
+        "256": 143223.51837158203,
+        "1024": 149190.41442871094,
+        "4096": 150756.84356689453
+      },
+      "backward": {
+        "ranks_agree_dx": true,
+        "dx_ep4_equals_ep1": false,
+        "dw_ep4_equals_ep1": false,
+        "nccl_setting_invariant": true,
+        "repeat_bitwise": true,
+        "batch_bitwise": false,
+        "latency_us_ep4": 91546.88262939453,
+        "latency_us_ep1": 374009.6435546875
+      }
+    },
+    "megatron_allgather_det": {
+      "ranks_agree": true,
+      "ep4_equals_ep1": false,
+      "nccl_setting_invariant": true,
+      "distinct_ep4_results": 1,
+      "repeat_bitwise": true,
+      "batch_bitwise": true,
+      "batch_cells_failed": [],
+      "max_abs_vs_fp64": 2.4855467477558242e-05,
+      "mean_abs_vs_fp64": 9.216224976588811e-07,
+      "max_abs_vs_fp64_ep1": 4.1981718139020435e-05,
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.0008697509765625,
+        "vllm_ep_bi": 0.0008697509765625,
+        "vllm_ep_nccl": 0.0008697509765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05
+      },
+      "latency_us_ep4": {
+        "64": 26543.79177093506,
+        "256": 32415.39192199707,
+        "1024": 33926.83219909668,
+        "4096": 34720.73745727539
+      },
+      "latency_us_ep1": {
+        "64": 119947.86834716797,
+        "256": 142401.42059326172,
+        "1024": 148125.40435791016,
+        "4096": 150155.79223632812
+      },
+      "backward": {
+        "ranks_agree_dx": false,
+        "dx_ep4_equals_ep1": false,
+        "dw_ep4_equals_ep1": false,
+        "nccl_setting_invariant": false,
+        "repeat_bitwise": true,
+        "batch_bitwise": false,
+        "latency_us_ep4": 86938.88092041016,
+        "latency_us_ep1": 370692.9016113281
+      }
+    }
+  }
+}

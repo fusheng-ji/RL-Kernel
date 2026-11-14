@@ -1,0 +1,6 @@
+Chain `preflight` at `2c699e3f7cb30665b8e7dafe48508b5dc94b3ef4` (#551 head), 4 x H100, `qwen3_next_run.py --stage all --until layers`, two attempts, no patch, clean clone made by the launcher.
+Both attempts FAILED in the same phase, so `layers` and `l2` did not run (they need a passed `preflight`). `l2` was therefore not run and `hopper_recompute_no_ddp.patch` was not applied. The chain report and gate were not produced.
+Passed in both attempts: environment lock, build, operator gates, device guards (27 tests, 0 skipped, 0 failed), checkpoint hashes, 4-rank TP probe.
+Failed: `rollout-smoke` (vLLM engine start, TP4). Four rank processes abort with `tvm::ffi::Error: TypeAttr __ffi_repr__ is already registered for type index 132` right after `Initialized FlashInfer Allreduce norm fusion workspace with backend=trtllm`; the engine then reports `Engine core initialization failed`. Failure kind recorded by the launcher: `unknown`, exit code 1.
+`attempt-B` and `attempt-B2` are unedited. `attempt-B2` was a second run of the identical command after the first failure, not a change of anything.
+The same step fails identically on #543 (`4e2c33af` + `hopper_preflight_2a8f18e4.patch`) and #544 (`81be0811` + the same patch), see `../../pr543/preflight-own-head` and `../../pr544/preflight-own-head`.

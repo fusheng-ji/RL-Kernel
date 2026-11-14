@@ -1,0 +1,498 @@
+{
+  "ep": 1,
+  "rank": 0,
+  "tokens": 1024,
+  "nccl_settings": {
+    "NCCL_ALGO": null,
+    "NCCL_PROTO": null,
+    "NCCL_MAX_NCHANNELS": null
+  },
+  "cublas_workspace_config": ":4096:8",
+  "input_sha256": "3a3e8b6a8a4510fb15be865e8679b273fda2bf2af05c850c8549ba5133c5286c",
+  "rl_kernel_commit": "2c699e3f7cb30665b8e7dafe48508b5dc94b3ef4",
+  "tracked_tree_dirty": false,
+  "provider": "qwen3-next-shared-cuda-forward-v1",
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "nccl": "2.29.7"
+  },
+  "candidates": {
+    "rl_kernel_ep": {
+      "output_sha256": "d55bee193fbc48a1a799bdf7d96bcf3110b8c5a9fca086bf0ac3e3fd04d989cd",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 1.7983585702528206e-05,
+      "mean_abs_vs_fp64": 6.872925038053382e-07,
+      "latency_us": {
+        "64": 2491.328001022339,
+        "256": 3229.967951774597,
+        "1024": 3749.0240335464478,
+        "4096": 5404.1759967803955
+      },
+      "backward": {
+        "dx_sha256": "06b9339d0485ab0e8ced9aa258eef5a87d6bd3c7e35a2acc28147d936970ccc8",
+        "d_gate_up_sha256": "a50d8f23e693c47f261b94d43ffd42f0e7891fabfefb738f433e0fb6a9678f03",
+        "d_down_sha256": "c56efd5ff8340fb84b7468579a01bfab818c013bf35e8f78c005f95296b04b22",
+        "d_gate_up_slice_sha256": [
+          "7d2d2cc84b0f10aa6b024bc0af5f00d4cfd1e97b91b9883b77ad9216c740ea09",
+          "29279a3bc74a7e8c79c0c0b52c4779c269d639fdadbb7c013758f2d1c12be407",
+          "2dd8e400c8612be166c591c8407c0f077aecce7defdc9cae1013235d1df37df1",
+          "318dbfe671b60d5dac7e6069a9e11b955170a6bd92bbcef1a89fd2641fd18915"
+        ],
+        "d_down_slice_sha256": [
+          "c1f5b1e1dd862f4f84b7644156a3171f384164f353a042629e91980780c3d846",
+          "22ffbd46b0245d8c8df0f6b2a89880644ddd58aa042cf4ee528cfe09237f7d8a",
+          "f82fc82d4ed22f7cc0e55508d6c6e5f377d412565bd5542e6eba910911c95796",
+          "6b1838b601478733aec05cbf2b699986aa1aea21113130981de0d16e0480ec73"
+        ],
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": true,
+          "64@28": true,
+          "64@56": true,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": true,
+        "latency_us": 329518.5852050781
+      },
+      "max_abs_vs": {
+        "vllm_ep": 0.000885009765625,
+        "vllm_ep_bi": 0.000885009765625,
+        "vllm_ep_nccl": 0.000885009765625,
+        "flashinfer_cutlass_ep": 0.000885009765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "vllm_ep": {
+      "output_sha256": "2d14b34a7202a483f939a1703899dfdac52a317fd7523ab4fd28ffaccbd6047e",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 0.0008842003429995516,
+      "mean_abs_vs_fp64": 5.589414295728859e-06,
+      "latency_us": {
+        "64": 1287.7280116081238,
+        "256": 1816.3040280342102,
+        "1024": 2052.832007408142,
+        "4096": 2370.543956756592
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.000885009765625,
+        "vllm_ep_bi": 0.0,
+        "vllm_ep_nccl": 0.0,
+        "flashinfer_cutlass_ep": 3.0517578125e-05,
+        "megatron_alltoall": 0.000885009765625,
+        "megatron_allgather": 0.000885009765625,
+        "megatron_alltoall_det": 0.000885009765625,
+        "megatron_allgather_det": 0.000885009765625
+      }
+    },
+    "vllm_ep_bi": {
+      "output_sha256": "2d14b34a7202a483f939a1703899dfdac52a317fd7523ab4fd28ffaccbd6047e",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 0.0008842003429995516,
+      "mean_abs_vs_fp64": 5.589414295728859e-06,
+      "latency_us": {
+        "64": 1493.120014667511,
+        "256": 2176.815986633301,
+        "1024": 2535.904049873352,
+        "4096": 3028.432011604309
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.000885009765625,
+        "vllm_ep": 0.0,
+        "vllm_ep_nccl": 0.0,
+        "flashinfer_cutlass_ep": 3.0517578125e-05,
+        "megatron_alltoall": 0.000885009765625,
+        "megatron_allgather": 0.000885009765625,
+        "megatron_alltoall_det": 0.000885009765625,
+        "megatron_allgather_det": 0.000885009765625
+      }
+    },
+    "vllm_ep_nccl": {
+      "output_sha256": "2d14b34a7202a483f939a1703899dfdac52a317fd7523ab4fd28ffaccbd6047e",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 0.0008842003429995516,
+      "mean_abs_vs_fp64": 5.589414295728859e-06,
+      "latency_us": {
+        "64": 1282.5279831886292,
+        "256": 1815.567970275879,
+        "1024": 2050.271987915039,
+        "4096": 2356.99200630188
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.000885009765625,
+        "vllm_ep": 0.0,
+        "vllm_ep_bi": 0.0,
+        "flashinfer_cutlass_ep": 3.0517578125e-05,
+        "megatron_alltoall": 0.000885009765625,
+        "megatron_allgather": 0.000885009765625,
+        "megatron_alltoall_det": 0.000885009765625,
+        "megatron_allgather_det": 0.000885009765625
+      }
+    },
+    "flashinfer_cutlass_ep": {
+      "output_sha256": "50c200b06e1cf7fda209d8368cd13d302dd27787760d337f913f87f35d57fb0d",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 0.0008842003429995516,
+      "mean_abs_vs_fp64": 5.533230822314534e-06,
+      "latency_us": {
+        "64": 3488.5120391845703,
+        "256": 4609.280109405518,
+        "1024": 5117.664098739624,
+        "4096": 5485.519886016846
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 0.000885009765625,
+        "vllm_ep": 3.0517578125e-05,
+        "vllm_ep_bi": 3.0517578125e-05,
+        "vllm_ep_nccl": 3.0517578125e-05,
+        "megatron_alltoall": 0.000885009765625,
+        "megatron_allgather": 0.000885009765625,
+        "megatron_alltoall_det": 0.000885009765625,
+        "megatron_allgather_det": 0.000885009765625
+      }
+    },
+    "megatron_alltoall": {
+      "output_sha256": "a124b72fe04c1c57aae04d274d9a4cbf28c1e3e35beee52873a2d75ccee26ea4",
+      "repeat_bitwise": false,
+      "batch_grid": {
+        "8@0": false,
+        "64@0": false,
+        "64@28": false,
+        "64@56": false,
+        "256@0": false,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 2.8441804649627887e-05,
+      "mean_abs_vs_fp64": 1.0687055381385416e-06,
+      "latency_us": {
+        "64": 110776.24130249023,
+        "256": 129196.1441040039,
+        "1024": 133860.17608642578,
+        "4096": 136251.953125
+      },
+      "backward": {
+        "dx_sha256": "49fa718c67714c783f47366d4d4d10fed88f2ba110c8bb95e1e29b3919eee2b3",
+        "d_gate_up_sha256": "a8590c1e6da83d1ec600538d50aafdec1820081a3735f0832010686e9d81d00e",
+        "d_down_sha256": "526cbc79839de7d850cc2dc84110fbe08bde5adab42b01e885ee6134bfb54f11",
+        "d_gate_up_slice_sha256": [
+          "2d913c653ee256792fc7a38b5ac7d3f50ff096022ce90f41f350d42fe26a5691",
+          "0c5a76512b2514e19b90b4fab5b3e68365960ced856a6a8e95195e34bab011cf",
+          "e3994a8b6f9d51bba3a5aec207c0815189b957beecc986b4b3baab4b18999f49",
+          "8a5f7c1666eec3ccffe30e239e37320be51a1b1a9a339718a9b04581bd9f4c61"
+        ],
+        "d_down_slice_sha256": [
+          "c1e56e3d446daf5e1aaa4322a5f583cb4e907ef1ff930b24fc86eda352f39370",
+          "63b8055193e71c178b39a86c289b28bd06fe14e2e616d84abe8c84aa897ad69d",
+          "b4e82782402f2e2cbb815f5dee10f264e43a520be33aa176098ae0b837046dbc",
+          "0dc87042b4c71e66f2134f4a6595cf8f1b16059cb4698859f1bf2389d8337a9c"
+        ],
+        "repeat_bitwise": false,
+        "batch_grid": {
+          "8@0": false,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": false,
+          "256@124": false,
+          "256@248": false,
+          "1024@0": false,
+          "1024@508": false,
+          "1024@1016": false
+        },
+        "batch_bitwise": false,
+        "latency_us": 342985.9619140625
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.000885009765625,
+        "vllm_ep_bi": 0.000885009765625,
+        "vllm_ep_nccl": 0.000885009765625,
+        "flashinfer_cutlass_ep": 0.000885009765625,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "megatron_allgather": {
+      "output_sha256": "f0048fbd5cfa74f43df5337ec90d1f037f3a5e6211dbe48bc7dcc6e356fddf21",
+      "repeat_bitwise": false,
+      "batch_grid": {
+        "8@0": false,
+        "64@0": false,
+        "64@28": false,
+        "64@56": false,
+        "256@0": false,
+        "256@124": false,
+        "256@248": false,
+        "1024@0": false,
+        "1024@508": false,
+        "1024@1016": false
+      },
+      "batch_bitwise": false,
+      "max_abs_vs_fp64": 3.569622315753324e-05,
+      "mean_abs_vs_fp64": 1.0682182496996734e-06,
+      "latency_us": {
+        "64": 110430.80139160156,
+        "256": 129145.37811279297,
+        "1024": 133836.9598388672,
+        "4096": 135223.25134277344
+      },
+      "backward": {
+        "dx_sha256": "74c98c1232fbc4c82412fc6226ef71b53e45384544c85fec64e3586514d6bdb0",
+        "d_gate_up_sha256": "a8590c1e6da83d1ec600538d50aafdec1820081a3735f0832010686e9d81d00e",
+        "d_down_sha256": "526cbc79839de7d850cc2dc84110fbe08bde5adab42b01e885ee6134bfb54f11",
+        "d_gate_up_slice_sha256": [
+          "2d913c653ee256792fc7a38b5ac7d3f50ff096022ce90f41f350d42fe26a5691",
+          "0c5a76512b2514e19b90b4fab5b3e68365960ced856a6a8e95195e34bab011cf",
+          "e3994a8b6f9d51bba3a5aec207c0815189b957beecc986b4b3baab4b18999f49",
+          "8a5f7c1666eec3ccffe30e239e37320be51a1b1a9a339718a9b04581bd9f4c61"
+        ],
+        "d_down_slice_sha256": [
+          "c1e56e3d446daf5e1aaa4322a5f583cb4e907ef1ff930b24fc86eda352f39370",
+          "63b8055193e71c178b39a86c289b28bd06fe14e2e616d84abe8c84aa897ad69d",
+          "b4e82782402f2e2cbb815f5dee10f264e43a520be33aa176098ae0b837046dbc",
+          "0dc87042b4c71e66f2134f4a6595cf8f1b16059cb4698859f1bf2389d8337a9c"
+        ],
+        "repeat_bitwise": false,
+        "batch_grid": {
+          "8@0": false,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": false,
+          "256@124": false,
+          "256@248": false,
+          "1024@0": false,
+          "1024@508": false,
+          "1024@1016": false
+        },
+        "batch_bitwise": false,
+        "latency_us": 340074.9816894531
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.000885009765625,
+        "vllm_ep_bi": 0.000885009765625,
+        "vllm_ep_nccl": 0.000885009765625,
+        "flashinfer_cutlass_ep": 0.000885009765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_alltoall_det": 3.0517578125e-05,
+        "megatron_allgather_det": 3.0517578125e-05
+      }
+    },
+    "megatron_alltoall_det": {
+      "output_sha256": "646078df9652585a3a7bb778598f90f33bdaf06068e53a610ae567a557ce3703",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 4.1981718139020435e-05,
+      "mean_abs_vs_fp64": 1.0694490482769653e-06,
+      "latency_us": {
+        "64": 115471.03881835938,
+        "256": 134887.26806640625,
+        "1024": 139645.10345458984,
+        "4096": 141164.6270751953
+      },
+      "backward": {
+        "dx_sha256": "f6e785fe630edaa75cae8c2650a5351fa5d3f710b1900ce271b312235dda1826",
+        "d_gate_up_sha256": "a8590c1e6da83d1ec600538d50aafdec1820081a3735f0832010686e9d81d00e",
+        "d_down_sha256": "526cbc79839de7d850cc2dc84110fbe08bde5adab42b01e885ee6134bfb54f11",
+        "d_gate_up_slice_sha256": [
+          "2d913c653ee256792fc7a38b5ac7d3f50ff096022ce90f41f350d42fe26a5691",
+          "0c5a76512b2514e19b90b4fab5b3e68365960ced856a6a8e95195e34bab011cf",
+          "e3994a8b6f9d51bba3a5aec207c0815189b957beecc986b4b3baab4b18999f49",
+          "8a5f7c1666eec3ccffe30e239e37320be51a1b1a9a339718a9b04581bd9f4c61"
+        ],
+        "d_down_slice_sha256": [
+          "c1e56e3d446daf5e1aaa4322a5f583cb4e907ef1ff930b24fc86eda352f39370",
+          "63b8055193e71c178b39a86c289b28bd06fe14e2e616d84abe8c84aa897ad69d",
+          "b4e82782402f2e2cbb815f5dee10f264e43a520be33aa176098ae0b837046dbc",
+          "0dc87042b4c71e66f2134f4a6595cf8f1b16059cb4698859f1bf2389d8337a9c"
+        ],
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": false,
+        "latency_us": 356363.1896972656
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.000885009765625,
+        "vllm_ep_bi": 0.000885009765625,
+        "vllm_ep_nccl": 0.000885009765625,
+        "flashinfer_cutlass_ep": 0.000885009765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_allgather_det": 0.0
+      }
+    },
+    "megatron_allgather_det": {
+      "output_sha256": "646078df9652585a3a7bb778598f90f33bdaf06068e53a610ae567a557ce3703",
+      "repeat_bitwise": true,
+      "batch_grid": {
+        "8@0": true,
+        "64@0": true,
+        "64@28": true,
+        "64@56": true,
+        "256@0": true,
+        "256@124": true,
+        "256@248": true,
+        "1024@0": true,
+        "1024@508": true,
+        "1024@1016": true
+      },
+      "batch_bitwise": true,
+      "max_abs_vs_fp64": 4.1981718139020435e-05,
+      "mean_abs_vs_fp64": 1.0694490482769653e-06,
+      "latency_us": {
+        "64": 114727.7946472168,
+        "256": 134204.79583740234,
+        "1024": 139250.3204345703,
+        "4096": 140867.85125732422
+      },
+      "backward": {
+        "dx_sha256": "f6e785fe630edaa75cae8c2650a5351fa5d3f710b1900ce271b312235dda1826",
+        "d_gate_up_sha256": "a8590c1e6da83d1ec600538d50aafdec1820081a3735f0832010686e9d81d00e",
+        "d_down_sha256": "526cbc79839de7d850cc2dc84110fbe08bde5adab42b01e885ee6134bfb54f11",
+        "d_gate_up_slice_sha256": [
+          "2d913c653ee256792fc7a38b5ac7d3f50ff096022ce90f41f350d42fe26a5691",
+          "0c5a76512b2514e19b90b4fab5b3e68365960ced856a6a8e95195e34bab011cf",
+          "e3994a8b6f9d51bba3a5aec207c0815189b957beecc986b4b3baab4b18999f49",
+          "8a5f7c1666eec3ccffe30e239e37320be51a1b1a9a339718a9b04581bd9f4c61"
+        ],
+        "d_down_slice_sha256": [
+          "c1e56e3d446daf5e1aaa4322a5f583cb4e907ef1ff930b24fc86eda352f39370",
+          "63b8055193e71c178b39a86c289b28bd06fe14e2e616d84abe8c84aa897ad69d",
+          "b4e82782402f2e2cbb815f5dee10f264e43a520be33aa176098ae0b837046dbc",
+          "0dc87042b4c71e66f2134f4a6595cf8f1b16059cb4698859f1bf2389d8337a9c"
+        ],
+        "repeat_bitwise": true,
+        "batch_grid": {
+          "8@0": true,
+          "64@0": false,
+          "64@28": false,
+          "64@56": false,
+          "256@0": true,
+          "256@124": true,
+          "256@248": true,
+          "1024@0": true,
+          "1024@508": true,
+          "1024@1016": true
+        },
+        "batch_bitwise": false,
+        "latency_us": 353471.3134765625
+      },
+      "max_abs_vs": {
+        "rl_kernel_ep": 3.0517578125e-05,
+        "vllm_ep": 0.000885009765625,
+        "vllm_ep_bi": 0.000885009765625,
+        "vllm_ep_nccl": 0.000885009765625,
+        "flashinfer_cutlass_ep": 0.000885009765625,
+        "megatron_alltoall": 3.0517578125e-05,
+        "megatron_allgather": 3.0517578125e-05,
+        "megatron_alltoall_det": 0.0
+      }
+    }
+  }
+}

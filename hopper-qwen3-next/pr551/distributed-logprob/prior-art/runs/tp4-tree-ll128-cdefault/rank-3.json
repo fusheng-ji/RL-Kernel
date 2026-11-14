@@ -1,0 +1,85 @@
+{
+  "tp": 4,
+  "rank": 3,
+  "tokens": 1024,
+  "nccl_settings": {
+    "NCCL_ALGO": "allreduce:tree",
+    "NCCL_PROTO": "LL128",
+    "NCCL_MAX_NCHANNELS": null
+  },
+  "full_logits_sha256": "6d1c072a04f1a29350e2889383b7354a94f1598fd8878af4f148a37282dab198",
+  "third_party": [],
+  "rl_kernel_commit": "2c699e3f7cb30665b8e7dafe48508b5dc94b3ef4",
+  "tracked_tree_dirty": false,
+  "provider": "qwen3-next-shared-cuda-forward-v1",
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "nccl": "2.29.7"
+  },
+  "candidates": {
+    "rl_kernel_ws2": {
+      "selected_sha256": "82d9e62b2a3276e6bba7beb7cc3e9e9e32248862d2e4c8b2afda89c0c591c1cf",
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "max_abs_vs_fp64": 7.779263082596799e-07,
+      "reference": "shared_logits_fp64",
+      "latency_us": 4676.607847213745,
+      "max_abs_vs": {
+        "vllm_gather": 9.5367431640625e-07,
+        "megatron_ce": 9.5367431640625e-07,
+        "vime_default": 9.5367431640625e-07
+      }
+    },
+    "vllm_gather": {
+      "selected_sha256": "e02765bab542ec5a62250324d56a05d9872fdb2780530f2c5e874de2310185af",
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "max_abs_vs_fp64": 8.081748923416399e-07,
+      "reference": "shared_logits_fp64",
+      "latency_us": 3252.063989639282,
+      "max_abs_vs": {
+        "rl_kernel_ws2": 9.5367431640625e-07,
+        "megatron_ce": 9.5367431640625e-07,
+        "vime_default": 9.5367431640625e-07
+      }
+    },
+    "megatron_ce": {
+      "selected_sha256": "2d9424806bbba5317ee76c8e81ed169d989326d63b6ac81e3ecb3d170ef21ce3",
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "max_abs_vs_fp64": 7.92225659296264e-07,
+      "reference": "shared_logits_fp64",
+      "latency_us": 890.8960223197937,
+      "max_abs_vs": {
+        "rl_kernel_ws2": 9.5367431640625e-07,
+        "vllm_gather": 9.5367431640625e-07,
+        "vime_default": 0.0
+      }
+    },
+    "vime_default": {
+      "selected_sha256": "2d9424806bbba5317ee76c8e81ed169d989326d63b6ac81e3ecb3d170ef21ce3",
+      "batch_bitwise": true,
+      "distinct_results_in_repeats": 1,
+      "repeats": 10,
+      "max_abs_vs_fp64": 7.92225659296264e-07,
+      "reference": "shared_logits_fp64",
+      "latency_us": 899.4879722595215,
+      "max_abs_vs": {
+        "rl_kernel_ws2": 9.5367431640625e-07,
+        "vllm_gather": 9.5367431640625e-07,
+        "megatron_ce": 0.0
+      }
+    },
+    "miles_fused": {
+      "unavailable": "ModuleNotFoundError: No module named 'miles'"
+    },
+    "verl_fused": {
+      "unavailable": "ModuleNotFoundError: No module named 'verl'"
+    }
+  }
+}
