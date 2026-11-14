@@ -1,0 +1,48 @@
+WARNING 11-14 04:19:21 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-14 04:19:24 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-14 04:19:24 [RL-Kernel]: KernelRegistry initialized for cuda
+Loading checkpoint shards:   0%|          | 0/14 [00:00<?, ?it/s]Loading checkpoint shards: 100%|██████████| 14/14 [00:00<00:00, 181.73it/s]
+<SRC>/base/tools/validation/models/h3_full_transformer.py:118: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/generated/python_variable_methods.cpp:822.)
+  loss=float(loss),
+INFO 11-14 04:21:18 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 04:21:18 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-14 04:21:18 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-14 04:21:18 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+INFO 11-14 04:21:18 [RL-Kernel]: KernelRegistry initialized for cuda
+Traceback (most recent call last):
+  File "<SRC>/base/tools/validation/models/h3_full_transformer.py", line 226, in <module>
+    main()
+  File "<SRC>/base/tools/validation/models/h3_full_transformer.py", line 164, in main
+    cand = run_once(
+           ^^^^^^^^^
+  File "<SRC>/base/tools/validation/models/h3_full_transformer.py", line 96, in run_once
+    video, audio = model(**fresh)
+                   ^^^^^^^^^^^^^^
+  File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<DATA>/h3_full_h100/diffusers_src/src/diffusers/utils/peft_utils.py", line 315, in wrapper
+    result = forward_fn(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<DATA>/h3_full_h100/diffusers_src/src/diffusers/models/transformers/transformer_minimax_h3.py", line 595, in forward
+    video_embeds = self.proj_in(hidden_states.to(self.proj_in.weight.dtype))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1832, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<SRC>/base/rl_engine/validation/models/h3_full_model.py", line 216, in forward
+    out = call(flat, module.weight, module.bias)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<SRC>/base/rl_engine/ops/gemm/video_input_projection_fp32.py", line 113, in __call__
+    raise RuntimeError("parameter gradients require canonical_backward_session")
+RuntimeError: parameter gradients require canonical_backward_session

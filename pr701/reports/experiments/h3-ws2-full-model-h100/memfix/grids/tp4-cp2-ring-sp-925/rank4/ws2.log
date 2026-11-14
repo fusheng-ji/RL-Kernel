@@ -1,0 +1,30 @@
+WARNING 11-14 06:14:34 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-14 06:14:38 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-14 06:14:38 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 06:16:15 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 06:16:15 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-14 06:16:15 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-14 06:16:15 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+[rank4]: Traceback (most recent call last):
+[rank4]:   File "<SRC>/ws2mem/tools/validation/models/h3_parallel_full_model.py", line 257, in <module>
+[rank4]:     main()
+[rank4]:   File "<SRC>/ws2mem/tools/validation/models/h3_parallel_full_model.py", line 147, in main
+[rank4]:     spans = pm.rank_spans(args.tp, args.cp, length, args.sp)
+[rank4]:             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank4]:   File "<SRC>/ws2mem/rl_engine/validation/models/h3_parallel_model.py", line 67, in rank_spans
+[rank4]:     raise ValueError(
+[rank4]: ValueError: sequence parallelism needs the 463 rows of CP rank 0 divisible by tp=4 (length 925, cp=2)
+[rank4]:[W1114 06:16:16.393970482 ProcessGroupNCCL.cpp:1624] Warning: WARNING: destroy_process_group() was not called before program exit, which can leak resources. For more info, please see https://pytorch.org/docs/stable/distributed.html#shutdown (function operator())
+[rank4]:[W1114 06:16:16.997505820 TCPStore.cpp:125] [c10d] recvValue failed on SocketImpl(fd=52, addr=[node-b]:47962, remote=[node-a]:29640): Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?
+Exception raised from recvBytes at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:787 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x761ed9563bfd in <ENV>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x761ed9564bd2 in <ENV>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistNetworkError::DistNetworkError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x761ed9565092 in <ENV>/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x66acf0d (0x761e426f8f0d in <ENV>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #4: c10d::TCPStore::check(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) + 0x383 (0x761e426f23e3 in <ENV>/lib/python3.12/site-packages/torch/lib/libtorch_cpu.so)
+frame #5: c10d::ProcessGroupNCCL::HeartbeatMonitor::runLoop() + 0x43d (0x761e2465319d in <ENV>/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xdc253 (0x761ea96dc253 in /lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x94a83 (0x761eda694a83 in /lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x126890 (0x761eda726890 in /lib/x86_64-linux-gnu/libc.so.6)
+
+[rank4]:[W1114 06:16:16.005934730 ProcessGroupNCCL.cpp:1876] [PG ID 0 PG GUID 0(default_pg) Rank 4] Failed to check the "should dump" flag on TCPStore, (maybe TCPStore server has shut down too early), with error: Failed to recv, got 0 bytes. Connection was likely closed. Did the remote server shutdown or crash?

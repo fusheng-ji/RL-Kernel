@@ -1,0 +1,66 @@
+WARNING 11-14 05:07:59 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-14 05:08:03 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-14 05:08:03 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 05:09:35 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-14 05:09:35 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-14 05:09:35 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-14 05:09:35 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+INFO 11-14 05:09:36 [RL-Kernel]: KernelRegistry initialized for cuda
+[rank7]:[W1114 05:09:40.225333191 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 3 while trying to allocate 155189248 bytes (free: 62193664, total: 99949674496).
+[rank7]:[W1114 05:09:40.226628042 CUDACachingAllocator.cpp:3933] memory allocation failed with OOM on device 3 while trying to allocate 155189248 bytes (free: 76873728, total: 99949674496).
+[rank7]: Traceback (most recent call last):
+[rank7]:   File "<SRC>/ws2/tools/validation/models/h3_parallel_full_model.py", line 249, in <module>
+[rank7]:     main()
+[rank7]:   File "<SRC>/ws2/tools/validation/models/h3_parallel_full_model.py", line 155, in main
+[rank7]:     reference = _run(model, base, canonical, False, ops, gradients)
+[rank7]:                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<SRC>/ws2/tools/validation/models/h3_parallel_full_model.py", line 65, in _run
+[rank7]:     video, audio = model(**inputs)
+[rank7]:                    ^^^^^^^^^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank7]:     return self._call_impl(*args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1789, in _call_impl
+[rank7]:     return forward_call(*args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<DATA>/h3_full_h100/diffusers_src/src/diffusers/utils/peft_utils.py", line 315, in wrapper
+[rank7]:     result = forward_fn(self, *args, **kwargs)
+[rank7]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<DATA>/h3_full_h100/diffusers_src/src/diffusers/models/transformers/transformer_minimax_h3.py", line 616, in forward
+[rank7]:     hidden_states = self._gradient_checkpointing_func(
+[rank7]:                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<DATA>/h3_full_h100/diffusers_src/src/diffusers/models/modeling_utils.py", line 309, in _gradient_checkpointing_func
+[rank7]:     return torch.utils.checkpoint.checkpoint(
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/_compile.py", line 54, in inner
+[rank7]:     return disable_fn(*args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1446, in _fn
+[rank7]:     return fn(*args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/utils/checkpoint.py", line 522, in checkpoint
+[rank7]:     gen.throw(e)
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/utils/checkpoint.py", line 1706, in _checkpoint_without_reentrant_generator
+[rank7]:     yield
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/utils/checkpoint.py", line 519, in checkpoint
+[rank7]:     ret = function(*args, **kwargs)
+[rank7]:           ^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1778, in _wrapped_call_impl
+[rank7]:     return self._call_impl(*args, **kwargs)
+[rank7]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1884, in _call_impl
+[rank7]:     return inner()
+[rank7]:            ^^^^^^^
+[rank7]:   File "<ENV>/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1832, in inner
+[rank7]:     result = forward_call(*args, **kwargs)
+[rank7]:              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<SRC>/ws2/rl_engine/validation/models/h3_parallel_model.py", line 149, in forward
+[rank7]:     out = h3_tp.run_tp_block_rows(
+[rank7]:           ^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<SRC>/ws2/rl_engine/validation/models/h3_tp.py", line 239, in run_tp_block_rows
+[rank7]:     leaf("ff.gate", par.shard_rows(fused[half:], tp, grid.tp_rank)),
+[rank7]:     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]:   File "<SRC>/ws2/rl_engine/validation/models/h3_tp.py", line 180, in leaf
+[rank7]:     tensor = tensor.detach().clone()
+[rank7]:              ^^^^^^^^^^^^^^^^^^^^^^^
+[rank7]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 148.00 MiB. GPU 3 has a total capacity of 93.09 GiB of which 73.31 MiB is free. Including non-PyTorch memory, this process has 93.00 GiB memory in use. Of the allocated memory 92.00 GiB is allocated by PyTorch, and 113.95 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
