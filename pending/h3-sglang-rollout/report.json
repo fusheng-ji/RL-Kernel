@@ -1,0 +1,212 @@
+{
+  "environment": {
+    "gpu": "NVIDIA B200",
+    "capability": [
+      10,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "sglang": "0.5.21",
+    "python": "3.12.14"
+  },
+  "rows": 261,
+  "prefix_rows": 37,
+  "seed": 0,
+  "tp": {
+    "1": {
+      "loaded": [
+        "blocks.0.attn.out_proj.weight",
+        "blocks.0.attn.qkv_proj.weight",
+        "blocks.0.mlp.fc1.weight",
+        "blocks.0.mlp.fc2.weight"
+      ],
+      "report": {
+        "contract": "h3-parallel-v1",
+        "patched": [
+          "blocks.0.attn.qkv_proj",
+          "blocks.0.attn.out_proj",
+          "blocks.0.mlp.fc1",
+          "blocks.0.mlp.fc2"
+        ],
+        "skipped": [],
+        "external": [
+          "attention",
+          "rotary",
+          "qk_norm",
+          "swiglu",
+          "adaln"
+        ],
+        "engine": "sglang",
+        "adaln_cache": false
+      },
+      "rows": {
+        "qkv": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          }
+        },
+        "fc1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "fc2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          }
+        }
+      }
+    },
+    "2": {
+      "loaded": [
+        "blocks.0.attn.out_proj.weight",
+        "blocks.0.attn.qkv_proj.weight",
+        "blocks.0.mlp.fc1.weight",
+        "blocks.0.mlp.fc2.weight"
+      ],
+      "report": {
+        "contract": "h3-parallel-v1",
+        "patched": [
+          "blocks.0.attn.qkv_proj",
+          "blocks.0.attn.out_proj",
+          "blocks.0.mlp.fc1",
+          "blocks.0.mlp.fc2"
+        ],
+        "skipped": [],
+        "external": [
+          "attention",
+          "rotary",
+          "qk_norm",
+          "swiglu",
+          "adaln"
+        ],
+        "engine": "sglang",
+        "adaln_cache": false
+      },
+      "rows": {
+        "qkv": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "fc1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "fc2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          }
+        }
+      },
+      "bound_equals_tp1": {
+        "qkv": true,
+        "out": true,
+        "fc1": true,
+        "fc2": true
+      },
+      "native_equals_tp1": {
+        "qkv": true,
+        "out": false,
+        "fc1": true,
+        "fc2": false
+      }
+    }
+  }
+}
