@@ -1,0 +1,462 @@
+{
+ "schema": "rlkernel.h3.audio_vae_bench.v1",
+ "checkpoint": {
+  "repo": "MiniMaxAI/MiniMax-H3",
+  "component": "FL2VA/audio_vae",
+  "model_safetensors_sha256": "37dddc2f3e6d5d5139d823d5ea283bbf304dadcb885b1ccda818aa13dade5ea2"
+ },
+ "provenance": {
+  "contract": "h3-audio-vae-v1",
+  "sample_rate": 32000,
+  "hop_length": 800,
+  "latents_per_second": 40,
+  "latent_channels": 32,
+  "stereo_order": [
+   "left",
+   "right"
+  ],
+  "row_layout": "channel-major [left T rows | right T rows] x 32",
+  "encode_policy": {
+   "name": "h3-audio-encode-strict-v1",
+   "micro_batch": 1,
+   "cudnn_enabled": false,
+   "cudnn_deterministic": true,
+   "cudnn_benchmark": false,
+   "allow_tf32": false,
+   "sdpa_backend": "math"
+  },
+  "decode_policy": {
+   "name": "h3-audio-decode-strict-v1",
+   "micro_batch": 1,
+   "cudnn_enabled": true,
+   "cudnn_deterministic": true,
+   "cudnn_benchmark": false,
+   "allow_tf32": false,
+   "sdpa_backend": null
+  },
+  "latents_mean_sha256": "a77dc0fd9c612e98b8a995dffebe793db9aa47a27af9ebd93389a479ad62a096",
+  "latents_std_sha256": "9c2f6c097fff4a3eab12248dead0d49175538a5124ca81c76f455920c33ec5fc",
+  "device": "cuda:0",
+  "torch": "2.13.0+cu130",
+  "gpu": "NVIDIA H100",
+  "capability": [
+   9,
+   0
+  ],
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "source": {
+   "commit": "a1177ddd9cbd276af24d0770d017b374fec7716f",
+   "clean": true
+  }
+ },
+ "paths": {
+  "diffusers": "diffusers f53d5520",
+  "vllm-omni": "vllm-omni aae3f386 recipe on checkpoint remote code",
+  "ours": "rl_engine h3-audio-vae-v1"
+ },
+ "cold_start": {
+  "diffusers": {
+   "encode_first_vs_third_max_abs": 0.0,
+   "decode_first_vs_third_max_abs": 0.0
+  },
+  "vllm-omni": {
+   "encode_first_vs_third_max_abs": 5.841255187988281e-06,
+   "decode_first_vs_third_max_abs": 0.0
+  },
+  "ours": {
+   "encode_first_vs_third_max_abs": 0.0,
+   "decode_first_vs_third_max_abs": 0.0
+  }
+ },
+ "cases": [
+  {
+   "video_frames": 22,
+   "samples": 29210,
+   "latents_per_channel": 37,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002088576555252075,
+       "batch8_first": 0.0033310651779174805,
+       "batch8_last": 0.0033310651779174805
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.007495462894439697,
+      "sha256": "832e21353ec20c0309f215171642cf58b9d8e65b4f9cd98932979a61ceafb916"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0006420761346817017,
+       "batch8_first": 0.0005600601434707642,
+       "batch8_last": 0.0005600601434707642
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.005678114481270313,
+      "sha256": "77471e59111de0755fe089d7a105db067c0e59b9a452eeda53a306b4d4e5b83c"
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 1.52587890625e-05,
+      "sha256": "8988274c022e6ea19314d6d0bc82473fb51946ee85a6278b3bedcfe4786b7c07"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0006420761346817017,
+       "batch8_first": 0.0005600601434707642,
+       "batch8_last": 0.0005600601434707642
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.005678114481270313,
+      "sha256": "77471e59111de0755fe089d7a105db067c0e59b9a452eeda53a306b4d4e5b83c"
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 6.556510925292969e-06,
+      "sha256": "cc7448c6033086e554a49e9b29b792791fe21a75ac2c625d267827453bd55914"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 3.095204010605812e-05,
+      "sha256": "9d94d0de018dd86a57ba585642fa06a52f0b25df39e6b0b54ca8218fac1fdddb"
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "e1546b6b2ab99b25b105936b85dd32007d6293dc016bb50400c4be2dd9a1c8ed",
+   "latents_sha256": "cc7448c6033086e554a49e9b29b792791fe21a75ac2c625d267827453bd55914"
+  },
+  {
+   "video_frames": 121,
+   "samples": 161210,
+   "latents_per_channel": 202,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002760276198387146,
+       "batch8_first": 0.004045046865940094,
+       "batch8_last": 0.004045046865940094
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.016681253910064697,
+      "sha256": "810b32c762475d0a19e9aa5c4c7d1e000701de3676320734ae4f7d2376b12e9e"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002050533890724182,
+       "batch8_first": 0.040998660027980804,
+       "batch8_last": 0.041043251752853394
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.010268330574035645,
+      "sha256": "183852fd98790f85191f13f7117c46a97d3528ca37ee80f2c20157e80da73e28"
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 1.0728836059570312e-06,
+       "batch8_last": 1.0728836059570312e-06
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 2.5033950805664062e-05,
+      "sha256": "fd4fa5bde10941bcabb335bc66813f5ae8bf905046e256eed4b7c48c6344c830"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002050533890724182,
+       "batch8_first": 0.040998660027980804,
+       "batch8_last": 0.041043251752853394
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.010268330574035645,
+      "sha256": "183852fd98790f85191f13f7117c46a97d3528ca37ee80f2c20157e80da73e28"
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 1.5854835510253906e-05,
+      "sha256": "95a91fab110c49253fb8a15790c8aeafd89b2bfece9046ab843975da5aadc238"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 2.008676528930664e-05,
+      "sha256": "c1329dce90b9071a812c90ede2e1fa5437d36f48e476c33c148adefa58338189"
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "d35fafa25d2f8f1c4f24fc0ecd491b94136e1ae9b48dc8ea494195e1d8105db8",
+   "latents_sha256": "95a91fab110c49253fb8a15790c8aeafd89b2bfece9046ab843975da5aadc238"
+  },
+  {
+   "video_frames": 241,
+   "samples": 321210,
+   "latents_per_channel": 402,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0057334303855896,
+       "batch8_first": 0.026672661304473877,
+       "batch8_last": 0.026672661304473877
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.030114591121673584,
+      "sha256": "1353950ca0817ec776d444b5d877f4e8b5533b7b4e40bd18c61c789e<JOBID>9"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.02542838454246521,
+       "batch8_first": 0.006347596645355225,
+       "batch8_last": 0.006347596645355225
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.029718071222305298,
+      "sha256": "b19564900972b3358cf7920b3ba318004ae48d0e73ec07270a172e2c2a9dc6ed"
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 1.6689300537109375e-06,
+       "batch8_last": 1.6689300537109375e-06
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00010418891906738281,
+      "sha256": "378fb076e3672e4c618a54f5b01d5b709299b669a2220e5161ea007480f7c5da"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.02542838454246521,
+       "batch8_first": 0.006347596645355225,
+       "batch8_last": 0.006347596645355225
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.029718071222305298,
+      "sha256": "b19564900972b3358cf7920b3ba318004ae48d0e73ec07270a172e2c2a9dc6ed"
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00010466575622558594,
+      "sha256": "c18936274ac6bf644a616329240a0caa8870aabf8397a0784ffaab79b172149a"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 8.809193968772888e-05,
+      "sha256": "50d14cfd1ecba1202f991fb590dff7d55bb9b58d59ff30a9efb5904b7019d1f9"
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "982d38f5ce9047f2dc532eeeb0a6312443bbf8eb264e7466dd1f035afc4f788e",
+   "latents_sha256": "c18936274ac6bf644a616329240a0caa8870aabf8397a0784ffaab79b172149a"
+  },
+  {
+   "video_frames": 481,
+   "samples": 641210,
+   "latents_per_channel": 802,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.026673316955566406,
+       "batch8_first": 3.5762786865234375e-06,
+       "batch8_last": 3.5762786865234375e-06
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.024325251579284668,
+      "sha256": "444756231a9bb57f00c8c67cabff8e455e9c09827b85f8c644df3430adbd4433"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0069791898131370544,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.032999083399772644,
+      "sha256": "b02a284d2c0bd47d2fec3b124a946c747a1cfab6306baa917bdf20f6e603e90e"
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 1.2516975402832031e-06,
+       "batch8_first": 3.933906555175781e-06,
+       "batch8_last": 3.933906555175781e-06
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00012123584747314453,
+      "sha256": "b68cbf6e55ae57ec75b03557fabeddf290aa51b2532fd85c06ad506469744acc"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0069791898131370544,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.032999083399772644,
+      "sha256": "b02a284d2c0bd47d2fec3b124a946c747a1cfab6306baa917bdf20f6e603e90e"
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00010132789611816406,
+      "sha256": "bd28a48dc6cee20869b6234d264073766ab50f3a123d869f811379141f3cd355"
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 5.603581666946411e-05,
+      "sha256": "d6a67a15a2e19109e77109a5337cb2b822f9aeea7f507d9513df4e253e5f1c74"
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "6d0f0af5d032c6b5fef91f9abbe24317668026ded22f204418fb4b1375f6b232",
+   "latents_sha256": "bd28a48dc6cee20869b6234d264073766ab50f3a123d869f811379141f3cd355"
+  }
+ ]
+}
