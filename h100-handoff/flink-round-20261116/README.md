@@ -5,15 +5,17 @@ Rules 1-7 of the 2026-11-14 handoff (fork branch `handoff/h100-evidence-gaps-202
 Files for step 0 (no repository code, no checkpoint): this directory (`probe.py`, `run_probe.sh`, `b200-reference/`).
 
 ## State of the code
-The fixes are committed locally and **not pushed**. Steps 1-3 run at the pushed heads; re-check each with `gh pr view N --json headRefOid` and test only a pushed SHA.
+**Update 2026-11-18:** all five heads are pushed (2026-11-17, fast-forwards) and are the PR heads; CI is green on each. Steps 1-3 run at these SHAs; re-check each with `gh pr view N --json headRefOid` before starting and test only the SHA the PR shows. The PR descriptions already say "H100 at this head: not run yet" and link the previous failed `preflight`; the results of this handoff replace that line.
 
-| PR | Local head (branch) | What changed |
+| PR | PR head (pushed) | What changed since the last H100 run |
 |---|---|---|
-| #543 | `85675a74` (`fix/543-flink-r1`) | Hopper preflight from #557 (`a705d287`, here `af186dd2`), #503's fixed-order `combine_routes` backward (`e514d42f`), GPU-guard CPU test |
+| #543 | `85675a74` | Hopper preflight from #557 (`a705d287`, here `af186dd2`, so no `2a8f18e4` patch any more), #503's fixed-order `combine_routes` backward (`e514d42f`), GPU-guard CPU test |
 | #544 | `c49419ae` | merge of #543 |
 | #549 | `e8195782` | merge of #544, on `b15de6e7` |
 | #557 | `62487710` | merge of #549; EP4 gate differentiates through the router and `combine_routes` |
 | #551 | `ea999fd4` | merge of #557 |
+
+The base of the stack, #503, is at `8e33c453` (see step 4). #507 (`1fef29b0`) is unchanged.
 
 The no-DDP replay actor (`hopper_recompute_no_ddp.patch`) is not ported (open question 1); until it is, a full-model `l2` on 80 GB needs it applied as a named, declared step.
 
@@ -50,11 +52,16 @@ at the #551 head `2c699e3f` (the one that failed), detached and clean.
 
 Hand back `header.txt` (it lists every `libtvm_ffi` copy found and whether a default FlashInfer cache exists), `summary.txt`, `steps.txt`, the per-case JSON, and the log of every failing case (redacted). The fix (a code change that turns FlashInfer all-reduce off where there is no multicast, or an environment change) is decided here afterwards (open question 3).
 
-## Steps 1-3: at the pushed heads (after the push)
-Blocked on step 0 for everything that starts vLLM. With the same commands as the 2026-11-14 handoff, Priority 2 B:
+## Steps 1-4: at the pushed heads
+Blocked on step 0 for everything that starts vLLM. The EP4 MoE gate in step 3 does not start vLLM and can run before step 0 is solved. With the same commands as the 2026-11-14 handoff, Priority 2 B:
 1. #543: chain `preflight`, `layers`, `l2`; the chain report and gate exit code.
 2. #544: `l2`, then `bi --bi-suite full` (97 cells).
 3. #557: the EP4 gate (4 GPUs, layer-0 weights are enough); the EP4 chain `preflight`, `layers` (with `moe_ep`), `l2` (16 cases); optional `bi` full at EP4.
    - B200 reference for the EP4 gate at local `62487710` (2026-11-16): passed, 10 cases, bitwise on all four ranks, including the new `ep4-vs-ep1-router-combine-backward-{8,64,256,1024}`. This is a pre-push check, not PR evidence.
+4. #503 at `8e33c453` (optional, 4 GPUs, no vLLM, no full checkpoint): the same 9 files as `hopper-qwen3-next/pr503/b200-8e33c453/` on `pr_assets` (`tests/models/qwen3_next/test_*.py` + `check_*.py`; command in that directory's `steps.txt`), with the Qwen3-Next SM90 build flags. The H100 runs of #503 so far are at `d5253a5c` and at the candidate tree `ce3f499d`, which is the tree of `e514d42f`; `8e33c453` only gates the empty-input bias gradient of `_SharedLinear.backward` and fixes a docstring. B200 at `8e33c453`: 323 passed, 0 failed, 0 skipped.
+
+If time is short: step 0, then the step 3 EP4 gate, then steps 1, 2, the rest of 3, and 4.
+
+The remaining items of the 2026-11-14 handoff that are outside this stack (#507, #495, #491, #536, #538, #547) are listed with their current heads in `h100-handoff/evidence-gaps-20261114/STATUS-2026-11-18.md` on fork branch `handoff/h100-evidence-gaps-20261114`.
 
 Archive under `pr_assets` `hopper-qwen3-next/pr<N>/<head8>/`; draft one "H100" paragraph per PR. H200: no hardware (open question 2).
