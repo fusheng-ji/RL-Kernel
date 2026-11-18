@@ -1,0 +1,13 @@
+[2026-11-18T22:34:10Z] START build :: find . -name "_C*.so" -not -path "./.git/*" -delete; rm -rf build; python setup.py build_ext --inplace
+[2026-11-18T22:35:27Z] END build rc=0
+_C: <HOME>/h100run-20261118/D491/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+[2026-11-18T22:35:30Z] START pytest :: python -m pytest -p no:cacheprovider -v -rs tests/distributed/collectives/ tests/benchmarks/
+[2026-11-18T22:35:53Z] END pytest rc=0
+[2026-11-18T22:35:53Z] START before-w2 :: CUDA_VISIBLE_DEVICES=0,1 PYTHONPATH=<WORK>/Dmain python -m torch.distributed.run --standalone --nproc-per-node=2 benchmarks/distributed/benchmark_deterministic_collectives.py --output <WORK>/out/D/491/res/before_w2.json
+[2026-11-18T22:36:07Z] END before-w2 rc=0
+[2026-11-18T22:36:07Z] START after-w2 :: CUDA_VISIBLE_DEVICES=0,1 python -m torch.distributed.run --standalone --nproc-per-node=2 benchmarks/distributed/benchmark_deterministic_collectives.py --output <WORK>/out/D/491/res/after_w2.json
+[2026-11-18T22:36:21Z] END after-w2 rc=0
+[2026-11-18T22:36:21Z] START before-w4 :: PYTHONPATH=<WORK>/Dmain python -m torch.distributed.run --standalone --nproc-per-node=4 benchmarks/distributed/benchmark_deterministic_collectives.py --output <WORK>/out/D/491/res/before_w4.json
+[2026-11-18T22:36:40Z] END before-w4 rc=0
+[2026-11-18T22:36:40Z] START after-w4 :: python -m torch.distributed.run --standalone --nproc-per-node=4 benchmarks/distributed/benchmark_deterministic_collectives.py --output <WORK>/out/D/491/res/after_w4.json
+[2026-11-18T22:36:59Z] END after-w4 rc=0

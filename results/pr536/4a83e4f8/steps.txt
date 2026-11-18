@@ -1,0 +1,13 @@
+[2026-11-18T22:10:42Z] START build :: find . -name "_C*.so" -not -path "./.git/*" -delete; rm -rf build; python setup.py build_ext --inplace
+[2026-11-18T22:12:01Z] END build rc=0
+_C: <HOME>/h100run-20261118/D536/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+[2026-11-18T22:12:04Z] START det-gemm-autotune0 :: RL_KERNEL_MODE=auto RL_KERNEL_AUTOTUNE_CACHE_DIR=$(mktemp -d /tmp/rlk-at-XXXXXX) RL_KERNEL_AUTOTUNE=0 python -m pytest -p no:cacheprovider -q -rs tests/ops/gemm/test_det_gemm.py
+[2026-11-18T22:12:32Z] END det-gemm-autotune0 rc=1
+[2026-11-18T22:12:32Z] START det-gemm-autotune1 :: RL_KERNEL_MODE=auto RL_KERNEL_AUTOTUNE_CACHE_DIR=$(mktemp -d /tmp/rlk-at-XXXXXX) RL_KERNEL_AUTOTUNE=1 python -m pytest -p no:cacheprovider -q -rs tests/ops/gemm/test_det_gemm.py
+[2026-11-18T22:12:43Z] END det-gemm-autotune1 rc=1
+[2026-11-18T22:12:43Z] START autotune-suite :: RL_KERNEL_MODE=auto RL_KERNEL_AUTOTUNE_CACHE_DIR=$(mktemp -d /tmp/rlk-at-XXXXXX) python -m pytest -p no:cacheprovider -q -rs tests/platforms/test_persistent_autotuner.py tests/runtime/test_kernel_registry.py tests/ops/test_autotuning_gpu.py tests/ops/test_autotuning_candidates.py tests/benchmarks/test_autotuning_benchmark.py
+[2026-11-18T22:23:57Z] END autotune-suite rc=0
+[2026-11-18T22:23:57Z] START ops-autotune0 :: RL_KERNEL_MODE=auto RL_KERNEL_AUTOTUNE_CACHE_DIR=$(mktemp -d /tmp/rlk-at-XXXXXX) RL_KERNEL_AUTOTUNE=0 python -m pytest -p no:cacheprovider -q -rs tests/ops
+[2026-11-18T22:26:26Z] END ops-autotune0 rc=1
+[2026-11-18T22:26:26Z] START ops-autotune1 :: RL_KERNEL_MODE=auto RL_KERNEL_AUTOTUNE_CACHE_DIR=$(mktemp -d /tmp/rlk-at-XXXXXX) RL_KERNEL_AUTOTUNE=1 python -m pytest -p no:cacheprovider -q -rs tests/ops
+[2026-11-18T22:29:48Z] END ops-autotune1 rc=1
