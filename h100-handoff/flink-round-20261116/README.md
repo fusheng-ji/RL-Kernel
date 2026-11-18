@@ -62,6 +62,8 @@ Blocked on step 0 for everything that starts vLLM. The EP4 MoE gate in step 3 do
 
 If time is short: step 0, then the step 3 EP4 gate, then steps 1, 2, the rest of 3, and 4.
 
+Step 5 (#507 attention prior art on H100 with the #551 timing fix, 1 GPU, no vLLM engine, can run before step 0): `update-20261118/README.md`, item B.
+
 The remaining items of the 2026-11-14 handoff that are outside this stack (#507, #495, #491, #536, #538, #547) are listed with their current heads in `h100-handoff/evidence-gaps-20261114/STATUS-2026-11-18.md` on fork branch `handoff/h100-evidence-gaps-20261114`.
 
 Archive under `pr_assets` `hopper-qwen3-next/pr<N>/<head8>/`; draft one "H100" paragraph per PR. H200: no hardware (open question 2).
