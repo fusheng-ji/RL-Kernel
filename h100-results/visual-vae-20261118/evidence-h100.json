@@ -1,0 +1,842 @@
+{
+ "checkpoint": {
+  "files": [
+   {
+    "path": "vae/config.json",
+    "sha256": "78f67deec3d63aae807f2bfe7154bc1e26f6372cb20b63265fcbae1b62bb5745",
+    "size": 2011
+   },
+   {
+    "path": "vae/diffusion_pytorch_model-00001-of-00003.safetensors",
+    "sha256": "72f4c6be84ac0674f27398cde991dd9d719762f3952c4921aa66b2ce542f6374",
+    "size": 5061033024
+   },
+   {
+    "path": "vae/diffusion_pytorch_model-00002-of-00003.safetensors",
+    "sha256": "2e05e8bc23fa4071043e17fd242be8acd0685e781a43987432b2eae925be4198",
+    "size": 4955986528
+   },
+   {
+    "path": "vae/diffusion_pytorch_model-00003-of-00003.safetensors",
+    "sha256": "c05d6ac4b1a33de372799d708531da6320f6a3ce6d1ce6d895e770988e004a39",
+    "size": 398539336
+   },
+   {
+    "path": "vae/diffusion_pytorch_model.safetensors.index.json",
+    "sha256": "15f6d44553c3c616b0dc999920aa784f92ecee7e4201f1f99ac405cfbf3061ca",
+    "size": 74228
+   }
+  ],
+  "repo": "MiniMaxAI/MiniMax-H3",
+  "revision": "42ed227ee7df40d41602854ae760620d6eb651fe",
+  "subfolder": "vae"
+ },
+ "checks": {
+  "batch_invariance": {
+   "contract_per_row": {
+    "decode_video": true,
+    "encode_keyframe": true,
+    "encode_video": true
+   },
+   "diffusers_batched_default_flags": {
+    "decode_video": {
+     "bitwise_equal": true,
+     "cases": [
+      {
+       "batch": 2,
+       "bitwise_equal": true,
+       "max_abs": 0.0,
+       "mismatches": 0,
+       "numel": 26357760,
+       "row": 0
+      },
+      {
+       "batch": 2,
+       "bitwise_equal": true,
+       "max_abs": 0.0,
+       "mismatches": 0,
+       "numel": 26357760,
+       "row": 1
+      }
+     ],
+     "differing_cases": 0,
+     "max_abs": 0.0
+    },
+    "encode_keyframe": {
+     "bitwise_equal": false,
+     "cases": [
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.02255868911743164,
+       "mismatches": 37433,
+       "numel": 37440,
+       "row": 0
+      },
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.025476694107055664,
+       "mismatches": 37429,
+       "numel": 37440,
+       "row": 1
+      },
+      {
+       "batch": 3,
+       "bitwise_equal": false,
+       "max_abs": 0.02181720733642578,
+       "mismatches": 37429,
+       "numel": 37440,
+       "row": 0
+      },
+      {
+       "batch": 3,
+       "bitwise_equal": false,
+       "max_abs": 0.025368690490722656,
+       "mismatches": 37431,
+       "numel": 37440,
+       "row": 1
+      },
+      {
+       "batch": 3,
+       "bitwise_equal": false,
+       "max_abs": 0.019894838333129883,
+       "mismatches": 37433,
+       "numel": 37440,
+       "row": 2
+      }
+     ],
+     "differing_cases": 5,
+     "max_abs": 0.025476694107055664
+    },
+    "encode_video": {
+     "bitwise_equal": false,
+     "cases": [
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.008047103881835938,
+       "mismatches": 261760,
+       "numel": 262080,
+       "row": 0
+      },
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.00620579719543457,
+       "mismatches": 261918,
+       "numel": 262080,
+       "row": 1
+      }
+     ],
+     "differing_cases": 2,
+     "max_abs": 0.008047103881835938
+    }
+   },
+   "diffusers_batched_pinned_flags": {
+    "decode_video": {
+     "bitwise_equal": true,
+     "cases": [
+      {
+       "batch": 2,
+       "bitwise_equal": true,
+       "max_abs": 0.0,
+       "mismatches": 0,
+       "numel": 26357760,
+       "row": 0
+      },
+      {
+       "batch": 2,
+       "bitwise_equal": true,
+       "max_abs": 0.0,
+       "mismatches": 0,
+       "numel": 26357760,
+       "row": 1
+      }
+     ],
+     "differing_cases": 0,
+     "max_abs": 0.0
+    },
+    "encode_keyframe": {
+     "bitwise_equal": false,
+     "cases": [
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.02255868911743164,
+       "mismatches": 37433,
+       "numel": 37440,
+       "row": 0
+      },
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.025476694107055664,
+       "mismatches": 37429,
+       "numel": 37440,
+       "row": 1
+      },
+      {
+       "batch": 3,
+       "bitwise_equal": false,
+       "max_abs": 0.02181720733642578,
+       "mismatches": 37429,
+       "numel": 37440,
+       "row": 0
+      },
+      {
+       "batch": 3,
+       "bitwise_equal": false,
+       "max_abs": 0.025368690490722656,
+       "mismatches": 37431,
+       "numel": 37440,
+       "row": 1
+      },
+      {
+       "batch": 3,
+       "bitwise_equal": false,
+       "max_abs": 0.019894838333129883,
+       "mismatches": 37433,
+       "numel": 37440,
+       "row": 2
+      }
+     ],
+     "differing_cases": 5,
+     "max_abs": 0.025476694107055664
+    },
+    "encode_video": {
+     "bitwise_equal": false,
+     "cases": [
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.008047103881835938,
+       "mismatches": 261760,
+       "numel": 262080,
+       "row": 0
+      },
+      {
+       "batch": 2,
+       "bitwise_equal": false,
+       "max_abs": 0.00620579719543457,
+       "mismatches": 261918,
+       "numel": 262080,
+       "row": 1
+      }
+     ],
+     "differing_cases": 2,
+     "max_abs": 0.008047103881835938
+    }
+   }
+  },
+  "diffusers_parity": {
+   "diffusers_default_flags": {
+    "decode_video": {
+     "bitwise_equal": true,
+     "max_abs": 0.0,
+     "mismatches": 0,
+     "numel": 52715520
+    },
+    "encode_keyframe": {
+     "bitwise_equal": true,
+     "max_abs": 0.0,
+     "mismatches": 0,
+     "numel": 112320
+    },
+    "encode_video": {
+     "bitwise_equal": true,
+     "max_abs": 0.0,
+     "mismatches": 0,
+     "numel": 524160
+    }
+   },
+   "diffusers_pinned": {
+    "decode_video": {
+     "bitwise_equal": true,
+     "max_abs": 0.0,
+     "mismatches": 0,
+     "numel": 52715520
+    },
+    "encode_keyframe": {
+     "bitwise_equal": true,
+     "max_abs": 0.0,
+     "mismatches": 0,
+     "numel": 112320
+    },
+    "encode_video": {
+     "bitwise_equal": true,
+     "max_abs": 0.0,
+     "mismatches": 0,
+     "numel": 524160
+    }
+   }
+  },
+  "layout": {
+   "decode_frames_ok": true,
+   "encode_keyframe_shape_ok": true,
+   "encode_video_shape_ok": true
+  },
+  "normalization": {
+   "denormalize_cpu_vs_cuda": {
+    "bitwise_equal": true,
+    "max_abs": 0.0,
+    "mismatches": 0,
+    "numel": 524160
+   },
+   "normalize_cpu_vs_cuda": {
+    "bitwise_equal": true,
+    "max_abs": 0.0,
+    "mismatches": 0,
+    "numel": 524160
+   }
+  },
+  "preprocessing": {
+   "div255_cpu_vs_cuda_mismatches": 126,
+   "lut_equals_cuda_release": true,
+   "lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+   "normalized_cpu_vs_cuda_mismatches": 322
+  },
+  "run_to_run": {
+   "decode_video": {
+    "bitwise_equal": true,
+    "digests": [
+     "c21ba7e538604e9cc660dcd632534573b8942a1ea4c86dd6bcab59b2970e9b18",
+     "c21ba7e538604e9cc660dcd632534573b8942a1ea4c86dd6bcab59b2970e9b18",
+     "c21ba7e538604e9cc660dcd632534573b8942a1ea4c86dd6bcab59b2970e9b18"
+    ]
+   },
+   "encode_keyframe": {
+    "bitwise_equal": true,
+    "digests": [
+     "282692c3b02a29ce14c681b8102a89753e04ab1da873069268971f0ef56d6040",
+     "282692c3b02a29ce14c681b8102a89753e04ab1da873069268971f0ef56d6040",
+     "282692c3b02a29ce14c681b8102a89753e04ab1da873069268971f0ef56d6040"
+    ]
+   },
+   "encode_video": {
+    "bitwise_equal": true,
+    "digests": [
+     "54856edb1dba4fd2443379c8fa0480ef6763d981439960ec6d282a25939f2ce4",
+     "54856edb1dba4fd2443379c8fa0480ef6763d981439960ec6d282a25939f2ce4",
+     "54856edb1dba4fd2443379c8fa0480ef6763d981439960ec6d282a25939f2ce4"
+    ]
+   }
+  },
+  "tiling": {
+   "plan": {
+    "cols": {
+     "length": 832,
+     "overlaps": [
+      64,
+      64,
+      64
+     ],
+     "sizes": [
+      256,
+      256,
+      256,
+      256
+     ],
+     "starts": [
+      0,
+      192,
+      384,
+      576
+     ]
+    },
+    "height": 480,
+    "min_overlap_height": 64,
+    "min_overlap_width": 64,
+    "rows": {
+     "length": 480,
+     "overlaps": [
+      144,
+      144
+     ],
+     "sizes": [
+      256,
+      256,
+      256
+     ],
+     "starts": [
+      0,
+      112,
+      224
+     ]
+    },
+    "sha256": "01a8d60087fb156a5cc8df68e196b92ca1b722dc43df9ed1ca45cc313e75c8bd",
+    "spatial_factor": 16,
+    "tile_height": 256,
+    "tile_width": 256,
+    "tiles": 12,
+    "width": 832
+   },
+   "record_plan_sha256_matches": true,
+   "tiled_run_to_run_equal": true,
+   "tiled_vs_untiled_decode_video": {
+    "bitwise_equal": false,
+    "max_abs": 0.3420703113079071,
+    "mismatches": 26337496,
+    "numel": 26357760
+   },
+   "tiled_vs_untiled_encode_keyframe": {
+    "bitwise_equal": false,
+    "max_abs": 1.1949573755264282,
+    "mismatches": 37417,
+    "numel": 37440
+   }
+  }
+ },
+ "contract_id": "h3-visual-vae-f16t4d24-v1",
+ "diffusers_version": "0.40.0.dev0",
+ "environment": {
+  "compute_capability": [
+   9,
+   0
+  ],
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "cudnn_allow_tf32": true,
+  "cudnn_benchmark": false,
+  "cudnn_deterministic": false,
+  "device_name": "NVIDIA H100",
+  "driver": "580.173.02",
+  "matmul_allow_tf32": false,
+  "python": "3.12.15",
+  "torch": "2.13.0+cu130"
+ },
+ "inputs": {
+  "keyframe": [
+   3,
+   3,
+   1,
+   480,
+   832
+  ],
+  "pixel_sha256": {
+   "keyframe": "345fd953f0dc3b0edcb06c91372196f5fc17250756f3f64bf133423f5316d02c",
+   "video": "8ab107083a39596fb90d12bb784b6bf0a9e711968cb44e26512b13face710c0f"
+  },
+  "video": [
+   2,
+   3,
+   22,
+   480,
+   832
+  ]
+ },
+ "kernels": {
+  "decode_video": [
+   {
+    "calls": 432,
+    "cuda_us": 35534.38400000079,
+    "name": "cudnn_generated_fort_native_sdpa_sm90_flash_fprop_wgmma_f16_knob_7_64x128x64_4x1x1_cga1x1x1_kernel0_0"
+   }
+  ],
+  "encode_keyframe": [
+   {
+    "calls": 672,
+    "cuda_us": 18128.46699999988,
+    "name": "void cudnn::engines_precompiled::nchwToNhwcKernel<float, float, float, false, true, (cudnnKernelDataType_t)0>(cudnn::engines_precompiled::nchw2nhwc_params_t<flo"
+   },
+   {
+    "calls": 60,
+    "cuda_us": 8928.569000000007,
+    "name": "sm90_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize64x128x32_warpgroupsize1x1x1_g1_execute_segment_k_off_kernel__5x_cudnn"
+   },
+   {
+    "calls": 132,
+    "cuda_us": 6620.04999999999,
+    "name": "sm90_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize256x128x32_warpgroupsize2x1x1_g1_execute_segment_k_on_kernel__5x_cudnn"
+   },
+   {
+    "calls": 48,
+    "cuda_us": 5729.903999999982,
+    "name": "sm90_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x128x32_warpgroupsize1x1x1_g1_execute_segment_k_off_kernel__5x_cudnn"
+   },
+   {
+    "calls": 84,
+    "cuda_us": 3520.1090000000368,
+    "name": "sm90_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize128x128x32_warpgroupsize1x1x1_g1_execute_segment_k_on_kernel__5x_cudnn"
+   },
+   {
+    "calls": 336,
+    "cuda_us": 2175.125000000018,
+    "name": "void cudnn::engines_precompiled::nhwcToNchwKernel<float, float, float, true, false, (cudnnKernelDataType_t)0>(cudnn::engines_precompiled::nhwc2nchw_params_t<flo"
+   },
+   {
+    "calls": 12,
+    "cuda_us": 1709.9930000000095,
+    "name": "sm80_xmma_fprop_implicit_gemm_tf32f32_tf32f32_f32_nhwckrsc_nchw_tilesize64x32x64_stage5_warpsize2x2x1_g1_tensor16x8x8_alignc4_execute_kernel__5x_cudnn"
+   },
+   {
+    "calls": 96,
+    "cuda_us": 1098.2409999999709,
+    "name": "sm90_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize256x128x32_warpgroupsize2x1x1_g1_execute_split_k_kernel__5x_cudnn"
+   },
+   {
+    "calls": 228,
+    "cuda_us": 658.8619999999355,
+    "name": "void cask_plugin__5x_cudnn::xmma__5x_cudnn::init_device_workspace_kernel<xmma__5x_cudnn::implicit_gemm::fprop::Warp_specialized_params_non_template<xmma__5x_cud"
+   },
+   {
+    "calls": 12,
+    "cuda_us": 603.5540000000046,
+    "name": "sm80_xmma_fprop_implicit_gemm_tf32f32_tf32f32_f32_nhwckrsc_nchw_tilesize128x128x16_stage4_warpsize2x2x1_g1_tensor16x8x8_alignc4_execute_kernel__5x_cudnn"
+   },
+   {
+    "calls": 12,
+    "cuda_us": 352.41800000001604,
+    "name": "sm90_xmma_fprop_implicit_gemm_f32f32_tf32f32_f32_nhwckrsc_nhwc_tilesize64x64x32_warpgroupsize1x1x1_g1_execute_segment_k_on_kernel__5x_cudnn"
+   },
+   {
+    "calls": 48,
+    "cuda_us": 256.6749999999747,
+    "name": "void cudnn::engines_precompiled::nchwToNhwcKernel<float, float, float, false, true, (cudnnKernelDataType_t)2>(cudnn::engines_precompiled::nchw2nhwc_params_t<flo"
+   },
+   {
+    "calls": 24,
+    "cuda_us": 158.81499999997504,
+    "name": "void cutlass::Kernel2<cutlass_80_tensorop_s1688gemm_64x64_32x6_nn_align4>(cutlass_80_tensorop_s1688gemm_64x64_32x6_nn_align4::Params)"
+   },
+   {
+    "calls": 12,
+    "cuda_us": 148.3849999999975,
+    "name": "void cutlass::Kernel2<cutlass_80_tensorop_s1688gemm_256x64_16x4_nn_align4>(cutlass_80_tensorop_s1688gemm_256x64_16x4_nn_align4::Params)"
+   },
+   {
+    "calls": 12,
+    "cuda_us": 36.2889999999752,
+    "name": "void cutlass::Kernel2<cutlass_80_tensorop_s1688gemm_64x64_16x6_nn_align4>(cutlass_80_tensorop_s1688gemm_64x64_16x6_nn_align4::Params)"
+   }
+  ]
+ },
+ "load_seconds": 38.69522166252136,
+ "manifest": {
+  "checkpoint": {
+   "files": [
+    {
+     "path": "vae/config.json",
+     "sha256": "78f67deec3d63aae807f2bfe7154bc1e26f6372cb20b63265fcbae1b62bb5745",
+     "size": 2011
+    },
+    {
+     "path": "vae/diffusion_pytorch_model-00001-of-00003.safetensors",
+     "sha256": "72f4c6be84ac0674f27398cde991dd9d719762f3952c4921aa66b2ce542f6374",
+     "size": 5061033024
+    },
+    {
+     "path": "vae/diffusion_pytorch_model-00002-of-00003.safetensors",
+     "sha256": "2e05e8bc23fa4071043e17fd242be8acd0685e781a43987432b2eae925be4198",
+     "size": 4955986528
+    },
+    {
+     "path": "vae/diffusion_pytorch_model-00003-of-00003.safetensors",
+     "sha256": "c05d6ac4b1a33de372799d708531da6320f6a3ce6d1ce6d895e770988e004a39",
+     "size": 398539336
+    },
+    {
+     "path": "vae/diffusion_pytorch_model.safetensors.index.json",
+     "sha256": "15f6d44553c3c616b0dc999920aa784f92ecee7e4201f1f99ac405cfbf3061ca",
+     "size": 74228
+    }
+   ],
+   "repo": "MiniMaxAI/MiniMax-H3",
+   "revision": "42ed227ee7df40d41602854ae760620d6eb651fe",
+   "subfolder": "vae"
+  },
+  "contract_id": "h3-visual-vae-f16t4d24-v1",
+  "derived": {
+   "frame_overlap": 5,
+   "frame_pre_padding": 3,
+   "token_overlap": 2,
+   "tokens_chunk_size": 5
+  },
+  "frame_map": {
+   "1": 1,
+   "22": 7
+  },
+  "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+  "layout": {
+   "clip_length": 17,
+   "latent_channels": 24,
+   "spatial_factor": 16,
+   "temporal_factor": 4,
+   "token_drop": 3
+  },
+  "layout_name": "f16t4d24",
+  "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+  "reference": {
+   "blobs": {
+    "src/diffusers/models/autoencoders/autoencoder_kl_minimax_h3.py": "acc04f2c179cafe4121a0d568be9478fbdcfd8a7",
+    "src/diffusers/models/autoencoders/vae.py": "a65bca418175f5f704f1e37c1a9d4af346bcf9f5",
+    "src/diffusers/modular_pipelines/minimax_h3/decoders.py": "44e9b2034f11ac93e8d028c07c78ac24d78b2379",
+    "src/diffusers/modular_pipelines/minimax_h3/encoders.py": "8ed4d548e9d180b40287200644c3efbfe8d53d9b"
+   },
+   "commit": "f53d552036a0d1bd5570782a39cd40cfabf112bc",
+   "library": "diffusers"
+  },
+  "tile_plans": {
+   "480x832": {
+    "cols": {
+     "length": 832,
+     "overlaps": [
+      64,
+      64,
+      64
+     ],
+     "sizes": [
+      256,
+      256,
+      256,
+      256
+     ],
+     "starts": [
+      0,
+      192,
+      384,
+      576
+     ]
+    },
+    "height": 480,
+    "min_overlap_height": 64,
+    "min_overlap_width": 64,
+    "rows": {
+     "length": 480,
+     "overlaps": [
+      144,
+      144
+     ],
+     "sizes": [
+      256,
+      256,
+      256
+     ],
+     "starts": [
+      0,
+      112,
+      224
+     ]
+    },
+    "sha256": "01a8d60087fb156a5cc8df68e196b92ca1b722dc43df9ed1ca45cc313e75c8bd",
+    "spatial_factor": 16,
+    "tile_height": 256,
+    "tile_width": 256,
+    "tiles": 12,
+    "width": 832
+   }
+  }
+ },
+ "outputs": {
+  "decode_record": {
+   "autocast_fp16": true,
+   "batch": 2,
+   "contract_id": "h3-visual-vae-f16t4d24-v1",
+   "kind": "decode",
+   "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+   "layout": {
+    "clip_length": 17,
+    "latent_channels": 24,
+    "spatial_factor": 16,
+    "temporal_factor": 4,
+    "token_drop": 3
+   },
+   "layout_name": "f16t4d24",
+   "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+   "policy": {
+    "cudnn_allow_tf32": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "matmul_allow_tf32": false
+   },
+   "runtime": {
+    "compute_capability": [
+     9,
+     0
+    ],
+    "cuda": "13.0",
+    "cudnn": 92000,
+    "cudnn_allow_tf32": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "device_name": "NVIDIA H100",
+    "matmul_allow_tf32": false,
+    "torch": "2.13.0+cu130"
+   },
+   "tile_plan_sha256": "01a8d60087fb156a5cc8df68e196b92ca1b722dc43df9ed1ca45cc313e75c8bd",
+   "tiles": 12
+  },
+  "decode_video": {
+   "sha256": "c21ba7e538604e9cc660dcd632534573b8942a1ea4c86dd6bcab59b2970e9b18",
+   "shape": [
+    2,
+    3,
+    22,
+    480,
+    832
+   ]
+  },
+  "encode_keyframe": {
+   "sha256": "282692c3b02a29ce14c681b8102a89753e04ab1da873069268971f0ef56d6040",
+   "shape": [
+    3,
+    24,
+    1,
+    30,
+    52
+   ]
+  },
+  "encode_record": {
+   "batch": 2,
+   "contract_id": "h3-visual-vae-f16t4d24-v1",
+   "kind": "encode",
+   "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+   "layout": {
+    "clip_length": 17,
+    "latent_channels": 24,
+    "spatial_factor": 16,
+    "temporal_factor": 4,
+    "token_drop": 3
+   },
+   "layout_name": "f16t4d24",
+   "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+   "policy": {
+    "cudnn_allow_tf32": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "matmul_allow_tf32": false
+   },
+   "posterior": "sample",
+   "round_fp16": true,
+   "runtime": {
+    "compute_capability": [
+     9,
+     0
+    ],
+    "cuda": "13.0",
+    "cudnn": 92000,
+    "cudnn_allow_tf32": true,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "device_name": "NVIDIA H100",
+    "matmul_allow_tf32": false,
+    "torch": "2.13.0+cu130"
+   },
+   "seed": 42,
+   "tile_plan_sha256": "01a8d60087fb156a5cc8df68e196b92ca1b722dc43df9ed1ca45cc313e75c8bd",
+   "tiles": 12
+  },
+  "encode_video": {
+   "sha256": "54856edb1dba4fd2443379c8fa0480ef6763d981439960ec6d282a25939f2ce4",
+   "shape": [
+    2,
+    24,
+    7,
+    30,
+    52
+   ]
+  }
+ },
+ "peak_memory_gib": 18.072643756866455,
+ "reference": {
+  "blobs": {
+   "src/diffusers/models/autoencoders/autoencoder_kl_minimax_h3.py": "acc04f2c179cafe4121a0d568be9478fbdcfd8a7",
+   "src/diffusers/models/autoencoders/vae.py": "a65bca418175f5f704f1e37c1a9d4af346bcf9f5",
+   "src/diffusers/modular_pipelines/minimax_h3/decoders.py": "44e9b2034f11ac93e8d028c07c78ac24d78b2379",
+   "src/diffusers/modular_pipelines/minimax_h3/encoders.py": "8ed4d548e9d180b40287200644c3efbfe8d53d9b"
+  },
+  "commit": "f53d552036a0d1bd5570782a39cd40cfabf112bc",
+  "library": "diffusers"
+ },
+ "rl_kernel_commit": "f299a32b08570bc78b33bea539795257126ff157",
+ "rl_kernel_dirty": false,
+ "schema": "rlkernel.h3.visual_vae_evidence.v1",
+ "sha256_verified": true,
+ "timing": {
+  "contract": {
+   "decode_video": {
+    "max_ms": 1127.71484375,
+    "median_ms": 1126.3453369140625,
+    "min_ms": 1122.9320068359375,
+    "repeats": 7
+   },
+   "encode_keyframe": {
+    "max_ms": 97.4656982421875,
+    "median_ms": 97.35667419433594,
+    "min_ms": 97.34419250488281,
+    "repeats": 7
+   },
+   "encode_video": {
+    "max_ms": 1849.27294921875,
+    "median_ms": 1849.013427734375,
+    "min_ms": 1848.9295654296875,
+    "repeats": 7
+   }
+  },
+  "contract_untiled": {
+   "decode_video": {
+    "max_ms": 990.7477416992188,
+    "median_ms": 988.65966796875,
+    "min_ms": 984.4127197265625,
+    "repeats": 7
+   },
+   "encode_keyframe": {
+    "max_ms": 41.99241638183594,
+    "median_ms": 41.885311126708984,
+    "min_ms": 41.86345672607422,
+    "repeats": 7
+   }
+  },
+  "diffusers_default_flags": {
+   "decode_video": {
+    "max_ms": 491.8235778808594,
+    "median_ms": 491.2082824707031,
+    "min_ms": 490.357177734375,
+    "repeats": 7
+   },
+   "encode_keyframe": {
+    "max_ms": 97.42960357666016,
+    "median_ms": 97.327392578125,
+    "min_ms": 96.87657928466797,
+    "repeats": 7
+   },
+   "encode_video": {
+    "max_ms": 1847.35595703125,
+    "median_ms": 1847.10400390625,
+    "min_ms": 1846.852294921875,
+    "repeats": 7
+   }
+  },
+  "diffusers_pinned_flags": {
+   "decode_video": {
+    "max_ms": 491.83013916015625,
+    "median_ms": 490.9944763183594,
+    "min_ms": 490.82489013671875,
+    "repeats": 7
+   },
+   "encode_keyframe": {
+    "max_ms": 97.38044738769531,
+    "median_ms": 97.328125,
+    "min_ms": 97.2446060180664,
+    "repeats": 7
+   },
+   "encode_video": {
+    "max_ms": 1858.843994140625,
+    "median_ms": 1849.4306640625,
+    "min_ms": 1849.079833984375,
+    "repeats": 7
+   }
+  }
+ },
+ "verdicts": {
+  "contract_batch_invariant": true,
+  "diffusers_batched_batch_invariant_default_flags": false,
+  "diffusers_parity_default_flags": true,
+  "diffusers_parity_pinned": true,
+  "layout": true,
+  "lut_equals_cuda_release": true,
+  "normalization_cpu_cuda_bitwise": true,
+  "run_to_run": true,
+  "tiling_deterministic": true
+ }
+}
