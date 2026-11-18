@@ -67,6 +67,7 @@
           "token_refiner.blocks.0.norm2": 2,
           "token_refiner.final_norm": 2
         },
+        "forwards": 0,
         "implementations": {
           "blocks.0.attn.qkv_proj": "h3-projection-gemm-v1 (Triton)",
           "blocks.0.attn.out_proj": "h3-parallel-v1 canonical row-parallel reduction",
@@ -296,6 +297,27 @@
           "final_layer.adaln_proj.linear": "adaln_projection_3mod / final_adaln_out GEMV: rl_engine._C.h3_det_linear_forward",
           "final_layer": "final_adaln_out norm: rl_engine._C.h3_rmsnorm_forward (modulated)"
         }
+      },
+      "plugin": {
+        "rank0": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        }
       }
     },
     "2": {
@@ -351,6 +373,7 @@
           "token_refiner.blocks.0.norm2": 2,
           "token_refiner.final_norm": 2
         },
+        "forwards": 0,
         "implementations": {
           "blocks.0.attn.qkv_proj": "h3-projection-gemm-v1 (Triton)",
           "blocks.0.attn.out_proj": "h3-parallel-v1 canonical row-parallel reduction",
@@ -733,6 +756,46 @@
           "final_layer": "final_adaln_out norm: rl_engine._C.h3_rmsnorm_forward (modulated)"
         }
       },
+      "plugin": {
+        "rank0": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank1": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        }
+      },
       "bound_equals_tp1": {
         "qkv": true,
         "out": true,
@@ -817,6 +880,7 @@
           "token_refiner.blocks.0.norm2": 2,
           "token_refiner.final_norm": 2
         },
+        "forwards": 0,
         "implementations": {
           "blocks.0.attn.qkv_proj": "h3-projection-gemm-v1 (Triton)",
           "blocks.0.attn.out_proj": "h3-parallel-v1 canonical row-parallel reduction",
@@ -1503,6 +1567,84 @@
           "final_layer": "final_adaln_out norm: rl_engine._C.h3_rmsnorm_forward (modulated)"
         }
       },
+      "plugin": {
+        "rank0": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank1": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank2": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank3": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        }
+      },
       "bound_equals_tp1": {
         "qkv": true,
         "out": true,
@@ -1587,6 +1729,7 @@
           "token_refiner.blocks.0.norm2": 2,
           "token_refiner.final_norm": 2
         },
+        "forwards": 0,
         "implementations": {
           "blocks.0.attn.qkv_proj": "h3-projection-gemm-v1 (Triton)",
           "blocks.0.attn.out_proj": "h3-parallel-v1 canonical row-parallel reduction",
@@ -2879,6 +3022,160 @@
           "blocks.1": "h3_rmsnorm (modulated) + adaln_gate_residual: rl_engine._C.h3_rmsnorm_forward, rl_engine._C.h3_gate_residual_forward",
           "final_layer.adaln_proj.linear": "adaln_projection_3mod / final_adaln_out GEMV: rl_engine._C.h3_det_linear_forward",
           "final_layer": "final_adaln_out norm: rl_engine._C.h3_rmsnorm_forward (modulated)"
+        }
+      },
+      "plugin": {
+        "rank0": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank1": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank2": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank3": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank4": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank5": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank6": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
+        },
+        "rank7": {
+          "hooked": true,
+          "installed": true,
+          "forwards": 2,
+          "readback": [],
+          "repeatable": true,
+          "readback_file_forwards": 2,
+          "readback_file_calls": [
+            2
+          ],
+          "overrides": [
+            "_can_batch_block_adaln: off (each block runs its bound AdaLN projection)",
+            "forward: guarded (sampling settings, readback after every forward)"
+          ],
+          "spectrum_refused": "strict H3 rollout on SGLang: enable_spectrum is set (it skips transformer steps)",
+          "forwards_after_refusal": 2,
+          "bypass_caught": "strict H3 rollout on SGLang: final_layer: ran 2 times in 3 forwards",
+          "forward_restored": true
         }
       },
       "bound_equals_tp1": {
