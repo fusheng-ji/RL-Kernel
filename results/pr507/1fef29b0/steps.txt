@@ -1,0 +1,11 @@
+[2026-11-18T22:37:03Z] START build :: find . -name "_C*.so" -not -path "./.git/*" -delete; rm -rf build; python setup.py build_ext --inplace
+[2026-11-18T22:38:57Z] END build rc=0
+_C: <HOME>/h100run-20261118/D507/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+[2026-11-18T22:39:00Z] START pytest-unit :: python -m pytest -p no:cacheprovider -q -rs tests/models/qwen3_next/test_qwen3_next_tp_gdn.py tests/models/qwen3_next/test_qwen3_next_tp_blocks.py tests/models/qwen3_next/test_qwen3_next_forward_contract.py
+[2026-11-18T22:39:11Z] END pytest-unit rc=0
+[2026-11-18T22:39:11Z] START pytest-check :: python -m pytest -p no:cacheprovider -q -rs tests/models/qwen3_next/check_qwen3_next_attention.py tests/models/qwen3_next/check_qwen3_next_gdn_bridge.py tests/models/qwen3_next/check_qwen3_next_gdn_sequence.py tests/models/qwen3_next/check_qwen3_next_conv_bridge.py tests/models/qwen3_next/check_qwen3_next_core_matrix.py tests/models/qwen3_next/check_qwen3_next_shared_core.py tests/models/qwen3_next/check_qwen3_next_forward.py
+[2026-11-18T22:40:05Z] END pytest-check rc=0
+[2026-11-18T22:40:05Z] START tp-gdn-gate :: python -m torch.distributed.run --nproc-per-node 4 tools/validation/models/qwen3_next/qwen3_next_tp_gdn_check.py --checkpoint <WORK>/../models/Qwen3-Next-80B-A3B-Instruct --output <WORK>/out/D/507/res/tp_gdn
+[2026-11-18T22:40:46Z] END tp-gdn-gate rc=0
+[2026-11-18T22:40:46Z] START tp-attention-gate :: python -m torch.distributed.run --nproc-per-node 4 tools/validation/models/qwen3_next/qwen3_next_tp_attention_check.py --checkpoint <WORK>/../models/Qwen3-Next-80B-A3B-Instruct --output <WORK>/out/D/507/res/tp_attention
+[2026-11-18T22:41:14Z] END tp-attention-gate rc=0
