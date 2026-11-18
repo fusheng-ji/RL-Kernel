@@ -1,5 +1,7 @@
 # H100 handoff: evidence gaps on the open PRs (2026-11-14)
 
+**2026-11-18:** read `STATUS-2026-11-18.md` first: Priorities 1 and 2 are done or moved to `handoff/h100-flink-round-20261116`; Priorities 3 and 4 are still open, and the #538 head moved.
+
 B200 work is shelved. Local note with paths: redact before anything goes into a PR. Recipes that are not repeated here are in `reference-hopper-evidence-2026-10-25.md` (this directory: rules and per-PR commands; its heads are outdated, so take only the commands) and in the PR descriptions' "Results (H100)" sections; the earlier raw runs are on the fork's `pr_assets` branch under `hopper-qwen3-next/pr<N>/`, `hopper-main/pr<N>/`, `pr495/hopper/`.
 
 ## What each PR's H100 evidence is at, versus the head to test now
