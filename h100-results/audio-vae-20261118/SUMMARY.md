@@ -22,3 +22,6 @@ The first launch of this task (`attempt1-cuda-invisible/`) set `CUDA_VISIBLE_DEV
 
 ## Draft "H100" paragraph
 On one H100 (driver 580.173.02, CUDA 13.0, torch 2.13.0+cu130, Diffusers `f53d5520`, weights `42ed227` `FL2VA/audio_vae`), at `6d9c4ec3` code (handoff `a1177ddd`): `test_h3_audio_vae.py` 33 passed / 0 failed / 0 skipped; `ours` encode and decode are batch invariant with every `max_abs` 0.0 and cold start 0.0, and the row and path sha256 values are identical between two separate processes. No patch applied.
+
+## Correction (re-export of the two JSON files)
+In the first commit, the redaction of job numbers also hit a digit run inside one sha256: `cases[2].paths.diffusers.encode.sha256` read `1353950c...c61c789e<JOBID>9` in `h3-audio-vae-h100.json` and `h3-audio-vae-h100-rerun.json`. Both files were re-exported from the raw, unredacted benchmark output of the same run (no experiment was rerun); they hold no host names, paths or job numbers, so nothing else needed replacing. The only difference from the previous commit is that one line in each file, now `1353950ca0817ec776d444b5d877f4e8b5533b7b4e40bd18c61c789e59222469`, and the original value is identical in the two files. All 35 sha256 fields are 64 hex digits and equal between the two files.
