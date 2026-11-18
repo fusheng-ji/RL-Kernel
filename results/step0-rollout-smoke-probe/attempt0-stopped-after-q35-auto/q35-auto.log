@@ -1,0 +1,502 @@
+INFO 11-18 22:46:52 [api_utils.py:286] non-default args: {'load_format': 'dummy', 'dtype': 'bfloat16', 'seed': 1234, 'max_model_len': 512, 'tensor_parallel_size': 4, 'enable_prefix_caching': False, 'gpu_memory_utilization': 0.5, 'max_num_seqs': 2, 'disable_log_stats': True, 'enforce_eager': True, 'limit_mm_per_prompt': {'image': 0, 'video': 0}, 'kernel_config': KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=[], fused_add_rms_norm=[], gelu_and_mul_sparse=[]), enable_flashinfer_autotune=False, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='triton', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None), 'mamba_cache_dtype': 'bfloat16', 'mamba_ssm_cache_dtype': 'float32', 'model': '<HOME>/datastorage/models/probe_models/Qwen3.5-0.8B'}
+INFO 11-18 22:47:18 [model.py:692] Resolved architecture: Qwen3_5ForConditionalGeneration
+INFO 11-18 22:47:18 [model.py:2030] Using max model len 512
+WARNING 11-18 22:47:18 [model.py:994] Model does not support mm_device_do_normalize, forcing mm_device_do_normalize = False.
+INFO 11-18 22:47:23 [registry.py:146] All limits of multimodal modalities supported by the model are set to 0, running in text-only mode.
+INFO 11-18 22:47:23 [model.py:900] Disabled mm_prefix attention mode because multimodal inputs are configuration-disabled. Attention backends without mm_prefix support may now be selected.
+INFO 11-18 22:47:23 [scheduler.py:288] Chunked prefill is enabled with max_num_batched_tokens=1024.
+WARNING 11-18 22:47:23 [vllm.py:1547] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+WARNING 11-18 22:47:23 [vllm.py:1570] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+INFO 11-18 22:47:23 [kernel.py:416] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native'])
+INFO 11-18 22:47:23 [vllm.py:1780] Cudagraph is disabled under eager mode
+INFO 11-18 22:47:24 [compilation.py:336] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+WARNING 11-18 22:47:28 [system_utils.py:157] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: CUDA is initialized
+(EngineCore pid=3117566) INFO 11-18 22:47:46 [core.py:123] Initializing a V1 LLM engine (v0.30.0) with config: model='<HOME>/datastorage/models/probe_models/Qwen3.5-0.8B', speculative_config=None, tokenizer='<HOME>/datastorage/models/probe_models/Qwen3.5-0.8B', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.bfloat16, max_seq_len=512, download_dir=None, load_format=dummy, tensor_parallel_size=4, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, quantization_config=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, per_request_spec_decode_metrics='none', kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False, jit_monitor_mode='warn', jit_monitor_verbose=False), seed=1234, served_model_name=<HOME>/datastorage/models/probe_models/Qwen3.5-0.8B, enable_prefix_caching=False, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [1024], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': True, 'enable_qk_norm_rope_fusion': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False, 'fuse_qk_norm_rope_kvcache': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'], gelu_and_mul_sparse=['triton', 'native']), enable_flashinfer_autotune=False, enable_cutedsl_warmup=True, enable_jit_warmup=True, moe_backend='triton', sparse_indexer_topk_backend='auto', linear_backend='auto', linear_backend_per_quant=None)
+(EngineCore pid=3117566) INFO 11-18 22:47:46 [multiproc_executor.py:153] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=<IP>, mq_connect_ip=<IP> (local), world_size=4, local_world_size=4
+INFO 11-18 22:48:15 [registry.py:146] All limits of multimodal modalities supported by the model are set to 0, running in text-only mode.
+(Worker pid=3117711) INFO 11-18 22:48:15 [parallel_state.py:1827] world_size=4 rank=3 local_rank=3 distributed_init_method=file:///tmp/fi-3116910/vllm_dist_122213d042b84df8ad84be561eec5db4 backend=nccl
+INFO 11-18 22:48:29 [registry.py:146] All limits of multimodal modalities supported by the model are set to 0, running in text-only mode.
+(Worker pid=3117708) INFO 11-18 22:48:29 [parallel_state.py:1827] world_size=4 rank=0 local_rank=0 distributed_init_method=file:///tmp/fi-3116910/vllm_dist_122213d042b84df8ad84be561eec5db4 backend=nccl
+INFO 11-18 22:48:30 [registry.py:146] All limits of multimodal modalities supported by the model are set to 0, running in text-only mode.
+(Worker pid=3117710) INFO 11-18 22:48:30 [parallel_state.py:1827] world_size=4 rank=2 local_rank=2 distributed_init_method=file:///tmp/fi-3116910/vllm_dist_122213d042b84df8ad84be561eec5db4 backend=nccl
+INFO 11-18 22:48:30 [registry.py:146] All limits of multimodal modalities supported by the model are set to 0, running in text-only mode.
+(Worker pid=3117709) INFO 11-18 22:48:31 [parallel_state.py:1827] world_size=4 rank=1 local_rank=1 distributed_init_method=file:///tmp/fi-3116910/vllm_dist_122213d042b84df8ad84be561eec5db4 backend=nccl
+(Worker pid=3117708) INFO 11-18 22:48:35 [pynccl.py:148] vLLM is using nccl==2.29.7
+(Worker pid=3117711) WARNING 11-18 22:48:38 [symm_mem.py:107] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3117710) WARNING 11-18 22:48:38 [symm_mem.py:107] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3117708) WARNING 11-18 22:48:38 [symm_mem.py:107] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3117709) WARNING 11-18 22:48:38 [symm_mem.py:107] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3117708) INFO 11-18 22:48:39 [cuda_communicator.py:318] Using ['FLASHINFER', 'CUSTOM', 'PYNCCL'] all-reduce backends (in dispatch order) for group 'tp:0' out of potential backends: ['FLASHINFER_PCIE_IPC', 'FLASHINFER', 'NCCL_SYMM_MEM', 'QUICK_REDUCE', 'AITER_CUSTOM', 'CUSTOM', 'SYMM_MEM', 'PYNCCL'].
+(Worker pid=3117708) INFO 11-18 22:48:39 [parallel_state.py:2267] rank 0 in world size 4 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, ETP rank 0, EP rank N/A, EPLB rank N/A
+(Worker pid=3117708) INFO 11-18 22:48:39 [gpu_worker.py:441] Using V2 Model Runner
+(Worker_TP2 pid=3117710) INFO 11-18 22:48:41 [model_runner.py:428] Model loading took 0.48 GiB memory and 1.450676 seconds
+(Worker_TP3 pid=3117711) INFO 11-18 22:48:41 [model_runner.py:428] Model loading took 0.48 GiB memory and 1.494288 seconds
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:41 [model_runner.py:396] Loading model from scratch...
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:41 [cuda.py:597] Using backend AttentionBackendEnum.FLASH_ATTN for vit attention
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:41 [mm_encoder_attention.py:372] Using AttentionBackendEnum.FLASH_ATTN for MMEncoderAttention.
+(Worker_TP2 pid=3117710) INFO 11-18 22:48:41 [interface.py:933] Setting attention block size to 272 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP3 pid=3117711) INFO 11-18 22:48:41 [interface.py:933] Setting attention block size to 272 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP2 pid=3117710) INFO 11-18 22:48:41 [interface.py:957] Padding mamba page size by 2.64% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP3 pid=3117711) INFO 11-18 22:48:41 [interface.py:957] Padding mamba page size by 2.64% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:41 [qwen_gdn_linear_attn.py:176] Using FlashInfer GDN prefill kernel (requested=auto, head_k_dim=128).
+(Worker_TP0 pid=3117708) WARNING 11-18 22:48:41 [qwen_gdn_linear_attn.py:183] FlashInfer GDN prefill is JIT-compiled; first run may take a while. Set --gdn-prefill-backend triton to skip JIT.
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:41 [qwen_gdn_linear_attn.py:528] GDN decode kernel: cuda
+(Worker_TP1 pid=3117709) INFO 11-18 22:48:41 [model_runner.py:428] Model loading took 0.48 GiB memory and 1.616298 seconds
+(Worker_TP1 pid=3117709) INFO 11-18 22:48:41 [interface.py:933] Setting attention block size to 272 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP1 pid=3117709) INFO 11-18 22:48:41 [interface.py:957] Padding mamba page size by 2.64% to ensure that mamba page size and attention page size are exactly equal.
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:41 [cuda.py:538] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:41 [flash_attn.py:1116] Using FlashAttention version 3
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:42 [model_runner.py:428] Model loading took 0.48 GiB memory and 2.578287 seconds
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:43 [topk_topp_sampler.py:78] Using FlashInfer for top-p & top-k sampling.
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:43 [interface.py:933] Setting attention block size to 272 tokens to ensure that attention page size is >= mamba page size.
+(Worker_TP0 pid=3117708) INFO 11-18 22:48:43 [interface.py:957] Padding mamba page size by 2.64% to ensure that mamba page size and attention page size are exactly equal.
+(EngineCore pid=3117566) INFO 11-18 22:48:43 [utils.py:320] Using LBNHC KV cache layout.
+(Worker_TP0 pid=3117708) WARNING 11-18 22:48:44 [flashinfer_all_reduce.py:100] Failed to initialize FlashInfer All Reduce workspace: [SymmDeviceMemory] Device does not support multicasting.. This is expected on GPUs without NVSwitch (e.g., NVLink bridge-only or PCIe topologies).
+(Worker_TP0 pid=3117708) WARNING 11-18 22:48:44 [flashinfer_all_reduce.py:208] FlashInfer mnnvl allreduce workspace unavailable (likely no NVSwitch multicast support); falling back to trtllm backend for single node.
+(EngineCore pid=3117566) INFO 11-18 22:49:44 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(EngineCore pid=3117566) INFO 11-18 22:50:44 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(EngineCore pid=3117566) INFO 11-18 22:51:44 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(EngineCore pid=3117566) INFO 11-18 22:52:44 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(Worker_TP0 pid=3117708) INFO 11-18 22:52:55 [flashinfer_all_reduce.py:216] Initialized FlashInfer Allreduce norm fusion workspace with backend=trtllm
+(Worker_TP0 pid=3117708) INFO 11-18 22:53:09 [gpu_worker.py:640] Available KV cache memory: 45.89 GiB
+(EngineCore pid=3117566) INFO 11-18 22:53:09 [kv_cache_utils.py:2395] GPU KV cache size: 3,019,059 tokens, Maximum concurrency for 512 tokens per request: 5896.60x
+(Worker_TP2 pid=3117710) INFO 11-18 22:53:09 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP1 pid=3117709) INFO 11-18 22:53:09 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP3 pid=3117711) INFO 11-18 22:53:09 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP2 pid=3117710) INFO 11-18 22:53:09 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP1 pid=3117709) INFO 11-18 22:53:09 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP0 pid=3117708) INFO 11-18 22:53:09 [kernel_warmup.py:172] JIT kernel warmup starting.
+(Worker_TP3 pid=3117711) INFO 11-18 22:53:09 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP0 pid=3117708) INFO 11-18 22:53:09 [kernel_warmup.py:185] JIT kernel warmup finished in 0.00s.
+(Worker_TP0 pid=3117708) INFO 11-18 22:53:09 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP1 pid=3117709) INFO 11-18 22:53:09 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP2 pid=3117710) INFO 11-18 22:53:09 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP3 pid=3117711) INFO 11-18 22:53:09 [qwen_triton_warmup.py:294] Warming up Qwen GDN Triton kernels for model_type=qwen3_5_text.
+(Worker_TP3 pid=3117711) INFO 11-18 22:53:11 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP2 pid=3117710) INFO 11-18 22:53:11 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP1 pid=3117709) INFO 11-18 22:53:11 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP0 pid=3117708) INFO 11-18 22:53:11 [qwen_vl_triton_warmup.py:98] Warmed M-RoPE Triton kernels.
+(Worker_TP0 pid=3117708) INFO 11-18 22:53:11 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP1 pid=3117709) INFO 11-18 22:53:11 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP2 pid=3117710) INFO 11-18 22:53:11 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP3 pid=3117711) INFO 11-18 22:53:11 [mamba_triton_warmup.py:42] Warmed Mamba batch_memcpy_kernel.
+(Worker_TP0 pid=3117708) INFO 11-18 22:53:13 [kernel_warmup.py:255] Skipping FlashInfer autotune because it is disabled.
+(EngineCore pid=3117566) INFO 11-18 22:54:10 [shm_broadcast.py:801] No available shared memory broadcast block found in 60 seconds. This typically happens when some processes are hanging or doing some time-consuming work (e.g. compilation, weight/kv cache quantization).
+(Worker_TP3 pid=3117711) INFO 11-18 22:54:50 [gpu_worker.py:888] Free memory on device (91.58/93.09 GiB) on startup. Desired GPU memory utilization is (0.5, 46.54 GiB). Actual usage is 0.62 GiB for consumed memory (weights + non-torch), 0.02 GiB for peak activation, and 0.0 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=49130809344` (45.76 GiB) to fit into requested memory, or `--kv-cache-memory=97484417024` (90.79 GiB) to fully utilize gpu memory. Current kv cache memory in use is 45.9 GiB.
+(Worker_TP2 pid=3117710) INFO 11-18 22:54:50 [gpu_worker.py:888] Free memory on device (91.58/93.09 GiB) on startup. Desired GPU memory utilization is (0.5, 46.54 GiB). Actual usage is 0.62 GiB for consumed memory (weights + non-torch), 0.02 GiB for peak activation, and 0.0 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=49130809344` (45.76 GiB) to fit into requested memory, or `--kv-cache-memory=97484417024` (90.79 GiB) to fully utilize gpu memory. Current kv cache memory in use is 45.9 GiB.
+(Worker_TP1 pid=3117709) INFO 11-18 22:54:50 [gpu_worker.py:888] Free memory on device (91.58/93.09 GiB) on startup. Desired GPU memory utilization is (0.5, 46.54 GiB). Actual usage is 0.62 GiB for consumed memory (weights + non-torch), 0.02 GiB for peak activation, and 0.0 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=49130809344` (45.76 GiB) to fit into requested memory, or `--kv-cache-memory=97484417024` (90.79 GiB) to fully utilize gpu memory. Current kv cache memory in use is 45.9 GiB.
+(Worker_TP0 pid=3117708) INFO 11-18 22:54:50 [gpu_worker.py:888] Free memory on device (91.58/93.09 GiB) on startup. Desired GPU memory utilization is (0.5, 46.54 GiB). Actual usage is 0.64 GiB for consumed memory (weights + non-torch), 0.02 GiB for peak activation, and 0.0 GiB for CUDAGraph memory. Replace gpu_memory_utilization config with `--kv-cache-memory=49114935296` (45.74 GiB) to fit into requested memory, or `--kv-cache-memory=97468542976` (90.77 GiB) to fully utilize gpu memory. Current kv cache memory in use is 45.89 GiB.
+terminate called after throwing an instance of 'terminate called after throwing an instance of 'terminate called after throwing an instance of 'terminate called after throwing an instance of 'tvm::ffi::Errortvm::ffi::Errortvm::ffi::Errortvm::ffi::Error'
+'
+'
+'
+  what():    what():    what():  TypeAttr `__ffi_repr__` is already registered for type index 132. To update the stored value, register a mutable container (e.g., Dict/List) once and mutate it in place on subsequent calls.  what():  TypeAttr `__ffi_repr__` is already registered for type index 132. To update the stored value, register a mutable container (e.g., Dict/List) once and mutate it in place on subsequent calls.
+TypeAttr `__ffi_repr__` is already registered for type index 132. To update the stored value, register a mutable container (e.g., Dict/List) once and mutate it in place on subsequent calls.
+TypeAttr `__ffi_repr__` is already registered for type index 132. To update the stored value, register a mutable container (e.g., Dict/List) once and mutate it in place on subsequent calls.
+Fatal Python error: 
+Fatal Python error: AbortedFatal Python error: Aborted
+
+AbortedFatal Python error: 
+
+Thread 0x
+
+AbortedThread 0x00007b54d57fd640Thread 0x
+
+000077b410ffc640 (most recent call first):
+000070f5fcffc640  File Thread 0x (most recent call first):
+ (most recent call first):
+"000071e389ffb640  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py (most recent call first):
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py, line """395<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py, line , line  in "395395_recv, line  in  in 
+395_recv_recv  File  in 
+
+"_recv  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py, line """430<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py, line , line  in "430430_recv_bytes, line  in  in 
+430_recv_bytes_recv_bytes  File  in 
+
+"_recv_bytes  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py, line """250<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/connection.py, line , line  in "250250recv, line  in  in 
+250recvrecv  File  in 
+
+"recv  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py, line """834<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py, line , line  in "834834death_pipe_monitor, line  in  in 
+834death_pipe_monitordeath_pipe_monitor  File  in 
+
+"death_pipe_monitor  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line """1012<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line , line  in "10121012run, line  in  in 
+1012runrun  File  in 
+
+"run  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line """1075<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line , line  in "10751075_bootstrap_inner, line  in  in 
+1075_bootstrap_inner_bootstrap_inner  File  in 
+
+"_bootstrap_inner  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line """1032<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line , line  in "10321032_bootstrap, line  in  in 
+1032_bootstrap_bootstrap
+ in 
+
+Thread 0x_bootstrap
+
+00007b54fe7fc640
+Thread 0xThread 0x (most recent call first):
+
+000077b435ffb640000070f621ffb640  File Thread 0x (most recent call first):
+ (most recent call first):
+"000071e3a0ff9640  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py (most recent call first):
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line """355<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line , line  in "355355wait, line  in  in 
+355waitwait  File  in 
+
+"wait  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/queue.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/queue.py, line """171<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/queue.py, line , line  in "171171get, line  in  in 
+171getget  File  in 
+
+"get  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py, line """1026<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py, line , line  in "10261026async_output_busy_loop, line  in  in 
+1026async_output_busy_loopasync_output_busy_loop  File  in 
+
+"async_output_busy_loop  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line """1012<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line , line  in "10121012run, line  in  in 
+1012runrun  File  in 
+
+"run  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line """1075<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line , line  in "10751075_bootstrap_inner, line  in  in 
+1075_bootstrap_inner_bootstrap_inner  File  in 
+
+"_bootstrap_inner  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line """1032<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py, line , line  in "10321032_bootstrap, line  in  in 
+1032_bootstrap_bootstrap
+ in 
+
+Thread 0x_bootstrap
+
+00007b54feffd640
+Current thread 0xCurrent thread 0x (most recent call first):
+
+000077b848a96740000070fa3437a740  File Current thread 0x (most recent call first):
+ (most recent call first):
+"000071e7b325a740  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/usage/usage_lib.py (most recent call first):
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py, line """255<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py, line , line  in "379379_report_continuous_usage, line  in  in 
+379__init____init__  File  in 
+
+"__init__  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/usage/usage_lib.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/__init__.py, line """173<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/__init__.py, line , line  in "141141_report_usage_worker, line  in  in 
+141lazy_initlazy_init  File  in 
+
+"lazy_init  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/libinfo.py, line """1012<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/libinfo.py, line , line  in "147147run, line  in  in 
+147load_lib_ctypesload_lib_ctypes  File  in 
+
+"load_lib_ctypes  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/base.py, line """1075<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/base.py, line , line  in "6060_bootstrap_inner, line  in  in 
+60<module><module>  File  in 
+
+"<module>  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/threading.py
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap>, line """1032<frozen importlib._bootstrap>, line , line  in "488488_bootstrap, line  in  in 
+488_call_with_frames_removed_call_with_frames_removed
+ in 
+
+Current thread 0x_call_with_frames_removed  File   File 00007b5916b00740
+"" (most recent call first):
+  File <frozen importlib._bootstrap_external><frozen importlib._bootstrap_external>  File """"<frozen importlib._bootstrap_external>, line , line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py"999999", line  in  in , line 999exec_moduleexec_module379 in 
+
+ in exec_module  File   File __init__
+""
+  File <frozen importlib._bootstrap><frozen importlib._bootstrap>  File """"<frozen importlib._bootstrap>, line , line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/__init__.py"935935", line  in  in , line 935_load_unlocked_load_unlocked141 in 
+
+ in _load_unlocked  File   File lazy_init
+""
+  File <frozen importlib._bootstrap><frozen importlib._bootstrap>  File """"<frozen importlib._bootstrap>, line , line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/libinfo.py"13311331", line  in  in , line 1331_find_and_load_unlocked_find_and_load_unlocked147 in 
+
+ in _find_and_load_unlocked  File   File load_lib_ctypes
+""
+  File <frozen importlib._bootstrap><frozen importlib._bootstrap>  File """"<frozen importlib._bootstrap>, line , line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/base.py"13601360", line  in  in , line 1360_find_and_load_find_and_load60 in 
+
+ in _find_and_load  File   File <module>
+""
+  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/__init__.py  File """"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/__init__.py, line , line <frozen importlib._bootstrap>"2929", line  in  in , line 29<module><module>488 in 
+
+ in <module>  File   File _call_with_frames_removed
+""
+  File <frozen importlib._bootstrap><frozen importlib._bootstrap>  File """"<frozen importlib._bootstrap>, line , line <frozen importlib._bootstrap_external>"488488", line  in  in , line 488_call_with_frames_removed_call_with_frames_removed999 in 
+
+ in _call_with_frames_removed  File   File exec_module
+""
+  File <frozen importlib._bootstrap_external><frozen importlib._bootstrap_external>  File """"<frozen importlib._bootstrap_external>, line , line <frozen importlib._bootstrap>"999999", line  in  in , line 999exec_moduleexec_module935 in 
+
+ in exec_module  File   File _load_unlocked
+""
+  File <frozen importlib._bootstrap><frozen importlib._bootstrap>  File """"<frozen importlib._bootstrap>, line , line <frozen importlib._bootstrap>"935935", line  in  in , line 935_load_unlocked_load_unlocked1331 in 
+
+ in _load_unlocked  File   File _find_and_load_unlocked
+
+""  File   File <frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap><frozen importlib._bootstrap>, line , line ""13311331, line , line  in  in 13601331_find_and_load_unlocked_find_and_load_unlocked in  in 
+
+_find_and_load_find_and_load_unlocked  File   File 
+
+""  File   File <frozen importlib._bootstrap><frozen importlib._bootstrap>""""<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/3rdparty/tvm/python/tvm/__init__.py<frozen importlib._bootstrap>, line , line ""13601360, line , line  in  in 291360_find_and_load_find_and_load in  in 
+
+<module>_find_and_load  File   File 
+
+""  File   File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/__init__.py""""<frozen importlib._bootstrap><HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/__init__.py, line , line ""173173, line , line  in  in 488173<module><module> in  in 
+
+_call_with_frames_removed<module>  File   File 
+
+""  File   File <frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap_external><frozen importlib._bootstrap>, line , line ""488488, line , line  in  in 999488_call_with_frames_removed_call_with_frames_removed in  in 
+
+exec_module_call_with_frames_removed  File   File 
+
+""  File   File <frozen importlib._bootstrap_external><frozen importlib._bootstrap_external>""""<frozen importlib._bootstrap><frozen importlib._bootstrap_external>, line , line ""999999, line , line  in  in 935999exec_moduleexec_module in  in 
+
+_load_unlockedexec_module  File   File 
+
+""  File   File <frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap><frozen importlib._bootstrap>, line , line ""935935, line , line  in  in 1331935_load_unlocked_load_unlocked in  in 
+
+_find_and_load_unlocked_load_unlocked  File   File 
+
+""  File   File <frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>"<frozen importlib._bootstrap>, line , line , line "133113311360, line  in  in  in 1331_find_and_load_unlocked_find_and_load_unlocked_find_and_load in 
+
+
+_find_and_load_unlocked  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/tilelang/__init__.py""""<frozen importlib._bootstrap>, line , line , line "13601360173, line  in  in  in 1360_find_and_load_find_and_load<module> in 
+
+
+_find_and_load  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "13871387488, line  in  in  in 1387_gcd_import_gcd_import_call_with_frames_removed in 
+
+
+_gcd_import  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap_external>""""<frozen importlib._bootstrap>, line , line , line "488488999, line  in  in  in 488_call_with_frames_removed_call_with_frames_removedexec_module in 
+
+
+_call_with_frames_removed  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "13101310935, line  in  in  in 1310_find_and_load_unlocked_find_and_load_unlocked_load_unlocked in 
+
+
+_find_and_load_unlocked  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "136013601331, line  in  in  in 1360_find_and_load_find_and_load_find_and_load_unlocked in 
+
+
+_find_and_load  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "138713871360, line  in  in  in 1387_gcd_import_gcd_import_find_and_load in 
+
+
+_gcd_import  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "4884881387, line  in  in  in 488_call_with_frames_removed_call_with_frames_removed_gcd_import in 
+
+
+_call_with_frames_removed  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "13101310488, line  in  in  in 1310_find_and_load_unlocked_find_and_load_unlocked_call_with_frames_removed in 
+
+
+_find_and_load_unlocked  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "136013601310, line  in  in  in 1360_find_and_load_find_and_load_find_and_load_unlocked in 
+
+
+_find_and_load  File   File   File 
+"""  File <frozen importlib._bootstrap><frozen importlib._bootstrap><frozen importlib._bootstrap>""""<frozen importlib._bootstrap>, line , line , line "138713871360, line  in  in  in 1387_gcd_import_gcd_import_find_and_load in 
+
+
+_gcd_import  File   File   File 
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/importlib/__init__.py<frozen importlib._bootstrap>""""<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/importlib/__init__.py, line , line , line "90901387, line  in  in  in 90import_moduleimport_module_gcd_import in 
+
+
+import_module  File   File   File 
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/utils/jit_monitor.py<frozen importlib._bootstrap>"", line ""<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/utils/jit_monitor.py473, line , line " in 473488, line _setup_tilelang_jit_hook in  in 473
+_setup_tilelang_jit_hook_call_with_frames_removed in   File 
+
+_setup_tilelang_jit_hook"  File   File 
+<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/utils/jit_monitor.py""  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/utils/jit_monitor.py<frozen importlib._bootstrap>", line ""<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/utils/jit_monitor.py83, line , line " in 831310, line activate in  in 83
+activate_find_and_load_unlocked in   File 
+
+activate"  File   File 
+<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py""  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py<frozen importlib._bootstrap>", line ""<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py932, line , line " in 9321360 in , line compile_or_warm_up_model in _find_and_load932
+compile_or_warm_up_model
+ in   File 
+  File compile_or_warm_up_model"  File "
+<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py"<frozen importlib._bootstrap>  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py"", line ", line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py178, line 1387" in 178 in , line sync_wrapper in _gcd_import178
+sync_wrapper
+ in   File 
+  File sync_wrapper"  File "
+<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/importlib/__init__.py  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py"", line ", line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py1047, line 90" in 1047 in , line _execute_worker_rpc in import_module1047
+_execute_worker_rpc
+ in   File 
+  File _execute_worker_rpc"  File "
+<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/utils/jit_monitor.py  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py"", line "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py, line 1033, line "473 in 1033, line  in worker_busy_loop in 1033_setup_tilelang_jit_hook
+worker_busy_loop in 
+  File 
+worker_busy_loop  File "  File 
+"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py"  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/utils/jit_monitor.py"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py"", line "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py, line 935, line "83 in 935, line  in worker_main in 935activate
+worker_main in 
+  File 
+worker_main  File "  File 
+"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py"  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/worker/gpu_worker.py", line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py""108"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py, line  in , line "932run108, line  in 
+ in 108compile_or_warm_up_model  File run in 
+"
+run  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py  File 
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py, line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py""314"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py, line  in , line "178_bootstrap314, line  in 
+ in 314sync_wrapper  File _bootstrap in 
+"
+_bootstrap  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.py  File 
+"""  File <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py, line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.py""135"<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.py, line  in , line "1047_main135, line  in 
+ in _execute_worker_rpc135  File _main
+ in "
+  File _main<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.py  File "
+""<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py  File , line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.py""122", line <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.py in , line 1033"spawn_main122 in , line 
+ in worker_busy_loop122  File spawn_main
+ in "
+  File spawn_main<string>  File "
+""<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py  File , line <string>""1", line <string> in , line 935"<module>1 in , line 
+ in worker_main1<module>
+ in 
+  File <module>"
+<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py", line 108
+Extension modules:  in numpy.core._multiarray_umathrun, 
+numpy.core._multiarray_tests
+Extension modules:   File , numpy.core._multiarray_umath"numpy.linalg._umath_linalg, <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py, numpy.core._multiarray_tests"numpy.fft._pocketfft_internal
+Extension modules: , , line , numpy.core._multiarray_umathnumpy.linalg._umath_linalg314numpy.random._common,  in , numpy.fft._pocketfft_internal, _bootstrapnumpy.core._multiarray_tests, numpy.random.bit_generator
+numpy.random._common, ,   File , numpy.linalg._umath_linalgnumpy.random._bounded_integers"numpy.random.bit_generator, <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.py, , numpy.random._mt19937"numpy.fft._pocketfft_internalnumpy.random._bounded_integers, , line , , numpy.random.mtrand135numpy.random._mt19937numpy.random._common,  in , numpy.random._philox, _mainnumpy.random.mtrand, numpy.random.bit_generator
+, numpy.random._pcg64,   File numpy.random._philox, numpy.random._bounded_integers", numpy.random._sfc64, <HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/spawn.pynumpy.random._pcg64, numpy.random._mt19937", numpy.random._generator, , line numpy.random._sfc64, numpy.random.mtrand122, torch._C,  in numpy.random._generator, numpy.random._philoxspawn_main, torch._C._dynamo.autograd_compiler, 
+torch._C, numpy.random._pcg64  File , torch._C._dynamo.eval_frame, "torch._C._dynamo.autograd_compiler, numpy.random._sfc64<string>, torch._C._dynamo.guards, "torch._C._dynamo.eval_frame, numpy.random._generator, line , torch._C._dynamo.utils1torch._C._dynamo.guards,  in , , torch._C._fft<module>torch._Ctorch._C._dynamo.utils, 
+, , torch._C._linalgtorch._C._dynamo.autograd_compilertorch._C._fft, , , torch._C._nestedtorch._C._dynamo.eval_frametorch._C._linalg, , , torch._C._nntorch._C._dynamo.guardstorch._C._nested, , 
+Extension modules: , torch._C._sparsetorch._C._dynamo.utilsnumpy.core._multiarray_umathtorch._C._nn, , , torch._C._specialtorch._C._fft, torch._C._sparse, , numpy.core._multiarray_tests, torch._C._linalgcuda.bindings._internal.utilstorch._C._special, , , numpy.linalg._umath_linalg, torch._C._nestedcuda.bindings._internal.drivercuda.bindings._internal.utils, , , , torch._C._nnnumpy.fft._pocketfft_internalcuda.bindings.cydrivercuda.bindings._internal.driver, , , , numpy.random._commontorch._C._sparsecuda.bindings.drivercuda.bindings.cydriver, , , , torch._C._specialnumpy.random.bit_generatorcuda.bindings._internal.runtime_ptdscuda.bindings.driver, , , numpy.random._bounded_integerscuda.bindings._internal.runtime, cuda.bindings._internal.runtime_ptds, , cuda.bindings._internal.utils, numpy.random._mt19937cuda.bindings.cyruntimecuda.bindings._internal.runtime, , , , cuda.bindings._internal.drivernumpy.random.mtrandcuda.bindings.runtimecuda.bindings.cyruntime, , , cuda.bindings.cydrivernumpy.random._philoxcuda.bindings.runtime, , , cuda.bindings.drivernumpy.random._pcg64regex._regex, , , cuda.bindings._internal.runtime_ptdsregex._regexnumpy.random._sfc64, , cuda.bindings._internal.runtimenumpy.random._generator, , , markupsafe._speedupscuda.bindings.cyruntimemarkupsafe._speedups, , , torch._C, xxhash._xxhashcuda.bindings.runtime, xxhash._xxhash, torch._C._dynamo.autograd_compiler, psutil._psutil_linux, psutil._psutil_linux, torch._C._dynamo.eval_frame, zmq.backend.cython._zmq, zmq.backend.cython._zmq, torch._C._dynamo.guards, PIL._imaging, PIL._imaging, torch._C._dynamo.utilsyaml._yaml, , torch._C._fft, yaml._yaml, PIL._imagingfttorch._C._linalg, , torch._C._nestedmultidict._multidict, , torch._C._nnyarl._quoting_c, , torch._C._sparsepropcache._helpers_c, , , PIL._imagingfttorch._C._specialaiohttp._http_writer, aiohttp._http_parser, , aiohttp._websocket.maskcuda.bindings._internal.utils, aiohttp._websocket.reader_c, frozenlist._frozenlist, charset_normalizer.md, charset_normalizer.cd, requests.packages.charset_normalizer.md, , cuda.bindings._internal.driverrequests.packages.chardet.md, , , cuda.bindings.cydriverregex._regexrequests.packages.charset_normalizer.cd, , cuda.bindings.driverrequests.packages.chardet.cd, cuda.bindings._internal.runtime_ptds, cuda.bindings._internal.runtime, , pybase64._pybase64, multidict._multidictcuda.bindings.cyruntime, , , msgspec._corecuda.bindings.runtimeyarl._quoting_c, , uvloop.looppropcache._helpers_c, tvm_ffi.core, grpc._cython.cygrpc, , aiohttp._http_writergoogle._upb._message, aiohttp._http_parser, aiohttp._websocket.mask, , cuda.bindings._internal.nvrtcaiohttp._websocket.reader_c, cuda.bindings.cynvrtc, cuda.bindings.nvrtc, frozenlist._frozenlist, cuda_utils, , charset_normalizer.mdsetproctitle._setproctitle, charset_normalizer.cd, , numba.core.typeconv._typeconvrequests.packages.charset_normalizer.md, , numba._helperlibrequests.packages.chardet.md, , numba._dynfuncrequests.packages.charset_normalizer.cd, , numba._dispatcherrequests.packages.chardet.cd, numba.core.runtime._nrt_python, numba.np.ufunc._internal, numba.experimental.jitclass._box (total: 72)
+, regex._regex, pybase64._pybase64, markupsafe._speedups, msgspec._core, xxhash._xxhash, , uvloop.looppsutil._psutil_linux, zmq.backend.cython._zmq, PIL._imaging, yaml._yaml, PIL._imagingft, multidict._multidict, yarl._quoting_c, propcache._helpers_c, , tvm_ffi.coreaiohttp._http_writer, aiohttp._http_parser, aiohttp._websocket.mask, aiohttp._websocket.reader_c, frozenlist._frozenlist, charset_normalizer.md, , charset_normalizer.cdgrpc._cython.cygrpc, requests.packages.charset_normalizer.md, requests.packages.chardet.md, , requests.packages.charset_normalizer.cdgoogle._upb._message, requests.packages.chardet.cd, pybase64._pybase64, msgspec._core, uvloop.loop, tvm_ffi.core, grpc._cython.cygrpc, google._upb._message, cuda.bindings._internal.nvrtc, cuda.bindings.cynvrtc, cuda.bindings.nvrtc, cuda_utils, setproctitle._setproctitle, numba.core.typeconv._typeconv, , cuda.bindings._internal.nvrtcnumba._helperlib, , cuda.bindings.cynvrtcnumba._dynfunc, , cuda.bindings.nvrtcnumba._dispatcher, numba.core.runtime._nrt_python, numba.np.ufunc._internal, numba.experimental.jitclass._box (total: 72, )markupsafe._speedups
+, , cuda_utilsxxhash._xxhash, psutil._psutil_linux, zmq.backend.cython._zmq, setproctitle._setproctitle, PIL._imaging, numba.core.typeconv._typeconv, numba._helperlib, numba._dynfunc, numba._dispatcher, numba.core.runtime._nrt_python, numba.np.ufunc._internal, numba.experimental.jitclass._box,  (total: yaml._yaml72)
+, PIL._imagingft, multidict._multidict, yarl._quoting_c, propcache._helpers_c, aiohttp._http_writer, aiohttp._http_parser, aiohttp._websocket.mask, aiohttp._websocket.reader_c, frozenlist._frozenlist, charset_normalizer.md, charset_normalizer.cd, requests.packages.charset_normalizer.md, requests.packages.chardet.md, requests.packages.charset_normalizer.cd, requests.packages.chardet.cd, pybase64._pybase64, msgspec._core, uvloop.loop, tvm_ffi.core, grpc._cython.cygrpc, google._upb._message, cuda.bindings._internal.nvrtc, cuda.bindings.cynvrtc, cuda.bindings.nvrtc, cuda_utils, setproctitle._setproctitle, numba.core.typeconv._typeconv, numba._helperlib, numba._dynfunc, numba._dispatcher, numba.core.runtime._nrt_python, numba.np.ufunc._internal, numba.experimental.jitclass._box (total: 72)
+(EngineCore pid=3117566) ERROR 11-18 22:54:53 [multiproc_executor.py:314] Worker proc VllmWorker-1 died unexpectedly (exit code: None), shutting down executor.
+(EngineCore pid=3117566) INFO 11-18 22:54:53 [multiproc_executor.py:472] [shutdown] Executor: waiting for worker exit count=4
+(EngineCore pid=3117566) INFO 11-18 22:54:54 [multiproc_executor.py:479] [shutdown] Executor: all workers exited gracefully
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366] EngineCore failed to start.
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366] Traceback (most recent call last):
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1328, in run_engine_core
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     return func(*args, **kwargs)
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1085, in __init__
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     super().__init__(
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 145, in __init__
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     kv_cache_config = self._initialize_kv_caches(vllm_config)
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     return func(*args, **kwargs)
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 356, in _initialize_kv_caches
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     self.model_executor.compile_or_warm_up_model()
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 126, in compile_or_warm_up_model
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     compilation_times: list[CompilationTimes] = self.collective_rpc(
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]                                                 ^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 448, in collective_rpc
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     return future if non_block else future.result()
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]                                     ^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 99, in result
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     return super().result()
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]            ^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     return self.__get_result()
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]            ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     raise self._exception
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 103, in _wait_for_response
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     response = self.aggregate(self.get_response())
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]                               ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 433, in get_response
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     status, result = mq.dequeue(timeout=dequeue_timeout)
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/distributed/device_communicators/shm_broadcast.py", line 889, in dequeue
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     with self.acquire_read(timeout, indefinite) as buf:
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/contextlib.py", line 137, in __enter__
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     return next(self.gen)
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]            ^^^^^^^^^^^^^^
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/distributed/device_communicators/shm_broadcast.py", line 797, in acquire_read
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366]     raise RuntimeError("cancelled")
+(EngineCore pid=3117566) ERROR 11-18 22:54:54 [core.py:1366] RuntimeError: cancelled
+(EngineCore pid=3117566) Process EngineCore:
+(EngineCore pid=3117566) Traceback (most recent call last):
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py", line 314, in _bootstrap
+(EngineCore pid=3117566)     self.run()
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/process.py", line 108, in run
+(EngineCore pid=3117566)     self._target(*self._args, **self._kwargs)
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1370, in run_engine_core
+(EngineCore pid=3117566)     raise e
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1328, in run_engine_core
+(EngineCore pid=3117566)     engine_core = EngineCoreProc(*args, engine_index=dp_rank, **kwargs)
+(EngineCore pid=3117566)                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=3117566)     return func(*args, **kwargs)
+(EngineCore pid=3117566)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 1085, in __init__
+(EngineCore pid=3117566)     super().__init__(
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 145, in __init__
+(EngineCore pid=3117566)     kv_cache_config = self._initialize_kv_caches(vllm_config)
+(EngineCore pid=3117566)                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+(EngineCore pid=3117566)     return func(*args, **kwargs)
+(EngineCore pid=3117566)            ^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core.py", line 356, in _initialize_kv_caches
+(EngineCore pid=3117566)     self.model_executor.compile_or_warm_up_model()
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/abstract.py", line 126, in compile_or_warm_up_model
+(EngineCore pid=3117566)     compilation_times: list[CompilationTimes] = self.collective_rpc(
+(EngineCore pid=3117566)                                                 ^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 448, in collective_rpc
+(EngineCore pid=3117566)     return future if non_block else future.result()
+(EngineCore pid=3117566)                                     ^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 99, in result
+(EngineCore pid=3117566)     return super().result()
+(EngineCore pid=3117566)            ^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/concurrent/futures/_base.py", line 449, in result
+(EngineCore pid=3117566)     return self.__get_result()
+(EngineCore pid=3117566)            ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/concurrent/futures/_base.py", line 401, in __get_result
+(EngineCore pid=3117566)     raise self._exception
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 103, in _wait_for_response
+(EngineCore pid=3117566)     response = self.aggregate(self.get_response())
+(EngineCore pid=3117566)                               ^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/executor/multiproc_executor.py", line 433, in get_response
+(EngineCore pid=3117566)     status, result = mq.dequeue(timeout=dequeue_timeout)
+(EngineCore pid=3117566)                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/distributed/device_communicators/shm_broadcast.py", line 889, in dequeue
+(EngineCore pid=3117566)     with self.acquire_read(timeout, indefinite) as buf:
+(EngineCore pid=3117566)          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/contextlib.py", line 137, in __enter__
+(EngineCore pid=3117566)     return next(self.gen)
+(EngineCore pid=3117566)            ^^^^^^^^^^^^^^
+(EngineCore pid=3117566)   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/distributed/device_communicators/shm_broadcast.py", line 797, in acquire_read
+(EngineCore pid=3117566)     raise RuntimeError("cancelled")
+(EngineCore pid=3117566) RuntimeError: cancelled
+INFO 11-18 22:54:56 [utils.py:632] [shutdown] Process manager: send sigterm to process EngineCore
+Traceback (most recent call last):
+  File "<WORK>/A/h100-handoff/flink-round-20261116/probe.py", line 72, in <module>
+    main()
+  File "<WORK>/A/h100-handoff/flink-round-20261116/probe.py", line 50, in main
+    llm = LLM(**kwargs)
+          ^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/entrypoints/llm.py", line 343, in __init__
+    self.llm_engine = LLMEngine.from_engine_args(
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 184, in from_engine_args
+    return cls(
+           ^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/llm_engine.py", line 109, in __init__
+    self.engine_core = EngineCoreClient.make_client(
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 122, in make_client
+    return SyncMPClient(
+           ^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/tracing/otel.py", line 178, in sync_wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 880, in __init__
+    super().__init__(
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/core_client.py", line 656, in __init__
+    with launch_core_engines(
+         ^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1240, in launch_core_engines
+    wait_for_engine_startup(
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/vllm/v1/engine/utils.py", line 1320, in wait_for_engine_startup
+    raise RuntimeError(
+RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
+<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/multiprocessing/resource_tracker.py:279: UserWarning: resource_tracker: There appear to be 5 leaked shared_memory objects to clean up at shutdown
+  warnings.warn('resource_tracker: There appear to be %d '

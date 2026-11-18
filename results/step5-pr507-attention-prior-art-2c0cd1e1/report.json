@@ -1,0 +1,276 @@
+{
+  "kind": "qwen3_next_prior_art_report",
+  "rfc": 428,
+  "rl_kernel_commit": "2c0cd1e12668c294e16c55d539af87fb29d2ac64",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "libraries": {
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "transformers": "5.17.0",
+      "triton": "3.7.1",
+      "sglang": null,
+      "megatron-core": "0.16.0rc0",
+      "megatron_core": "0.16.0rc0",
+      "transformer_engine": "2.18.0",
+      "vime": "0.3.0"
+    }
+  },
+  "op": "qwen3_next_tp4_attention",
+  "shape": {
+    "q_heads": 4,
+    "kv_heads": 1,
+    "head_dim": 256,
+    "scale": 0.0625
+  },
+  "target_tokens": 1000,
+  "companion_tokens": [
+    777,
+    1500,
+    64
+  ],
+  "candidates": [
+    {
+      "key": "rl_kernel_cuda",
+      "name": "RL-Kernel deterministic attention (one launch per sequence)",
+      "source": "rl_engine.models.qwen3_next.qwen3_next_forward.shared_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": true,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.001610144833412164,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "torch_sdpa",
+      "name": "torch SDPA (default backend, one launch per sequence)",
+      "source": "torch 2.13.0+cu130 scaled_dot_product_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": false,
+        "last_1": false
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": false,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002000017560035726,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "vllm_fa2_auto",
+      "name": "vLLM FlashAttention-2 varlen, num_splits=0",
+      "source": "vllm 0.30.0 vllm_flash_attn.flash_attn_varlen_func",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": false
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "vllm_fa2_split1",
+      "name": "vLLM FlashAttention-2 varlen, num_splits=1",
+      "source": "vllm 0.30.0 vllm_flash_attn.flash_attn_varlen_func",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "vllm_triton_2d",
+      "name": "vLLM Triton unified attention (2D kernel)",
+      "source": "vllm 0.30.0 v1/attention/ops/triton_unified_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.0020030409266623924,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "flashinfer",
+      "name": "FlashInfer BatchPrefillWithRaggedKVCache",
+      "source": "flashinfer 0.6.18.post1",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "fa4_cute",
+      "name": "FlashAttention-4 (CuTe DSL) varlen, vendored by vLLM",
+      "source": "vllm 0.30.0 vllm_flash_attn/cute (its head-dim-256 SM100 backward has no deterministic mode)",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": true,
+        "dk": false,
+        "dv": false
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002013933970487403,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "te_training",
+      "unavailable": "RuntimeError: cudnn shared object not found."
+    },
+    {
+      "key": "megatron_local",
+      "unavailable": "RuntimeError: cudnn shared object not found."
+    },
+    {
+      "key": "te_fused",
+      "unavailable": "RuntimeError: cudnn shared object not found."
+    }
+  ],
+  "latency": {
+    "prefill_us": {
+      "512": {
+        "rl_kernel_cuda": 816.5760040283203,
+        "torch_sdpa": 99.71199929714203,
+        "vllm_fa2_auto": 87.312001734972,
+        "vllm_fa2_split1": 88.51200342178345,
+        "vllm_triton_2d": 151.16799622774124,
+        "flashinfer": 76.09599828720093,
+        "fa4_cute": 169.295996427536
+      },
+      "2048": {
+        "rl_kernel_cuda": 11263.711929321289,
+        "torch_sdpa": 158.4480032324791,
+        "vllm_fa2_auto": 127.53599882125854,
+        "vllm_fa2_split1": 118.04800108075142,
+        "vllm_triton_2d": 278.0480086803436,
+        "flashinfer": 114.35200273990631,
+        "fa4_cute": 187.42399662733078
+      },
+      "8192": {
+        "rl_kernel_cuda": 177263.02337646484,
+        "torch_sdpa": 817.1840012073517,
+        "vllm_fa2_auto": 701.3919949531555,
+        "vllm_fa2_split1": 672.0959842205048,
+        "vllm_triton_2d": 1622.1439838409424,
+        "flashinfer": 351.21600329875946,
+        "fa4_cute": 353.7759929895401
+      }
+    },
+    "decode_us_kv8192": {
+      "rl_kernel_cuda": 866.239994764328,
+      "torch_sdpa": 418.92799735069275,
+      "vllm_fa2_auto": 127.23200023174286,
+      "vllm_fa2_split1": 291.6799932718277,
+      "vllm_triton_2d": 504.60800528526306,
+      "flashinfer": 219.5039987564087,
+      "fa4_cute": 281.72799944877625
+    },
+    "forward_plus_backward_us_2048": {
+      "rl_kernel_cuda": 31483.3927154541,
+      "torch_sdpa": 921.4400053024292,
+      "fa4_cute": 1166.0480499267578
+    }
+  },
+  "environments": {
+    "main": {
+      "gpu": "NVIDIA H100",
+      "torch": "2.13.0+cu130",
+      "cuda": "13.0",
+      "libraries": {
+        "vllm": "0.30.0",
+        "flashinfer-python": "0.6.18.post1",
+        "transformers": "5.17.0",
+        "triton": "3.7.1",
+        "sglang": null,
+        "megatron-core": "0.16.0rc0",
+        "megatron_core": "0.16.0rc0",
+        "transformer_engine": "2.18.0",
+        "vime": "0.3.0"
+      }
+    },
+    "extra": {
+      "gpu": "NVIDIA H100",
+      "torch": "2.13.0+cu130",
+      "cuda": "13.0",
+      "libraries": {
+        "vllm": "0.30.0",
+        "flashinfer-python": "0.6.18.post1",
+        "transformers": "5.17.0",
+        "triton": "3.7.1",
+        "sglang": null,
+        "megatron-core": "0.16.0rc0",
+        "megatron_core": "0.16.0rc0",
+        "transformer_engine": "2.18.0",
+        "vime": "0.3.0"
+      }
+    }
+  }
+}

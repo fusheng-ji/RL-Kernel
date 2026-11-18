@@ -1,0 +1,11 @@
+[2026-11-18T22:36:01Z] START build :: python setup.py build_ext --inplace
+[2026-11-18T22:37:55Z] END build rc=0
+_C: <HOME>/h100run-20261118/A551/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+[2026-11-18T22:37:57Z] START attn-main :: export CUDA_VISIBLE_DEVICES=0 PYTHONPATH=<WORK>/A551:<HOME>/datastorage/Megatron-LM; python benchmarks/models/qwen3_next/qwen3_next_attention_prior_art.py --only rl_kernel_cuda,torch_sdpa,vllm_fa2_auto,vllm_fa2_split1,vllm_triton_2d,flashinfer,fa4_cute,te_training,megatron_local --out <WORK>/out/A/step5/res/report-main.json
+[2026-11-18T22:43:18Z] END attn-main rc=0
+[2026-11-18T22:43:18Z] START attn-te :: export CUDA_VISIBLE_DEVICES=0 PYTHONPATH=<WORK>/A551:<HOME>/datastorage/Megatron-LM; python benchmarks/models/qwen3_next/qwen3_next_attention_prior_art.py --only te_fused --merge <WORK>/out/A/step5/res/report-main.json --out <WORK>/out/A/step5/res/report.json
+[2026-11-18T22:43:22Z] END attn-te rc=0
+[2026-11-18T22:43:22Z] START plot :: python benchmarks/models/qwen3_next/plot_qwen3_next_attention_prior_art.py <WORK>/out/A/step5/res/report.json
+[2026-11-18T22:43:24Z] END plot rc=0
+[2026-11-18T22:43:24Z] START versions :: python -m pip list 2>/dev/null | grep -iE "^(torch|vllm|flashinfer|flash-attn|transformer.engine|megatron|nvidia-cudnn-frontend|triton|apache-tvm-ffi) "
+[2026-11-18T22:43:25Z] END versions rc=0
