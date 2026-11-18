@@ -28,20 +28,19 @@ So this handoff produces the strict (`R/R`) fixtures on Hopper and checks four t
 `<THIS_DIR>` is `h100-handoff/phase-b-full-chain-20261118/` in the handoff branch
 `handoff/h3-h100-phase-b-full-chain-20261118`. That branch is `feat/h3-phase-b-full-chain` @
 `c9666ada` plus one commit that adds this folder (the doc, the runner script, the B200 reference
-artifacts). Both branches are local; Wenbo pushes them. The branch merges the four sibling
+artifacts), plus one commit that adds the pinned text features under `text/`. The handoff
+branch is on the fork; `feat/h3-phase-b-full-chain` itself is not pushed. The branch merges the four sibling
 Phase B branches (visual VAE, audio VAE, FL2VA and Ref2VA pipeline contracts) on top of
 `test-h3` @ `10552d82`.
 
 ```bash
 cd <REPO>                                   # clone of RL-Align/RL-Kernel, remote "upstream"
 git fetch upstream test-h3                  # must reach 10552d82
-# from the fork, once pushed:
+# from the fork:
 git fetch https://github.com/fusheng-ji/RL-Kernel.git \
     handoff/h3-h100-phase-b-full-chain-20261118:refs/heads/handoff/h3-h100-phase-b-full-chain-20261118
-# or from the bundle in Wenbo's handoff folder (prerequisite 10552d82):
-#   git fetch <bundle> 'refs/heads/*:refs/heads/*'
 git worktree add --detach <SRC> handoff/h3-h100-phase-b-full-chain-20261118
-git -C <SRC> log --oneline -2               # handoff commit on top of c9666ada; stop if not
+git -C <SRC> log --oneline -3               # two handoff commits on top of c9666ada; stop if not
 ```
 
 The runs only read `rl_engine/` and `tools/`, which are identical to `c9666ada`.
@@ -71,8 +70,8 @@ The editable `_C` of a shared env resolves to the last `pip install -e`, so chec
       --local-dir <CKPT> --include 'transformer/*' 'transformer_ref/*' 'vae/*' 'FL2VA/audio_vae/*'
   ```
 - Text features: `fl2va-text.safetensors` (2.7 MB) and `ref2va-text.safetensors` (84 MB). They
-  are too large for the branch: copy the `h100/text/` folder of Wenbo's handoff folder
-  (`phase-b-full-chain-20261118`) to `<TEXT>`. `<THIS_DIR>/text-sha256/` holds their sha256 for
+  are in `<THIS_DIR>/text/`, together with their `*.sha256`, so `TEXT=<THIS_DIR>/text`.
+  `<THIS_DIR>/text-sha256/` holds the same sha256 for
   checking.
   - They were pinned on the B200 host with Diffusers' own `MiniMaxH3FL2VATextEncoderStep` /
     `MiniMaxH3Ref2VATextEncoderStep` and the released Qwen3-VL (BF16, layer 50).
@@ -222,7 +221,7 @@ trajectory tensor). Send the PNGs of items 1–3.
 
 - Never change a bound, a runner or the code to make a result pass. A failure is reported
   with its log.
-- No push, no PR edit, no comment.
+- No PR, no PR edit, no comment. The only push is the results branch below.
 - Anything that may leave the machine is redacted. That means no cluster, job, node,
   partition, user or personal paths. The artifacts record versions, device names and
   compute capability only. Check the logs before sending them.
@@ -240,3 +239,6 @@ per item:
 - decoded-media equality;
 - `execution.case_id`, `bound` and `fell_back`;
 - the peak memory, if `nvidia-smi` showed it.
+
+Push them as fork branch `handoff/h3-h100-phase-b-full-chain-results-20261118` (folder
+`h100-results/phase-b-full-chain-20261118/`), redacted as above.
