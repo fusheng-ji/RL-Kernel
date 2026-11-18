@@ -16,10 +16,18 @@
   "tp": {
     "1": {
       "loaded": [
+        "blocks.0.adaln_proj.linear.bias",
+        "blocks.0.adaln_proj.linear.weight",
         "blocks.0.attn.out_proj.weight",
         "blocks.0.attn.qkv_proj.weight",
         "blocks.0.mlp.fc1.weight",
-        "blocks.0.mlp.fc2.weight"
+        "blocks.0.mlp.fc2.weight",
+        "blocks.0.norm1.weight",
+        "blocks.0.norm2.weight",
+        "final_layer.adaln_proj.linear.bias",
+        "final_layer.adaln_proj.linear.weight",
+        "final_layer.norm.weight",
+        "token_refiner.final_norm.weight"
       ],
       "report": {
         "contract": "h3-parallel-v1",
@@ -27,7 +35,14 @@
           "blocks.0.attn.qkv_proj",
           "blocks.0.attn.out_proj",
           "blocks.0.mlp.fc1",
-          "blocks.0.mlp.fc2"
+          "blocks.0.mlp.fc2",
+          "blocks.0.adaln_proj.linear",
+          "blocks.0",
+          "final_layer.adaln_proj.linear",
+          "final_layer",
+          "token_refiner.blocks.0.norm1",
+          "token_refiner.blocks.0.norm2",
+          "token_refiner.final_norm"
         ],
         "skipped": [],
         "external": [
@@ -35,10 +50,12 @@
           "rotary",
           "qk_norm",
           "swiglu",
-          "adaln"
+          "patch_embeddings",
+          "time_embedder",
+          "output_heads"
         ],
         "engine": "sglang",
-        "adaln_cache": false
+        "sglang": "0.5.21"
       },
       "rows": {
         "qkv": {
@@ -84,15 +101,116 @@
             "native_prefix_equals_rows": false,
             "native_prefix_max_abs_diff": 0.125
           }
+        },
+        "adaln_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "block_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "final_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "final_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0078125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_final_norm": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
         }
       }
     },
     "2": {
       "loaded": [
+        "blocks.0.adaln_proj.linear.bias",
+        "blocks.0.adaln_proj.linear.weight",
         "blocks.0.attn.out_proj.weight",
         "blocks.0.attn.qkv_proj.weight",
         "blocks.0.mlp.fc1.weight",
-        "blocks.0.mlp.fc2.weight"
+        "blocks.0.mlp.fc2.weight",
+        "blocks.0.norm1.weight",
+        "blocks.0.norm2.weight",
+        "final_layer.adaln_proj.linear.bias",
+        "final_layer.adaln_proj.linear.weight",
+        "final_layer.norm.weight",
+        "token_refiner.final_norm.weight"
       ],
       "report": {
         "contract": "h3-parallel-v1",
@@ -100,7 +218,14 @@
           "blocks.0.attn.qkv_proj",
           "blocks.0.attn.out_proj",
           "blocks.0.mlp.fc1",
-          "blocks.0.mlp.fc2"
+          "blocks.0.mlp.fc2",
+          "blocks.0.adaln_proj.linear",
+          "blocks.0",
+          "final_layer.adaln_proj.linear",
+          "final_layer",
+          "token_refiner.blocks.0.norm1",
+          "token_refiner.blocks.0.norm2",
+          "token_refiner.final_norm"
         ],
         "skipped": [],
         "external": [
@@ -108,10 +233,12 @@
           "rotary",
           "qk_norm",
           "swiglu",
-          "adaln"
+          "patch_embeddings",
+          "time_embedder",
+          "output_heads"
         ],
         "engine": "sglang",
-        "adaln_cache": false
+        "sglang": "0.5.21"
       },
       "rows": {
         "qkv": {
@@ -193,19 +320,1741 @@
             "native_prefix_equals_rows": false,
             "native_prefix_max_abs_diff": 0.125
           }
+        },
+        "adaln_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "block_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "final_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "final_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_final_norm": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
         }
       },
       "bound_equals_tp1": {
         "qkv": true,
         "out": true,
         "fc1": true,
-        "fc2": true
+        "fc2": true,
+        "adaln_table": true,
+        "norm1": true,
+        "norm2": true,
+        "block_out": true,
+        "final_table": true,
+        "final_out": true,
+        "refiner_norm1": true,
+        "refiner_norm2": true,
+        "refiner_final_norm": true
       },
       "native_equals_tp1": {
         "qkv": true,
         "out": false,
         "fc1": true,
-        "fc2": false
+        "fc2": false,
+        "adaln_table": true,
+        "norm1": true,
+        "norm2": true,
+        "block_out": true,
+        "final_table": false,
+        "final_out": false,
+        "refiner_norm1": true,
+        "refiner_norm2": true,
+        "refiner_final_norm": true
+      }
+    },
+    "4": {
+      "loaded": [
+        "blocks.0.adaln_proj.linear.bias",
+        "blocks.0.adaln_proj.linear.weight",
+        "blocks.0.attn.out_proj.weight",
+        "blocks.0.attn.qkv_proj.weight",
+        "blocks.0.mlp.fc1.weight",
+        "blocks.0.mlp.fc2.weight",
+        "blocks.0.norm1.weight",
+        "blocks.0.norm2.weight",
+        "final_layer.adaln_proj.linear.bias",
+        "final_layer.adaln_proj.linear.weight",
+        "final_layer.norm.weight",
+        "token_refiner.final_norm.weight"
+      ],
+      "report": {
+        "contract": "h3-parallel-v1",
+        "patched": [
+          "blocks.0.attn.qkv_proj",
+          "blocks.0.attn.out_proj",
+          "blocks.0.mlp.fc1",
+          "blocks.0.mlp.fc2",
+          "blocks.0.adaln_proj.linear",
+          "blocks.0",
+          "final_layer.adaln_proj.linear",
+          "final_layer",
+          "token_refiner.blocks.0.norm1",
+          "token_refiner.blocks.0.norm2",
+          "token_refiner.final_norm"
+        ],
+        "skipped": [],
+        "external": [
+          "attention",
+          "rotary",
+          "qk_norm",
+          "swiglu",
+          "patch_embeddings",
+          "time_embedder",
+          "output_heads"
+        ],
+        "engine": "sglang",
+        "sglang": "0.5.21"
+      },
+      "rows": {
+        "qkv": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          }
+        },
+        "out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "fc1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "fc2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "adaln_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "block_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "final_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "final_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_final_norm": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        }
+      },
+      "bound_equals_tp1": {
+        "qkv": true,
+        "out": true,
+        "fc1": true,
+        "fc2": true,
+        "adaln_table": true,
+        "norm1": true,
+        "norm2": true,
+        "block_out": true,
+        "final_table": true,
+        "final_out": true,
+        "refiner_norm1": true,
+        "refiner_norm2": true,
+        "refiner_final_norm": true
+      },
+      "native_equals_tp1": {
+        "qkv": true,
+        "out": false,
+        "fc1": true,
+        "fc2": false,
+        "adaln_table": true,
+        "norm1": true,
+        "norm2": true,
+        "block_out": true,
+        "final_table": false,
+        "final_out": false,
+        "refiner_norm1": true,
+        "refiner_norm2": true,
+        "refiner_final_norm": true
+      }
+    },
+    "8": {
+      "loaded": [
+        "blocks.0.adaln_proj.linear.bias",
+        "blocks.0.adaln_proj.linear.weight",
+        "blocks.0.attn.out_proj.weight",
+        "blocks.0.attn.qkv_proj.weight",
+        "blocks.0.mlp.fc1.weight",
+        "blocks.0.mlp.fc2.weight",
+        "blocks.0.norm1.weight",
+        "blocks.0.norm2.weight",
+        "final_layer.adaln_proj.linear.bias",
+        "final_layer.adaln_proj.linear.weight",
+        "final_layer.norm.weight",
+        "token_refiner.final_norm.weight"
+      ],
+      "report": {
+        "contract": "h3-parallel-v1",
+        "patched": [
+          "blocks.0.attn.qkv_proj",
+          "blocks.0.attn.out_proj",
+          "blocks.0.mlp.fc1",
+          "blocks.0.mlp.fc2",
+          "blocks.0.adaln_proj.linear",
+          "blocks.0",
+          "final_layer.adaln_proj.linear",
+          "final_layer",
+          "token_refiner.blocks.0.norm1",
+          "token_refiner.blocks.0.norm2",
+          "token_refiner.final_norm"
+        ],
+        "skipped": [],
+        "external": [
+          "attention",
+          "rotary",
+          "qk_norm",
+          "swiglu",
+          "patch_embeddings",
+          "time_embedder",
+          "output_heads"
+        ],
+        "engine": "sglang",
+        "sglang": "0.5.21"
+      },
+      "rows": {
+        "qkv": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.03125
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.03125
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          }
+        },
+        "out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          }
+        },
+        "fc1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.125
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.0625
+          }
+        },
+        "fc2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.25,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": false,
+            "native_prefix_max_abs_diff": 0.25
+          }
+        },
+        "adaln_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.125,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "block_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0625,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "final_table": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.03125,
+            "restored_equals_native": true
+          }
+        },
+        "final_out": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": false,
+            "native_max_abs_diff": 0.0234375,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm1": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_norm2": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        },
+        "refiner_final_norm": {
+          "rank0": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank1": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank2": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank3": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank4": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank5": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank6": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          },
+          "rank7": {
+            "bound_equals_canonical": true,
+            "native_equals_canonical": true,
+            "native_max_abs_diff": 0.0,
+            "restored_equals_native": true,
+            "bound_prefix_equals_rows": true,
+            "native_prefix_equals_rows": true,
+            "native_prefix_max_abs_diff": 0.0
+          }
+        }
+      },
+      "bound_equals_tp1": {
+        "qkv": true,
+        "out": true,
+        "fc1": true,
+        "fc2": true,
+        "adaln_table": true,
+        "norm1": true,
+        "norm2": true,
+        "block_out": true,
+        "final_table": true,
+        "final_out": true,
+        "refiner_norm1": true,
+        "refiner_norm2": true,
+        "refiner_final_norm": true
+      },
+      "native_equals_tp1": {
+        "qkv": true,
+        "out": false,
+        "fc1": true,
+        "fc2": false,
+        "adaln_table": false,
+        "norm1": false,
+        "norm2": false,
+        "block_out": false,
+        "final_table": false,
+        "final_out": false,
+        "refiner_norm1": true,
+        "refiner_norm2": true,
+        "refiner_final_norm": true
       }
     }
   }
