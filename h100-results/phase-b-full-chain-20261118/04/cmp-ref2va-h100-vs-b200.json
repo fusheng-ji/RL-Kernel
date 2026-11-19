@@ -1,0 +1,188 @@
+{
+ "first_drift": {
+  "component": "condition_latents.0",
+  "stage": "visual_vae_encode"
+ },
+ "gate": {
+  "decoded_media_equal": {
+   "audio_decode": false,
+   "video_decode": false
+  },
+  "hard_gate": "fail",
+  "latent_trajectory_equal": false,
+  "rule": "latent trajectory equality is the gate; decoded media are secondary",
+  "transformer_intermediates_equal": false
+ },
+ "kind": "compare",
+ "labels": [
+  "P",
+  "A"
+ ],
+ "runtime_equal": false,
+ "schema": "rlkernel.h3.full_chain.evidence.v1",
+ "secondary_metrics": {
+  "lhs": {
+   "audio": {
+    "peak": 0.6217411160469055,
+    "rms_lr": [
+     0.14875014515800497,
+     0.15672179227215424
+    ],
+    "shape": [
+     2,
+     165600
+    ]
+   },
+   "video": {
+    "max": 1.0,
+    "mean_rgb": [
+     0.36713916988735396,
+     0.5002534541721321,
+     0.6395601503018965
+    ],
+    "min": 0.0,
+    "shape": [
+     1,
+     3,
+     124,
+     256,
+     448
+    ],
+    "std": 0.14045042195117205
+   }
+  },
+  "rhs": {
+   "audio": {
+    "peak": 0.6013056039810181,
+    "rms_lr": [
+     0.14852941239925488,
+     0.15533830436813342
+    ],
+    "shape": [
+     2,
+     165600
+    ]
+   },
+   "video": {
+    "max": 1.0,
+    "mean_rgb": [
+     0.352534522831015,
+     0.49324433154602193,
+     0.6381770524175553
+    ],
+    "min": 0.0,
+    "shape": [
+     1,
+     3,
+     124,
+     256,
+     448
+    ],
+    "std": 0.14349962390172055
+   }
+  }
+ },
+ "stages": [
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "request"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "media_preprocess"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "text_conditions"
+  },
+  {
+   "differing_components": [
+    "condition_latents.0",
+    "condition_latents.1"
+   ],
+   "equal": false,
+   "provenance_equal": false,
+   "stage": "visual_vae_encode"
+  },
+  {
+   "differing_components": [
+    "audio_rows.0",
+    "audio_rows.1"
+   ],
+   "equal": false,
+   "provenance_equal": false,
+   "stage": "audio_vae_encode"
+  },
+  {
+   "differing_components": [
+    "layout_artifact"
+   ],
+   "equal": false,
+   "provenance_equal": true,
+   "stage": "packed_layout"
+  },
+  {
+   "differing_components": [
+    "video_rows",
+    "audio_rows"
+   ],
+   "equal": false,
+   "provenance_equal": true,
+   "stage": "initial_rows"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "schedule"
+  },
+  {
+   "differing_components": [
+    "trajectory",
+    "transformer_probe",
+    "final_video_rows",
+    "final_audio_rows"
+   ],
+   "equal": false,
+   "provenance_equal": false,
+   "stage": "denoise"
+  },
+  {
+   "differing_components": [
+    "video_latents",
+    "audio_latents"
+   ],
+   "equal": false,
+   "provenance_equal": true,
+   "stage": "unpack"
+  },
+  {
+   "differing_components": [
+    "video"
+   ],
+   "equal": false,
+   "provenance_equal": false,
+   "stage": "video_decode"
+  },
+  {
+   "differing_components": [
+    "waveform"
+   ],
+   "equal": false,
+   "provenance_equal": false,
+   "stage": "audio_decode"
+  }
+ ],
+ "trajectory": {
+  "comparable": false,
+  "reason": "initial noise differs for video; initial noise differs for audio"
+ },
+ "variant": "Ref2VA",
+ "workflow": "ref2va"
+}

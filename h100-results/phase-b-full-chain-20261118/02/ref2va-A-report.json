@@ -1,0 +1,194 @@
+{
+ "artifact": "ref2va-A.json",
+ "artifact_sha256": "73f62f64b185201f7c1f53a2df0b29b2a4d878347759f9972bcd695d12f65d13",
+ "execution": {
+  "actual_backends": {
+   "attention": "rl_engine.validation.models.h3_full_model.QueryChunkAttention",
+   "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+   "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+   "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+   "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+   "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+   "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+  },
+  "bound": true,
+  "boundary_bindings": {
+   "audio_proj_in": {
+    "row": "audio_input_projection_fp32",
+    "status": "row"
+   },
+   "audio_proj_out": {
+    "row": "audio_output_projection_fp32",
+    "status": "row"
+   },
+   "context_embedder": {
+    "row": "text_context_projection",
+    "status": "row"
+   },
+   "norm_out": {
+    "row": "final_adaln_out",
+    "status": "row"
+   },
+   "proj_in": {
+    "row": "video_input_projection_fp32",
+    "status": "row"
+   },
+   "proj_out": {
+    "row": "video_output_projection_fp32",
+    "status": "row"
+   },
+   "time_embedder": {
+    "row": "timestep_mlp_fp32",
+    "status": "row"
+   },
+   "token_refiner": {
+    "row": "token_refiner_block",
+    "status": "row"
+   }
+  },
+  "case_id": "R/R",
+  "contract": "h3-runtime-v1",
+  "fell_back": null,
+  "label": "R/R",
+  "mode": "strict",
+  "native_boundaries": [],
+  "native_nodes": []
+ },
+ "final_latent_sha256": {
+  "audio": "1b3f3b220db4c9976569d7949b4346728cf376646cbca250bd7eebf2a5adece9",
+  "video": "44f19d3fdcd1723f2f5c30946835c1b964b546e6c04c7d6dc93e3687182b92d5"
+ },
+ "info": {
+  "chain_s": 2527.2,
+  "identity": {
+   "attention_query_chunk": 4096,
+   "layer_truncated": false,
+   "layers_loaded": 50,
+   "placement": "offload",
+   "transformer_dir_identified_as": "Ref2VA"
+  },
+  "transformer_load_s": 0.6,
+  "vae_load_s": 48.2
+ },
+ "kind": "run",
+ "label": "A",
+ "runtime": {
+  "compute_capability": [
+   9,
+   0
+  ],
+  "cpu_capability": "AVX512",
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "cudnn_allow_tf32": true,
+  "deterministic_algorithms": false,
+  "device": "cuda",
+  "device_name": "NVIDIA H100",
+  "hip": null,
+  "matmul_allow_tf32": false,
+  "num_threads": 16,
+  "platform_machine": "x86_64",
+  "python": "3.12.15",
+  "torch": "2.13.0+cu130"
+ },
+ "schema": "rlkernel.h3.full_chain.evidence.v1",
+ "secondary_metrics": {
+  "audio": {
+   "peak": 0.6325458884239197,
+   "rms_lr": [
+    0.15063639788541114,
+    0.15867187941898203
+   ],
+   "shape": [
+    2,
+    165600
+   ]
+  },
+  "video": {
+   "max": 0.9993554949760437,
+   "mean_rgb": [
+    0.34908198385600714,
+    0.4884018998210207,
+    0.6352005002099371
+   ],
+   "min": 0.0,
+   "shape": [
+    1,
+    3,
+    124,
+    256,
+    448
+   ],
+   "std": 0.14048016325116777
+  }
+ },
+ "sequence_length": 26139,
+ "source": {
+  "clean": true,
+  "commit": "7e22c736bde5ed4754023f563f8e7410596a383d"
+ },
+ "stages": {
+  "audio_decode": {
+   "waveform": "2a6b0d6b5e73ced7aefef45dd6d957178bd1d2339f3d79db8eade0429cf4d16a"
+  },
+  "audio_vae_encode": {
+   "audio_rows.0": "d911d271fdece5f7ba16ac71764f07ae4df551108877e6f0f1ca17be5d496b39",
+   "audio_rows.1": "65ac4b08079116a9e16bdf4ec43e8adf77aefb4ca8c56e5752aaf99f66d031b6"
+  },
+  "denoise": {
+   "final_audio_rows": "1b3f3b220db4c9976569d7949b4346728cf376646cbca250bd7eebf2a5adece9",
+   "final_video_rows": "44f19d3fdcd1723f2f5c30946835c1b964b546e6c04c7d6dc93e3687182b92d5",
+   "trajectory": "2daac273a388140702c8a3bbc8538d92b8c2928ea02bc41206d8f4a912c2b6d7",
+   "transformer_probe": "92e0f24e1c633fdfec87850aad65043b9baf05fd4dd8b61265cba5decf8fb794"
+  },
+  "initial_rows": {
+   "audio_rows": "0841c1469db89d87d8e8510f578d10c2042d053e6a958c55bd33d218a261bb64",
+   "video_rows": "1d9a93b97021b5e4901458aff00114575081c8c687254e761685469983b3ce96"
+  },
+  "media_preprocess": {
+   "reference.0.pixels": "bce31bd0f43eca2ded33f1bfad8ec7e7104738dd3748d9544b1065e0d79627b4",
+   "reference.1.pixels": "d733483021c26931949783414662c68c3bce96380b5e10aa82a6f8215f44df8b",
+   "reference.1.waveform": "6bcf215643c728054f5ea2be3b726b50a160b039a18b149537db24f47a324ddb",
+   "reference.2.waveform": "d0ca41d1e10b0a065cb9ef4ea65455b3af10d9b19c857ed11a22391214192b8d"
+  },
+  "packed_layout": {
+   "audio_indices": "f03c72c3d7748a64b79791a403c894286c7f5779fb5bc3a211c0795ec9139907",
+   "layout_artifact": "35f0ed98d33b5f226b64667b80f5e4746c67eb6f1da403ddf064c89ed0451da1",
+   "position_ids": "d1f31d499c2c42148ddf5f06583210351de8f61dabff23ad6cf09408c5eb4c2b",
+   "text_indices": "3c02fa01a35fb3cb9cdf199b2c3760e7ac90feccb86a226b69b1a5c13024b2f9",
+   "token_tags": "1e9ffd37d53c297a2b744dcdbdb0f84a6bb7b7d7ef5acb3dcb6c891ee5f70a97",
+   "video_indices": "fa4417252192121191f1bd3bb8d5becb33c5c39e3375edb2bca18451d2200bf4"
+  },
+  "request": {
+   "prompt": "5756d255e5b7df1e6e2cd4b78482e7569f492945ec35e6212b06011ce49cc222",
+   "reference.0.image": "adb3d52a3c5c87721d50621285190f5fd27c6864b5cb767d98ff83189b511163",
+   "reference.1.audio": "0dd744490bae8188b781f803d8cc08891f5ed0a332e38c0befd0a6a9d70f786f",
+   "reference.1.video": "f4decc2ccaffe83e2f42ba7819f7a804a826afafd34eb92e25c6ea45771ccd10",
+   "reference.2.audio": "d0ca41d1e10b0a065cb9ef4ea65455b3af10d9b19c857ed11a22391214192b8d",
+   "spec": "bb187678e471c725207965735a7a0a9722c1cbc41c4d6cab5aac73c9979dde21"
+  },
+  "schedule": {
+   "audio_sigmas": "698a99d0cd635599942b10afc429ce922b6bd5220c01b0e6f57fbc2fc7cd13fd",
+   "audio_timesteps": "44ac97368e3b7ceb2b527dd06a776dbbfb37be5110142fdf381293bad2fa9ce7",
+   "row_timestep_plan": "a12230207a6cbb5b046f978c303b6596e62abe2d3d9290cd1260f9713a14d0e2",
+   "video_sigmas": "adf3aa7009a3804b42cc8d0a032456799b9e3a5720f357bba7c428e202217fcb",
+   "video_timesteps": "d13d4b33f8216be9523df77ec193dede1e7b21faccc3bf542ef579e2e07ae832"
+  },
+  "text_conditions": {
+   "prompt_embeds": "f09e5b70b8385475f51ecff7917c6dd9caa62ae4ed29ad2734b81793cfbd59e9",
+   "text_token_tags": "56a20d2ee4f38064bd1baedb519f7181208604308d9f227685fc45834b3cdff2"
+  },
+  "unpack": {
+   "audio_latents": "3cefdff3a0eb6d8731bd380be5601da3606ca6b61a2a65c8a161e5a89885cf1c",
+   "video_latents": "b672138bbe681720945086b9232fe18cc15ae63153c9093d79cb3ef03c759d34"
+  },
+  "video_decode": {
+   "video": "e2a9f28edde40eb680ed77fbe5f7b26239e2374b0246cb8af0dab2ba4d19cc14"
+  },
+  "visual_vae_encode": {
+   "condition_latents.0": "86e8b46893399c24bb6cc248ccf5037fbfb34db9c35efba706eae6fa9fe458a4",
+   "condition_latents.1": "6830695f83655faed7a4c6eca361dc43707929458c51cb7dc1213b812ce1ca73"
+  }
+ },
+ "workflow": "ref2va"
+}
