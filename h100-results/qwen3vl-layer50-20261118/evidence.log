@@ -1,0 +1,73 @@
+Modular Diffusers is currently an experimental feature under active development. The API is subject to breaking changes in future releases.
+
+Loading weights:   0%|          | 0/1058 [00:00<?, ?it/s]
+Loading weights:  78%|███████▊  | 825/1058 [00:00<00:00, 8233.46it/s]
+Loading weights: 100%|██████████| 1058/1058 [00:00<00:00, 8242.50it/s]
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: Memory efficient kernel not used because: (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/cuda/sdp_utils.cpp:1104.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: For dense input, both fused kernels require query, key and value to have the same num_heads. Query.sizes(): [1, 64, 10, 128], Key sizes(): [1, 8, 10, 128], Value sizes(): [1, 8, 10, 128] instead. To broadcast dense inputs, try using unsqueeze and expand_to before passing them into the kernel. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/sdp_utils_cpp.h:437.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: Flash attention kernel not used because: (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/cuda/sdp_utils.cpp:1106.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: Flash attention has been runtime disabled. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/sdp_utils_cpp.h:559.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: cuDNN attention kernel not used because: (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/cuda/sdp_utils.cpp:1108.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: cuDNN attention has been runtime disabled. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/cuda/sdp_utils.cpp:831.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: For dense input, both fused kernels require query, key and value to have the same num_heads. Query.sizes(): [1, 64, 288, 128], Key sizes(): [1, 8, 288, 128], Value sizes(): [1, 8, 288, 128] instead. To broadcast dense inputs, try using unsqueeze and expand_to before passing them into the kernel. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/sdp_utils_cpp.h:437.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+{ENV}/lib/python3.12/site-packages/transformers/integrations/sdpa_attention.py:158: UserWarning: For dense input, both fused kernels require query, key and value to have the same num_heads. Query.sizes(): [1, 64, 408, 128], Key sizes(): [1, 8, 408, 128], Value sizes(): [1, 8, 408, 128] instead. To broadcast dense inputs, try using unsqueeze and expand_to before passing them into the kernel. (Triggered internally at /__w/pytorch/pytorch/aten/src/ATen/native/transformers/sdp_utils_cpp.h:437.)
+  attn_output = torch.nn.functional.scaled_dot_product_attention(
+
+Loading weights:   0%|          | 0/904 [00:00<?, ?it/s]
+Loading weights:  57%|█████▋    | 511/904 [00:00<00:00, 5106.21it/s]
+Loading weights: 100%|██████████| 904/904 [00:00<00:00, 5168.98it/s]
+[transformers] [1mQwen3VLForConditionalGeneration LOAD REPORT[0m from: {CKPT}/text_encoder
+Key                                                                   | Status     |  | 
+----------------------------------------------------------------------+------------+--+-
+model.language_model.layers.{50...63}.self_attn.k_proj.weight         | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.post_attention_layernorm.weight | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.input_layernorm.weight          | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.self_attn.q_norm.weight         | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.self_attn.q_proj.weight         | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.mlp.up_proj.weight              | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.self_attn.v_proj.weight         | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.self_attn.o_proj.weight         | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.self_attn.k_norm.weight         | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.mlp.gate_proj.weight            | UNEXPECTED |  | 
+model.language_model.layers.{50...63}.mlp.down_proj.weight            | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED:	can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+[W1119 01:08:21.799653605 CUDACachingAllocator.cpp:508] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 22413312, total: 99949674496).
+[W1119 01:08:21.800431501 CUDACachingAllocator.cpp:508] expandable_segments: memory mapping failed with OOM on device 0 while trying to map 20971520 bytes (free: 22413312, total: 99949674496).
+Traceback (most recent call last):
+  File "{SRC}/tools/validation/models/h3_qwen3vl_evidence.py", line 429, in <module>
+    main()
+  File "{SRC}/tools/validation/models/h3_qwen3vl_evidence.py", line 358, in main
+    model, report = q.load_release_text_encoder(args.root / "text_encoder", device=device)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{SRC}/rl_engine/models/minimax_h3/qwen3vl_text.py", line 649, in load_release_text_encoder
+    model = model.to(device).eval()
+            ^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/transformers/modeling_utils.py", line 3706, in to
+    return super().to(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1383, in to
+    return self._apply(convert)
+           ^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "{ENV}/lib/python3.12/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  File "{ENV}/lib/python3.12/site-packages/torch/nn/modules/module.py", line 933, in _apply
+    module._apply(fn)
+  [Previous line repeated 3 more times]
+  File "{ENV}/lib/python3.12/site-packages/torch/nn/modules/module.py", line 964, in _apply
+    param_applied = fn(param)
+                    ^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1369, in convert
+    return t.to(
+           ^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 250.00 MiB. GPU 0 has a total capacity of 93.09 GiB of which 121.38 MiB is free. Including non-PyTorch memory, this process has 92.96 GiB memory in use. Of the allocated memory 92.24 GiB is allocated by PyTorch, and 45.04 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
