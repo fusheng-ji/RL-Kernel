@@ -1,0 +1,12 @@
+[2026-11-18T22:09:57Z] START build-default :: find . -name "_C*.so" -not -path "./.git/*" -delete; rm -rf build; python setup.py build_ext --inplace
+[2026-11-18T22:12:21Z] END build-default rc=0
+[2026-11-18T22:12:21Z] START cuda-file-check :: python -c "import rl_engine._C as c; print(c.__file__)"
+[2026-11-18T22:12:24Z] END cuda-file-check rc=0
+[2026-11-18T22:12:24Z] START pytest-default :: CUDA_VISIBLE_DEVICES=0,1 python -m pytest -p no:cacheprovider -q -rs tests/backends/cuda/test_fused_logp_chunked_backward.py tests/backends/cuda/test_fused_logp_backward_indexing.py tests/ops/logprob/test_logp.py tests/ops/logprob/test_deterministic_logp.py tests/ops/logprob/test_batch_invariant_logp.py tests/ops/test_op_accuracy.py tests/e2e/test_rl_kernel_loss_step.py tests/validation/common/test_logprob_comparison.py tests/validation/operators/test_gradient_invariance.py tests/validation/operators/test_ws1_gtest_gpu.py tests/validation/models/test_ws1_chain_integration.py tests/contracts/test_tolerance_contract.py tests/benchmarks/test_fused_logp_backward_evidence.py tests/benchmarks/test_fused_logp_provider_evidence.py
+[2026-11-18T22:13:51Z] END pytest-default rc=0
+[2026-11-18T22:13:51Z] START build-sm90 :: find . -name "_C*.so" -not -path "./.git/*" -delete; rm -rf build; KERNEL_ALIGN_FORCE_SM90=1 python setup.py build_ext --inplace
+[2026-11-18T22:15:43Z] END build-sm90 rc=0
+[2026-11-18T22:15:43Z] START cuda-file-check-sm90 :: python -c "import rl_engine._C as c; print(c.__file__)"
+[2026-11-18T22:15:47Z] END cuda-file-check-sm90 rc=0
+[2026-11-18T22:15:47Z] START pytest-sm90 :: KERNEL_ALIGN_FORCE_SM90=1 CUDA_VISIBLE_DEVICES=0,1 python -m pytest -p no:cacheprovider -q -rs tests/backends/cuda/test_fused_logp_chunked_backward.py tests/backends/cuda/test_fused_logp_backward_indexing.py tests/ops/logprob/test_logp.py tests/ops/logprob/test_deterministic_logp.py tests/ops/logprob/test_batch_invariant_logp.py tests/ops/test_op_accuracy.py tests/e2e/test_rl_kernel_loss_step.py tests/validation/common/test_logprob_comparison.py tests/validation/operators/test_gradient_invariance.py tests/validation/operators/test_ws1_gtest_gpu.py tests/validation/models/test_ws1_chain_integration.py tests/contracts/test_tolerance_contract.py tests/benchmarks/test_fused_logp_backward_evidence.py tests/benchmarks/test_fused_logp_provider_evidence.py
+[2026-11-18T22:17:00Z] END pytest-sm90 rc=0

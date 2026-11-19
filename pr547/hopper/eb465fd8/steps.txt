@@ -1,0 +1,11 @@
+[2026-11-18T22:17:04Z] START build :: find . -name "_C*.so" -not -path "./.git/*" -delete; rm -rf build; KERNEL_ALIGN_FORCE_SM90=1 python setup.py build_ext --inplace
+[2026-11-18T22:18:57Z] END build rc=0
+_C: <HOME>/h100run-20261118/D547/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+[2026-11-18T22:19:00Z] START pytest-recursive :: KERNEL_ALIGN_FORCE_SM90=1 python -m pytest -p no:cacheprovider -q -rs tests/ops/logprob/test_deterministic_logp_recursive.py
+[2026-11-18T22:19:59Z] END pytest-recursive rc=0
+[2026-11-18T22:19:59Z] START pytest-max-order-10 :: KERNEL_ALIGN_FORCE_SM90=1 RL_KERNEL_LOGP_MAX_ORDER=10 python -m pytest -p no:cacheprovider -q -rs tests/ops/logprob/test_deterministic_logp_recursive.py -k 'recursive_orders and dtype3'
+[2026-11-18T22:20:17Z] END pytest-max-order-10 rc=0
+[2026-11-18T22:20:17Z] START pytest-logprob-layout :: KERNEL_ALIGN_FORCE_SM90=1 python -m pytest -p no:cacheprovider -q -rs tests/ops/logprob tests/runtime/test_layout_compatibility.py
+[2026-11-18T22:22:10Z] END pytest-logprob-layout rc=0
+[2026-11-18T22:22:10Z] START probe :: KERNEL_ALIGN_FORCE_SM90=1 python tools/validation/operators/probe_deterministic_logp_autograd.py --output <WORK>/out/D/547/recursive-backends.json
+[2026-11-18T22:22:29Z] END probe rc=0
