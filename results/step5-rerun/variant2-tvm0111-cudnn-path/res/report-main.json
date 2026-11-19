@@ -1,0 +1,288 @@
+{
+  "kind": "qwen3_next_prior_art_report",
+  "rfc": 428,
+  "rl_kernel_commit": "2c0cd1e12668c294e16c55d539af87fb29d2ac64",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "libraries": {
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "transformers": "5.17.0",
+      "triton": "3.7.1",
+      "sglang": null,
+      "megatron-core": "0.16.0rc0",
+      "megatron_core": "0.16.0rc0",
+      "transformer_engine": "2.18.0",
+      "vime": "0.3.0"
+    }
+  },
+  "op": "qwen3_next_tp4_attention",
+  "shape": {
+    "q_heads": 4,
+    "kv_heads": 1,
+    "head_dim": 256,
+    "scale": 0.0625
+  },
+  "target_tokens": 1000,
+  "companion_tokens": [
+    777,
+    1500,
+    64
+  ],
+  "candidates": [
+    {
+      "key": "rl_kernel_cuda",
+      "name": "RL-Kernel deterministic attention (one launch per sequence)",
+      "source": "rl_engine.models.qwen3_next.qwen3_next_forward.shared_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": true,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.001610144833412164,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "torch_sdpa",
+      "name": "torch SDPA (default backend, one launch per sequence)",
+      "source": "torch 2.13.0+cu130 scaled_dot_product_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": false,
+        "last_1": false
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": false,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002000017560035726,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "vllm_fa2_auto",
+      "name": "vLLM FlashAttention-2 varlen, num_splits=0",
+      "source": "vllm 0.30.0 vllm_flash_attn.flash_attn_varlen_func",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": false
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "vllm_fa2_split1",
+      "name": "vLLM FlashAttention-2 varlen, num_splits=1",
+      "source": "vllm 0.30.0 vllm_flash_attn.flash_attn_varlen_func",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "vllm_triton_2d",
+      "name": "vLLM Triton unified attention (2D kernel)",
+      "source": "vllm 0.30.0 v1/attention/ops/triton_unified_attention",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.0020030409266623924,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "flashinfer",
+      "name": "FlashInfer BatchPrefillWithRaggedKVCache",
+      "source": "flashinfer 0.6.18.post1",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002010367135595657,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": true
+    },
+    {
+      "key": "fa4_cute",
+      "name": "FlashAttention-4 (CuTe DSL) varlen, vendored by vLLM",
+      "source": "vllm 0.30.0 vllm_flash_attn/cute (its head-dim-256 SM100 backward has no deterministic mode)",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": false,
+        "dk": false,
+        "dv": false
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.002013933970487403,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "te_training",
+      "name": "Transformer Engine DotProductAttention (THD), training: unfused fallback",
+      "source": "transformer-engine 2.18.0 (selected for head-dim-256 training on SM100)",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": false,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.00202087613933077,
+        "max_abs_vs_fp64": 0.0066821561991154965
+      },
+      "batch_invariant": false
+    },
+    {
+      "key": "megatron_local",
+      "name": "Megatron-core DotProductAttention (local, one launch per sequence)",
+      "source": "megatron-core 0.16.0rc0",
+      "batch_bitwise": {
+        "first": true,
+        "last": true
+      },
+      "prefill_decode_bitwise": {
+        "last_64": true,
+        "last_1": true
+      },
+      "repeatable": true,
+      "backward_batch_bitwise": {
+        "dq": true,
+        "dk": true,
+        "dv": true
+      },
+      "accuracy": {
+        "rel_l2_vs_fp64": 0.003575631766252745,
+        "max_abs_vs_fp64": 0.012889566535712937
+      },
+      "batch_invariant": true
+    }
+  ],
+  "latency": {
+    "prefill_us": {
+      "512": {
+        "rl_kernel_cuda": 817.3919916152954,
+        "torch_sdpa": 101.47200152277946,
+        "vllm_fa2_auto": 88.128000497818,
+        "vllm_fa2_split1": 85.63200011849403,
+        "vllm_triton_2d": 164.16000574827194,
+        "flashinfer": 83.98399874567986,
+        "fa4_cute": 183.9039996266365,
+        "te_training": 460.83199977874756,
+        "megatron_local": 466.0159945487976
+      },
+      "2048": {
+        "rl_kernel_cuda": 11260.079860687256,
+        "torch_sdpa": 155.5040031671524,
+        "vllm_fa2_auto": 123.08800220489502,
+        "vllm_fa2_split1": 122.70399555563927,
+        "vllm_triton_2d": 285.47200560569763,
+        "flashinfer": 120.92799693346024,
+        "fa4_cute": 199.95199888944626,
+        "te_training": 519.1999971866608,
+        "megatron_local": 512.2240036725998
+      },
+      "8192": {
+        "rl_kernel_cuda": 175908.9126586914,
+        "torch_sdpa": 802.047997713089,
+        "vllm_fa2_auto": 713.2479846477509,
+        "vllm_fa2_split1": 672.4479794502258,
+        "vllm_triton_2d": 1628.976047039032,
+        "flashinfer": 361.32800579071045,
+        "fa4_cute": 376.3040006160736,
+        "te_training": 900.2240002155304,
+        "megatron_local": 5086.688041687012
+      }
+    },
+    "decode_us_kv8192": {
+      "rl_kernel_cuda": 850.5440056324005,
+      "torch_sdpa": 410.17599403858185,
+      "vllm_fa2_auto": 126.8480010330677,
+      "vllm_fa2_split1": 297.1840053796768,
+      "vllm_triton_2d": 557.4400126934052,
+      "flashinfer": 222.1599966287613,
+      "fa4_cute": 291.04000329971313,
+      "te_training": 575.6640136241913,
+      "megatron_local": 448.2879936695099
+    },
+    "forward_plus_backward_us_2048": {
+      "rl_kernel_cuda": 31482.36846923828,
+      "torch_sdpa": 1038.5279655456543,
+      "fa4_cute": 1233.1199645996094,
+      "te_training": 1507.7439546585083,
+      "megatron_local": 2333.631992340088
+    }
+  }
+}

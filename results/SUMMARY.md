@@ -1,5 +1,7 @@
 # Qwen3-Next stack on H100, 2026-11-18: SUMMARY
 
+> Update of 2026-11-19: step 0 and the chains were rerun after the environment fix and now pass; see `SUMMARY-update-20261119.md`. This file is kept as written on 2026-11-18.
+
 Handoff `handoff/h100-flink-round-20261116` @ `3e8a61bf` (`README.md` and `update-20261118/README.md`). Hardware: 4 x NVIDIA H100 per node (95830 MiB each), driver 580.173.02, CUDA 13.0, torch 2.13.0+cu130, triton 3.7.1, vLLM 0.30.0, flashinfer-python 0.6.18.post1, python 3.12.15, NCCL 2.29.7. Topology: 4 GPUs per node, every pair NVLink-connected (NV6, `step0-.../nvidia-smi.txt`). Every run used a detached, clean worktree (`git status --porcelain --untracked-files=no` empty before and after, see each `header.txt` / `status-after.txt`), `TORCH_CUDA_ARCH_LIST=9.0`, and for Qwen3-Next `KERNEL_ALIGN_FORCE_SM90=1 KERNEL_ALIGN_DET_GEMM_SM90=1`; `rl_engine._C.__file__` was printed and is inside the worktree (`c-file.txt`). **No patch was applied in any run. `hopper_recompute_no_ddp.patch` was not needed: `l2` was not run.**
 
 ## What was run and what was not

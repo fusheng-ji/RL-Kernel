@@ -1,0 +1,88 @@
+[qwen3-next] preflight: <HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d
+PREFLIGHT environment-lock: ['<HOME>/datastorage/venvs/rlk_ep4_venv/bin/python', '-m', 'pip', 'freeze', '--all']
+PREFLIGHT build: ['<HOME>/datastorage/venvs/rlk_ep4_venv/bin/python', 'setup.py', 'build_ext', '--inplace']
+PREFLIGHT operators: ['bash', 'ci/scripts/run_qwen3_next_operator_gates.sh']
+PREFLIGHT device-guards: ['<HOME>/datastorage/venvs/rlk_ep4_venv/bin/python', '-m', 'pytest', '-q', 'tests/models/qwen3_next/check_qwen3_next_multigpu.py', '--junitxml=<HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/attempts/0/device-guards.xml']
+PREFLIGHT tp4: ['<HOME>/datastorage/venvs/rlk_ep4_venv/bin/python', '-m', 'torch.distributed.run', '--standalone', '--nproc_per_node=4', 'tools/validation/models/qwen3_next/qwen3_next_tp_probe.py', '--output', '<HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/attempts/0/tp4']
+Traceback (most recent call last):
+  File "<HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/source/tools/validation/models/qwen3_next/qwen3_next_preflight.py", line 248, in <module>
+    main()
+  File "<HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/source/tools/validation/models/qwen3_next/qwen3_next_preflight.py", line 170, in main
+    run(
+  File "<HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/source/tools/validation/models/qwen3_next/qwen3_next_preflight.py", line 53, in run
+    raise subprocess_failure(completed.returncode, log_path)
+qwen3_next_runtime.ProcessFailure: Native model process failed with exit 1; see <HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/attempts/0/tp4.log
+[rank2]: Traceback (most recent call last):
+[rank2]:   File "<HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/source/tools/validation/models/qwen3_next/qwen3_next_tp_probe.py", line 54, in <module>
+[rank2]:     main()
+[rank2]:   File "<HOME>/h100run-20261118/out/A/chain-543/runs/20261119T001209Z-preflight-5375881f-b8d5a50d/source/tools/validation/models/qwen3_next/qwen3_next_tp_probe.py", line 31, in main
+[rank2]:     dist.all_gather(gathered, value)
+[rank2]:   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+[rank2]:     return func(*args, **kwargs)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^
+[rank2]:   File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 4280, in all_gather
+[rank2]:     work = group.allgather([tensor_list], [tensor], opts)
+[rank2]:            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[rank2]: torch.distributed.DistBackendError: NCCL error in: /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:3866, unhandled cuda error (run with NCCL_DEBUG=INFO for details), NCCL version 2.29.7
+[rank2]: ncclUnhandledCudaError: Call to CUDA function failed.
+[rank2]: Last error:
+[rank2]: Cuda failure 2 'out of memory'
+W1119 01:20:38.296000 1931247 <HOME>/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1931265 closing signal SIGTERM
+W1119 01:20:38.300000 1931247 <HOME>/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1931266 closing signal SIGTERM
+W1119 01:20:38.301000 1931247 <HOME>/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:1028] Sending process 1931268 closing signal SIGTERM
+E1119 01:20:38.817000 1931247 <HOME>/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/api.py:1002] failed (exitcode: 1) local_rank: 2 (pid: 1931267) of binary: <HOME>/datastorage/venvs/rlk_ep4_venv/bin/python
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/run.py", line 1032, in <module>
+    main()
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/elastic/multiprocessing/errors/__init__.py", line 367, in wrapper
+    return f(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/run.py", line 1028, in main
+    run(args)
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/run.py", line 1019, in run
+    elastic_launch(
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 194, in __call__
+    return launch_agent(
+           ^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/distributed/launcher/api.py", line 383, in launch_agent
+    raise ChildFailedError(
+torch.distributed.elastic.multiprocessing.errors.ChildFailedError: 
+============================================================
+tools/validation/models/qwen3_next/qwen3_next_tp_probe.py FAILED
+------------------------------------------------------------
+Failures:
+[1]:
+  time      : 2026-11-19_01:20:38
+  host      : <NODE>
+  rank      : 0 (local_rank: 0)
+  exitcode  : -15 (pid: 1931265)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 1931265
+[2]:
+  time      : 2026-11-19_01:20:38
+  host      : <NODE>
+  rank      : 1 (local_rank: 1)
+  exitcode  : -15 (pid: 1931266)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 1931266
+[3]:
+  time      : 2026-11-19_01:20:38
+  host      : <NODE>
+  rank      : 3 (local_rank: 3)
+  exitcode  : -15 (pid: 1931268)  (SIGTERM)
+  error_file: <N/A>
+  traceback : Signal 15 (SIGTERM) received by PID 1931268
+------------------------------------------------------------
+Root Cause (first observed failure):
+[0]:
+  time      : 2026-11-19_01:20:38
+  host      : <NODE>
+  rank      : 2 (local_rank: 2)
+  exitcode  : 1 (pid: 1931267) 
+  error_file: <N/A>
+  traceback : To enable traceback see: https://pytorch.org/docs/stable/elastic/errors.html
+============================================================
+
+[qwen3-next] preflight: failed

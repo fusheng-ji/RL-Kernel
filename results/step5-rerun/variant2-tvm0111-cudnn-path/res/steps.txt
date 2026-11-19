@@ -1,0 +1,11 @@
+[2026-11-18T23:25:47Z] START build :: python setup.py build_ext --inplace
+[2026-11-18T23:25:51Z] END build rc=0
+_C: <HOME>/h100run-20261118/A551/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+[2026-11-18T23:25:54Z] START attn-main :: export CUDA_VISIBLE_DEVICES=0 CUDNN_HOME=<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/nvidia/cudnn LD_LIBRARY_PATH=<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/nvidia/nccl/lib:<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH PYTHONPATH=<HOME>/datastorage/extra_tvm011:<WORK>/A551:<HOME>/datastorage/Megatron-LM; python benchmarks/models/qwen3_next/qwen3_next_attention_prior_art.py --only rl_kernel_cuda,torch_sdpa,vllm_fa2_auto,vllm_fa2_split1,vllm_triton_2d,flashinfer,fa4_cute,te_training,megatron_local --out <WORK>/out/A/step5-tvm0111-cudnn/res/report-main.json
+[2026-11-18T23:26:46Z] END attn-main rc=0
+[2026-11-18T23:26:46Z] START attn-te :: export CUDA_VISIBLE_DEVICES=0 CUDNN_HOME=<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/nvidia/cudnn LD_LIBRARY_PATH=<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/nvidia/nccl/lib:<HOME>/datastorage/conda_envs/rlk_ep4/lib/python3.12/site-packages/nvidia/cudnn/lib:$LD_LIBRARY_PATH PYTHONPATH=<HOME>/datastorage/extra_tvm011:<WORK>/A551:<HOME>/datastorage/Megatron-LM; python benchmarks/models/qwen3_next/qwen3_next_attention_prior_art.py --only te_fused --merge <WORK>/out/A/step5-tvm0111-cudnn/res/report-main.json --out <WORK>/out/A/step5-tvm0111-cudnn/res/report.json
+[2026-11-18T23:26:55Z] END attn-te rc=0
+[2026-11-18T23:26:55Z] START plot :: python benchmarks/models/qwen3_next/plot_qwen3_next_attention_prior_art.py <WORK>/out/A/step5-tvm0111-cudnn/res/report.json
+[2026-11-18T23:26:56Z] END plot rc=0
+[2026-11-18T23:26:56Z] START versions :: python -m pip list 2>/dev/null | grep -iE "^(torch|vllm|flashinfer|flash-attn|transformer.engine|megatron|nvidia-cudnn-frontend|triton|apache-tvm-ffi) "
+[2026-11-18T23:26:57Z] END versions rc=0

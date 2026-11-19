@@ -1,0 +1,46 @@
+index, name, driver_version, memory.used [MiB], utilization.gpu [%]
+0, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+1, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+2, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+3, NVIDIA H100, 580.173.02, 0 MiB, 0 %
+	[4mGPU0	GPU1	GPU2	GPU3	NIC0	NIC1	NIC2	NIC3	NIC4	NIC5	CPU Affinity	NUMA Affinity	GPU NUMA ID[0m
+GPU0	 X 	NV6	NV6	NV6	NODE	NODE	NODE	PXB	SYS	SYS	0-15,48-63	0		N/A
+GPU1	NV6	 X 	NV6	NV6	NODE	NODE	PXB	NODE	SYS	SYS	0-15,48-63	0		N/A
+GPU2	NV6	NV6	 X 	NV6	SYS	SYS	SYS	SYS	NODE	PXB	24-39,72-87	1		N/A
+GPU3	NV6	NV6	NV6	 X 	SYS	SYS	SYS	SYS	PXB	NODE	24-39,72-87	1		N/A
+NIC0	NODE	NODE	SYS	SYS	 X 	PIX	NODE	NODE	SYS	SYS				
+NIC1	NODE	NODE	SYS	SYS	PIX	 X 	NODE	NODE	SYS	SYS				
+NIC2	NODE	PXB	SYS	SYS	NODE	NODE	 X 	NODE	SYS	SYS				
+NIC3	PXB	NODE	SYS	SYS	NODE	NODE	NODE	 X 	SYS	SYS				
+NIC4	SYS	SYS	NODE	PXB	SYS	SYS	SYS	SYS	 X 	NODE				
+NIC5	SYS	SYS	PXB	NODE	SYS	SYS	SYS	SYS	NODE	 X 				
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+
+NIC Legend:
+
+  NIC0: mlx5_0
+  NIC1: mlx5_1
+  NIC2: mlx5_2
+  NIC3: mlx5_3
+  NIC4: mlx5_4
+  NIC5: mlx5_5
+
+      4     Fabric
+      4         GPU Fabric GUID                                : N/A
+python 3.12.15 torch 2.13.0+cu130 vllm 0.30.0 flashinfer 0.6.18.post1 tvm_ffi 0.1.11 <HOME>/datastorage/extra_tvm011/tvm_ffi/__init__.py
+apache-tvm-ffi                           0.1.11
+cuda-python                              13.4.4
+flashinfer-python                        0.6.18.post1
+nvidia-nccl-cu13                         2.29.7
+libtvm_ffi: <site-packages>/tvm_ffi/lib/libtvm_ffi_testing.so
+libtvm_ffi: <site-packages>/tvm_ffi/lib/libtvm_ffi.so
+default FlashInfer JIT cache entries: 0.6.1 0.6.18.post1 
