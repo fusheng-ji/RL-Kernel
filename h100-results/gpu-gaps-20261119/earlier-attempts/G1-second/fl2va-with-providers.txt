@@ -1,0 +1,1047 @@
+......................................FFFFs                              [100%]
+=================================== FAILURES ===================================
+_______ test_preprocessing_matches_the_tiny_diffusers_pipeline[anchors0] _______
+
+anchors = ()
+
+    @pytest.mark.parametrize("anchors", fl2va.ANCHOR_SETS)
+    def test_preprocessing_matches_the_tiny_diffusers_pipeline(anchors):
+        from tests.models.minimax_h3._tiny_pipeline import capture_steps, load_tiny_pipeline
+    
+        pipe = load_tiny_pipeline()
+        first = _image(80, 48, 1) if "first" in anchors else None
+        last = _image(70, 70, 2) if "last" in anchors else None
+        kwargs = {"image": first, "last_image": last} if anchors else {"height": 64, "width": 128}
+        with capture_steps() as captured:
+>           pipe(
+                prompt="a cat on a skateboard",
+                num_frames=121,
+                num_inference_steps=2,
+                generator=torch.Generator().manual_seed(0),
+                output="latents",
+                **kwargs,
+            )
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:3030: in __call__
+    _, state = self._blocks(self, state)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:1224: in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:864: in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+tests/models/minimax_h3/_tiny_pipeline.py:116: in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py:198: in __call__
+    block_state.prompt_embeds = get_qwen3vl_prompt_embeds(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+text_encoder = Qwen3VLForConditionalGeneration(
+  (model): Qwen3VLModel(
+    (visual): Qwen3VLVisionModel(
+      (patch_embed): Qwen3...ary_emb): Qwen3VLTextRotaryEmbedding()
+    )
+  )
+  (lm_head): Linear(in_features=16, out_features=151936, bias=False)
+)
+processor = None, token_ids = [64, 8251, 389, 264, 97982], vision_inputs = {}
+text_encoder_layer = 50, device = device(type='cpu'), dtype = torch.float32
+
+    def get_qwen3vl_prompt_embeds(
+        text_encoder,
+        processor,
+        token_ids: list[int],
+        vision_inputs: dict | None = None,
+        text_encoder_layer: int = 50,
+        device: torch.device | None = None,
+        dtype: torch.dtype | None = None,
+    ) -> torch.Tensor:
+        r"""
+        Encode one tokenized MiniMax-H3 presentation with the Qwen3-VL conditioner.
+    
+        Unlike its `get_<encoder>_prompt_embeds` siblings this takes the *tokenized* presentation rather than a prompt
+        string: MiniMax-H3's tokenization is the presentation-building phase that precedes it, where every reference or
+        keyframe prepends a label and a vision block. The `mm_token_type_ids` built here are Qwen-internal (`0` text, `1`
+        image, `2` video — they drive Qwen3-VL's per-modality-run rotary layout and never leave this function) and are not
+        MiniMax-H3's own per-row modality tags, which the presentation phase produces alongside `token_ids`.
+    
+        Args:
+            text_encoder (`Qwen3VLForConditionalGeneration`): The conditioner.
+            processor (`Qwen3VLProcessor`): Its processor, which derives the token type ids from the vision pad ids.
+            token_ids (`list[int]`): The tokenized presentation.
+            vision_inputs (`dict`, *optional*):
+                The vision tensors of the presentation's blocks, by the conditioner's own parameter names — `pixel_values`
+                / `image_grid_thw` for images, `pixel_values_videos` / `video_grid_thw` for videos.
+            text_encoder_layer (`int`, *optional*, defaults to 50):
+                Which hidden state conditions the transformer, i.e. `components.text_encoder_layer`.
+            device (`torch.device`, *optional*): The device to run the conditioner on.
+            dtype (`torch.dtype`, *optional*): The dtype of the returned embeddings.
+    
+        Returns:
+            `torch.Tensor`: the `(1, num_text_tokens, 5120)` hidden state after decoder layer `text_encoder_layer`.
+        """
+        num_layers = text_encoder.config.text_config.num_hidden_layers
+        if num_layers <= text_encoder_layer:
+            raise ValueError(
+                f"MiniMax-H3 conditions on `hidden_states[{text_encoder_layer}]` of its Qwen3-VL "
+                f"conditioner, which needs more than {text_encoder_layer} decoder layers, but "
+                f"`text_encoder` has {num_layers}. The last hidden state of a stack truncated to exactly "
+                f"{text_encoder_layer} layers is post-norm and is not the conditioning MiniMax-H3 expects."
+            )
+    
+        input_ids = torch.tensor([token_ids], dtype=torch.long, device=device)
+>       mm_token_type_ids = torch.tensor(processor.create_mm_token_type_ids([token_ids]), dtype=torch.long, device=device)
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py:73: AttributeError
+----------------------------- Captured stderr call -----------------------------
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+
+Loading weights:   0%|          | 0/603 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 603/603 [00:00<00:00, 8297.02it/s]
+Failed to create component processor:
+- Component spec: ComponentSpec(name='processor', type_hint=<class 'transformers.models.qwen3_vl.processing_qwen3_vl.Qwen3VLProcessor'>, description=None, config=None, pretrained_model_name_or_path='hf-internal-testing/tiny-minimax-h3-modular-pipe', subfolder='processor', variant=None, revision=None, default_creation_method='from_pretrained', repo=None)
+- load() called with kwargs: {'torch_dtype': torch.float32}
+If this component is not required for your workflow you can safely ignore this message.
+
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 716, in from_pretrained
+    config = AutoConfig.from_pretrained(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/configuration_auto.py", line 376, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 347, in load
+    component = load_method(pretrained_model_name_or_path, **load_kwargs, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1715, in from_pretrained
+    args = cls._get_arguments_from_pretrained(pretrained_model_name_or_path, processor_dict, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1829, in _get_arguments_from_pretrained
+    tokenizer = cls._load_tokenizer_from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1776, in _load_tokenizer_from_pretrained
+    tokenizer = auto_processor_class.from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 720, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 646, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 2565, in load_components
+    components_to_register[name] = spec.load(**component_load_kwargs)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 349, in load
+    raise ValueError(f"Unable to load {self.name} using load method: {e}")
+ValueError: Unable to load processor using load method: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+
+Error in block: MiniMaxH3TextEncoderStep
+Error details: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 198, in __call__
+    block_state.prompt_embeds = get_qwen3vl_prompt_embeds(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 73, in get_qwen3vl_prompt_embeds
+    mm_token_type_ids = torch.tensor(processor.create_mm_token_type_ids([token_ids]), dtype=torch.long, device=device)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+
+
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 198, in __call__
+    block_state.prompt_embeds = get_qwen3vl_prompt_embeds(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 73, in get_qwen3vl_prompt_embeds
+    mm_token_type_ids = torch.tensor(processor.create_mm_token_type_ids([token_ids]), dtype=torch.long, device=device)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+
+Error in block: (MiniMaxH3Blocks):
+
+------------------------------ Captured log call -------------------------------
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:2590 Failed to create component processor:
+- Component spec: ComponentSpec(name='processor', type_hint=<class 'transformers.models.qwen3_vl.processing_qwen3_vl.Qwen3VLProcessor'>, description=None, config=None, pretrained_model_name_or_path='hf-internal-testing/tiny-minimax-h3-modular-pipe', subfolder='processor', variant=None, revision=None, default_creation_method='from_pretrained', repo=None)
+- load() called with kwargs: {'torch_dtype': torch.float32}
+If this component is not required for your workflow you can safely ignore this message.
+
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 716, in from_pretrained
+    config = AutoConfig.from_pretrained(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/configuration_auto.py", line 376, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 347, in load
+    component = load_method(pretrained_model_name_or_path, **load_kwargs, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1715, in from_pretrained
+    args = cls._get_arguments_from_pretrained(pretrained_model_name_or_path, processor_dict, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1829, in _get_arguments_from_pretrained
+    tokenizer = cls._load_tokenizer_from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1776, in _load_tokenizer_from_pretrained
+    tokenizer = auto_processor_class.from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 720, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 646, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 2565, in load_components
+    components_to_register[name] = spec.load(**component_load_kwargs)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 349, in load
+    raise ValueError(f"Unable to load {self.name} using load method: {e}")
+ValueError: Unable to load processor using load method: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:871 
+Error in block: MiniMaxH3TextEncoderStep
+Error details: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 198, in __call__
+    block_state.prompt_embeds = get_qwen3vl_prompt_embeds(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 73, in get_qwen3vl_prompt_embeds
+    mm_token_type_ids = torch.tensor(processor.create_mm_token_type_ids([token_ids]), dtype=torch.long, device=device)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:1231 
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 198, in __call__
+    block_state.prompt_embeds = get_qwen3vl_prompt_embeds(
+                                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 73, in get_qwen3vl_prompt_embeds
+    mm_token_type_ids = torch.tensor(processor.create_mm_token_type_ids([token_ids]), dtype=torch.long, device=device)
+                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'create_mm_token_type_ids'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:3033 Error in block: (MiniMaxH3Blocks):
+_______ test_preprocessing_matches_the_tiny_diffusers_pipeline[anchors1] _______
+
+anchors = ('first',)
+
+    @pytest.mark.parametrize("anchors", fl2va.ANCHOR_SETS)
+    def test_preprocessing_matches_the_tiny_diffusers_pipeline(anchors):
+        from tests.models.minimax_h3._tiny_pipeline import capture_steps, load_tiny_pipeline
+    
+        pipe = load_tiny_pipeline()
+        first = _image(80, 48, 1) if "first" in anchors else None
+        last = _image(70, 70, 2) if "last" in anchors else None
+        kwargs = {"image": first, "last_image": last} if anchors else {"height": 64, "width": 128}
+        with capture_steps() as captured:
+>           pipe(
+                prompt="a cat on a skateboard",
+                num_frames=121,
+                num_inference_steps=2,
+                generator=torch.Generator().manual_seed(0),
+                output="latents",
+                **kwargs,
+            )
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:3030: in __call__
+    _, state = self._blocks(self, state)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:1224: in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:864: in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+tests/models/minimax_h3/_tiny_pipeline.py:116: in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = MiniMaxH3FL2VATextEncoderStep {
+  "_class_name": "MiniMaxH3FL2VATextEncoderStep",
+  "_diffusers_version": "0.43.0"
+}
+
+components = MiniMaxH3ModularPipeline {
+  "_blocks_class_name": "MiniMaxH3Blocks",
+  "_class_name": "MiniMaxH3ModularPipeline",
+  "...
+      "type_hint": [
+        "diffusers",
+        "AutoencoderKLMiniMaxH3"
+      ],
+      "variant": null
+    }
+  ]
+}
+
+state = PipelineState(
+  values={
+    num_frames: 121
+    image: <PIL.Image.Image image mode=RGB size=80x48 at 0x7FBCDA25FB00>...width: 96
+    keyframes: [<PIL.Image.Image image mode=RGB size=96x64 at 0x7FBCDA25FB60>]
+  },
+  kwargs_mapping={
+
+  }
+)
+
+    @torch.no_grad()
+    def __call__(
+        self, components: MiniMaxH3ModularPipeline, state: PipelineState
+    ) -> tuple[MiniMaxH3ModularPipeline, PipelineState]:
+        block_state = self.get_block_state(state)
+        if not isinstance(block_state.prompt, str):
+            raise ValueError(
+                "MiniMax-H3 packs one request into one sequence, so `prompt` must be a single string, got "
+                f"{type(block_state.prompt)}."
+            )
+        tokenizer, processor = components.tokenizer, components.processor
+        text_tag, video_tag = components.text_tag, components.video_tag
+    
+        # 1. Vision features of the keyframes, batched. The presentation is text-only without them.
+        vision_inputs, image_grid_thw = {}, None
+        if block_state.keyframes:
+>           vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py:278: AttributeError
+----------------------------- Captured stderr call -----------------------------
+
+Error in block: MiniMaxH3FL2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+Error in block: (MiniMaxH3Blocks):
+
+------------------------------ Captured log call -------------------------------
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:871 
+Error in block: MiniMaxH3FL2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:1231 
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:3033 Error in block: (MiniMaxH3Blocks):
+_______ test_preprocessing_matches_the_tiny_diffusers_pipeline[anchors2] _______
+
+anchors = ('last',)
+
+    @pytest.mark.parametrize("anchors", fl2va.ANCHOR_SETS)
+    def test_preprocessing_matches_the_tiny_diffusers_pipeline(anchors):
+        from tests.models.minimax_h3._tiny_pipeline import capture_steps, load_tiny_pipeline
+    
+        pipe = load_tiny_pipeline()
+        first = _image(80, 48, 1) if "first" in anchors else None
+        last = _image(70, 70, 2) if "last" in anchors else None
+        kwargs = {"image": first, "last_image": last} if anchors else {"height": 64, "width": 128}
+        with capture_steps() as captured:
+>           pipe(
+                prompt="a cat on a skateboard",
+                num_frames=121,
+                num_inference_steps=2,
+                generator=torch.Generator().manual_seed(0),
+                output="latents",
+                **kwargs,
+            )
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:3030: in __call__
+    _, state = self._blocks(self, state)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:1224: in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:864: in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+tests/models/minimax_h3/_tiny_pipeline.py:116: in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = MiniMaxH3FL2VATextEncoderStep {
+  "_class_name": "MiniMaxH3FL2VATextEncoderStep",
+  "_diffusers_version": "0.43.0"
+}
+
+components = MiniMaxH3ModularPipeline {
+  "_blocks_class_name": "MiniMaxH3Blocks",
+  "_class_name": "MiniMaxH3ModularPipeline",
+  "...
+      "type_hint": [
+        "diffusers",
+        "AutoencoderKLMiniMaxH3"
+      ],
+      "variant": null
+    }
+  ]
+}
+
+state = PipelineState(
+  values={
+    num_frames: 121
+    image: None
+    last_image: <PIL.Image.Image image mode=RGB size=70x...width: 64
+    keyframes: [<PIL.Image.Image image mode=RGB size=64x64 at 0x7FBDBAB66AE0>]
+  },
+  kwargs_mapping={
+
+  }
+)
+
+    @torch.no_grad()
+    def __call__(
+        self, components: MiniMaxH3ModularPipeline, state: PipelineState
+    ) -> tuple[MiniMaxH3ModularPipeline, PipelineState]:
+        block_state = self.get_block_state(state)
+        if not isinstance(block_state.prompt, str):
+            raise ValueError(
+                "MiniMax-H3 packs one request into one sequence, so `prompt` must be a single string, got "
+                f"{type(block_state.prompt)}."
+            )
+        tokenizer, processor = components.tokenizer, components.processor
+        text_tag, video_tag = components.text_tag, components.video_tag
+    
+        # 1. Vision features of the keyframes, batched. The presentation is text-only without them.
+        vision_inputs, image_grid_thw = {}, None
+        if block_state.keyframes:
+>           vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py:278: AttributeError
+----------------------------- Captured stderr call -----------------------------
+
+Error in block: MiniMaxH3FL2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+Error in block: (MiniMaxH3Blocks):
+
+------------------------------ Captured log call -------------------------------
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:871 
+Error in block: MiniMaxH3FL2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:1231 
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:3033 Error in block: (MiniMaxH3Blocks):
+_______ test_preprocessing_matches_the_tiny_diffusers_pipeline[anchors3] _______
+
+anchors = ('first', 'last')
+
+    @pytest.mark.parametrize("anchors", fl2va.ANCHOR_SETS)
+    def test_preprocessing_matches_the_tiny_diffusers_pipeline(anchors):
+        from tests.models.minimax_h3._tiny_pipeline import capture_steps, load_tiny_pipeline
+    
+        pipe = load_tiny_pipeline()
+        first = _image(80, 48, 1) if "first" in anchors else None
+        last = _image(70, 70, 2) if "last" in anchors else None
+        kwargs = {"image": first, "last_image": last} if anchors else {"height": 64, "width": 128}
+        with capture_steps() as captured:
+>           pipe(
+                prompt="a cat on a skateboard",
+                num_frames=121,
+                num_inference_steps=2,
+                generator=torch.Generator().manual_seed(0),
+                output="latents",
+                **kwargs,
+            )
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py:342: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:3030: in __call__
+    _, state = self._blocks(self, state)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:1224: in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:864: in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+tests/models/minimax_h3/_tiny_pipeline.py:116: in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = MiniMaxH3FL2VATextEncoderStep {
+  "_class_name": "MiniMaxH3FL2VATextEncoderStep",
+  "_diffusers_version": "0.43.0"
+}
+
+components = MiniMaxH3ModularPipeline {
+  "_blocks_class_name": "MiniMaxH3Blocks",
+  "_class_name": "MiniMaxH3ModularPipeline",
+  "...
+      "type_hint": [
+        "diffusers",
+        "AutoencoderKLMiniMaxH3"
+      ],
+      "variant": null
+    }
+  ]
+}
+
+state = PipelineState(
+  values={
+    num_frames: 121
+    image: <PIL.Image.Image image mode=RGB size=80x48 at 0x7FBDBAB648C0>...96x64 at 0x7FBDBAB65190>, <PIL.Image.Image image mode=RGB size=96x64 at 0x7FBCDA25E0F0>]
+  },
+  kwargs_mapping={
+
+  }
+)
+
+    @torch.no_grad()
+    def __call__(
+        self, components: MiniMaxH3ModularPipeline, state: PipelineState
+    ) -> tuple[MiniMaxH3ModularPipeline, PipelineState]:
+        block_state = self.get_block_state(state)
+        if not isinstance(block_state.prompt, str):
+            raise ValueError(
+                "MiniMax-H3 packs one request into one sequence, so `prompt` must be a single string, got "
+                f"{type(block_state.prompt)}."
+            )
+        tokenizer, processor = components.tokenizer, components.processor
+        text_tag, video_tag = components.text_tag, components.video_tag
+    
+        # 1. Vision features of the keyframes, batched. The presentation is text-only without them.
+        vision_inputs, image_grid_thw = {}, None
+        if block_state.keyframes:
+>           vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py:278: AttributeError
+----------------------------- Captured stderr call -----------------------------
+
+Error in block: MiniMaxH3FL2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+Error in block: (MiniMaxH3Blocks):
+
+------------------------------ Captured log call -------------------------------
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:871 
+Error in block: MiniMaxH3FL2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:1231 
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/df18d2d9/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 278, in __call__
+    vision = processor.image_processor(images=block_state.keyframes, return_tensors="pt")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:3033 Error in block: (MiniMaxH3Blocks):
+=============================== warnings summary ===============================
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py::test_layout_matches_diffusers_static_builder_sweep
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py::test_layout_matches_diffusers_static_builder_sweep
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py::test_preprocessing_matches_the_tiny_diffusers_pipeline[anchors0]
+  {ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:206: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+    warnings.warn(
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py::test_preprocessing_matches_the_tiny_diffusers_pipeline[anchors0]
+  {PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/utils/deprecation_utils.py:23: FutureWarning: `torch_dtype` is deprecated and will be removed in version 1.0.0. Please use `dtype` instead.
+    deprecate("torch_dtype", "1.0.0", _TORCH_DTYPE_DEPRECATION_MESSAGE)
+
+tests/models/minimax_h3/test_h3_fl2va_pipeline.py::test_preprocessing_matches_the_tiny_diffusers_pipeline[anchors0]
+  {ENV}/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+    WeightNorm.apply(module, name, dim)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/models/minimax_h3/test_h3_fl2va_pipeline.py:417: could not import 'sglang.multimodal_gen.runtime.pipelines_core.stages.model_specific_stages.minimax_h3.packed_sequence': No module named 'imageio'
+4 failed, 38 passed, 1 skipped, 5 warnings in 32.87s

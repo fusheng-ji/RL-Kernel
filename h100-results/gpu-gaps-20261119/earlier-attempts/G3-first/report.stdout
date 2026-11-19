@@ -1,0 +1,27 @@
+WARNING 11-19 19:50:20 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 19:50:39 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+Traceback (most recent call last):
+  File "{WT}/8506f6a2/tools/validation/models/h3_sglang_rollout_report.py", line 177, in <module>
+    main()
+  File "{WT}/8506f6a2/tools/validation/models/h3_sglang_rollout_report.py", line 147, in main
+    results[tp] = run_world(tp, hs.rollout_target, inputs, prefix_rows=args.prefix_rows)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 421, in run_world
+    raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+RuntimeError: rank 0 failed:
+Traceback (most recent call last):
+  File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+    from rl_engine import _C
+ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+    DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+  File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+    self._load_cuda_extension()
+  File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+    raise RuntimeError(
+RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+

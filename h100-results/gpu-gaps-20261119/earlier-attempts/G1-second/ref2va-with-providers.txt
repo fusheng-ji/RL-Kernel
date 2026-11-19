@@ -1,0 +1,454 @@
+......................................Fs                                 [100%]
+=================================== FAILURES ===================================
+____________ test_preprocessing_matches_the_tiny_diffusers_pipeline ____________
+
+    def test_preprocessing_matches_the_tiny_diffusers_pipeline():
+        from tests.models.minimax_h3._tiny_pipeline import capture_steps, load_tiny_pipeline
+    
+        pytest.importorskip("torchaudio")
+        pipe = load_tiny_pipeline(reference_image_short_edge=96)
+        _, _, _, references = _diffusers()
+        rate = pipe.audio_sampling_rate
+        refs = [
+            references.MiniMaxH3ImageReference(image=_image(90, 60, 1)),
+            references.MiniMaxH3VideoReference(
+                frames=_frames(70, 45, 80, 2), fps=30.0, audio=_wave(1, 4410 * 3, 3), sample_rate=4410
+            ),
+            references.MiniMaxH3AudioReference(audio=_wave(2, rate * 7, 4), sample_rate=rate),
+        ]
+        with capture_steps() as captured:
+>           pipe(
+                prompt=PROMPT,
+                references=refs,
+                num_frames=121,
+                num_inference_steps=2,
+                generator=torch.Generator().manual_seed(0),
+                output="latents",
+            )
+
+tests/models/minimax_h3/test_h3_ref2va_pipeline.py:641: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:3030: in __call__
+    _, state = self._blocks(self, state)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:1224: in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py:864: in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+tests/models/minimax_h3/_tiny_pipeline.py:116: in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/utils/_contextlib.py:124: in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py:627: in __call__
+    vision_inputs, image_token_counts, video_token_counts, video_timestamps = self._gather_vision_features(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = MiniMaxH3Ref2VATextEncoderStep {
+  "_class_name": "MiniMaxH3Ref2VATextEncoderStep",
+  "_diffusers_version": "0.43.0"
+}
+
+processor = None
+references = [MiniMaxH3ImageReference(image=<PIL.Image.Image image mode=RGB size=128x96 at 0x712787E67E90>), MiniMaxH3VideoReferenc..., -0.0021,  0.0969,  0.1142],
+        [-0.0278, -0.0625, -0.0476,  ...,  0.0525, -0.0282,  0.0244]]), sample_rate=160)]
+fps = 24
+
+    def _gather_vision_features(
+        self, processor, references: list[MiniMaxH3Reference], fps: float
+    ) -> tuple[dict, list[int], list[int], list[list[float]]]:
+        r"""
+        Run the references' pixels through the conditioner's processors, batched per modality.
+    
+        The vision tensors are batched per modality while the presentation is tokenized in request order; the two agree
+        because the filtering here preserves relative order within each modality and Qwen3-VL fills the n-th pad *run*
+        of a modality with the n-th entry of that modality's batch. Audio contributes nothing — a waveform never
+        reaches the conditioner.
+    
+        Returns:
+            `tuple`: the vision tensors by the conditioner's parameter names, the vision token count per image
+            reference, the per-block token count per video reference, and the block timestamps per video reference.
+        """
+>       merge_size = processor.image_processor.merge_size**2
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+../../venv-gg/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py:506: AttributeError
+----------------------------- Captured stderr call -----------------------------
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+Failed to create component processor:
+- Component spec: ComponentSpec(name='processor', type_hint=<class 'transformers.models.qwen3_vl.processing_qwen3_vl.Qwen3VLProcessor'>, description=None, config=None, pretrained_model_name_or_path='hf-internal-testing/tiny-minimax-h3-modular-pipe', subfolder='processor', variant=None, revision=None, default_creation_method='from_pretrained', repo=None)
+- load() called with kwargs: {'torch_dtype': torch.float32}
+If this component is not required for your workflow you can safely ignore this message.
+
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 716, in from_pretrained
+    config = AutoConfig.from_pretrained(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/configuration_auto.py", line 376, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 347, in load
+    component = load_method(pretrained_model_name_or_path, **load_kwargs, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1715, in from_pretrained
+    args = cls._get_arguments_from_pretrained(pretrained_model_name_or_path, processor_dict, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1829, in _get_arguments_from_pretrained
+    tokenizer = cls._load_tokenizer_from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1776, in _load_tokenizer_from_pretrained
+    tokenizer = auto_processor_class.from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 720, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 646, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 2565, in load_components
+    components_to_register[name] = spec.load(**component_load_kwargs)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 349, in load
+    raise ValueError(f"Unable to load {self.name} using load method: {e}")
+ValueError: Unable to load processor using load method: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+
+Loading weights:   0%|          | 0/603 [00:00<?, ?it/s]
+Loading weights: 100%|██████████| 603/603 [00:00<00:00, 6398.12it/s]
+`num_frames` has to be of the form 17 * n + 5 for the video VAE; rounding 121 up to 124.
+
+Error in block: MiniMaxH3Ref2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/23dcb84b/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 627, in __call__
+    vision_inputs, image_token_counts, video_token_counts, video_timestamps = self._gather_vision_features(
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 506, in _gather_vision_features
+    merge_size = processor.image_processor.merge_size**2
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/23dcb84b/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 627, in __call__
+    vision_inputs, image_token_counts, video_token_counts, video_timestamps = self._gather_vision_features(
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 506, in _gather_vision_features
+    merge_size = processor.image_processor.merge_size**2
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+Error in block: (MiniMaxH3Blocks):
+
+------------------------------ Captured log call -------------------------------
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  huggingface_hub.hf_api:hf_api.py:3770 Could not reach the Hub (Cannot reach https://huggingface.co/api/models/hf-internal-testing/tiny-minimax-h3-modular-pipe: offline mode is enabled. To disable it, please unset the `HF_HUB_OFFLINE` environment variable.). Using cached commit hash for 'hf-internal-testing/tiny-minimax-h3-modular-pipe'.
+WARNING  diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:2590 Failed to create component processor:
+- Component spec: ComponentSpec(name='processor', type_hint=<class 'transformers.models.qwen3_vl.processing_qwen3_vl.Qwen3VLProcessor'>, description=None, config=None, pretrained_model_name_or_path='hf-internal-testing/tiny-minimax-h3-modular-pipe', subfolder='processor', variant=None, revision=None, default_creation_method='from_pretrained', repo=None)
+- load() called with kwargs: {'torch_dtype': torch.float32}
+If this component is not required for your workflow you can safely ignore this message.
+
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 716, in from_pretrained
+    config = AutoConfig.from_pretrained(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/configuration_auto.py", line 376, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 437, in cached_files
+    hf_hub_download(
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py", line 89, in _inner_fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_http.py", line 266, in _inner
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1047, in hf_hub_download
+    return _hf_hub_download_to_cache_dir(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1194, in _hf_hub_download_to_cache_dir
+    _raise_on_head_call_error(head_call_error, force_download, local_files_only)
+  File "{ENV}/lib/python3.12/site-packages/huggingface_hub/file_download.py", line 1944, in _raise_on_head_call_error
+    raise LocalEntryNotFoundError(
+huggingface_hub.errors.LocalEntryNotFoundError: Cannot find the requested files in the disk cache and outgoing traffic has been disabled. To enable hf.co look-ups and downloads online, set 'local_files_only' to False.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 347, in load
+    component = load_method(pretrained_model_name_or_path, **load_kwargs, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1715, in from_pretrained
+    args = cls._get_arguments_from_pretrained(pretrained_model_name_or_path, processor_dict, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1829, in _get_arguments_from_pretrained
+    tokenizer = cls._load_tokenizer_from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/processing_utils.py", line 1776, in _load_tokenizer_from_pretrained
+    tokenizer = auto_processor_class.from_pretrained(
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/models/auto/tokenization_auto.py", line 720, in from_pretrained
+    config = PreTrainedConfig.from_pretrained(pretrained_model_name_or_path, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 646, in from_pretrained
+    config_dict, kwargs = cls.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 687, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/configuration_utils.py", line 742, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 293, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/transformers/utils/hub.py", line 513, in cached_files
+    raise OSError(
+OSError: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 2565, in load_components
+    components_to_register[name] = spec.load(**component_load_kwargs)
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline_utils.py", line 349, in load
+    raise ValueError(f"Unable to load {self.name} using load method: {e}")
+ValueError: Unable to load processor using load method: We couldn't connect to 'https://huggingface.co' to load the files, and couldn't find them in the cached files.
+Check your internet connection or see how to run the library in offline mode at 'https://huggingface.co/docs/transformers/installation#offline-mode'.
+
+WARNING  diffusers.modular_pipelines.minimax_h3.before_encoder:before_encoder.py:444 `num_frames` has to be of the form 17 * n + 5 for the video VAE; rounding 121 up to 124.
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:871 
+Error in block: MiniMaxH3Ref2VATextEncoderStep
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/23dcb84b/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 627, in __call__
+    vision_inputs, image_token_counts, video_token_counts, video_timestamps = self._gather_vision_features(
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 506, in _gather_vision_features
+    merge_size = processor.image_processor.merge_size**2
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:1231 
+Error in block: (text_encoder, MiniMaxH3AutoTextEncoderStep)
+Error details: 'NoneType' object has no attribute 'image_processor'
+Traceback:
+Traceback (most recent call last):
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 1224, in __call__
+    pipeline, state = block(pipeline, state)
+                      ^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/modular_pipeline.py", line 864, in __call__
+    return block(pipeline, state)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "{WT}/23dcb84b/tests/models/minimax_h3/_tiny_pipeline.py", line 116, in wrapped
+    out = _original(self, components, state)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{ENV}/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 627, in __call__
+    vision_inputs, image_token_counts, video_token_counts, video_timestamps = self._gather_vision_features(
+                                                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "{PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/modular_pipelines/minimax_h3/encoders.py", line 506, in _gather_vision_features
+    merge_size = processor.image_processor.merge_size**2
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: 'NoneType' object has no attribute 'image_processor'
+
+ERROR    diffusers.modular_pipelines.modular_pipeline:modular_pipeline.py:3033 Error in block: (MiniMaxH3Blocks):
+=============================== warnings summary ===============================
+tests/models/minimax_h3/test_h3_ref2va_pipeline.py::test_layout_matches_diffusers_static_builder_on_random_requests
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+
+tests/models/minimax_h3/test_h3_ref2va_pipeline.py::test_layout_matches_diffusers_static_builder_on_random_requests
+  <frozen importlib._bootstrap>:488: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+
+tests/models/minimax_h3/test_h3_ref2va_pipeline.py::test_preprocessing_matches_the_tiny_diffusers_pipeline
+  {ENV}/lib/python3.12/site-packages/huggingface_hub/utils/_validators.py:206: UserWarning: The `local_dir_use_symlinks` argument is deprecated and ignored in `hf_hub_download`. Downloading to a local directory does not use symlinks anymore.
+    warnings.warn(
+
+tests/models/minimax_h3/test_h3_ref2va_pipeline.py::test_preprocessing_matches_the_tiny_diffusers_pipeline
+  {PY_PROVIDERS_ENV}/lib/python3.12/site-packages/diffusers/utils/deprecation_utils.py:23: FutureWarning: `torch_dtype` is deprecated and will be removed in version 1.0.0. Please use `dtype` instead.
+    deprecate("torch_dtype", "1.0.0", _TORCH_DTYPE_DEPRECATION_MESSAGE)
+
+tests/models/minimax_h3/test_h3_ref2va_pipeline.py::test_preprocessing_matches_the_tiny_diffusers_pipeline
+  {ENV}/lib/python3.12/site-packages/torch/nn/utils/weight_norm.py:144: FutureWarning: `torch.nn.utils.weight_norm` is deprecated in favor of `torch.nn.utils.parametrizations.weight_norm`.
+    WeightNorm.apply(module, name, dim)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/models/minimax_h3/test_h3_ref2va_pipeline.py:754: could not import 'sglang.multimodal_gen.runtime.pipelines_core.stages.model_specific_stages.minimax_h3.packed_sequence': No module named 'imageio'
+1 failed, 38 passed, 1 skipped, 5 warnings in 30.62s

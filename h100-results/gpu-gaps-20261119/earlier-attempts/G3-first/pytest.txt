@@ -1,0 +1,992 @@
+..............................F.F.F.FFFsFFFF.....s......s                [100%]
+=================================== FAILURES ===================================
+___ test_without_strict_a_refused_projection_keeps_its_forward_and_is_listed ___
+
+    @needs_gpu
+    def test_without_strict_a_refused_projection_keeps_its_forward_and_is_listed():
+        pytest.importorskip("triton")
+        model = _model("cuda", torch.bfloat16)
+        _lora(model)
+        model.blocks[0].adaln_proj = None  # SGLang's AdaLN cache
+>       with adapter.install_h3_sglang_rollout(model, strict=False) as handle:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:372: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/integrations/engines/rollout/sglang/h3.py:479: in install_h3_sglang_rollout
+    ops = _Ops()
+          ^^^^^^
+rl_engine/integrations/engines/rollout/sglang/h3.py:403: in __init__
+    self.norm = H3RMSNormCudaOp()
+                ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp object at 0x7f1eaa0aa840>
+
+    def __init__(self) -> None:
+        if not h3_rmsnorm_available():
+>           raise RuntimeError(
+                "rl_engine._C lacks h3_rmsnorm_*; rebuild with csrc/cuda/h3/rmsnorm_modulate.cu"
+            )
+E           RuntimeError: rl_engine._C lacks h3_rmsnorm_*; rebuild with csrc/cuda/h3/rmsnorm_modulate.cu
+
+rl_engine/backends/cuda/model_specific/minimax_h3/rmsnorm.py:81: RuntimeError
+_______ test_the_bound_adaln_paths_and_norms_are_the_training_operators ________
+
+    @needs_gpu
+    def test_the_bound_adaln_paths_and_norms_are_the_training_operators():
+        pytest.importorskip("triton")
+        from rl_engine.backends.cuda.model_specific.minimax_h3.det_linear import det_linear_forward
+        from rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual import H3GateResidualCudaOp
+        from rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm import H3RMSNormCudaOp
+    
+        torch.manual_seed(0)
+        model = _model("cuda", torch.bfloat16)
+        block, final = model.blocks[0], model.final_layer
+        rows, steps = 37, 2
+        x = torch.randn(rows, HIDDEN, device="cuda").bfloat16()
+        adaln_input = torch.randn(steps, TEMB, device="cuda").bfloat16()
+        step = torch.randint(0, steps, (rows,), device="cuda")
+        index = step * 3 + torch.randint(0, 3, (rows,), device="cuda")
+>       norm, gate = H3RMSNormCudaOp(), H3GateResidualCudaOp()
+                     ^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:412: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp object at 0x7f1ea82e24e0>
+
+    def __init__(self) -> None:
+        if not h3_rmsnorm_available():
+>           raise RuntimeError(
+                "rl_engine._C lacks h3_rmsnorm_*; rebuild with csrc/cuda/h3/rmsnorm_modulate.cu"
+            )
+E           RuntimeError: rl_engine._C lacks h3_rmsnorm_*; rebuild with csrc/cuda/h3/rmsnorm_modulate.cu
+
+rl_engine/backends/cuda/model_specific/minimax_h3/rmsnorm.py:81: RuntimeError
+_ test_the_readback_counts_every_bound_forward_and_the_batching_switch_is_put_back _
+
+    @needs_gpu
+    def test_the_readback_counts_every_bound_forward_and_the_batching_switch_is_put_back():
+        pytest.importorskip("triton")
+        model = _model("cuda", torch.bfloat16)
+        x = torch.randn(5, HIDDEN, device="cuda").bfloat16()
+>       with adapter.install_h3_sglang_rollout(model) as handle:
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:462: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/integrations/engines/rollout/sglang/h3.py:479: in install_h3_sglang_rollout
+    ops = _Ops()
+          ^^^^^^
+rl_engine/integrations/engines/rollout/sglang/h3.py:403: in __init__
+    self.norm = H3RMSNormCudaOp()
+                ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp object at 0x7f1ea82e3da0>
+
+    def __init__(self) -> None:
+        if not h3_rmsnorm_available():
+>           raise RuntimeError(
+                "rl_engine._C lacks h3_rmsnorm_*; rebuild with csrc/cuda/h3/rmsnorm_modulate.cu"
+            )
+E           RuntimeError: rl_engine._C lacks h3_rmsnorm_*; rebuild with csrc/cuda/h3/rmsnorm_modulate.cu
+
+rl_engine/backends/cuda/model_specific/minimax_h3/rmsnorm.py:81: RuntimeError
+______ test_bound_sglang_operators_equal_the_training_arithmetic_bitwise _______
+
+h3_block_weights_cuda = {'time_embedder.linear_1.weight': tensor([[ 0.0025,  0.0065, -0.0008,  ..., -0.0183, -0.0258, -0.0143],
+        [ 0.00...dder.linear_2.bias': tensor([ 0.0441,  0.0200, -0.0723,  ...,  0.0195, -0.0645, -0.0310],
+       device='cuda:0'), ...}
+
+    @needs_gpu
+    def test_bound_sglang_operators_equal_the_training_arithmetic_bitwise(h3_block_weights_cuda):
+        _sglang_dit()
+>       hs, (rank,), prefix = _rollout_world(1, h3_block_weights_cuda)
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:524: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/minimax_h3/test_h3_sglang_rollout.py:518: in _rollout_world
+    return hs, run_world(world, hs.rollout_target, inputs, prefix_rows=prefix), prefix
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+world = 1, target = <function rollout_target at 0x7f1df062a2a0>
+inputs = {'x': tensor([[-0.7617, -0.3750, -0.3262,  ..., -0.1582, -0.2334,  0.6250],
+        [-0.1787,  0.4766,  0.4180,  ..., ...37,  0.0103],
+        [ 0.0139,  0.0212, -0.0376,  ...,  0.0471,  0.0287, -0.0151]],
+       dtype=torch.bfloat16), ...}
+timeout = 900, deterministic_collective = True, kwargs = {'prefix_rows': 13}
+
+    def run_world(
+        world: int,
+        target,
+        inputs: dict[str, torch.Tensor],
+        timeout: float = 900,
+        deterministic_collective: bool = True,
+        **kwargs,
+    ):
+        """Run ``target(collective, **inputs, **kwargs)`` on ranks ``0..world-1`` (one GPU each).
+    
+        ``target`` must be importable (it is pickled into spawned processes). Each
+        rank gets a NCCL group and a ``DeterministicCollective``; results come back
+        on the CPU, ordered by rank. Any rank's exception is re-raised here.
+    
+        ``deterministic_collective=False`` passes ``None`` instead: the fixed-tree collective only
+        exists for 1, 2, 4 and 8 ranks, and the ring / packed-IO paths use plain point-to-point and
+        all-gather, so they also run on 3, 5, 6 or 7 ranks.
+        """
+    
+        import tempfile
+        import time
+        from pathlib import Path
+        from queue import Empty
+    
+        import torch.multiprocessing as mp
+    
+        if torch.cuda.device_count() < world:
+            raise RuntimeError(f"needs {world} GPUs, found {torch.cuda.device_count()}")
+        ctx = mp.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "inputs.pt"
+            torch.save({k: v.cpu() for k, v in inputs.items()}, path)
+            queue = ctx.Queue()
+            init = (Path(tmp) / "init").as_uri()
+            procs = [
+                ctx.Process(
+                    target=_bootstrap,
+                    args=(r, world, init, queue, path, target, kwargs, deterministic_collective),
+                )
+                for r in range(world)
+            ]
+            started = []
+            deadline = time.monotonic() + timeout
+            status: dict[int, object] = {}
+            try:
+                for proc in procs:
+                    proc.start()
+                    started.append(proc)
+                while len(status) < world or any(proc.is_alive() for proc in procs):
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError(f"rank results timed out after {timeout}s")
+                    try:
+                        result = queue.get(timeout=min(0.1, remaining))
+                    except Empty:
+                        exited = [
+                            (rank, proc.exitcode)
+                            for rank, proc in enumerate(procs)
+                            if proc.exitcode is not None and (proc.exitcode != 0 or rank not in status)
+                        ]
+                        if not exited:
+                            continue
+                        # A worker may have flushed its final message between the
+                        # timed read and the exit-code check.
+                        try:
+                            result = queue.get_nowait()
+                        except Empty:
+                            rank, code = exited[0]
+                            raise RuntimeError(
+                                f"rank {rank} exited with code {code} without completing"
+                            ) from None
+                    if "error" in result:
+>                       raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+E                       RuntimeError: rank 0 failed:
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E                           from rl_engine import _C
+E                       ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+E                       
+E                       The above exception was the direct cause of the following exception:
+E                       
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+E                           DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E                           self._load_cuda_extension()
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E                           raise RuntimeError(
+E                       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+rl_engine/validation/distributed/h3_ws2.py:421: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 19:51:25 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+_______________ test_bound_sglang_operators_at_tp_n_equal_tp1[2] _______________
+
+h3_block_weights_cuda = {'time_embedder.linear_1.weight': tensor([[ 0.0025,  0.0065, -0.0008,  ..., -0.0183, -0.0258, -0.0143],
+        [ 0.00...dder.linear_2.bias': tensor([ 0.0441,  0.0200, -0.0723,  ...,  0.0195, -0.0645, -0.0310],
+       device='cuda:0'), ...}
+tp = 2
+
+    @pytest.mark.parametrize(
+        "tp",
+        [
+            pytest.param(
+                t, marks=pytest.mark.skipif(torch.cuda.device_count() < t, reason=f"needs {t} GPUs")
+            )
+            for t in (2, 4, 8)
+        ],
+    )
+    def test_bound_sglang_operators_at_tp_n_equal_tp1(h3_block_weights_cuda, tp):
+        _sglang_dit()
+>       hs, (one,), _ = _rollout_world(1, h3_block_weights_cuda)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:545: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/minimax_h3/test_h3_sglang_rollout.py:518: in _rollout_world
+    return hs, run_world(world, hs.rollout_target, inputs, prefix_rows=prefix), prefix
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+world = 1, target = <function rollout_target at 0x7f1df062a2a0>
+inputs = {'x': tensor([[-0.7617, -0.3750, -0.3262,  ..., -0.1582, -0.2334,  0.6250],
+        [-0.1787,  0.4766,  0.4180,  ..., ...37,  0.0103],
+        [ 0.0139,  0.0212, -0.0376,  ...,  0.0471,  0.0287, -0.0151]],
+       dtype=torch.bfloat16), ...}
+timeout = 900, deterministic_collective = True, kwargs = {'prefix_rows': 13}
+
+    def run_world(
+        world: int,
+        target,
+        inputs: dict[str, torch.Tensor],
+        timeout: float = 900,
+        deterministic_collective: bool = True,
+        **kwargs,
+    ):
+        """Run ``target(collective, **inputs, **kwargs)`` on ranks ``0..world-1`` (one GPU each).
+    
+        ``target`` must be importable (it is pickled into spawned processes). Each
+        rank gets a NCCL group and a ``DeterministicCollective``; results come back
+        on the CPU, ordered by rank. Any rank's exception is re-raised here.
+    
+        ``deterministic_collective=False`` passes ``None`` instead: the fixed-tree collective only
+        exists for 1, 2, 4 and 8 ranks, and the ring / packed-IO paths use plain point-to-point and
+        all-gather, so they also run on 3, 5, 6 or 7 ranks.
+        """
+    
+        import tempfile
+        import time
+        from pathlib import Path
+        from queue import Empty
+    
+        import torch.multiprocessing as mp
+    
+        if torch.cuda.device_count() < world:
+            raise RuntimeError(f"needs {world} GPUs, found {torch.cuda.device_count()}")
+        ctx = mp.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "inputs.pt"
+            torch.save({k: v.cpu() for k, v in inputs.items()}, path)
+            queue = ctx.Queue()
+            init = (Path(tmp) / "init").as_uri()
+            procs = [
+                ctx.Process(
+                    target=_bootstrap,
+                    args=(r, world, init, queue, path, target, kwargs, deterministic_collective),
+                )
+                for r in range(world)
+            ]
+            started = []
+            deadline = time.monotonic() + timeout
+            status: dict[int, object] = {}
+            try:
+                for proc in procs:
+                    proc.start()
+                    started.append(proc)
+                while len(status) < world or any(proc.is_alive() for proc in procs):
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError(f"rank results timed out after {timeout}s")
+                    try:
+                        result = queue.get(timeout=min(0.1, remaining))
+                    except Empty:
+                        exited = [
+                            (rank, proc.exitcode)
+                            for rank, proc in enumerate(procs)
+                            if proc.exitcode is not None and (proc.exitcode != 0 or rank not in status)
+                        ]
+                        if not exited:
+                            continue
+                        # A worker may have flushed its final message between the
+                        # timed read and the exit-code check.
+                        try:
+                            result = queue.get_nowait()
+                        except Empty:
+                            rank, code = exited[0]
+                            raise RuntimeError(
+                                f"rank {rank} exited with code {code} without completing"
+                            ) from None
+                    if "error" in result:
+>                       raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+E                       RuntimeError: rank 0 failed:
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E                           from rl_engine import _C
+E                       ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+E                       
+E                       The above exception was the direct cause of the following exception:
+E                       
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+E                           DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E                           self._load_cuda_extension()
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E                           raise RuntimeError(
+E                       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+rl_engine/validation/distributed/h3_ws2.py:421: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 19:51:34 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+_______________ test_bound_sglang_operators_at_tp_n_equal_tp1[4] _______________
+
+h3_block_weights_cuda = {'time_embedder.linear_1.weight': tensor([[ 0.0025,  0.0065, -0.0008,  ..., -0.0183, -0.0258, -0.0143],
+        [ 0.00...dder.linear_2.bias': tensor([ 0.0441,  0.0200, -0.0723,  ...,  0.0195, -0.0645, -0.0310],
+       device='cuda:0'), ...}
+tp = 4
+
+    @pytest.mark.parametrize(
+        "tp",
+        [
+            pytest.param(
+                t, marks=pytest.mark.skipif(torch.cuda.device_count() < t, reason=f"needs {t} GPUs")
+            )
+            for t in (2, 4, 8)
+        ],
+    )
+    def test_bound_sglang_operators_at_tp_n_equal_tp1(h3_block_weights_cuda, tp):
+        _sglang_dit()
+>       hs, (one,), _ = _rollout_world(1, h3_block_weights_cuda)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:545: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/minimax_h3/test_h3_sglang_rollout.py:518: in _rollout_world
+    return hs, run_world(world, hs.rollout_target, inputs, prefix_rows=prefix), prefix
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+world = 1, target = <function rollout_target at 0x7f1df062a2a0>
+inputs = {'x': tensor([[-0.7617, -0.3750, -0.3262,  ..., -0.1582, -0.2334,  0.6250],
+        [-0.1787,  0.4766,  0.4180,  ..., ...37,  0.0103],
+        [ 0.0139,  0.0212, -0.0376,  ...,  0.0471,  0.0287, -0.0151]],
+       dtype=torch.bfloat16), ...}
+timeout = 900, deterministic_collective = True, kwargs = {'prefix_rows': 13}
+
+    def run_world(
+        world: int,
+        target,
+        inputs: dict[str, torch.Tensor],
+        timeout: float = 900,
+        deterministic_collective: bool = True,
+        **kwargs,
+    ):
+        """Run ``target(collective, **inputs, **kwargs)`` on ranks ``0..world-1`` (one GPU each).
+    
+        ``target`` must be importable (it is pickled into spawned processes). Each
+        rank gets a NCCL group and a ``DeterministicCollective``; results come back
+        on the CPU, ordered by rank. Any rank's exception is re-raised here.
+    
+        ``deterministic_collective=False`` passes ``None`` instead: the fixed-tree collective only
+        exists for 1, 2, 4 and 8 ranks, and the ring / packed-IO paths use plain point-to-point and
+        all-gather, so they also run on 3, 5, 6 or 7 ranks.
+        """
+    
+        import tempfile
+        import time
+        from pathlib import Path
+        from queue import Empty
+    
+        import torch.multiprocessing as mp
+    
+        if torch.cuda.device_count() < world:
+            raise RuntimeError(f"needs {world} GPUs, found {torch.cuda.device_count()}")
+        ctx = mp.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "inputs.pt"
+            torch.save({k: v.cpu() for k, v in inputs.items()}, path)
+            queue = ctx.Queue()
+            init = (Path(tmp) / "init").as_uri()
+            procs = [
+                ctx.Process(
+                    target=_bootstrap,
+                    args=(r, world, init, queue, path, target, kwargs, deterministic_collective),
+                )
+                for r in range(world)
+            ]
+            started = []
+            deadline = time.monotonic() + timeout
+            status: dict[int, object] = {}
+            try:
+                for proc in procs:
+                    proc.start()
+                    started.append(proc)
+                while len(status) < world or any(proc.is_alive() for proc in procs):
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError(f"rank results timed out after {timeout}s")
+                    try:
+                        result = queue.get(timeout=min(0.1, remaining))
+                    except Empty:
+                        exited = [
+                            (rank, proc.exitcode)
+                            for rank, proc in enumerate(procs)
+                            if proc.exitcode is not None and (proc.exitcode != 0 or rank not in status)
+                        ]
+                        if not exited:
+                            continue
+                        # A worker may have flushed its final message between the
+                        # timed read and the exit-code check.
+                        try:
+                            result = queue.get_nowait()
+                        except Empty:
+                            rank, code = exited[0]
+                            raise RuntimeError(
+                                f"rank {rank} exited with code {code} without completing"
+                            ) from None
+                    if "error" in result:
+>                       raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+E                       RuntimeError: rank 0 failed:
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E                           from rl_engine import _C
+E                       ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+E                       
+E                       The above exception was the direct cause of the following exception:
+E                       
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+E                           DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E                           self._load_cuda_extension()
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E                           raise RuntimeError(
+E                       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+rl_engine/validation/distributed/h3_ws2.py:421: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 19:51:44 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+___ test_the_adapter_binds_sglangs_whole_dit_and_every_bound_forward_runs[1] ___
+
+tp = 1
+
+    @pytest.mark.parametrize(
+        "tp",
+        [
+            pytest.param(
+                t, marks=pytest.mark.skipif(torch.cuda.device_count() < t, reason=f"needs {t} GPUs")
+            )
+            for t in (1, 2)
+        ],
+    )
+    def test_the_adapter_binds_sglangs_whole_dit_and_every_bound_forward_runs(tp):
+        """SGLang's ``MiniMaxH3DiTModel`` (2 blocks at H3's widths, seeded weights) on one denoising
+        step packed by SGLang's request builder: all 27 bound forwards run once per model forward.
+        Under TP this needs the batching switch off: SGLang's batched AdaLN path would hand the blocks
+        precomputed tables."""
+    
+        _sglang_dit()
+        from rl_engine.validation.distributed.h3_ws2 import run_world
+        from rl_engine.validation.models import h3_sglang_rollout as hs
+    
+>       for rank in run_world(tp, hs.full_model_target, {}, layers=2, forwards=2):
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:578: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+world = 1, target = <function full_model_target at 0x7f1df062a660>, inputs = {}
+timeout = 900, deterministic_collective = True
+kwargs = {'layers': 2, 'forwards': 2}
+
+    def run_world(
+        world: int,
+        target,
+        inputs: dict[str, torch.Tensor],
+        timeout: float = 900,
+        deterministic_collective: bool = True,
+        **kwargs,
+    ):
+        """Run ``target(collective, **inputs, **kwargs)`` on ranks ``0..world-1`` (one GPU each).
+    
+        ``target`` must be importable (it is pickled into spawned processes). Each
+        rank gets a NCCL group and a ``DeterministicCollective``; results come back
+        on the CPU, ordered by rank. Any rank's exception is re-raised here.
+    
+        ``deterministic_collective=False`` passes ``None`` instead: the fixed-tree collective only
+        exists for 1, 2, 4 and 8 ranks, and the ring / packed-IO paths use plain point-to-point and
+        all-gather, so they also run on 3, 5, 6 or 7 ranks.
+        """
+    
+        import tempfile
+        import time
+        from pathlib import Path
+        from queue import Empty
+    
+        import torch.multiprocessing as mp
+    
+        if torch.cuda.device_count() < world:
+            raise RuntimeError(f"needs {world} GPUs, found {torch.cuda.device_count()}")
+        ctx = mp.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "inputs.pt"
+            torch.save({k: v.cpu() for k, v in inputs.items()}, path)
+            queue = ctx.Queue()
+            init = (Path(tmp) / "init").as_uri()
+            procs = [
+                ctx.Process(
+                    target=_bootstrap,
+                    args=(r, world, init, queue, path, target, kwargs, deterministic_collective),
+                )
+                for r in range(world)
+            ]
+            started = []
+            deadline = time.monotonic() + timeout
+            status: dict[int, object] = {}
+            try:
+                for proc in procs:
+                    proc.start()
+                    started.append(proc)
+                while len(status) < world or any(proc.is_alive() for proc in procs):
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError(f"rank results timed out after {timeout}s")
+                    try:
+                        result = queue.get(timeout=min(0.1, remaining))
+                    except Empty:
+                        exited = [
+                            (rank, proc.exitcode)
+                            for rank, proc in enumerate(procs)
+                            if proc.exitcode is not None and (proc.exitcode != 0 or rank not in status)
+                        ]
+                        if not exited:
+                            continue
+                        # A worker may have flushed its final message between the
+                        # timed read and the exit-code check.
+                        try:
+                            result = queue.get_nowait()
+                        except Empty:
+                            rank, code = exited[0]
+                            raise RuntimeError(
+                                f"rank {rank} exited with code {code} without completing"
+                            ) from None
+                    if "error" in result:
+>                       raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+E                       RuntimeError: rank 0 failed:
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E                           from rl_engine import _C
+E                       ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+E                       
+E                       The above exception was the direct cause of the following exception:
+E                       
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+E                           DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E                           self._load_cuda_extension()
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E                           raise RuntimeError(
+E                       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+rl_engine/validation/distributed/h3_ws2.py:421: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 19:51:51 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+___ test_the_adapter_binds_sglangs_whole_dit_and_every_bound_forward_runs[2] ___
+
+tp = 2
+
+    @pytest.mark.parametrize(
+        "tp",
+        [
+            pytest.param(
+                t, marks=pytest.mark.skipif(torch.cuda.device_count() < t, reason=f"needs {t} GPUs")
+            )
+            for t in (1, 2)
+        ],
+    )
+    def test_the_adapter_binds_sglangs_whole_dit_and_every_bound_forward_runs(tp):
+        """SGLang's ``MiniMaxH3DiTModel`` (2 blocks at H3's widths, seeded weights) on one denoising
+        step packed by SGLang's request builder: all 27 bound forwards run once per model forward.
+        Under TP this needs the batching switch off: SGLang's batched AdaLN path would hand the blocks
+        precomputed tables."""
+    
+        _sglang_dit()
+        from rl_engine.validation.distributed.h3_ws2 import run_world
+        from rl_engine.validation.models import h3_sglang_rollout as hs
+    
+>       for rank in run_world(tp, hs.full_model_target, {}, layers=2, forwards=2):
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:578: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+world = 2, target = <function full_model_target at 0x7f1df062a660>, inputs = {}
+timeout = 900, deterministic_collective = True
+kwargs = {'layers': 2, 'forwards': 2}
+
+    def run_world(
+        world: int,
+        target,
+        inputs: dict[str, torch.Tensor],
+        timeout: float = 900,
+        deterministic_collective: bool = True,
+        **kwargs,
+    ):
+        """Run ``target(collective, **inputs, **kwargs)`` on ranks ``0..world-1`` (one GPU each).
+    
+        ``target`` must be importable (it is pickled into spawned processes). Each
+        rank gets a NCCL group and a ``DeterministicCollective``; results come back
+        on the CPU, ordered by rank. Any rank's exception is re-raised here.
+    
+        ``deterministic_collective=False`` passes ``None`` instead: the fixed-tree collective only
+        exists for 1, 2, 4 and 8 ranks, and the ring / packed-IO paths use plain point-to-point and
+        all-gather, so they also run on 3, 5, 6 or 7 ranks.
+        """
+    
+        import tempfile
+        import time
+        from pathlib import Path
+        from queue import Empty
+    
+        import torch.multiprocessing as mp
+    
+        if torch.cuda.device_count() < world:
+            raise RuntimeError(f"needs {world} GPUs, found {torch.cuda.device_count()}")
+        ctx = mp.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "inputs.pt"
+            torch.save({k: v.cpu() for k, v in inputs.items()}, path)
+            queue = ctx.Queue()
+            init = (Path(tmp) / "init").as_uri()
+            procs = [
+                ctx.Process(
+                    target=_bootstrap,
+                    args=(r, world, init, queue, path, target, kwargs, deterministic_collective),
+                )
+                for r in range(world)
+            ]
+            started = []
+            deadline = time.monotonic() + timeout
+            status: dict[int, object] = {}
+            try:
+                for proc in procs:
+                    proc.start()
+                    started.append(proc)
+                while len(status) < world or any(proc.is_alive() for proc in procs):
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError(f"rank results timed out after {timeout}s")
+                    try:
+                        result = queue.get(timeout=min(0.1, remaining))
+                    except Empty:
+                        exited = [
+                            (rank, proc.exitcode)
+                            for rank, proc in enumerate(procs)
+                            if proc.exitcode is not None and (proc.exitcode != 0 or rank not in status)
+                        ]
+                        if not exited:
+                            continue
+                        # A worker may have flushed its final message between the
+                        # timed read and the exit-code check.
+                        try:
+                            result = queue.get_nowait()
+                        except Empty:
+                            rank, code = exited[0]
+                            raise RuntimeError(
+                                f"rank {rank} exited with code {code} without completing"
+                            ) from None
+                    if "error" in result:
+>                       raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+E                       RuntimeError: rank 0 failed:
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E                           from rl_engine import _C
+E                       ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+E                       
+E                       The above exception was the direct cause of the following exception:
+E                       
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+E                           DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E                           self._load_cuda_extension()
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E                           raise RuntimeError(
+E                       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+rl_engine/validation/distributed/h3_ws2.py:421: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 19:51:56 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 19:51:56 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+__ test_the_sglang_plugin_installs_the_adapter_in_sglangs_worker_lifecycle[1] __
+
+tmp_path = PosixPath('/tmp/pytest-of-{USER}/pytest-34/test_the_sglang_plugin_install0')
+tp = 1
+
+    @pytest.mark.parametrize(
+        "tp",
+        [
+            pytest.param(
+                t, marks=pytest.mark.skipif(torch.cuda.device_count() < t, reason=f"needs {t} GPUs")
+            )
+            for t in (1, 2)
+        ],
+    )
+    def test_the_sglang_plugin_installs_the_adapter_in_sglangs_worker_lifecycle(tmp_path, tp):
+        """RL-Kernel's entry point, found by SGLang's own ``load_plugins()`` / ``apply_plugin_hooks()``,
+        hooks ``TransformerLoader.load_customized`` (its body returns the seeded whole DiT: no H3
+        checkpoint here). The guard refuses Spectrum before a forward and stops a forward whose bound
+        path SGLang went around."""
+    
+        _sglang_dit()
+        from rl_engine.validation.distributed.h3_ws2 import run_world
+        from rl_engine.validation.models import h3_sglang_rollout as hs
+    
+        plugin_dir = hs.write_plugin_dist(str(tmp_path))
+>       for rank in run_world(tp, hs.plugin_target, {}, plugin_dir=plugin_dir, forwards=2):
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:607: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+world = 1, target = <function plugin_target at 0x7f1df062a700>, inputs = {}
+timeout = 900, deterministic_collective = True
+kwargs = {'plugin_dir': '/tmp/pytest-of-{USER}/pytest-34/test_the_sglang_plugin_install0', 'forwards': 2}
+
+    def run_world(
+        world: int,
+        target,
+        inputs: dict[str, torch.Tensor],
+        timeout: float = 900,
+        deterministic_collective: bool = True,
+        **kwargs,
+    ):
+        """Run ``target(collective, **inputs, **kwargs)`` on ranks ``0..world-1`` (one GPU each).
+    
+        ``target`` must be importable (it is pickled into spawned processes). Each
+        rank gets a NCCL group and a ``DeterministicCollective``; results come back
+        on the CPU, ordered by rank. Any rank's exception is re-raised here.
+    
+        ``deterministic_collective=False`` passes ``None`` instead: the fixed-tree collective only
+        exists for 1, 2, 4 and 8 ranks, and the ring / packed-IO paths use plain point-to-point and
+        all-gather, so they also run on 3, 5, 6 or 7 ranks.
+        """
+    
+        import tempfile
+        import time
+        from pathlib import Path
+        from queue import Empty
+    
+        import torch.multiprocessing as mp
+    
+        if torch.cuda.device_count() < world:
+            raise RuntimeError(f"needs {world} GPUs, found {torch.cuda.device_count()}")
+        ctx = mp.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "inputs.pt"
+            torch.save({k: v.cpu() for k, v in inputs.items()}, path)
+            queue = ctx.Queue()
+            init = (Path(tmp) / "init").as_uri()
+            procs = [
+                ctx.Process(
+                    target=_bootstrap,
+                    args=(r, world, init, queue, path, target, kwargs, deterministic_collective),
+                )
+                for r in range(world)
+            ]
+            started = []
+            deadline = time.monotonic() + timeout
+            status: dict[int, object] = {}
+            try:
+                for proc in procs:
+                    proc.start()
+                    started.append(proc)
+                while len(status) < world or any(proc.is_alive() for proc in procs):
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError(f"rank results timed out after {timeout}s")
+                    try:
+                        result = queue.get(timeout=min(0.1, remaining))
+                    except Empty:
+                        exited = [
+                            (rank, proc.exitcode)
+                            for rank, proc in enumerate(procs)
+                            if proc.exitcode is not None and (proc.exitcode != 0 or rank not in status)
+                        ]
+                        if not exited:
+                            continue
+                        # A worker may have flushed its final message between the
+                        # timed read and the exit-code check.
+                        try:
+                            result = queue.get_nowait()
+                        except Empty:
+                            rank, code = exited[0]
+                            raise RuntimeError(
+                                f"rank {rank} exited with code {code} without completing"
+                            ) from None
+                    if "error" in result:
+>                       raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+E                       RuntimeError: rank 0 failed:
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E                           from rl_engine import _C
+E                       ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+E                       
+E                       The above exception was the direct cause of the following exception:
+E                       
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+E                           DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E                           self._load_cuda_extension()
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E                           raise RuntimeError(
+E                       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+rl_engine/validation/distributed/h3_ws2.py:421: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 19:52:03 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+__ test_the_sglang_plugin_installs_the_adapter_in_sglangs_worker_lifecycle[2] __
+
+tmp_path = PosixPath('/tmp/pytest-of-{USER}/pytest-34/test_the_sglang_plugin_install1')
+tp = 2
+
+    @pytest.mark.parametrize(
+        "tp",
+        [
+            pytest.param(
+                t, marks=pytest.mark.skipif(torch.cuda.device_count() < t, reason=f"needs {t} GPUs")
+            )
+            for t in (1, 2)
+        ],
+    )
+    def test_the_sglang_plugin_installs_the_adapter_in_sglangs_worker_lifecycle(tmp_path, tp):
+        """RL-Kernel's entry point, found by SGLang's own ``load_plugins()`` / ``apply_plugin_hooks()``,
+        hooks ``TransformerLoader.load_customized`` (its body returns the seeded whole DiT: no H3
+        checkpoint here). The guard refuses Spectrum before a forward and stops a forward whose bound
+        path SGLang went around."""
+    
+        _sglang_dit()
+        from rl_engine.validation.distributed.h3_ws2 import run_world
+        from rl_engine.validation.models import h3_sglang_rollout as hs
+    
+        plugin_dir = hs.write_plugin_dist(str(tmp_path))
+>       for rank in run_world(tp, hs.plugin_target, {}, plugin_dir=plugin_dir, forwards=2):
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_sglang_rollout.py:607: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+world = 2, target = <function plugin_target at 0x7f1df062a700>, inputs = {}
+timeout = 900, deterministic_collective = True
+kwargs = {'plugin_dir': '/tmp/pytest-of-{USER}/pytest-34/test_the_sglang_plugin_install1', 'forwards': 2}
+
+    def run_world(
+        world: int,
+        target,
+        inputs: dict[str, torch.Tensor],
+        timeout: float = 900,
+        deterministic_collective: bool = True,
+        **kwargs,
+    ):
+        """Run ``target(collective, **inputs, **kwargs)`` on ranks ``0..world-1`` (one GPU each).
+    
+        ``target`` must be importable (it is pickled into spawned processes). Each
+        rank gets a NCCL group and a ``DeterministicCollective``; results come back
+        on the CPU, ordered by rank. Any rank's exception is re-raised here.
+    
+        ``deterministic_collective=False`` passes ``None`` instead: the fixed-tree collective only
+        exists for 1, 2, 4 and 8 ranks, and the ring / packed-IO paths use plain point-to-point and
+        all-gather, so they also run on 3, 5, 6 or 7 ranks.
+        """
+    
+        import tempfile
+        import time
+        from pathlib import Path
+        from queue import Empty
+    
+        import torch.multiprocessing as mp
+    
+        if torch.cuda.device_count() < world:
+            raise RuntimeError(f"needs {world} GPUs, found {torch.cuda.device_count()}")
+        ctx = mp.get_context("spawn")
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "inputs.pt"
+            torch.save({k: v.cpu() for k, v in inputs.items()}, path)
+            queue = ctx.Queue()
+            init = (Path(tmp) / "init").as_uri()
+            procs = [
+                ctx.Process(
+                    target=_bootstrap,
+                    args=(r, world, init, queue, path, target, kwargs, deterministic_collective),
+                )
+                for r in range(world)
+            ]
+            started = []
+            deadline = time.monotonic() + timeout
+            status: dict[int, object] = {}
+            try:
+                for proc in procs:
+                    proc.start()
+                    started.append(proc)
+                while len(status) < world or any(proc.is_alive() for proc in procs):
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise TimeoutError(f"rank results timed out after {timeout}s")
+                    try:
+                        result = queue.get(timeout=min(0.1, remaining))
+                    except Empty:
+                        exited = [
+                            (rank, proc.exitcode)
+                            for rank, proc in enumerate(procs)
+                            if proc.exitcode is not None and (proc.exitcode != 0 or rank not in status)
+                        ]
+                        if not exited:
+                            continue
+                        # A worker may have flushed its final message between the
+                        # timed read and the exit-code check.
+                        try:
+                            result = queue.get_nowait()
+                        except Empty:
+                            rank, code = exited[0]
+                            raise RuntimeError(
+                                f"rank {rank} exited with code {code} without completing"
+                            ) from None
+                    if "error" in result:
+>                       raise RuntimeError(f"rank {result['rank']} failed:\n{result['error']}")
+E                       RuntimeError: rank 0 failed:
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E                           from rl_engine import _C
+E                       ImportError: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py)
+E                       
+E                       The above exception was the direct cause of the following exception:
+E                       
+E                       Traceback (most recent call last):
+E                         File "{WT}/8506f6a2/rl_engine/validation/distributed/h3_ws2.py", line 330, in _bootstrap
+E                           DeterministicCollective(device=rank, max_size_bytes=256 << 20)
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E                           self._load_cuda_extension()
+E                         File "{WT}/8506f6a2/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E                           raise RuntimeError(
+E                       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+rl_engine/validation/distributed/h3_ws2.py:421: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 19:52:09 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 19:52:09 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' ({WT}/8506f6a2/rl_engine/__init__.py). Falling back to native code.
+=============================== warnings summary ===============================
+tests/models/minimax_h3/test_h3_sglang_rollout.py: 14 warnings
+  {ENV}/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+SKIPPED [1] tests/models/minimax_h3/test_h3_sglang_rollout.py:534: needs 8 GPUs
+SKIPPED [1] tests/models/minimax_h3/test_h3_checkpoint_mapper_vllm.py:72: could not import 'vllm_omni.diffusion.models.minimax_h3.fasth3': No module named 'vllm_omni'
+SKIPPED [1] tests/models/minimax_h3/test_h3_checkpoint_mapper_vllm.py:215: could not import 'vllm_omni.diffusion.models.minimax_h3.minimax_h3_transformer': No module named 'vllm_omni'
+10 failed, 44 passed, 3 skipped, 14 warnings in 86.93s (0:01:26)
