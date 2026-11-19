@@ -1,0 +1,47 @@
+Thu Nov 19 03:52:02 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.173.02             Driver Version: 580.173.02     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H100                    Off |   00000000:06:00.0 Off |                    0 |
+| N/A   42C    P0            121W /  700W |    1897MiB /  95830MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA H100                    Off |   00000000:26:00.0 Off |                    0 |
+| N/A   43C    P0            122W /  700W |     697MiB /  95830MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA H100                    Off |   00000000:A6:00.0 Off |                    0 |
+| N/A   43C    P0            121W /  700W |     531MiB /  95830MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA H100                    Off |   00000000:C6:00.0 Off |                    0 |
+| N/A   42C    P0            118W /  700W |     531MiB /  95830MiB |      0%      Default |
+|                                         |                        |             Disabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A         3325730      C   ...venvs/rlk_ep4_venv/bin/python       1886MiB |
+|    1   N/A  N/A         3325730      C   ...venvs/rlk_ep4_venv/bin/python        686MiB |
+|    2   N/A  N/A         3325730      C   ...venvs/rlk_ep4_venv/bin/python        520MiB |
+|    3   N/A  N/A         3325730      C   ...venvs/rlk_ep4_venv/bin/python        520MiB |
++-----------------------------------------------------------------------------------------+
+torch 2.13.0+cu130 cuda 13.0 NVIDIA H100
+capability (9, 0)
+_C {SRC}/rl_engine/_C.cpython-312-x86_64-linux-gnu.so
+WARNING 11-19 03:52:05 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-19 03:52:05 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 03:52:05 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-19 03:52:05 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-19 03:52:05 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-19 03:52:05 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-19 03:52:05 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+candidate backends {'projection': 'rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp', 'norm': 'rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp', 'gate': 'rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp', 'gemm': 'rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp', 'qkv': 'rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp', 'attention': 'rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp', 'attention_h3': 'rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp', 'swiglu': 'rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp'}
+h3_full_attention True
