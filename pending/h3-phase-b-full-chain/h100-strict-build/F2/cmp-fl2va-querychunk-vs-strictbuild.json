@@ -1,0 +1,205 @@
+{
+ "first_drift": {
+  "component": "trajectory",
+  "kind": "velocity",
+  "modality": "video",
+  "stage": "denoise",
+  "step": 0,
+  "trajectory": {
+   "kind": "velocity",
+   "modality": "video",
+   "step": 0
+  },
+  "transformer": {
+   "execution_index": 3,
+   "module": "token_refiner"
+  }
+ },
+ "gate": {
+  "decoded_media_equal": {
+   "audio_decode": false,
+   "video_decode": false
+  },
+  "hard_gate": "fail",
+  "latent_trajectory_equal": false,
+  "rule": "latent trajectory equality is the gate; decoded media are secondary",
+  "transformer_intermediates_equal": false
+ },
+ "kind": "compare",
+ "labels": [
+  "A",
+  "A"
+ ],
+ "runtime_equal": true,
+ "schema": "rlkernel.h3.full_chain.evidence.v1",
+ "secondary_metrics": {
+  "lhs": {
+   "audio": {
+    "peak": 0.14603932201862335,
+    "rms_lr": [
+     0.03904406561829241,
+     0.03786370989276018
+    ],
+    "shape": [
+     2,
+     165600
+    ]
+   },
+   "video": {
+    "max": 1.0,
+    "mean_rgb": [
+     0.6455715383272664,
+     0.5737654485584655,
+     0.5728418167090269
+    ],
+    "min": 0.0,
+    "shape": [
+     1,
+     3,
+     124,
+     256,
+     448
+    ],
+    "std": 0.15486203974516796
+   }
+  },
+  "rhs": {
+   "audio": {
+    "peak": 0.14222341775894165,
+    "rms_lr": [
+     0.039183816819856124,
+     0.03784334002043082
+    ],
+    "shape": [
+     2,
+     165600
+    ]
+   },
+   "video": {
+    "max": 1.0,
+    "mean_rgb": [
+     0.6471534545805219,
+     0.5746335100803728,
+     0.573441732454951
+    ],
+    "min": 0.0,
+    "shape": [
+     1,
+     3,
+     124,
+     256,
+     448
+    ],
+    "std": 0.15552243697648138
+   }
+  }
+ },
+ "stages": [
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "request"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "media_preprocess"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "text_conditions"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "visual_vae_encode"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "audio_vae_encode"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "packed_layout"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "initial_rows"
+  },
+  {
+   "differing_components": [],
+   "equal": true,
+   "provenance_equal": true,
+   "stage": "schedule"
+  },
+  {
+   "differing_components": [
+    "trajectory",
+    "transformer_probe",
+    "final_video_rows",
+    "final_audio_rows"
+   ],
+   "equal": false,
+   "provenance_equal": false,
+   "stage": "denoise"
+  },
+  {
+   "differing_components": [
+    "video_latents",
+    "audio_latents"
+   ],
+   "equal": false,
+   "provenance_equal": true,
+   "stage": "unpack"
+  },
+  {
+   "differing_components": [
+    "video"
+   ],
+   "equal": false,
+   "provenance_equal": true,
+   "stage": "video_decode"
+  },
+  {
+   "differing_components": [
+    "waveform"
+   ],
+   "equal": false,
+   "provenance_equal": true,
+   "stage": "audio_decode"
+  }
+ ],
+ "text_sources": [
+  "pinned-precomputed",
+  "pinned-precomputed"
+ ],
+ "trajectory": {
+  "bitwise_equal": false,
+  "compared": 12,
+  "differing": 12,
+  "final_latent_equal": false,
+  "first_drift": {
+   "kind": "velocity",
+   "modality": "video",
+   "step": 0
+  },
+  "labels": [
+   "A",
+   "A"
+  ],
+  "steps": 3
+ },
+ "variant": "FL2VA",
+ "workflow": "fl2va"
+}

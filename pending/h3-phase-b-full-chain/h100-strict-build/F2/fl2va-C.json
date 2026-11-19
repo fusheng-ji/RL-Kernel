@@ -1,0 +1,1449 @@
+{
+ "architecture_fingerprint_sha256": "805d0ebf601a09d65ede184441fda2694aa374d80f3dc274ba4670cfcfdf0839",
+ "artifact_sha256": "58aa1626e3114b2c3c21561a22c25514f4cf2dd62d28d4edd553efae9a3e4055",
+ "checkpoint": {
+  "repo": "MiniMaxAI/MiniMax-H3",
+  "revision": "42ed227ee7df40d41602854ae760620d6eb651fe"
+ },
+ "contract": "h3-phase-b-full-chain-v1",
+ "gate_policy": {
+  "hard": [
+   "request",
+   "media_preprocess",
+   "text_conditions",
+   "visual_vae_encode",
+   "audio_vae_encode",
+   "packed_layout",
+   "initial_rows",
+   "schedule",
+   "denoise",
+   "unpack"
+  ],
+  "rule": "latent trajectory equality is the gate; decoded media are recorded only",
+  "secondary": [
+   "video_decode",
+   "audio_decode"
+  ]
+ },
+ "injection": {
+  "component": null,
+  "module": "transformer_blocks.25",
+  "row": 3000,
+  "stage": "denoise",
+  "step": 1
+ },
+ "label": "C",
+ "layout": {
+  "artifact_sha256": "e1c64e7a04b77a7ba5ca9e5a3572314283f569c1e8e90ec34812712234ff86ed",
+  "checkpoint": {
+   "repo": "MiniMaxAI/MiniMax-H3",
+   "revision": "42ed227ee7df40d41602854ae760620d6eb651fe"
+  },
+  "geometry": {
+   "height": 256,
+   "keyframe_anchors": [
+    "first",
+    "last"
+   ],
+   "latent_height": 16,
+   "latent_width": 28,
+   "num_audio_latents": 207,
+   "num_frames": 124,
+   "num_latent_frames": 37,
+   "width": 448
+  },
+  "input_sha256": {
+   "condition_latents.0": "ffdcc3e401df289dce4f5d22f3645d87aeb3119847c429a86b74748023955088",
+   "condition_latents.1": "8f77cc4a2b3edcad1a78ec536f468840ca2503cce11f74f74884b5318cda9042",
+   "prompt_embeds": "02f8f4954b7bb23b87fc3ff92d1b1979ef957539850c2e67234d829231a5b87b",
+   "text_token_tags": "4e8dfd1075918df9a8c4cdfdf9ec916bb807ec54b6ffe6962428f47b085934f1"
+  },
+  "layout_component_sha256": {
+   "audio_indices": "381c5c38c16a7ba811bdb39389050d9b4ea67d6cab62399413ca46abee1bc9af",
+   "position_ids": "317768e638e388571f71f9e71ba918f253db629ad6dfa73296400d2180ab2025",
+   "text_indices": "36ebd6f6b88fc428a5ab9a9e4b5e807bf9dd8b911ed3cdd1528458b95d6b473e",
+   "token_tags": "3b74bcb622425f38bc6b366f5a29016b7ec50eebf11a31641287211f7d815808",
+   "video_indices": "e95e4be4c5efce3963730dda98719d4a69961a38ee5225ea1e99c0ebfc1e49b6"
+  },
+  "num_condition_audio_rows": 0,
+  "num_condition_video_rows": 224,
+  "num_text_tokens": 259,
+  "pipeline_identity": {
+   "checkpoint_component_sha256": {
+    "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+    "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+    "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+    "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+    "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+    "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+    "transformer": "422af2a84dc63c5ff53b93a231ed3982b1570157879d07e0d7f0499c3ca74f62",
+    "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+   },
+   "preprocessing_recipe_sha256": "d56ca503a4adb57a23ff4e7b17b464083a679c252cb54cbfa0d1e1de9ef9daa0",
+   "structural_workflow": "fl2va",
+   "transformer_dir": "transformer",
+   "variant": "FL2VA",
+   "workflow": "fl2va"
+  },
+  "schema_version": "rlkernel.h3.packed_layout.v1",
+  "sequence_length": 5041
+ },
+ "metadata": {
+  "runner": "tools/validation/models/h3_full_chain.py",
+  "source": {
+   "clean": true,
+   "commit": "d31727d15d858ae3805c52aa96c5b33305f64ee4"
+  }
+ },
+ "request": {
+  "canvas": [
+   768,
+   1032192
+  ],
+  "generator": "torch.Generator('cpu').manual_seed(seed)",
+  "height": 256,
+  "keyframes": [
+   "first",
+   "last"
+  ],
+  "num_frames": 124,
+  "num_inference_steps": 4,
+  "prompt_sha256": "ce85f3d4019f175388c83ecedefab5066b9d8a627e96e554843c18718db39618",
+  "seed": 42,
+  "width": 448,
+  "workflow": "fl2va"
+ },
+ "runtime": {
+  "compute_capability": [
+   9,
+   0
+  ],
+  "cpu_capability": "AVX512",
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "cudnn_allow_tf32": true,
+  "deterministic_algorithms": false,
+  "device": "cuda",
+  "device_name": "NVIDIA H100",
+  "hip": null,
+  "matmul_allow_tf32": false,
+  "num_threads": 16,
+  "platform_machine": "x86_64",
+  "python": "3.12.15",
+  "torch": "2.13.0+cu130"
+ },
+ "schema_version": "rlkernel.h3.full_chain.v1",
+ "secondary_metrics": {
+  "audio": {
+   "peak": 0.1405833214521408,
+   "rms_lr": [
+    0.03886901105477687,
+    0.03736862417848458
+   ],
+   "shape": [
+    2,
+    165600
+   ]
+  },
+  "video": {
+   "max": 1.0,
+   "mean_rgb": [
+    0.6471652606384037,
+    0.5747325188585819,
+    0.5735744242395052
+   ],
+   "min": 0.0,
+   "shape": [
+    1,
+    3,
+    124,
+    256,
+    448
+   ],
+   "std": 0.15540270711704873
+  }
+ },
+ "stages": [
+  {
+   "chain_sha256": "389fe61a17372feab2e80a2e5bd7f82a56a9801043595b999a0f225688bf5b1a",
+   "components": [
+    [
+     "spec",
+     "53c7c1960c518669c39b567337124be0a0ff3f36a742750c2e92760afd315a1e"
+    ],
+    [
+     "prompt",
+     "ce85f3d4019f175388c83ecedefab5066b9d8a627e96e554843c18718db39618"
+    ],
+    [
+     "keyframe.first",
+     "25ff9d529c2c87255aa5e7a847b7a341f358f888aaa5f1165f0d48d7b06104c9"
+    ],
+    [
+     "keyframe.last",
+     "46c90a51d1b8f8d3e340e275cb5706581de00ffd9f8af754e6b487ddcdb2bbde"
+    ]
+   ],
+   "provenance": {
+    "variant": "FL2VA",
+    "workflow": "fl2va"
+   },
+   "stage": "request"
+  },
+  {
+   "chain_sha256": "59aca4c6db1015344f8c16dbbf549c0df7ba2a0c5440c0225792401599b68cd4",
+   "components": [
+    [
+     "keyframe_pixels.0",
+     "2ade1d9318b1b946320bd288358310ccfccdb18d864edda8d8465ca51b7ec38a"
+    ],
+    [
+     "keyframe_pixels.1",
+     "ca7d9099ab21d9be5e91878e7f00f728aa4c11ffa9f891310736e4686b7e98ba"
+    ]
+   ],
+   "provenance": {
+    "anchors": [
+     "first",
+     "last"
+    ],
+    "canvas": [
+     256,
+     448
+    ],
+    "contract": "fl2va_pipeline_contract"
+   },
+   "stage": "media_preprocess"
+  },
+  {
+   "chain_sha256": "7dab9134e2014b4fa009078bbecd1d26e9624a5886187117c9d41c576259be1f",
+   "components": [
+    [
+     "prompt_embeds",
+     "02f8f4954b7bb23b87fc3ff92d1b1979ef957539850c2e67234d829231a5b87b"
+    ],
+    [
+     "text_token_tags",
+     "4e8dfd1075918df9a8c4cdfdf9ec916bb807ec54b6ffe6962428f47b085934f1"
+    ]
+   ],
+   "provenance": {
+    "conditioner_input_sha256": "ed90bed51660f5c56ec64053b6d8a90d065764a204c3e7f47637b95c48e2e0ef",
+    "file_sha256": "f4e695327244dbaa87a3b8300d473e8d4cedcb7fe1dcd329ea85bfaacc87ff35",
+    "producer": {
+     "block": "MiniMaxH3FL2VATextEncoderStep",
+     "checkpoint_revision": "42ed227ee7df40d41602854ae760620d6eb651fe",
+     "conditioner": "Qwen3-VL text_encoder/ of MiniMaxAI/MiniMax-H3",
+     "decoder_layers_loaded": 51,
+     "decoder_layers_released": 64,
+     "device": "cpu",
+     "diffusers": "0.40.0.dev0",
+     "dtype": "bfloat16",
+     "hidden_state": "hidden_states[50] (after decoder layer 50, before the final norm)",
+     "note": "pinned until qwen3vl_layer50_contract lands",
+     "provider": "huggingface/diffusers",
+     "provider_revision": "f53d552036a0d1bd5570782a39cd40cfabf112bc",
+     "torch": "2.13.0+cu130",
+     "transformers": "5.17.0"
+    },
+    "source": "pinned-precomputed"
+   },
+   "stage": "text_conditions"
+  },
+  {
+   "chain_sha256": "25d7d77f1ffc6c92db3276a848d06f3f5ecfc531d1480da764f351da536a2e9f",
+   "components": [
+    [
+     "condition_latents.0",
+     "ffdcc3e401df289dce4f5d22f3645d87aeb3119847c429a86b74748023955088"
+    ],
+    [
+     "condition_latents.1",
+     "8f77cc4a2b3edcad1a78ec536f468840ca2503cce11f74f74884b5318cda9042"
+    ]
+   ],
+   "provenance": {
+    "batch": 1,
+    "contract_id": "h3-visual-vae-f16t4d24-v1",
+    "kind": "encode",
+    "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+    "layout": {
+     "clip_length": 17,
+     "latent_channels": 24,
+     "spatial_factor": 16,
+     "temporal_factor": 4,
+     "token_drop": 3
+    },
+    "layout_name": "f16t4d24",
+    "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+    "policy": {
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "matmul_allow_tf32": false
+    },
+    "posterior": "sample",
+    "round_fp16": true,
+    "runtime": {
+     "compute_capability": [
+      9,
+      0
+     ],
+     "cuda": "13.0",
+     "cudnn": 92000,
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "device_name": "NVIDIA H100",
+     "matmul_allow_tf32": false,
+     "torch": "2.13.0+cu130"
+    },
+    "seed": 42,
+    "tile_plan_sha256": "6a371c538399de2951f0b4176bbe19049097135b5dcfd1a44df34e0cd92892f2",
+    "tiles": 2
+   },
+   "stage": "visual_vae_encode"
+  },
+  {
+   "chain_sha256": "33524d6a7a93d21ae99514a6fd301fddc091ade5b47998e3a82be95ff6874e63",
+   "components": [],
+   "provenance": {
+    "skipped": "FL2VA has no audio conditions"
+   },
+   "stage": "audio_vae_encode"
+  },
+  {
+   "chain_sha256": "f3cdf154f4cbebb40e28083ffb643eb60b655104178e8fec53cec94d52dc2fc8",
+   "components": [
+    [
+     "layout_artifact",
+     "e1c64e7a04b77a7ba5ca9e5a3572314283f569c1e8e90ec34812712234ff86ed"
+    ],
+    [
+     "position_ids",
+     "317768e638e388571f71f9e71ba918f253db629ad6dfa73296400d2180ab2025"
+    ],
+    [
+     "token_tags",
+     "3b74bcb622425f38bc6b366f5a29016b7ec50eebf11a31641287211f7d815808"
+    ],
+    [
+     "text_indices",
+     "36ebd6f6b88fc428a5ab9a9e4b5e807bf9dd8b911ed3cdd1528458b95d6b473e"
+    ],
+    [
+     "video_indices",
+     "e95e4be4c5efce3963730dda98719d4a69961a38ee5225ea1e99c0ebfc1e49b6"
+    ],
+    [
+     "audio_indices",
+     "381c5c38c16a7ba811bdb39389050d9b4ea67d6cab62399413ca46abee1bc9af"
+    ]
+   ],
+   "provenance": {
+    "schema": "rlkernel.h3.packed_layout.v1",
+    "sequence_length": 5041,
+    "variant": "FL2VA",
+    "workflow": "fl2va"
+   },
+   "stage": "packed_layout"
+  },
+  {
+   "chain_sha256": "fdbb14da1eca2cd6412008d9171b2a35adb8e01881171c4108ca9e3ea87d6f72",
+   "components": [
+    [
+     "video_rows",
+     "b673beb07fed31dbfd0c4bed19120cf334f75ee21bfca027d54c8b77bcd68a88"
+    ],
+    [
+     "audio_rows",
+     "d9ae6b7e07173357b2834cc454e94d80332b5c8351482fc7ea50b86b81de0324"
+    ]
+   ],
+   "provenance": {
+    "device": "cuda",
+    "draw_device": "cpu",
+    "generator": "cpu",
+    "seed": 42
+   },
+   "stage": "initial_rows"
+  },
+  {
+   "chain_sha256": "c1723e78badaba988932913223312b090b96127fc6df00baa85b6477d04e7eaf",
+   "components": [
+    [
+     "video_sigmas",
+     "adf3aa7009a3804b42cc8d0a032456799b9e3a5720f357bba7c428e202217fcb"
+    ],
+    [
+     "audio_sigmas",
+     "698a99d0cd635599942b10afc429ce922b6bd5220c01b0e6f57fbc2fc7cd13fd"
+    ],
+    [
+     "video_timesteps",
+     "d13d4b33f8216be9523df77ec193dede1e7b21faccc3bf542ef579e2e07ae832"
+    ],
+    [
+     "audio_timesteps",
+     "44ac97368e3b7ceb2b527dd06a776dbbfb37be5110142fdf381293bad2fa9ce7"
+    ],
+    [
+     "row_timestep_plan",
+     "c06adaccbc340d17de8b81ab24c91240eb0bc18d2f0518c1c9b89897c7e1fd33"
+    ]
+   ],
+   "provenance": {
+    "condition_noise_level": 0.999,
+    "model_evaluations": 3,
+    "num_inference_steps": 4,
+    "operator": "h3_sigma_schedule (NativeH3SigmaScheduleOp)",
+    "shifts": {
+     "audio": 3.0,
+     "video": 12.0
+    }
+   },
+   "stage": "schedule"
+  },
+  {
+   "chain_sha256": "cb060c73abb788287e136010993de3f3995426922a8821a1c045765131dd11da",
+   "components": [
+    [
+     "trajectory",
+     "fdac795aaeba595a6e9e76a30433883c40a24632c08ec6e8931ac91aa8a77b33"
+    ],
+    [
+     "transformer_probe",
+     "ca7dd33eedd336bfd5c1d19caf11be5d769dc8b8e68f4f90c87f3f2edc344b50"
+    ],
+    [
+     "final_video_rows",
+     "e74e7ea735c73a2dcedf1f46db8b47fe8bc0299bb6ac43e709c4251544e2c1ed"
+    ],
+    [
+     "final_audio_rows",
+     "564cb6a3e6136af37bf1e8468b5a140e998bdc079f0b74f7ff851f0676f169a8"
+    ]
+   ],
+   "provenance": {
+    "execution": {
+     "actual_backends": {
+      "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+      "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+      "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+      "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+      "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+      "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+      "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+      "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+     },
+     "bound": true,
+     "boundary_bindings": {
+      "audio_proj_in": {
+       "row": "audio_input_projection_fp32",
+       "status": "row"
+      },
+      "audio_proj_out": {
+       "row": "audio_output_projection_fp32",
+       "status": "row"
+      },
+      "context_embedder": {
+       "row": "text_context_projection",
+       "status": "row"
+      },
+      "norm_out": {
+       "row": "final_adaln_out",
+       "status": "row"
+      },
+      "proj_in": {
+       "row": "video_input_projection_fp32",
+       "status": "row"
+      },
+      "proj_out": {
+       "row": "video_output_projection_fp32",
+       "status": "row"
+      },
+      "time_embedder": {
+       "row": "timestep_mlp_fp32",
+       "status": "row"
+      },
+      "token_refiner": {
+       "row": "token_refiner_block",
+       "status": "row"
+      }
+     },
+     "case_id": "R/R",
+     "contract": "h3-runtime-v1",
+     "fell_back": null,
+     "label": "R/R",
+     "mode": "strict",
+     "native_boundaries": [],
+     "native_nodes": []
+    },
+    "probe": true,
+    "sampler": "MiniMaxH3Scheduler.step (diffusers f53d552), op for op",
+    "transformer": {
+     "class": "MiniMaxH3Transformer3DModel",
+     "config_sha256": "3e6fd54edab6b862ccc3d2df6d9a03fc546c58965880d93499f95e9403710f61",
+     "layer_truncated": false,
+     "layers_loaded": 50,
+     "mode": "strict",
+     "num_layers": 50,
+     "parameter_dtypes": [
+      "torch.bfloat16",
+      "torch.float32"
+     ],
+     "placement": "offload",
+     "transformer_dir": "transformer",
+     "transformer_dir_identified_as": "FL2VA",
+     "variant": "FL2VA"
+    }
+   },
+   "stage": "denoise"
+  },
+  {
+   "chain_sha256": "99bf4ba13cbd93145a016a07758054cf18af52b7da9e4b1cab20a0469ede1a06",
+   "components": [
+    [
+     "video_latents",
+     "afe00633006ea3bcb4a7e948773cafaa6c01894ae82f10aa64d2de03a97d3795"
+    ],
+    [
+     "audio_latents",
+     "f21461818d581d43e2799df213c0fc166dedbba5a0cf6ecbbe8576d4d45da83e"
+    ]
+   ],
+   "provenance": {
+    "audio": "(2, 32, T) normalized, (left, right)",
+    "video": "(1, 24, T, H, W) normalized"
+   },
+   "stage": "unpack"
+  },
+  {
+   "chain_sha256": "e68bbd7e8ca415096127b9dea2b510027d18b38fc508b0f03d3b95adb98ae0f1",
+   "components": [
+    [
+     "video",
+     "1ec460ea9d0feb7912c16c02430dfd91bf3bab376dbf56f4fc3e490a53b78eb6"
+    ]
+   ],
+   "provenance": {
+    "autocast_fp16": true,
+    "batch": 1,
+    "contract_id": "h3-visual-vae-f16t4d24-v1",
+    "kind": "decode",
+    "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+    "layout": {
+     "clip_length": 17,
+     "latent_channels": 24,
+     "spatial_factor": 16,
+     "temporal_factor": 4,
+     "token_drop": 3
+    },
+    "layout_name": "f16t4d24",
+    "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+    "policy": {
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "matmul_allow_tf32": false
+    },
+    "runtime": {
+     "compute_capability": [
+      9,
+      0
+     ],
+     "cuda": "13.0",
+     "cudnn": 92000,
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "device_name": "NVIDIA H100",
+     "matmul_allow_tf32": false,
+     "torch": "2.13.0+cu130"
+    },
+    "tile_plan_sha256": "6a371c538399de2951f0b4176bbe19049097135b5dcfd1a44df34e0cd92892f2",
+    "tiles": 2
+   },
+   "stage": "video_decode"
+  },
+  {
+   "chain_sha256": "077adadec31696752c0a84460d907bceeed7d7b57bb2787efc78db7f9a1328c9",
+   "components": [
+    [
+     "waveform",
+     "b3eae79c118a11c2e9cd41d54aaafc5f8e37dee28a375c418403af15763964f2"
+    ]
+   ],
+   "provenance": {
+    "capability": [
+     9,
+     0
+    ],
+    "contract": "h3-audio-vae-v1",
+    "cuda": "13.0",
+    "cudnn": 92000,
+    "decode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": true,
+     "micro_batch": 1,
+     "name": "h3-audio-decode-strict-v1",
+     "sdpa_backend": null
+    },
+    "device": "cuda:0",
+    "encode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": false,
+     "micro_batch": 1,
+     "name": "h3-audio-encode-strict-v1",
+     "sdpa_backend": "math"
+    },
+    "gpu": "NVIDIA H100",
+    "hop_length": 800,
+    "latent_channels": 32,
+    "latents_mean_sha256": "a77dc0fd9c612e98b8a995dffebe793db9aa47a27af9ebd93389a479ad62a096",
+    "latents_per_second": 40,
+    "latents_std_sha256": "9c2f6c097fff4a3eab12248dead0d49175538a5124ca81c76f455920c33ec5fc",
+    "row_layout": "channel-major [left T rows | right T rows] x 32",
+    "sample_rate": 32000,
+    "stereo_order": [
+     "left",
+     "right"
+    ],
+    "torch": "2.13.0+cu130"
+   },
+   "stage": "audio_decode"
+  }
+ ],
+ "trajectory": {
+  "architecture_fingerprint_sha256": "805d0ebf601a09d65ede184441fda2694aa374d80f3dc274ba4670cfcfdf0839",
+  "artifact_sha256": "07ff2c5342b17681da5d1bdbc78702c9c4ed270653a19a97228fb2f0db30af59",
+  "final_latent_sha256": {
+   "audio": "564cb6a3e6136af37bf1e8468b5a140e998bdc079f0b74f7ff851f0676f169a8",
+   "video": "e74e7ea735c73a2dcedf1f46db8b47fe8bc0299bb6ac43e709c4251544e2c1ed"
+  },
+  "initial_noise": {
+   "audio": {
+    "dtype": "torch.float32",
+    "sha256": "d9ae6b7e07173357b2834cc454e94d80332b5c8351482fc7ea50b86b81de0324",
+    "shape": [
+     414,
+     32
+    ]
+   },
+   "video": {
+    "dtype": "torch.float32",
+    "sha256": "b673beb07fed31dbfd0c4bed19120cf334f75ee21bfca027d54c8b77bcd68a88",
+    "shape": [
+     4368,
+     96
+    ]
+   }
+  },
+  "label": "C",
+  "metadata": {
+   "chain": "h3-phase-b-full-chain-v1",
+   "sampler": "MiniMaxH3Scheduler euler eta=0"
+  },
+  "modalities": [
+   "video",
+   "audio"
+  ],
+  "operator_trace_sha256": "",
+  "schema_version": "rlkernel.h3.trajectory.v1",
+  "seed": 42,
+  "shifts": {
+   "audio": 3.0,
+   "video": 12.0
+  },
+  "sigma_grids": {
+   "audio": [
+    "0x1.0000000000000p+0",
+    "0x1.b6db6c0000000p-1",
+    "0x1.3333320000000p-1",
+    "0x0.0p+0"
+   ],
+   "video": [
+    "0x1.0000000000000p+0",
+    "0x1.eb851e0000000p-1",
+    "0x1.b6db6c0000000p-1",
+    "0x0.0p+0"
+   ]
+  },
+  "step_records": [
+   {
+    "chain_sha256": "e97f5dc566c8a5fcdba7075291ff8c0f74888193182f33df5ae6bf011aa76312",
+    "index": 0,
+    "latent_sha256": {
+     "audio": "cecbb0acdb345a3809ae5b626fff96380f091d2e210111e69791efb2b91edf26",
+     "video": "8e1b4242eeda1a9a113cebc0c7b2d2dfdb13608e89dbca3b08506a6666f306e9"
+    },
+    "sigma": {
+     "audio": "0x1.0000000000000p+0",
+     "video": "0x1.0000000000000p+0"
+    },
+    "sigma_next": {
+     "audio": "0x1.b6db6c0000000p-1",
+     "video": "0x1.eb851e0000000p-1"
+    },
+    "velocity_sha256": {
+     "audio": "b68799ad9088df3632fe13e8cb229f1e68b4d02ae014e05731b33fc407cc53cd",
+     "video": "29eb3a569cf6ddbe44c6b97d55ec27809f585dd4b562fbeea70f86c81122fe2e"
+    }
+   },
+   {
+    "chain_sha256": "9bef861211049cee26d03d56392694df011a86fa7c73e1f6a1efb63bb2c192e4",
+    "index": 1,
+    "latent_sha256": {
+     "audio": "295e0719273306d4f37634349060c82980ae880a6c64de090765d2546689690e",
+     "video": "8181737703d01c8a8458acc7fa33121944cdede28ab3572a7120fa8e2f06e2de"
+    },
+    "sigma": {
+     "audio": "0x1.b6db6c0000000p-1",
+     "video": "0x1.eb851e0000000p-1"
+    },
+    "sigma_next": {
+     "audio": "0x1.3333320000000p-1",
+     "video": "0x1.b6db6c0000000p-1"
+    },
+    "velocity_sha256": {
+     "audio": "d170164daf15e94dd64ccb2698911e3cf17ba9036f93ceed894f7d61a69188a1",
+     "video": "c57c7a148faa8b954f1ee2186d70b1b744a5be29561411cfcfdd5e14d9523743"
+    }
+   },
+   {
+    "chain_sha256": "7d6458f4bbd4f2b1549ff7c65f4c41e6184788f3fec21df102ea92060502e6c2",
+    "index": 2,
+    "latent_sha256": {
+     "audio": "564cb6a3e6136af37bf1e8468b5a140e998bdc079f0b74f7ff851f0676f169a8",
+     "video": "e74e7ea735c73a2dcedf1f46db8b47fe8bc0299bb6ac43e709c4251544e2c1ed"
+    },
+    "sigma": {
+     "audio": "0x1.3333320000000p-1",
+     "video": "0x1.b6db6c0000000p-1"
+    },
+    "sigma_next": {
+     "audio": "0x0.0p+0",
+     "video": "0x0.0p+0"
+    },
+    "velocity_sha256": {
+     "audio": "999bc246af973bdd1f6bae228ba022c84c8a7dd3bf54b31ab23b3f0939668349",
+     "video": "a0979cc185590edf2ceed4685748e25afcfe3f6720ad9bf8c240fe0f767bc3dc"
+    }
+   }
+  ],
+  "steps": 3,
+  "variant": "FL2VA"
+ },
+ "transformer_probe": {
+  "steps": [
+   [
+    [
+     "proj_in",
+     "611c8a75afa4c1a10fa6263749b18f4d0b571f9df0d19f86c70aa4609b8bca83"
+    ],
+    [
+     "audio_proj_in",
+     "f6372b22a4d3a2493b3b6af52100763917ac297745f204578b8fd901b32fd35b"
+    ],
+    [
+     "context_embedder",
+     "51a07fc76c5387c74871ecbe1d6388953a00717af0b6108926ad3ea6ea39f596"
+    ],
+    [
+     "token_refiner",
+     "bf8d8e9d6535c86910a6ccece4758ce25bfa58275802d18cf0b16e1e7b4942e3"
+    ],
+    [
+     "time_embedder",
+     "11863db4c990e2055a50f84650ff9a26f2e07d642f8f939d78cea482a50c56fb"
+    ],
+    [
+     "transformer_blocks.0",
+     "5cdc60dd26ccfd3761e67a72d40280ba0ff67753c85859f3aec5af775f6060d9"
+    ],
+    [
+     "transformer_blocks.1",
+     "ca6a7f683684059bdae24cb2a67335f66ced0a573c2631c15fea26c8a1ef7271"
+    ],
+    [
+     "transformer_blocks.2",
+     "9a5c521ec395a5a15912c084b5700e49dfc5605bf80d15b507bc866875e3966b"
+    ],
+    [
+     "transformer_blocks.3",
+     "bfd0ecd48bf5e0b453fdb33fcef921802f21a285974c680a257ac3e2683b193d"
+    ],
+    [
+     "transformer_blocks.4",
+     "0603ce43ee56578368dabfd63ca82fdc7feb88d058a949c8c9eb21fbfe8fe347"
+    ],
+    [
+     "transformer_blocks.5",
+     "a0c28430da286521d6bdf4528eb0ea05e5196abbde4d738dc73adffc3de4b671"
+    ],
+    [
+     "transformer_blocks.6",
+     "6017c089f4b6ab2b4b497fe86950ed73a3dd8d56140851c3cb063cce7c5295d4"
+    ],
+    [
+     "transformer_blocks.7",
+     "004583f88bbc2a7e514a4d25b48573b98bfac3d914289d7f1bd87ea36df81240"
+    ],
+    [
+     "transformer_blocks.8",
+     "72ce75d2827d5db2441f60115f72ae7cb5c6a6f82a3562636deab8c8fc4315b9"
+    ],
+    [
+     "transformer_blocks.9",
+     "87e88eca7d65814d5e1055c5cd02b5d9dd48e4d61775de41ac8dadde97714317"
+    ],
+    [
+     "transformer_blocks.10",
+     "3abf4d51a3265c59a7dde0a598ffc767324a9b934677569ed178af4e67fc3f30"
+    ],
+    [
+     "transformer_blocks.11",
+     "4bf8dd116c64bf52dca757179054645f0fa1d5d2e0a16f071072650a6f92cffc"
+    ],
+    [
+     "transformer_blocks.12",
+     "820c1c908e3f2fa4076ec8e415c62e22c19f663b2bb187764fb7220f9634b3f0"
+    ],
+    [
+     "transformer_blocks.13",
+     "ec0493f62e514eb98421609b5cc0f33ea2d65255b45254d746902fa0490c4b8e"
+    ],
+    [
+     "transformer_blocks.14",
+     "5e466ef0e5a0c6e37f68ea393a2d4fed4ecfcac740ba5c99d61cb1e7a17e2394"
+    ],
+    [
+     "transformer_blocks.15",
+     "b571f20d2d3c21397eb74cfeb042bbd36eabb5cfe643a0f8696e1c353baca0b3"
+    ],
+    [
+     "transformer_blocks.16",
+     "35aafa82a15870db8d61bbaedd5dee945f0d0b014d2f79fe70727a36d1de19f5"
+    ],
+    [
+     "transformer_blocks.17",
+     "022a2483cb0c7c64b4530b4794d9101baa717343a58d7970fa889b41c4bee86e"
+    ],
+    [
+     "transformer_blocks.18",
+     "c75396bfac34c55328351ec01de1e0b8fe6392e6b39ac957d38a1b13832a5426"
+    ],
+    [
+     "transformer_blocks.19",
+     "c54c47bb0f0669042e38ffd5b8dd4dfab113da78bfc118eac3ed3287b0bed98b"
+    ],
+    [
+     "transformer_blocks.20",
+     "a7c3d3b24673e568e8792588ea1ea7869d3af23102a60b3c10963541d8cc741e"
+    ],
+    [
+     "transformer_blocks.21",
+     "143dab652e32afc70a465d6e6085e8aad4eec0cde801f60007f70ba261161092"
+    ],
+    [
+     "transformer_blocks.22",
+     "6a133b7dd64755732f700b12cef8640ada16c5edc3269d4d6fe30feb93c88a7d"
+    ],
+    [
+     "transformer_blocks.23",
+     "d448063d67dc9091b6b1ca7f647499a7931018f1da2db6da64ee8fabe6a21a71"
+    ],
+    [
+     "transformer_blocks.24",
+     "3f815cef5b87d592a526599d5e673f582504b44b22b84f53ec053400c04bd2e2"
+    ],
+    [
+     "transformer_blocks.25",
+     "8bc0b551b8f508c27be9f94013cd8583393d5252a2fb0157386931858f8b6852"
+    ],
+    [
+     "transformer_blocks.26",
+     "e032e8fb349ac69cdcff8b2e1e0c5b8f34e03d5398cc9879b46262163f54043b"
+    ],
+    [
+     "transformer_blocks.27",
+     "9bc279af74d93a707b58859837b95c357b55dd3fc5fe36e019f5a855dfc945f8"
+    ],
+    [
+     "transformer_blocks.28",
+     "bfae29db0d05701f2d6365c443485728bfbcb440e72f1a31b940709fac376592"
+    ],
+    [
+     "transformer_blocks.29",
+     "ba2624c6d80289206127f5850cb939542078ad95e6f0349cf679d4915c41c1f8"
+    ],
+    [
+     "transformer_blocks.30",
+     "3121bfc24e6be23b7c9f2f2f7b6a6370b60c66053277792d3db64e6e2b27c77c"
+    ],
+    [
+     "transformer_blocks.31",
+     "766a5b8c43dc27d6997074adde15b86486a15203d4036968492ddec4b6ce0c85"
+    ],
+    [
+     "transformer_blocks.32",
+     "9ee1a337a3b8c89d8b03e55cb4118fd761c925ca98e13645e65d09415d32524b"
+    ],
+    [
+     "transformer_blocks.33",
+     "992044c2884113752dc99f44f07bf03b05ef98375193c5ecafadd7785643548c"
+    ],
+    [
+     "transformer_blocks.34",
+     "8bfcbea494320f1461ffcb899ca2f0bcfac0c88d4829cfd81da78852df32d9d0"
+    ],
+    [
+     "transformer_blocks.35",
+     "3ab5a713a45509b5ca38dea02eca2c7792422c748aa1a838ab0d44f05a23b953"
+    ],
+    [
+     "transformer_blocks.36",
+     "6f669f64ff032aec081731d6f5c869149f506ab70bda9d8a17e8ccd36d265c10"
+    ],
+    [
+     "transformer_blocks.37",
+     "7dfa406a02f82be7429be1225639389a7c53502c17635a2a53ab2ad7ac1f8f1a"
+    ],
+    [
+     "transformer_blocks.38",
+     "99f01a7bc82600d83706cd2242bd405b560c070a1e4979d001f6b5be1153a84c"
+    ],
+    [
+     "transformer_blocks.39",
+     "d7b3cbd978866a9eafeb01a044c9de289b370848d9ad44058c7f7c4da8e7979b"
+    ],
+    [
+     "transformer_blocks.40",
+     "fe702e7dc2a9b9ec498cb428c191aefd294184ef9328bb5c584c01e84c29c088"
+    ],
+    [
+     "transformer_blocks.41",
+     "ffe5b292a8acbc168189828798b318b49c2cf5a99931511c6c385e1e835287a1"
+    ],
+    [
+     "transformer_blocks.42",
+     "55c32d017849edf46e6651bc69b75711d91910a206d0b89257c58220ede28fe9"
+    ],
+    [
+     "transformer_blocks.43",
+     "712dc32f302b163bf4880bc19df36c1cbd7262501966e8593fff0d74764766a3"
+    ],
+    [
+     "transformer_blocks.44",
+     "47beb7ffd3a4bc072789042bcbe87931dc1d385770a3fcb0aa937bf3c4465e3c"
+    ],
+    [
+     "transformer_blocks.45",
+     "d9b14495b69f2d1e6a8637ce6c6b42fee52069d46610d423ae472d5fde3d36ff"
+    ],
+    [
+     "transformer_blocks.46",
+     "49fb36746d749d9fbf27195f0aa572eeae3a94fd15b69591ff064de66da6bbc6"
+    ],
+    [
+     "transformer_blocks.47",
+     "01510ed3b2ec784c1cf75342e63d2f5221a0b752c3d5eeaf910a10a7178b4a06"
+    ],
+    [
+     "transformer_blocks.48",
+     "f3639c0950c55a9e8a6226871253c3b8efb785473e5c3d92dd8da78894fc0df8"
+    ],
+    [
+     "transformer_blocks.49",
+     "fc5115950415250788e7f789c24103ce7013940d282ca06260a300eeefb3efc9"
+    ],
+    [
+     "norm_out",
+     "2f87c43ed433d282ee0fbfa8289481dcb687b560eb489e56d7082504f06753ff"
+    ],
+    [
+     "proj_out",
+     "173b74ce56bcd9651f2d0343e75fa6d311d127bea7191aff48cce6e21a8563d5"
+    ],
+    [
+     "audio_proj_out",
+     "63ffc97e434025459cd499f871db23d4649501eaa5071ae2612daa251faa5f6a"
+    ]
+   ],
+   [
+    [
+     "proj_in",
+     "0cdf21b67a845d8c198b300ca2ba25a7673c1dd7aec65c8826a00003b65739b3"
+    ],
+    [
+     "audio_proj_in",
+     "54a726dcdccdad286eb74fc8f1617d532a1d555152f33b75c1cb0f73dd728c9b"
+    ],
+    [
+     "context_embedder",
+     "51a07fc76c5387c74871ecbe1d6388953a00717af0b6108926ad3ea6ea39f596"
+    ],
+    [
+     "token_refiner",
+     "bf8d8e9d6535c86910a6ccece4758ce25bfa58275802d18cf0b16e1e7b4942e3"
+    ],
+    [
+     "time_embedder",
+     "2b09f8902d54205c62c3e52790a5f156d993e0259da990ce27cb3f6a39b9e9a5"
+    ],
+    [
+     "transformer_blocks.0",
+     "cf7eab8d9bb3f9a6876fabef135962828f99d82ad431b5d77589b6315c9c5431"
+    ],
+    [
+     "transformer_blocks.1",
+     "79d35f37d56ce0994a511b421d9fdf077e631555ec01b1e8bf391b6b2d65ae73"
+    ],
+    [
+     "transformer_blocks.2",
+     "bce0459e56b59368ca0d7fa678548d39d2efad16cf820f473a622f03040dc935"
+    ],
+    [
+     "transformer_blocks.3",
+     "64c24283ea5e525b205ce84ed19a328c88332c842ae6013efac42873124bc8c2"
+    ],
+    [
+     "transformer_blocks.4",
+     "816df78767fded37e2e0c59f8a5964fa9e64a420ca88e0ba7fa630ec97009248"
+    ],
+    [
+     "transformer_blocks.5",
+     "6846e565e387d3ba1794200a82e93629eb5aef1f04cfb471e9cb3c5368c4bd89"
+    ],
+    [
+     "transformer_blocks.6",
+     "b7c8aa9ad9f5bb458d357344a03e57ecae2e9131c85c91e571c356bb7aad3bbb"
+    ],
+    [
+     "transformer_blocks.7",
+     "d6eda8aef3877a353ba491500a0384a0dcae7a8c631a7924b22092f5cc624e25"
+    ],
+    [
+     "transformer_blocks.8",
+     "19c65a18785870002731f909e168302cf3df08b211091b67fda10cbc242356e8"
+    ],
+    [
+     "transformer_blocks.9",
+     "f2c8489eaade7abb912eae40b98642758c6ad6954dde727bc9b69b4911c52510"
+    ],
+    [
+     "transformer_blocks.10",
+     "61d1a65c1d21b7e484bf2d114d697cc88375912d0c540efa70d45b722ed9734a"
+    ],
+    [
+     "transformer_blocks.11",
+     "e7c5c82bb984a7290d13c4677d85bb617a8d4374cfccdb22551523c0d674c050"
+    ],
+    [
+     "transformer_blocks.12",
+     "815682b750e5a60fa92740e42751255768be3f52f8eeed8e76589602050f1b88"
+    ],
+    [
+     "transformer_blocks.13",
+     "0986951ec8f524a5787281574aaeba5508b88cc43a03c2ee50c362cc52f68c44"
+    ],
+    [
+     "transformer_blocks.14",
+     "454e171ae60bd59ff71bfe277c4353eae3c747a5a8cd5649cd1268b06a540358"
+    ],
+    [
+     "transformer_blocks.15",
+     "97789b5b95d66b148536581a4b80d7477e5ea72c9d7ad032eed3447b4eca264f"
+    ],
+    [
+     "transformer_blocks.16",
+     "f8e20e968b4d7afd2733d3f37d9f3dd740a55cfd3045985d96f5540a74851f83"
+    ],
+    [
+     "transformer_blocks.17",
+     "2d259ef90982a34118f99b053c1a0b6ac261eb9de3b83b5de6382d29e7e2d926"
+    ],
+    [
+     "transformer_blocks.18",
+     "e6f91a4d65581cf7d8aa21b8b3aae6df677f4f06cec7c817390c8080f94b9468"
+    ],
+    [
+     "transformer_blocks.19",
+     "46eb2b99529533656883fd0f6912d683019805a7fbbd3d03e41ed33a084ee63a"
+    ],
+    [
+     "transformer_blocks.20",
+     "3bfd7c77f3ddff131e7b0730f8f871132667446285a39ac565eb4542f8c4bb91"
+    ],
+    [
+     "transformer_blocks.21",
+     "a098922070df1ad12cb1047278abf97eeefdc48fc5399e3f40848828cd45d251"
+    ],
+    [
+     "transformer_blocks.22",
+     "ef04a2ce27d53e7871ff4c8289df28fb868c195c502b2ed9b41621d1fb007a52"
+    ],
+    [
+     "transformer_blocks.23",
+     "8133e002c72117aa747c74604fb9ace16c07cce8f0f2d2e7129d5d81587151a4"
+    ],
+    [
+     "transformer_blocks.24",
+     "83582d4d89d155fa41d9e687a2523c3dc57204378e69c28b39ac27bd78ad307c"
+    ],
+    [
+     "transformer_blocks.25",
+     "faa868fbeaff8a9bb271464ac0719e9820f65b29428ad68cc5818063883244ee"
+    ],
+    [
+     "transformer_blocks.26",
+     "dd063783dd0fbbaa6366c86647eaca6f4dc2ea01225061ecb107e45329d71f75"
+    ],
+    [
+     "transformer_blocks.27",
+     "38eb149deeb7efcc95792a176a8b8663f07ef848442c2f3e21d89c1f9fdb210b"
+    ],
+    [
+     "transformer_blocks.28",
+     "7beb7da0f8d2aa765e3a1353db19c7ecc138433686d1326311af4051cf2a2ede"
+    ],
+    [
+     "transformer_blocks.29",
+     "e221b31f993defeeb6e5f43d8f78d5631855f58e74f517d8e8e25f15b2ee0085"
+    ],
+    [
+     "transformer_blocks.30",
+     "d84d328fab8145bb3c3e873255e77a3e56a3ef9c37e82545577f07b4e2c06f7e"
+    ],
+    [
+     "transformer_blocks.31",
+     "ace344db8c431289d682835f514ec2b686c38295817ef46c7158e2c43b0fe7fe"
+    ],
+    [
+     "transformer_blocks.32",
+     "fd2a7a97e230fc4052d5df9ccec28f0536f2c6d8a57fc7dec78c4e4af6f4d3f5"
+    ],
+    [
+     "transformer_blocks.33",
+     "11d22bac2b2b3fd3e3e401cbea8e8e096fada608094b2f2050167c700e78d816"
+    ],
+    [
+     "transformer_blocks.34",
+     "e3d17373eaf064c6f438710227502e1bb6618c763a266392f8cbef881e6306db"
+    ],
+    [
+     "transformer_blocks.35",
+     "f37eadc59fbc202c4be6043f6e80f08b122fb7fae28dd6c524888d6ef40df3a1"
+    ],
+    [
+     "transformer_blocks.36",
+     "9289a6c4e8017d0683e749bc33a5e5f4de760328c04d4de245433ad52b8b286c"
+    ],
+    [
+     "transformer_blocks.37",
+     "d17b634d8b7fca5630fd2791d957334a704cc8f30ba463efa7392dbbc8f2e159"
+    ],
+    [
+     "transformer_blocks.38",
+     "1a3ae4703b77fc4677c05e5a5477027c17851ad4175ecc6dd7507ef83c5c735c"
+    ],
+    [
+     "transformer_blocks.39",
+     "7a917524ec352df19fa0a4cc2591d3d72b8b273ea9cc63c1e48ab90c9664814c"
+    ],
+    [
+     "transformer_blocks.40",
+     "abbb571cc441ee65e044a5d0938ce777f48b4af21a6a8c658b2ebd7fbefe81a8"
+    ],
+    [
+     "transformer_blocks.41",
+     "6f2b12cb34c14b02ea489fc50206d52bf843254ef2ac67cbb291f5918914df1d"
+    ],
+    [
+     "transformer_blocks.42",
+     "e72c6547535d72a63b5c1d4b1cb32c492ab933b4f94c99d46feb1fd7a34a4b8f"
+    ],
+    [
+     "transformer_blocks.43",
+     "041bae80d8ffe016def6083d354236b49773a549be0c9976bc76f0afe70df1c0"
+    ],
+    [
+     "transformer_blocks.44",
+     "94a69810c60a17ec433c7c4856e082af2776eb98770226170904be437aeb5cfb"
+    ],
+    [
+     "transformer_blocks.45",
+     "6a003c04e497bf6c92774fcd4acf8a864a11cedc050d68f956a58693ea1d6140"
+    ],
+    [
+     "transformer_blocks.46",
+     "a1b1dcc1e5ae690c191f4503e3966b851ba6b760e5a2db10d9a7f508c0c854a6"
+    ],
+    [
+     "transformer_blocks.47",
+     "b8db12d5226cec303f15ef8ed6e17d2247157c99db9fab2e6ae0a9174c246956"
+    ],
+    [
+     "transformer_blocks.48",
+     "5863fae32356fe0885528053794b03da6f2f0f295a3390f02c042623f4249abb"
+    ],
+    [
+     "transformer_blocks.49",
+     "798382aae161607c651fb4644029da71762264426569762bdda1cdd9efb64adf"
+    ],
+    [
+     "norm_out",
+     "c4aa7780af434d0e0832935a897b8d9ae3727a3c0cd4f20728fdc4803d5e7d50"
+    ],
+    [
+     "proj_out",
+     "6d74a251f6ee1b45b76f957c79c5d7870a46076eab786df388fb802888f7f568"
+    ],
+    [
+     "audio_proj_out",
+     "31ba11029e3ffd53a14cc01be6c297416a2e1006b65aa9be33adab2a5a512725"
+    ]
+   ],
+   [
+    [
+     "proj_in",
+     "62812ffca47cafb3e8b604ca99376a25c03b3ffa7dfb9dd7d4cafc6d6c903516"
+    ],
+    [
+     "audio_proj_in",
+     "7a6dd3632bbd8c03404405b478dddb3fd23200ed15de17aeaf6e62303eca2827"
+    ],
+    [
+     "context_embedder",
+     "51a07fc76c5387c74871ecbe1d6388953a00717af0b6108926ad3ea6ea39f596"
+    ],
+    [
+     "token_refiner",
+     "bf8d8e9d6535c86910a6ccece4758ce25bfa58275802d18cf0b16e1e7b4942e3"
+    ],
+    [
+     "time_embedder",
+     "befb030cfaa3837114d6a0a0ce7e16da04a35993b97d48f5933870e0b44459f6"
+    ],
+    [
+     "transformer_blocks.0",
+     "932d31a56bb2780c94f6b76351bd2e09c1f45c7be4006ab0c26c17b2be59ff61"
+    ],
+    [
+     "transformer_blocks.1",
+     "82bc538643b7049f92df1f97d1dbd3a1e82eaad72fbcb87cb70ef9eda7619760"
+    ],
+    [
+     "transformer_blocks.2",
+     "52e453ed2d33109d3fce16587d6c57dab8ff2db70929e63712a2c4c7cccb4cde"
+    ],
+    [
+     "transformer_blocks.3",
+     "dc4046cfd9f83dc60e66e11dd4012c2135939ef5e9d75370918f5e4a3c9cea7a"
+    ],
+    [
+     "transformer_blocks.4",
+     "c1c9b87dc5fef5ca4677fac9e7df70d36a3620623fe3bb737141649de9e7e838"
+    ],
+    [
+     "transformer_blocks.5",
+     "86b61413974cd6f1d07306a72a0ecab6a0e540c2ff53f58a22a7622174f4b962"
+    ],
+    [
+     "transformer_blocks.6",
+     "dd91313d8a3cf62f90e6cdf9e9f00b81d9a2e5e5cf8da62a2b8bddc4bfe6938a"
+    ],
+    [
+     "transformer_blocks.7",
+     "550e38b347694f6ae1f72822f961619a7e517e1aeac4889651941c736f8170f1"
+    ],
+    [
+     "transformer_blocks.8",
+     "a225a9e119a6a9aff5103363744a864d73a6af2dfff1e4fdb27b611cd4f49ae3"
+    ],
+    [
+     "transformer_blocks.9",
+     "50961815ff57d66582965a53ec5108d4ea0b2d7d66df00e8022343f69ec8ea44"
+    ],
+    [
+     "transformer_blocks.10",
+     "71aef8270f25aa5b32e89b0c038a97bc41bdfe40daf479b7f24867ce23425642"
+    ],
+    [
+     "transformer_blocks.11",
+     "1416c6c8792eabe51465fd1aaad5a0938fa73f900ab39c4fd7389d240b2240a0"
+    ],
+    [
+     "transformer_blocks.12",
+     "41e0c7d632bba3873b7261c9d5c1b2da36c5c11ce4c5136b3608eee061d740f1"
+    ],
+    [
+     "transformer_blocks.13",
+     "f84dca0ac171376e0bd6392eeaf07bb702b2db1130b76b5291a6fcf332176625"
+    ],
+    [
+     "transformer_blocks.14",
+     "2c5fb1e3b5e4dd2af307f76b86ab3c5823b8ad4d8b429627341b7612bce68734"
+    ],
+    [
+     "transformer_blocks.15",
+     "0d315e79a99cb5a3af16f15a6d6d1d7fb4b5cb4e5087d805cdbb7e565d592655"
+    ],
+    [
+     "transformer_blocks.16",
+     "6d074a62295a2b393703a4b35c1a2247415d0e9971e8c926dfbb7dcdffd7f5d7"
+    ],
+    [
+     "transformer_blocks.17",
+     "dcb88f07e6d285db0a42a19b6b254b398f9770dbbb43028bb1c1b08ac726ce7b"
+    ],
+    [
+     "transformer_blocks.18",
+     "ed9f6ce570f60795e3a686a768cd327701507b7be22e8f2909f88b8395d7fe8a"
+    ],
+    [
+     "transformer_blocks.19",
+     "33f9f45938d75194eefac9880de55e9411c8bf1621553f3f910ff517f8f55a1e"
+    ],
+    [
+     "transformer_blocks.20",
+     "7e56d3e2dac149bb3cadf29591108d7b6fceb60e1c4eb4adbdddc88477d82af1"
+    ],
+    [
+     "transformer_blocks.21",
+     "e96c1baccfe7d323f4a05d1ed4bbb6b662f9585c8c79372897f10a6923b3e437"
+    ],
+    [
+     "transformer_blocks.22",
+     "cb7a0a5bb2b4dabd24a5ccbf71216bd9a4f46f8de391d830aca7636f7450b052"
+    ],
+    [
+     "transformer_blocks.23",
+     "ab41e3b54fc931739a9f3a82df5a1c6c86585e4fd7fa35d04bbde5cb67fd9aed"
+    ],
+    [
+     "transformer_blocks.24",
+     "e5ef6084bcf059660ac32639de8220385077aaa245a55cecffdbc39a03ea7f83"
+    ],
+    [
+     "transformer_blocks.25",
+     "b9c4ddf635d254592851562e7758fa7c1feb5e85f6087d15141e6d794fd1a411"
+    ],
+    [
+     "transformer_blocks.26",
+     "54e56943799b3baf10980428ccb07f63fb2404fc7fb1e3e0d76bc2874cd21276"
+    ],
+    [
+     "transformer_blocks.27",
+     "b3a87339aff82e138a7942f3fb83a54e5a52d0177b24202875732bfb2a2d54a3"
+    ],
+    [
+     "transformer_blocks.28",
+     "186b7789f6a6be5671c99d09849ba3e68f5083f7ef8c6dec2d316c2e98ef0b52"
+    ],
+    [
+     "transformer_blocks.29",
+     "cf97775e139179ffa5093d707c37fd8a54d6aa50b4947af8dfae73a19c14cf34"
+    ],
+    [
+     "transformer_blocks.30",
+     "2b54057c27612952c70ea3f8c2163c40388f9b70ee02ad5c9af6f0040d1a2f5a"
+    ],
+    [
+     "transformer_blocks.31",
+     "59b70cc0dd548d8d14da3dbf4ba66f8597d0b765091ac45569e7c2f553f6f31a"
+    ],
+    [
+     "transformer_blocks.32",
+     "d74748d56c6c3068539c273391a33d1d6a3404694ec0430c3c5c5478fd8e0194"
+    ],
+    [
+     "transformer_blocks.33",
+     "60c84866e59981b16534f75040b0b08971d21631091c40dde16a08a5f3333851"
+    ],
+    [
+     "transformer_blocks.34",
+     "96688e9cd9d2bca321c5b7258c7ad8f77661b7f55dc8212b666d643f368033d7"
+    ],
+    [
+     "transformer_blocks.35",
+     "0172d15d98d67da1c51126e1d79b7cde247862100415efbccbd640f3cc4054b1"
+    ],
+    [
+     "transformer_blocks.36",
+     "5491e398b796bd916ca1a0a179b6a9da1c5d91407851524fc33cf1cf9bb4a981"
+    ],
+    [
+     "transformer_blocks.37",
+     "762254a8f1b26ac0033c96b0851281818f302b7a17fac97226d6a7f5e1453003"
+    ],
+    [
+     "transformer_blocks.38",
+     "d6b30f0fa314b99ad1a081f56a047550c9e2ff15443383ec53f3a70615cc6353"
+    ],
+    [
+     "transformer_blocks.39",
+     "29ead5e1b1f5e43a12c225578efac99ee8c064949bb34162e57bf43d756e4594"
+    ],
+    [
+     "transformer_blocks.40",
+     "ddbfaba47a2b1880e0c8b4d6c5deb99837e6284f8798a4535dbb6e4a2c142838"
+    ],
+    [
+     "transformer_blocks.41",
+     "0dda9d4365f697017872253fefbffcef7cf62f27f2649a8d1cc84d98cdf51ee2"
+    ],
+    [
+     "transformer_blocks.42",
+     "1b795d4e907394f61f74121a0653e8fec8636af562bde1c31e392f1105b48875"
+    ],
+    [
+     "transformer_blocks.43",
+     "96c91ac8532693da6bab54cffe081675f3b3c6e840cb59b7d010347c73b842e2"
+    ],
+    [
+     "transformer_blocks.44",
+     "d7cbd2d2ff2617daa46ec18be9f5a5ce7f795abda778b25a6fdf3c9a26541b2f"
+    ],
+    [
+     "transformer_blocks.45",
+     "c3758fbc3a3b6def5a325d5deacae4fb0d3a894809e15963aac234a43b0bfaab"
+    ],
+    [
+     "transformer_blocks.46",
+     "b10ad696d3ca986f8cfb21c75bcd0c74797784b7bd083ba9d628ad0c167982ee"
+    ],
+    [
+     "transformer_blocks.47",
+     "95d24c09d1995b5281a4433f8371075502810314a3cd535a5bbb2f0ec63f0c37"
+    ],
+    [
+     "transformer_blocks.48",
+     "adad09dc8303c00d5365cfe8b6678968236a67219ba66f13d9ac64de4011dd19"
+    ],
+    [
+     "transformer_blocks.49",
+     "c3993e33592e01bd45a7299b1fc9add53b06b37a011e113d806607f1cb5ff7df"
+    ],
+    [
+     "norm_out",
+     "f177d574ae666e27abd4210c878649e903928c16ee00f39e93b2b6871b5b95a1"
+    ],
+    [
+     "proj_out",
+     "de217112a9da4bfa72bc3681bbb51434dfcf072d611ff34c68857cbeb52c3a98"
+    ],
+    [
+     "audio_proj_out",
+     "b8e3d1b402b000703cd841c3fa7703a818f2b44826ead9336cbbe8569d3db457"
+    ]
+   ]
+  ]
+ },
+ "variant": "FL2VA",
+ "workflow": "fl2va"
+}

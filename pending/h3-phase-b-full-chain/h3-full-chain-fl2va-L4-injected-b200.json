@@ -1,0 +1,116 @@
+{
+ "device": "NVIDIA B200",
+ "first_drift_cell": {
+  "module": "transformer_blocks.2",
+  "step": 1
+ },
+ "kind": "plot",
+ "markdown": "| First drift: stage | Step | Module | Packed row | Row | Module max \\|\u0394\\| | Trajectory first drift |\n|---|---|---|---|---|---|---|\n| denoise | 1 | transformer_blocks.2 | 3000 | target video, latent frame 18, patch (6, 3) | 0.0312 | velocity video, step 1, 1 rows, max \\|\u0394\\| 0.000118 |\n\n| Step | Module outputs that differ | First that differs | velocity video | velocity audio | latent video | latent audio |\n|---|---|---|---|---|---|---|\n| 0 | 0 / 12 | none | equal | equal | equal | equal |\n| 1 | 5 / 12 | transformer_blocks.2 | differs | equal | differs | equal |\n| 2 | 1 / 12 | proj_in | equal | equal | differs | equal |\n\n| Pair | request | media_preprocess | text_conditions | visual_vae_encode | audio_vae_encode | packed_layout | initial_rows | schedule | denoise | unpack | video_decode | audio_decode | Hard gate |\n|---|---|---|---|---|---|---|---|---|---|---|---|---|---|\n| A vs C (injected) | equal | equal | equal | equal | equal | equal | equal | equal | differs | differs | equal | equal | fail |",
+ "png": "h3-full-chain-fl2va-L4-injected-b200.png",
+ "schema": "rlkernel.h3.full_chain.evidence.v1",
+ "source": {
+  "clean": true,
+  "commit": "5b2b0c171899c8e79fad91bf7b94a9c1a6522481"
+ },
+ "tables": {
+  "first_drift": {
+   "headers": [
+    "First drift: stage",
+    "Step",
+    "Module",
+    "Packed row",
+    "Row",
+    "Module max |\u0394|",
+    "Trajectory first drift"
+   ],
+   "rows": [
+    [
+     "denoise",
+     "1",
+     "transformer_blocks.2",
+     "3000",
+     "target video, latent frame 18, patch (6, 3)",
+     "0.0312",
+     "velocity video, step 1, 1 rows, max |\u0394| 0.000118"
+    ]
+   ]
+  },
+  "stages": {
+   "headers": [
+    "Pair",
+    "request",
+    "media_preprocess",
+    "text_conditions",
+    "visual_vae_encode",
+    "audio_vae_encode",
+    "packed_layout",
+    "initial_rows",
+    "schedule",
+    "denoise",
+    "unpack",
+    "video_decode",
+    "audio_decode",
+    "Hard gate"
+   ],
+   "rows": [
+    [
+     "A vs B",
+     "equal",
+     "equal",
+     "equal",
+     "equal",
+     "equal",
+     "equal",
+     "equal",
+     "equal",
+     "differs",
+     "differs",
+     "equal",
+     "equal",
+     "fail"
+    ]
+   ]
+  },
+  "steps": {
+   "headers": [
+    "Step",
+    "Module outputs that differ",
+    "First that differs",
+    "velocity video",
+    "velocity audio",
+    "latent video",
+    "latent audio"
+   ],
+   "rows": [
+    [
+     0,
+     "0 / 12",
+     "none",
+     "equal",
+     "equal",
+     "equal",
+     "equal"
+    ],
+    [
+     1,
+     "5 / 12",
+     "transformer_blocks.2",
+     "differs",
+     "equal",
+     "differs",
+     "equal"
+    ],
+    [
+     2,
+     "1 / 12",
+     "proj_in",
+     "equal",
+     "equal",
+     "differs",
+     "equal"
+    ]
+   ]
+  }
+ },
+ "transformer": "P/P"
+}

@@ -1,0 +1,187 @@
+{
+ "artifact": "fl2va-B.json",
+ "artifact_sha256": "e0c463b6bb1719f371a357608af3f418cd701e65318e2ee904af3de591df72e6",
+ "execution": {
+  "actual_backends": {
+   "attention": "rl_engine.validation.models.h3_full_model.QueryChunkAttention",
+   "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+   "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+   "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+   "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+   "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+   "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+  },
+  "bound": true,
+  "boundary_bindings": {
+   "audio_proj_in": {
+    "row": "audio_input_projection_fp32",
+    "status": "row"
+   },
+   "audio_proj_out": {
+    "row": "audio_output_projection_fp32",
+    "status": "row"
+   },
+   "context_embedder": {
+    "row": "text_context_projection",
+    "status": "row"
+   },
+   "norm_out": {
+    "row": "final_adaln_out",
+    "status": "row"
+   },
+   "proj_in": {
+    "row": "video_input_projection_fp32",
+    "status": "row"
+   },
+   "proj_out": {
+    "row": "video_output_projection_fp32",
+    "status": "row"
+   },
+   "time_embedder": {
+    "row": "timestep_mlp_fp32",
+    "status": "row"
+   },
+   "token_refiner": {
+    "row": "token_refiner_block",
+    "status": "row"
+   }
+  },
+  "case_id": "R/R",
+  "contract": "h3-runtime-v1",
+  "fell_back": null,
+  "label": "R/R",
+  "mode": "strict",
+  "native_boundaries": [],
+  "native_nodes": []
+ },
+ "final_latent_sha256": {
+  "audio": "753d88877ac5a3341e951312b220aa4686c59a0fb46a58241381e76ee9f6b2cf",
+  "video": "5797c4b3418a97b9684a2db6d6f58dbb0a744069716ffb9235b6f9aa5e935dfd"
+ },
+ "info": {
+  "chain_s": 263.7,
+  "identity": {
+   "attention_query_chunk": 4096,
+   "layer_truncated": false,
+   "layers_loaded": 50,
+   "placement": "offload",
+   "transformer_dir_identified_as": "FL2VA"
+  },
+  "transformer_load_s": 0.1,
+  "vae_load_s": 21.0
+ },
+ "kind": "run",
+ "label": "B",
+ "runtime": {
+  "compute_capability": [
+   9,
+   0
+  ],
+  "cpu_capability": "AVX512",
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "cudnn_allow_tf32": true,
+  "deterministic_algorithms": false,
+  "device": "cuda",
+  "device_name": "NVIDIA H100",
+  "hip": null,
+  "matmul_allow_tf32": false,
+  "num_threads": 16,
+  "platform_machine": "x86_64",
+  "python": "3.12.15",
+  "torch": "2.13.0+cu130"
+ },
+ "schema": "rlkernel.h3.full_chain.evidence.v1",
+ "secondary_metrics": {
+  "audio": {
+   "peak": 0.14603932201862335,
+   "rms_lr": [
+    0.03904406561829241,
+    0.03786370989276018
+   ],
+   "shape": [
+    2,
+    165600
+   ]
+  },
+  "video": {
+   "max": 1.0,
+   "mean_rgb": [
+    0.6455715383272664,
+    0.5737654485584655,
+    0.5728418167090269
+   ],
+   "min": 0.0,
+   "shape": [
+    1,
+    3,
+    124,
+    256,
+    448
+   ],
+   "std": 0.15486203974516796
+  }
+ },
+ "sequence_length": 5041,
+ "source": {
+  "clean": true,
+  "commit": "7e22c736bde5ed4754023f563f8e7410596a383d"
+ },
+ "stages": {
+  "audio_decode": {
+   "waveform": "c9e8cde386bbe38ab179c8212903946fab6694b2b43a5775a502511e94bb4274"
+  },
+  "audio_vae_encode": {},
+  "denoise": {
+   "final_audio_rows": "753d88877ac5a3341e951312b220aa4686c59a0fb46a58241381e76ee9f6b2cf",
+   "final_video_rows": "5797c4b3418a97b9684a2db6d6f58dbb0a744069716ffb9235b6f9aa5e935dfd",
+   "trajectory": "a521df0e6dfad79f1d814d3359c0069173b69b5a72b33606cb0c2c4758c77071",
+   "transformer_probe": "6c7926fb0b58624dec480d2f7425c01a479a400a595b834ce5b69218bc354a8f"
+  },
+  "initial_rows": {
+   "audio_rows": "d9ae6b7e07173357b2834cc454e94d80332b5c8351482fc7ea50b86b81de0324",
+   "video_rows": "b673beb07fed31dbfd0c4bed19120cf334f75ee21bfca027d54c8b77bcd68a88"
+  },
+  "media_preprocess": {
+   "keyframe_pixels.0": "2ade1d9318b1b946320bd288358310ccfccdb18d864edda8d8465ca51b7ec38a",
+   "keyframe_pixels.1": "ca7d9099ab21d9be5e91878e7f00f728aa4c11ffa9f891310736e4686b7e98ba"
+  },
+  "packed_layout": {
+   "audio_indices": "381c5c38c16a7ba811bdb39389050d9b4ea67d6cab62399413ca46abee1bc9af",
+   "layout_artifact": "e1c64e7a04b77a7ba5ca9e5a3572314283f569c1e8e90ec34812712234ff86ed",
+   "position_ids": "317768e638e388571f71f9e71ba918f253db629ad6dfa73296400d2180ab2025",
+   "text_indices": "36ebd6f6b88fc428a5ab9a9e4b5e807bf9dd8b911ed3cdd1528458b95d6b473e",
+   "token_tags": "3b74bcb622425f38bc6b366f5a29016b7ec50eebf11a31641287211f7d815808",
+   "video_indices": "e95e4be4c5efce3963730dda98719d4a69961a38ee5225ea1e99c0ebfc1e49b6"
+  },
+  "request": {
+   "keyframe.first": "25ff9d529c2c87255aa5e7a847b7a341f358f888aaa5f1165f0d48d7b06104c9",
+   "keyframe.last": "46c90a51d1b8f8d3e340e275cb5706581de00ffd9f8af754e6b487ddcdb2bbde",
+   "prompt": "ce85f3d4019f175388c83ecedefab5066b9d8a627e96e554843c18718db39618",
+   "spec": "53c7c1960c518669c39b567337124be0a0ff3f36a742750c2e92760afd315a1e"
+  },
+  "schedule": {
+   "audio_sigmas": "698a99d0cd635599942b10afc429ce922b6bd5220c01b0e6f57fbc2fc7cd13fd",
+   "audio_timesteps": "44ac97368e3b7ceb2b527dd06a776dbbfb37be5110142fdf381293bad2fa9ce7",
+   "row_timestep_plan": "c06adaccbc340d17de8b81ab24c91240eb0bc18d2f0518c1c9b89897c7e1fd33",
+   "video_sigmas": "adf3aa7009a3804b42cc8d0a032456799b9e3a5720f357bba7c428e202217fcb",
+   "video_timesteps": "d13d4b33f8216be9523df77ec193dede1e7b21faccc3bf542ef579e2e07ae832"
+  },
+  "text_conditions": {
+   "prompt_embeds": "02f8f4954b7bb23b87fc3ff92d1b1979ef957539850c2e67234d829231a5b87b",
+   "text_token_tags": "4e8dfd1075918df9a8c4cdfdf9ec916bb807ec54b6ffe6962428f47b085934f1"
+  },
+  "unpack": {
+   "audio_latents": "42894f535e1435137b703dee85cdf59824d73c296e0d8cce15e3c3a9fce53004",
+   "video_latents": "36cdb8f7931692e078910cf10d0e455b7de908aac9863bb75eec5b799a07c4ea"
+  },
+  "video_decode": {
+   "video": "5f4dd6e69cb26087c3c6defddca07c685499d73f38efd38479f71917209305c9"
+  },
+  "visual_vae_encode": {
+   "condition_latents.0": "ffdcc3e401df289dce4f5d22f3645d87aeb3119847c429a86b74748023955088",
+   "condition_latents.1": "8f77cc4a2b3edcad1a78ec536f468840ca2503cce11f74f74884b5318cda9042"
+  }
+ },
+ "workflow": "fl2va"
+}

@@ -1,0 +1,842 @@
+{
+ "architecture_fingerprint_sha256": "805d0ebf601a09d65ede184441fda2694aa374d80f3dc274ba4670cfcfdf0839",
+ "artifact_sha256": "799be8ca02815a001846d75acbb4470ce512d219b6ee943055c62d1325d7a579",
+ "checkpoint": {
+  "repo": "MiniMaxAI/MiniMax-H3",
+  "revision": "42ed227ee7df40d41602854ae760620d6eb651fe"
+ },
+ "contract": "h3-phase-b-full-chain-v1",
+ "gate_policy": {
+  "hard": [
+   "request",
+   "media_preprocess",
+   "text_conditions",
+   "visual_vae_encode",
+   "audio_vae_encode",
+   "packed_layout",
+   "initial_rows",
+   "schedule",
+   "denoise",
+   "unpack"
+  ],
+  "rule": "latent trajectory equality is the gate; decoded media are recorded only",
+  "secondary": [
+   "video_decode",
+   "audio_decode"
+  ]
+ },
+ "injection": null,
+ "label": "S",
+ "layout": {
+  "artifact_sha256": "23680d61d3d61ea17b50cb6d02455d64aba8ad969381aac5986f34d955446bbb",
+  "checkpoint": {
+   "repo": "MiniMaxAI/MiniMax-H3",
+   "revision": "42ed227ee7df40d41602854ae760620d6eb651fe"
+  },
+  "geometry": {
+   "height": 256,
+   "keyframe_anchors": [
+    "first",
+    "last"
+   ],
+   "latent_height": 16,
+   "latent_width": 28,
+   "num_audio_latents": 207,
+   "num_frames": 124,
+   "num_latent_frames": 37,
+   "width": 448
+  },
+  "input_sha256": {
+   "condition_latents.0": "3e026d0a7a1438beff376821739e31cb3380179c27591ae19827da9115866ddd",
+   "condition_latents.1": "2dc84d5b4e4bace57bfff14caabc90d0433fb6b245b08aaa2cec027c5770fdd4",
+   "prompt_embeds": "02f8f4954b7bb23b87fc3ff92d1b1979ef957539850c2e67234d829231a5b87b",
+   "text_token_tags": "4e8dfd1075918df9a8c4cdfdf9ec916bb807ec54b6ffe6962428f47b085934f1"
+  },
+  "layout_component_sha256": {
+   "audio_indices": "381c5c38c16a7ba811bdb39389050d9b4ea67d6cab62399413ca46abee1bc9af",
+   "position_ids": "317768e638e388571f71f9e71ba918f253db629ad6dfa73296400d2180ab2025",
+   "text_indices": "36ebd6f6b88fc428a5ab9a9e4b5e807bf9dd8b911ed3cdd1528458b95d6b473e",
+   "token_tags": "3b74bcb622425f38bc6b366f5a29016b7ec50eebf11a31641287211f7d815808",
+   "video_indices": "e95e4be4c5efce3963730dda98719d4a69961a38ee5225ea1e99c0ebfc1e49b6"
+  },
+  "num_condition_audio_rows": 0,
+  "num_condition_video_rows": 224,
+  "num_text_tokens": 259,
+  "pipeline_identity": {
+   "checkpoint_component_sha256": {
+    "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+    "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+    "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+    "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+    "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+    "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+    "transformer": "422af2a84dc63c5ff53b93a231ed3982b1570157879d07e0d7f0499c3ca74f62",
+    "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+   },
+   "preprocessing_recipe_sha256": "d56ca503a4adb57a23ff4e7b17b464083a679c252cb54cbfa0d1e1de9ef9daa0",
+   "structural_workflow": "fl2va",
+   "transformer_dir": "transformer",
+   "variant": "FL2VA",
+   "workflow": "fl2va"
+  },
+  "schema_version": "rlkernel.h3.packed_layout.v1",
+  "sequence_length": 5041
+ },
+ "metadata": {
+  "runner": "tools/validation/models/h3_full_chain.py",
+  "source": {
+   "clean": true,
+   "commit": "b06b60383805839f8a9aeb48d1a3f3e2c524b422"
+  }
+ },
+ "request": {
+  "canvas": [
+   768,
+   1032192
+  ],
+  "generator": "torch.Generator('cpu').manual_seed(seed)",
+  "height": 256,
+  "keyframes": [
+   "first",
+   "last"
+  ],
+  "num_frames": 124,
+  "num_inference_steps": 4,
+  "prompt_sha256": "ce85f3d4019f175388c83ecedefab5066b9d8a627e96e554843c18718db39618",
+  "seed": 42,
+  "width": 448,
+  "workflow": "fl2va"
+ },
+ "runtime": {
+  "compute_capability": [
+   10,
+   0
+  ],
+  "cpu_capability": "AVX512",
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "cudnn_allow_tf32": true,
+  "deterministic_algorithms": false,
+  "device": "cuda",
+  "device_name": "NVIDIA B200",
+  "hip": null,
+  "matmul_allow_tf32": false,
+  "num_threads": 16,
+  "platform_machine": "x86_64",
+  "python": "3.12.14",
+  "torch": "2.13.0+cu130"
+ },
+ "schema_version": "rlkernel.h3.full_chain.v1",
+ "secondary_metrics": {
+  "audio": {
+   "peak": 1.0,
+   "rms_lr": [
+    0.9174650165660806,
+    0.9248888463840138
+   ],
+   "shape": [
+    2,
+    165600
+   ]
+  },
+  "video": {
+   "max": 1.0,
+   "mean_rgb": [
+    0.48820550534464446,
+    0.6260052178003708,
+    0.2018726973742874
+   ],
+   "min": 0.0,
+   "shape": [
+    1,
+    3,
+    124,
+    256,
+    448
+   ],
+   "std": 0.41836618027814026
+  }
+ },
+ "stages": [
+  {
+   "chain_sha256": "389fe61a17372feab2e80a2e5bd7f82a56a9801043595b999a0f225688bf5b1a",
+   "components": [
+    [
+     "spec",
+     "53c7c1960c518669c39b567337124be0a0ff3f36a742750c2e92760afd315a1e"
+    ],
+    [
+     "prompt",
+     "ce85f3d4019f175388c83ecedefab5066b9d8a627e96e554843c18718db39618"
+    ],
+    [
+     "keyframe.first",
+     "25ff9d529c2c87255aa5e7a847b7a341f358f888aaa5f1165f0d48d7b06104c9"
+    ],
+    [
+     "keyframe.last",
+     "46c90a51d1b8f8d3e340e275cb5706581de00ffd9f8af754e6b487ddcdb2bbde"
+    ]
+   ],
+   "provenance": {
+    "variant": "FL2VA",
+    "workflow": "fl2va"
+   },
+   "stage": "request"
+  },
+  {
+   "chain_sha256": "59aca4c6db1015344f8c16dbbf549c0df7ba2a0c5440c0225792401599b68cd4",
+   "components": [
+    [
+     "keyframe_pixels.0",
+     "2ade1d9318b1b946320bd288358310ccfccdb18d864edda8d8465ca51b7ec38a"
+    ],
+    [
+     "keyframe_pixels.1",
+     "ca7d9099ab21d9be5e91878e7f00f728aa4c11ffa9f891310736e4686b7e98ba"
+    ]
+   ],
+   "provenance": {
+    "anchors": [
+     "first",
+     "last"
+    ],
+    "canvas": [
+     256,
+     448
+    ],
+    "contract": "fl2va_pipeline_contract"
+   },
+   "stage": "media_preprocess"
+  },
+  {
+   "chain_sha256": "7dab9134e2014b4fa009078bbecd1d26e9624a5886187117c9d41c576259be1f",
+   "components": [
+    [
+     "prompt_embeds",
+     "02f8f4954b7bb23b87fc3ff92d1b1979ef957539850c2e67234d829231a5b87b"
+    ],
+    [
+     "text_token_tags",
+     "4e8dfd1075918df9a8c4cdfdf9ec916bb807ec54b6ffe6962428f47b085934f1"
+    ]
+   ],
+   "provenance": {
+    "conditioner_input_sha256": "ed90bed51660f5c56ec64053b6d8a90d065764a204c3e7f47637b95c48e2e0ef",
+    "file_sha256": "f4e695327244dbaa87a3b8300d473e8d4cedcb7fe1dcd329ea85bfaacc87ff35",
+    "producer": {
+     "block": "MiniMaxH3FL2VATextEncoderStep",
+     "checkpoint_revision": "42ed227ee7df40d41602854ae760620d6eb651fe",
+     "conditioner": "Qwen3-VL text_encoder/ of MiniMaxAI/MiniMax-H3",
+     "decoder_layers_loaded": 51,
+     "decoder_layers_released": 64,
+     "device": "cpu",
+     "diffusers": "0.40.0.dev0",
+     "dtype": "bfloat16",
+     "hidden_state": "hidden_states[50] (after decoder layer 50, before the final norm)",
+     "note": "pinned until qwen3vl_layer50_contract lands",
+     "provider": "huggingface/diffusers",
+     "provider_revision": "f53d552036a0d1bd5570782a39cd40cfabf112bc",
+     "torch": "2.13.0+cu130",
+     "transformers": "5.17.0"
+    },
+    "source": "pinned-precomputed"
+   },
+   "stage": "text_conditions"
+  },
+  {
+   "chain_sha256": "bccfef018b78980f58f6a7c1318a8851ae4a3f7fc28309f36389084f1c5dc9f8",
+   "components": [
+    [
+     "condition_latents.0",
+     "3e026d0a7a1438beff376821739e31cb3380179c27591ae19827da9115866ddd"
+    ],
+    [
+     "condition_latents.1",
+     "2dc84d5b4e4bace57bfff14caabc90d0433fb6b245b08aaa2cec027c5770fdd4"
+    ]
+   ],
+   "provenance": {
+    "batch": 1,
+    "contract_id": "h3-visual-vae-f16t4d24-v1",
+    "kind": "encode",
+    "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+    "layout": {
+     "clip_length": 17,
+     "latent_channels": 24,
+     "spatial_factor": 16,
+     "temporal_factor": 4,
+     "token_drop": 3
+    },
+    "layout_name": "f16t4d24",
+    "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+    "policy": {
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "matmul_allow_tf32": false
+    },
+    "posterior": "sample",
+    "round_fp16": true,
+    "runtime": {
+     "compute_capability": [
+      10,
+      0
+     ],
+     "cuda": "13.0",
+     "cudnn": 92000,
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "device_name": "NVIDIA B200",
+     "matmul_allow_tf32": false,
+     "torch": "2.13.0+cu130"
+    },
+    "seed": 42,
+    "tile_plan_sha256": "6a371c538399de2951f0b4176bbe19049097135b5dcfd1a44df34e0cd92892f2",
+    "tiles": 2
+   },
+   "stage": "visual_vae_encode"
+  },
+  {
+   "chain_sha256": "18dfd9557755b5d1fad96e383ce8153fc5cefa15ba28fbf67cb43cec5a2dafd2",
+   "components": [],
+   "provenance": {
+    "skipped": "FL2VA has no audio conditions"
+   },
+   "stage": "audio_vae_encode"
+  },
+  {
+   "chain_sha256": "a980666a607d91cdcd8e574b73dd4c48af018adba5b5b742894ac9ba45473731",
+   "components": [
+    [
+     "layout_artifact",
+     "23680d61d3d61ea17b50cb6d02455d64aba8ad969381aac5986f34d955446bbb"
+    ],
+    [
+     "position_ids",
+     "317768e638e388571f71f9e71ba918f253db629ad6dfa73296400d2180ab2025"
+    ],
+    [
+     "token_tags",
+     "3b74bcb622425f38bc6b366f5a29016b7ec50eebf11a31641287211f7d815808"
+    ],
+    [
+     "text_indices",
+     "36ebd6f6b88fc428a5ab9a9e4b5e807bf9dd8b911ed3cdd1528458b95d6b473e"
+    ],
+    [
+     "video_indices",
+     "e95e4be4c5efce3963730dda98719d4a69961a38ee5225ea1e99c0ebfc1e49b6"
+    ],
+    [
+     "audio_indices",
+     "381c5c38c16a7ba811bdb39389050d9b4ea67d6cab62399413ca46abee1bc9af"
+    ]
+   ],
+   "provenance": {
+    "schema": "rlkernel.h3.packed_layout.v1",
+    "sequence_length": 5041,
+    "variant": "FL2VA",
+    "workflow": "fl2va"
+   },
+   "stage": "packed_layout"
+  },
+  {
+   "chain_sha256": "7aa0f1700424122a592a320d7429880e0d3757411a9b71e72843ef65a52691ff",
+   "components": [
+    [
+     "video_rows",
+     "4c9543dd3b05a3bf9754f298b3b45ba664d7e544c5b7cdd76579435092d5ca8d"
+    ],
+    [
+     "audio_rows",
+     "d9ae6b7e07173357b2834cc454e94d80332b5c8351482fc7ea50b86b81de0324"
+    ]
+   ],
+   "provenance": {
+    "device": "cuda",
+    "draw_device": "cpu",
+    "generator": "cpu",
+    "seed": 42
+   },
+   "stage": "initial_rows"
+  },
+  {
+   "chain_sha256": "a73723cbbdea7952c832ddfbeb58493c38c2bd7b99b20e35b6e6b2c54a37db4a",
+   "components": [
+    [
+     "video_sigmas",
+     "adf3aa7009a3804b42cc8d0a032456799b9e3a5720f357bba7c428e202217fcb"
+    ],
+    [
+     "audio_sigmas",
+     "698a99d0cd635599942b10afc429ce922b6bd5220c01b0e6f57fbc2fc7cd13fd"
+    ],
+    [
+     "video_timesteps",
+     "d13d4b33f8216be9523df77ec193dede1e7b21faccc3bf542ef579e2e07ae832"
+    ],
+    [
+     "audio_timesteps",
+     "44ac97368e3b7ceb2b527dd06a776dbbfb37be5110142fdf381293bad2fa9ce7"
+    ],
+    [
+     "row_timestep_plan",
+     "c06adaccbc340d17de8b81ab24c91240eb0bc18d2f0518c1c9b89897c7e1fd33"
+    ]
+   ],
+   "provenance": {
+    "condition_noise_level": 0.999,
+    "model_evaluations": 3,
+    "num_inference_steps": 4,
+    "operator": "h3_sigma_schedule (NativeH3SigmaScheduleOp)",
+    "shifts": {
+     "audio": 3.0,
+     "video": 12.0
+    }
+   },
+   "stage": "schedule"
+  },
+  {
+   "chain_sha256": "7200581f6e628be59e8f73c16e53068b6feb88104d32bc675096692aca9ecad6",
+   "components": [
+    [
+     "trajectory",
+     "96e8b6d41a78f400510ebc2c9cf8ae111f850e809d498060c2ee85914b6a3989"
+    ],
+    [
+     "transformer_probe",
+     "e43a13c3259178b6f30121a1e50c2b2cd43a481fbf8857fbd11bc6132db75d38"
+    ],
+    [
+     "final_video_rows",
+     "af7edf12e67314c03248da94c2739fb2af2e425cd64ba7e73bcccdd20604d52c"
+    ],
+    [
+     "final_audio_rows",
+     "50c9655ea7dd7f09c6c9bd831e71f2f5935db4a4395c10ce42369070f4f9a306"
+    ]
+   ],
+   "provenance": {
+    "execution": {
+     "bound": false,
+     "case_id": "P/P",
+     "mode": "provider"
+    },
+    "probe": true,
+    "sampler": "MiniMaxH3Scheduler.step (diffusers f53d552), op for op",
+    "transformer": {
+     "class": "MiniMaxH3Transformer3DModel",
+     "config_sha256": "39c6d9e7e4ffd1c64bd8c3ee947a14a14aad5fae040528f0998901d41674cc25",
+     "layer_truncated": true,
+     "layers_loaded": 4,
+     "mode": "provider",
+     "num_layers": 4,
+     "parameter_dtypes": [
+      "torch.bfloat16",
+      "torch.float32"
+     ],
+     "placement": "stream-blocks",
+     "transformer_dir": "transformer",
+     "transformer_dir_identified_as": "FL2VA",
+     "variant": "FL2VA"
+    }
+   },
+   "stage": "denoise"
+  },
+  {
+   "chain_sha256": "2c97634adbfad25a9564db05addd6ce48f29ab09e38453eec56f4516408d4cb4",
+   "components": [
+    [
+     "video_latents",
+     "213ac4a63a2d9c36c11c49b018930a7472f09f4f532b59dae7c902749abdfc5b"
+    ],
+    [
+     "audio_latents",
+     "8b2963abe91fcb5534178bd90a487655172dfbe8f94a71879a2d884f4e331b5b"
+    ]
+   ],
+   "provenance": {
+    "audio": "(2, 32, T) normalized, (left, right)",
+    "video": "(1, 24, T, H, W) normalized"
+   },
+   "stage": "unpack"
+  },
+  {
+   "chain_sha256": "a10e5b586bcfed37b79435377daa65bef67afda2d104d930f089d24e9b9d5dea",
+   "components": [
+    [
+     "video",
+     "46122062cf6af7b8d375c7dbd48b8c7b9281b79a36505961ccafb09c4efbed55"
+    ]
+   ],
+   "provenance": {
+    "autocast_fp16": true,
+    "batch": 1,
+    "contract_id": "h3-visual-vae-f16t4d24-v1",
+    "kind": "decode",
+    "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+    "layout": {
+     "clip_length": 17,
+     "latent_channels": 24,
+     "spatial_factor": 16,
+     "temporal_factor": 4,
+     "token_drop": 3
+    },
+    "layout_name": "f16t4d24",
+    "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+    "policy": {
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "matmul_allow_tf32": false
+    },
+    "runtime": {
+     "compute_capability": [
+      10,
+      0
+     ],
+     "cuda": "13.0",
+     "cudnn": 92000,
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "device_name": "NVIDIA B200",
+     "matmul_allow_tf32": false,
+     "torch": "2.13.0+cu130"
+    },
+    "tile_plan_sha256": "6a371c538399de2951f0b4176bbe19049097135b5dcfd1a44df34e0cd92892f2",
+    "tiles": 2
+   },
+   "stage": "video_decode"
+  },
+  {
+   "chain_sha256": "40864f79eb81a3f53c9a7e7d412e85d8c751d367a919af4d3365a624a7d694bb",
+   "components": [
+    [
+     "waveform",
+     "234b8f1b19171d515ac05f75c4ed5250e24d507a6f964f29500d53ccf1e10c78"
+    ]
+   ],
+   "provenance": {
+    "capability": [
+     10,
+     0
+    ],
+    "contract": "h3-audio-vae-v1",
+    "cuda": "13.0",
+    "cudnn": 92000,
+    "decode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": true,
+     "micro_batch": 1,
+     "name": "h3-audio-decode-strict-v1",
+     "sdpa_backend": null
+    },
+    "device": "cuda:0",
+    "encode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": false,
+     "micro_batch": 1,
+     "name": "h3-audio-encode-strict-v1",
+     "sdpa_backend": "math"
+    },
+    "gpu": "NVIDIA B200",
+    "hop_length": 800,
+    "latent_channels": 32,
+    "latents_mean_sha256": "a77dc0fd9c612e98b8a995dffebe793db9aa47a27af9ebd93389a479ad62a096",
+    "latents_per_second": 40,
+    "latents_std_sha256": "9c2f6c097fff4a3eab12248dead0d49175538a5124ca81c76f455920c33ec5fc",
+    "row_layout": "channel-major [left T rows | right T rows] x 32",
+    "sample_rate": 32000,
+    "stereo_order": [
+     "left",
+     "right"
+    ],
+    "torch": "2.13.0+cu130"
+   },
+   "stage": "audio_decode"
+  }
+ ],
+ "trajectory": {
+  "architecture_fingerprint_sha256": "805d0ebf601a09d65ede184441fda2694aa374d80f3dc274ba4670cfcfdf0839",
+  "artifact_sha256": "782eca2856e99f312743517fdb6e3856f8c73d9b211350559984f11f32e3427a",
+  "final_latent_sha256": {
+   "audio": "50c9655ea7dd7f09c6c9bd831e71f2f5935db4a4395c10ce42369070f4f9a306",
+   "video": "af7edf12e67314c03248da94c2739fb2af2e425cd64ba7e73bcccdd20604d52c"
+  },
+  "initial_noise": {
+   "audio": {
+    "dtype": "torch.float32",
+    "sha256": "d9ae6b7e07173357b2834cc454e94d80332b5c8351482fc7ea50b86b81de0324",
+    "shape": [
+     414,
+     32
+    ]
+   },
+   "video": {
+    "dtype": "torch.float32",
+    "sha256": "4c9543dd3b05a3bf9754f298b3b45ba664d7e544c5b7cdd76579435092d5ca8d",
+    "shape": [
+     4368,
+     96
+    ]
+   }
+  },
+  "label": "S",
+  "metadata": {
+   "chain": "h3-phase-b-full-chain-v1",
+   "sampler": "MiniMaxH3Scheduler euler eta=0"
+  },
+  "modalities": [
+   "video",
+   "audio"
+  ],
+  "operator_trace_sha256": "",
+  "schema_version": "rlkernel.h3.trajectory.v1",
+  "seed": 42,
+  "shifts": {
+   "audio": 3.0,
+   "video": 12.0
+  },
+  "sigma_grids": {
+   "audio": [
+    "0x1.0000000000000p+0",
+    "0x1.b6db6c0000000p-1",
+    "0x1.3333320000000p-1",
+    "0x0.0p+0"
+   ],
+   "video": [
+    "0x1.0000000000000p+0",
+    "0x1.eb851e0000000p-1",
+    "0x1.b6db6c0000000p-1",
+    "0x0.0p+0"
+   ]
+  },
+  "step_records": [
+   {
+    "chain_sha256": "b8aa52e1506e330b3af0e5647776e43ec80ccff7aee590077e6b3206d88a9b6b",
+    "index": 0,
+    "latent_sha256": {
+     "audio": "1d66b4902b89674ffe9ac63f0dfeafdd2e43e8a1a514b04fe195f6cc86cc43eb",
+     "video": "02bfeb67a228d1e79be2867897042a082fc266823e96a93585afe60ba87d4c00"
+    },
+    "sigma": {
+     "audio": "0x1.0000000000000p+0",
+     "video": "0x1.0000000000000p+0"
+    },
+    "sigma_next": {
+     "audio": "0x1.b6db6c0000000p-1",
+     "video": "0x1.eb851e0000000p-1"
+    },
+    "velocity_sha256": {
+     "audio": "0fbd531de393f0ba2c49c12a73b80e3944f5fd1f0b3068e24e358fa5faa93d65",
+     "video": "b9c73c8fb133fe0e97b4c0dd378396527a34e9f1f4cbb3ab08b910b28064d582"
+    }
+   },
+   {
+    "chain_sha256": "c1afd8627413c304d5485778e8c35119173a1ec4bc61429d7e0e832c43470b82",
+    "index": 1,
+    "latent_sha256": {
+     "audio": "8087bcba620c477e67210e2309d058112b399233af0b7ea8c6349ba03bc0ac92",
+     "video": "68d824540b8b156dddf1e64d0a0ab09e1127c9e3146966a1472cef2b14e033db"
+    },
+    "sigma": {
+     "audio": "0x1.b6db6c0000000p-1",
+     "video": "0x1.eb851e0000000p-1"
+    },
+    "sigma_next": {
+     "audio": "0x1.3333320000000p-1",
+     "video": "0x1.b6db6c0000000p-1"
+    },
+    "velocity_sha256": {
+     "audio": "3304b78180d87e084a663cba476e510f22add96c68f7a7abdc06f9681eeab3a6",
+     "video": "054cfaed674f055c0fcee5f80bad729aa9002772a6f276f645b6d4a0a8eb719e"
+    }
+   },
+   {
+    "chain_sha256": "ca76eb80afa17568c6f35c1d07322a7e95807bef11022f5d6d68f6ce73379571",
+    "index": 2,
+    "latent_sha256": {
+     "audio": "50c9655ea7dd7f09c6c9bd831e71f2f5935db4a4395c10ce42369070f4f9a306",
+     "video": "af7edf12e67314c03248da94c2739fb2af2e425cd64ba7e73bcccdd20604d52c"
+    },
+    "sigma": {
+     "audio": "0x1.3333320000000p-1",
+     "video": "0x1.b6db6c0000000p-1"
+    },
+    "sigma_next": {
+     "audio": "0x0.0p+0",
+     "video": "0x0.0p+0"
+    },
+    "velocity_sha256": {
+     "audio": "64c90f8604a2b3eea7df405e9b51c7e7fdefd7e851024945e5a14653ebb403cd",
+     "video": "4c21f6d1450033154e6be862f0da6acf01f4a0ea1df192f7d2f242299ab22f61"
+    }
+   }
+  ],
+  "steps": 3,
+  "variant": "FL2VA"
+ },
+ "transformer_probe": {
+  "steps": [
+   [
+    [
+     "proj_in",
+     "2e57c0f963a2639c10591c0602086bce3e796b3a487b0bf73b2cfa2b6713c26e"
+    ],
+    [
+     "audio_proj_in",
+     "f6372b22a4d3a2493b3b6af52100763917ac297745f204578b8fd901b32fd35b"
+    ],
+    [
+     "context_embedder",
+     "51a07fc76c5387c74871ecbe1d6388953a00717af0b6108926ad3ea6ea39f596"
+    ],
+    [
+     "token_refiner",
+     "4144cb933264ee02c3cb4f4486684f4c6733f2213b78be0baf595ba52c28deb7"
+    ],
+    [
+     "time_embedder",
+     "6d616a242233aa3736e5059d5f37aa0db09a91910f501c5dc650a60c85d3ddeb"
+    ],
+    [
+     "transformer_blocks.0",
+     "c76d873e6b192ce858ea7d0aad27652827305b173ac46249090d9a85b1cf27c9"
+    ],
+    [
+     "transformer_blocks.1",
+     "3aa3225167c0e3c3065c416a0be2d584620835fc6810146c1421b3435e2bc026"
+    ],
+    [
+     "transformer_blocks.2",
+     "61d01005e729697a073d29adbc2f3aae106476166d668d1069b2fd124b75a967"
+    ],
+    [
+     "transformer_blocks.3",
+     "0fe394915937bc3c922712cf2b7fbf7332cb624575002a20de0513796f4d0c76"
+    ],
+    [
+     "norm_out",
+     "b3779c43e8fc43a4e17e150c6556eb50b205c00cbf93c2be2106da4a92a0f0f1"
+    ],
+    [
+     "proj_out",
+     "bf4c98478b1e1e559d95ad5b35fee17c3630ef6f1e5c0748b6b227d72ef8438f"
+    ],
+    [
+     "audio_proj_out",
+     "bb5eb651c1ad7b4dcb4d2532645dd84913c70d1b816ff43e345eca931da8e325"
+    ]
+   ],
+   [
+    [
+     "proj_in",
+     "b72459403990f072a669f98df0025d98dc5ad4169b901253ed0f4caee145f011"
+    ],
+    [
+     "audio_proj_in",
+     "de291af75c8ef33b1ab79a7fa98d88e6c878fed37b024a396d06d31a563f1258"
+    ],
+    [
+     "context_embedder",
+     "51a07fc76c5387c74871ecbe1d6388953a00717af0b6108926ad3ea6ea39f596"
+    ],
+    [
+     "token_refiner",
+     "4144cb933264ee02c3cb4f4486684f4c6733f2213b78be0baf595ba52c28deb7"
+    ],
+    [
+     "time_embedder",
+     "173b2c7f5b3c9694226805b0777746e914b138c935d6f079a1cdf645f6b26f4b"
+    ],
+    [
+     "transformer_blocks.0",
+     "b28f31121c8bf4bb0476740bfab7f76d237cec50d67069f44dde0604002e1e0e"
+    ],
+    [
+     "transformer_blocks.1",
+     "23400bbb04d0a5f19c6b0d937ea949aa925d6dda507873174fcd3ab5d2e11779"
+    ],
+    [
+     "transformer_blocks.2",
+     "60d9fdea5218290b76003c43e0c3ea8f018e1842ea0cc4560f98ce6839a20b3b"
+    ],
+    [
+     "transformer_blocks.3",
+     "f77385c01459d15f1cd9cc4a7b5c4c4e514411887f9abcd31e99a4f9060a5257"
+    ],
+    [
+     "norm_out",
+     "1ca058441bdb00f0c9b197381ff542874c95d7e94e4e7dcb97dfa2da6bef3be4"
+    ],
+    [
+     "proj_out",
+     "a983e32a9258a5bbe456f8d93c567b3702b2fbf5f880596686a1fa8860d5c944"
+    ],
+    [
+     "audio_proj_out",
+     "e4421d93bc8e47a500fc6abdf48b6c4ac764fec751edc02d62c5c549966c8e8f"
+    ]
+   ],
+   [
+    [
+     "proj_in",
+     "8d68c3f3b0533026b6701c90afae53ac2145e801bf19cb0ff4d80e734b642d7e"
+    ],
+    [
+     "audio_proj_in",
+     "d01bd4722a8f8f2585b235d71d941268b82839753e95a2ac64fa9c9e2e387d1d"
+    ],
+    [
+     "context_embedder",
+     "51a07fc76c5387c74871ecbe1d6388953a00717af0b6108926ad3ea6ea39f596"
+    ],
+    [
+     "token_refiner",
+     "4144cb933264ee02c3cb4f4486684f4c6733f2213b78be0baf595ba52c28deb7"
+    ],
+    [
+     "time_embedder",
+     "7ebb7de8ad7218dc563905255b141015f9f44c3844008bccbfbbcc44f6a69e48"
+    ],
+    [
+     "transformer_blocks.0",
+     "022ab12a2aadefb82a990459a71ecccdfdddcfd4a9568f234c2f855eb1008875"
+    ],
+    [
+     "transformer_blocks.1",
+     "f58e39ea04763f4edbd2294344ef11ae656747be3dfc62a753980f12d8d24645"
+    ],
+    [
+     "transformer_blocks.2",
+     "e9bccfe41484b515b0e765ccac805fac4ca1b5ef012cff5b3a8c58a7f6c60420"
+    ],
+    [
+     "transformer_blocks.3",
+     "1895c3212dfc150b9ed7e3cc94f83fcc98d3585b3ef39aaba7be1e9be098f401"
+    ],
+    [
+     "norm_out",
+     "1559d0be88e19c7bf4d138ec1f28f93ebb48bb4e0107c40451df00c9cce6d0fb"
+    ],
+    [
+     "proj_out",
+     "88de3db662cb3ed2d9ab1fcde09195c3ce9edeacd93ffc958b42125edafeb55c"
+    ],
+    [
+     "audio_proj_out",
+     "bec9de5821150f272942c8484caabbe8c79d6fc430532abf0f740b990e55f35b"
+    ]
+   ]
+  ]
+ },
+ "variant": "FL2VA",
+ "workflow": "fl2va"
+}

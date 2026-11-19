@@ -1,0 +1,946 @@
+{
+ "architecture_fingerprint_sha256": "805d0ebf601a09d65ede184441fda2694aa374d80f3dc274ba4670cfcfdf0839",
+ "artifact_sha256": "3be30dffa9f7913b12943e6eec72ef8587d2ebdadd2f3822d7d3ec4e800d1b2c",
+ "checkpoint": {
+  "repo": "MiniMaxAI/MiniMax-H3",
+  "revision": "42ed227ee7df40d41602854ae760620d6eb651fe"
+ },
+ "contract": "h3-phase-b-full-chain-v1",
+ "gate_policy": {
+  "hard": [
+   "request",
+   "media_preprocess",
+   "text_conditions",
+   "visual_vae_encode",
+   "audio_vae_encode",
+   "packed_layout",
+   "initial_rows",
+   "schedule",
+   "denoise",
+   "unpack"
+  ],
+  "rule": "latent trajectory equality is the gate; decoded media are recorded only",
+  "secondary": [
+   "video_decode",
+   "audio_decode"
+  ]
+ },
+ "injection": null,
+ "label": "A",
+ "layout": {
+  "artifact_sha256": "5dc35362fa1c7d1ff3e1ea7c669428b95883fd11613bb065a1c5a1175ba544aa",
+  "checkpoint": {
+   "repo": "MiniMaxAI/MiniMax-H3",
+   "revision": "42ed227ee7df40d41602854ae760620d6eb651fe"
+  },
+  "geometry": {
+   "height": 256,
+   "latent_height": 16,
+   "latent_width": 28,
+   "num_audio_latents": 207,
+   "num_frames": 124,
+   "num_latent_frames": 37,
+   "reference_blocks": [
+    {
+     "audio_rows": 0,
+     "kind": "image",
+     "latent_frames": 1,
+     "latent_height": 128,
+     "latent_width": 192
+    },
+    {
+     "audio_rows": 100,
+     "kind": "video",
+     "latent_frames": 7,
+     "latent_height": 48,
+     "latent_width": 84
+    },
+    {
+     "audio_rows": 64,
+     "kind": "audio",
+     "latent_frames": 0,
+     "latent_height": 0,
+     "latent_width": 0
+    }
+   ],
+   "span_summation": "neumaier",
+   "width": 448
+  },
+  "input_sha256": {
+   "audio_rows.0": "08617082952d6e4c1c16263c623b82b246e478177bfe9492eaf4a33fe2138736",
+   "audio_rows.1": "2d1ca2ea14f6d87e26289773feb8d61cbddeb4d39d0dea52870ee934a3cabbb0",
+   "condition_latents.0": "547bfdfb183aa977bb48c3114e91cb27e85f630f2b9560128fa46cd6d815f40e",
+   "condition_latents.1": "610dd3312e0b2c788e2fa7ebb9a7ef7291d49950378dfa6ba1f3427428aed458",
+   "prompt_embeds": "f09e5b70b8385475f51ecff7917c6dd9caa62ae4ed29ad2734b81793cfbd59e9",
+   "text_token_tags": "56a20d2ee4f38064bd1baedb519f7181208604308d9f227685fc45834b3cdff2"
+  },
+  "layout_component_sha256": {
+   "audio_indices": "f03c72c3d7748a64b79791a403c894286c7f5779fb5bc3a211c0795ec9139907",
+   "position_ids": "d1f31d499c2c42148ddf5f06583210351de8f61dabff23ad6cf09408c5eb4c2b",
+   "text_indices": "3c02fa01a35fb3cb9cdf199b2c3760e7ac90feccb86a226b69b1a5c13024b2f9",
+   "token_tags": "1e9ffd37d53c297a2b744dcdbdb0f84a6bb7b7d7ef5acb3dcb6c891ee5f70a97",
+   "video_indices": "fa4417252192121191f1bd3bb8d5becb33c5c39e3375edb2bca18451d2200bf4"
+  },
+  "num_condition_audio_rows": 164,
+  "num_condition_video_rows": 13200,
+  "num_text_tokens": 8217,
+  "pipeline_identity": {
+   "checkpoint_component_sha256": {
+    "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+    "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+    "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+    "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+    "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+    "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+    "transformer": "2043e25af70d94796436a98423ee13a2b868442a162373f671c9ad4d4ea4eef0",
+    "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+   },
+   "preprocessing_recipe_sha256": "112dcefe5b748fa7223122feb954f2c3b7e8dfa714bb555f5a4d0f06102b918c",
+   "structural_workflow": "ref2va",
+   "transformer_dir": "transformer_ref",
+   "variant": "Ref2VA",
+   "workflow": "ref2va"
+  },
+  "schema_version": "rlkernel.h3.packed_layout.v1",
+  "sequence_length": 26139
+ },
+ "metadata": {
+  "runner": "tools/validation/models/h3_full_chain.py",
+  "source": {
+   "clean": true,
+   "commit": "c791d80163f3cb94c8e8afd7c8f845372284de4b"
+  }
+ },
+ "request": {
+  "canvas": [
+   768,
+   1032192
+  ],
+  "generator": "torch.Generator('cpu').manual_seed(seed)",
+  "height": 256,
+  "image_short_edge": 2048,
+  "num_frames": 124,
+  "num_inference_steps": 4,
+  "prompt_sha256": "5756d255e5b7df1e6e2cd4b78482e7569f492945ec35e6212b06011ce49cc222",
+  "references": [
+   {
+    "fps": null,
+    "has_audio": false,
+    "kind": "image",
+    "sample_rate": null
+   },
+   {
+    "fps": 24.0,
+    "has_audio": true,
+    "kind": "video",
+    "sample_rate": 32000
+   },
+   {
+    "fps": null,
+    "has_audio": true,
+    "kind": "audio",
+    "sample_rate": 32000
+   }
+  ],
+  "seed": 42,
+  "span_summation": "neumaier",
+  "width": 448,
+  "workflow": "ref2va"
+ },
+ "runtime": {
+  "compute_capability": [
+   10,
+   0
+  ],
+  "cpu_capability": "AVX512",
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "cudnn_allow_tf32": true,
+  "deterministic_algorithms": false,
+  "device": "cuda",
+  "device_name": "NVIDIA B200",
+  "hip": null,
+  "matmul_allow_tf32": false,
+  "num_threads": 16,
+  "platform_machine": "x86_64",
+  "python": "3.12.14",
+  "torch": "2.13.0+cu130"
+ },
+ "schema_version": "rlkernel.h3.full_chain.v1",
+ "secondary_metrics": {
+  "audio": {
+   "peak": 1.0,
+   "rms_lr": [
+    0.891193080485696,
+    0.8955645358368984
+   ],
+   "shape": [
+    2,
+    165600
+   ]
+  },
+  "video": {
+   "max": 1.0,
+   "mean_rgb": [
+    0.373039138244108,
+    0.36196216254393326,
+    0.32627229475227587
+   ],
+   "min": 0.0,
+   "shape": [
+    1,
+    3,
+    124,
+    256,
+    448
+   ],
+   "std": 0.4044932227636115
+  }
+ },
+ "stages": [
+  {
+   "chain_sha256": "7f8cbc40ee9ccbecdfc847a0bb1df66dfcb5e59a382076317f9b2210cbb44472",
+   "components": [
+    [
+     "spec",
+     "bb187678e471c725207965735a7a0a9722c1cbc41c4d6cab5aac73c9979dde21"
+    ],
+    [
+     "prompt",
+     "5756d255e5b7df1e6e2cd4b78482e7569f492945ec35e6212b06011ce49cc222"
+    ],
+    [
+     "reference.0.image",
+     "adb3d52a3c5c87721d50621285190f5fd27c6864b5cb767d98ff83189b511163"
+    ],
+    [
+     "reference.1.video",
+     "f4decc2ccaffe83e2f42ba7819f7a804a826afafd34eb92e25c6ea45771ccd10"
+    ],
+    [
+     "reference.1.audio",
+     "0dd744490bae8188b781f803d8cc08891f5ed0a332e38c0befd0a6a9d70f786f"
+    ],
+    [
+     "reference.2.audio",
+     "d0ca41d1e10b0a065cb9ef4ea65455b3af10d9b19c857ed11a22391214192b8d"
+    ]
+   ],
+   "provenance": {
+    "variant": "Ref2VA",
+    "workflow": "ref2va"
+   },
+   "stage": "request"
+  },
+  {
+   "chain_sha256": "fcb7222026a918bb06debaaa78d50541ea554ade74c6e29f2dc179e805816186",
+   "components": [
+    [
+     "reference.0.pixels",
+     "bce31bd0f43eca2ded33f1bfad8ec7e7104738dd3748d9544b1065e0d79627b4"
+    ],
+    [
+     "reference.1.pixels",
+     "d733483021c26931949783414662c68c3bce96380b5e10aa82a6f8215f44df8b"
+    ],
+    [
+     "reference.1.waveform",
+     "6bcf215643c728054f5ea2be3b726b50a160b039a18b149537db24f47a324ddb"
+    ],
+    [
+     "reference.2.waveform",
+     "d0ca41d1e10b0a065cb9ef4ea65455b3af10d9b19c857ed11a22391214192b8d"
+    ]
+   ],
+   "provenance": {
+    "canvas": [
+     256,
+     448
+    ],
+    "contract": "ref2va_pipeline_contract",
+    "kinds": [
+     "image",
+     "video",
+     "audio"
+    ],
+    "num_frames": 124
+   },
+   "stage": "media_preprocess"
+  },
+  {
+   "chain_sha256": "378e9e57132eef12e439d0e1c0d011fbdc3d99ef6e9858257b7ace35778de14f",
+   "components": [
+    [
+     "prompt_embeds",
+     "f09e5b70b8385475f51ecff7917c6dd9caa62ae4ed29ad2734b81793cfbd59e9"
+    ],
+    [
+     "text_token_tags",
+     "56a20d2ee4f38064bd1baedb519f7181208604308d9f227685fc45834b3cdff2"
+    ]
+   ],
+   "provenance": {
+    "conditioner_input_sha256": "354f0718e31a48f8eef372d6805661586a4617639da0c9706cb5e2ad38f97d2e",
+    "file_sha256": "c32af7519886191e9f5444e9917c7b6172d7d07c444240d1c2ab78e5eeff6d60",
+    "producer": {
+     "block": "MiniMaxH3Ref2VATextEncoderStep",
+     "checkpoint_revision": "42ed227ee7df40d41602854ae760620d6eb651fe",
+     "conditioner": "Qwen3-VL text_encoder/ of MiniMaxAI/MiniMax-H3",
+     "decoder_layers_loaded": 51,
+     "decoder_layers_released": 64,
+     "device": "cpu",
+     "diffusers": "0.40.0.dev0",
+     "dtype": "bfloat16",
+     "hidden_state": "hidden_states[50] (after decoder layer 50, before the final norm)",
+     "note": "pinned until qwen3vl_layer50_contract lands",
+     "provider": "huggingface/diffusers",
+     "provider_revision": "f53d552036a0d1bd5570782a39cd40cfabf112bc",
+     "torch": "2.13.0+cu130",
+     "transformers": "5.17.0"
+    },
+    "source": "pinned-precomputed"
+   },
+   "stage": "text_conditions"
+  },
+  {
+   "chain_sha256": "380d254aa99d754fc6aef5fa98b14e030daab4412f9a306d72e28212c06df1c4",
+   "components": [
+    [
+     "condition_latents.0",
+     "547bfdfb183aa977bb48c3114e91cb27e85f630f2b9560128fa46cd6d815f40e"
+    ],
+    [
+     "condition_latents.1",
+     "610dd3312e0b2c788e2fa7ebb9a7ef7291d49950378dfa6ba1f3427428aed458"
+    ]
+   ],
+   "provenance": {
+    "batch": 1,
+    "contract_id": "h3-visual-vae-f16t4d24-v1",
+    "kind": "encode",
+    "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+    "layout": {
+     "clip_length": 17,
+     "latent_channels": 24,
+     "spatial_factor": 16,
+     "temporal_factor": 4,
+     "token_drop": 3
+    },
+    "layout_name": "f16t4d24",
+    "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+    "policy": {
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "matmul_allow_tf32": false
+    },
+    "posterior": "sample",
+    "round_fp16": true,
+    "runtime": {
+     "compute_capability": [
+      10,
+      0
+     ],
+     "cuda": "13.0",
+     "cudnn": 92000,
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "device_name": "NVIDIA B200",
+     "matmul_allow_tf32": false,
+     "torch": "2.13.0+cu130"
+    },
+    "seed": 42,
+    "tile_plan_sha256": "98b85495114030d3709d51050f6491a21eb1960a9833842ac5fb0fc45a6cb37a",
+    "tiles": 28
+   },
+   "stage": "visual_vae_encode"
+  },
+  {
+   "chain_sha256": "6447c915903d8c57bb2d3e703fd8b37b1ef46a2d6966ba7f71466628b15b71c8",
+   "components": [
+    [
+     "audio_rows.0",
+     "08617082952d6e4c1c16263c623b82b246e478177bfe9492eaf4a33fe2138736"
+    ],
+    [
+     "audio_rows.1",
+     "2d1ca2ea14f6d87e26289773feb8d61cbddeb4d39d0dea52870ee934a3cabbb0"
+    ]
+   ],
+   "provenance": {
+    "capability": [
+     10,
+     0
+    ],
+    "contract": "h3-audio-vae-v1",
+    "cuda": "13.0",
+    "cudnn": 92000,
+    "decode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": true,
+     "micro_batch": 1,
+     "name": "h3-audio-decode-strict-v1",
+     "sdpa_backend": null
+    },
+    "device": "cuda:0",
+    "encode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": false,
+     "micro_batch": 1,
+     "name": "h3-audio-encode-strict-v1",
+     "sdpa_backend": "math"
+    },
+    "gpu": "NVIDIA B200",
+    "hop_length": 800,
+    "latent_channels": 32,
+    "latents_mean_sha256": "a77dc0fd9c612e98b8a995dffebe793db9aa47a27af9ebd93389a479ad62a096",
+    "latents_per_second": 40,
+    "latents_std_sha256": "9c2f6c097fff4a3eab12248dead0d49175538a5124ca81c76f455920c33ec5fc",
+    "row_layout": "channel-major [left T rows | right T rows] x 32",
+    "sample_rate": 32000,
+    "stereo_order": [
+     "left",
+     "right"
+    ],
+    "torch": "2.13.0+cu130"
+   },
+   "stage": "audio_vae_encode"
+  },
+  {
+   "chain_sha256": "207b642582e4da445cadc15a4024a074fd6130b753bdfbdee5adafcec5431af3",
+   "components": [
+    [
+     "layout_artifact",
+     "5dc35362fa1c7d1ff3e1ea7c669428b95883fd11613bb065a1c5a1175ba544aa"
+    ],
+    [
+     "position_ids",
+     "d1f31d499c2c42148ddf5f06583210351de8f61dabff23ad6cf09408c5eb4c2b"
+    ],
+    [
+     "token_tags",
+     "1e9ffd37d53c297a2b744dcdbdb0f84a6bb7b7d7ef5acb3dcb6c891ee5f70a97"
+    ],
+    [
+     "text_indices",
+     "3c02fa01a35fb3cb9cdf199b2c3760e7ac90feccb86a226b69b1a5c13024b2f9"
+    ],
+    [
+     "video_indices",
+     "fa4417252192121191f1bd3bb8d5becb33c5c39e3375edb2bca18451d2200bf4"
+    ],
+    [
+     "audio_indices",
+     "f03c72c3d7748a64b79791a403c894286c7f5779fb5bc3a211c0795ec9139907"
+    ]
+   ],
+   "provenance": {
+    "schema": "rlkernel.h3.packed_layout.v1",
+    "sequence_length": 26139,
+    "variant": "Ref2VA",
+    "workflow": "ref2va"
+   },
+   "stage": "packed_layout"
+  },
+  {
+   "chain_sha256": "2d99adff0912753de93a9c5d1133be9fa0eca64c31d88a1ef49875f407e6eea9",
+   "components": [
+    [
+     "video_rows",
+     "5911670ffcf9954aa827968f1648ea6692551d59d12d37cc26404e1e25d425d1"
+    ],
+    [
+     "audio_rows",
+     "b1db607bdf6602de8d0a2db17f75b861afb622a9e43200675a7cb27c1de94b93"
+    ]
+   ],
+   "provenance": {
+    "device": "cuda",
+    "draw_device": "cpu",
+    "generator": "cpu",
+    "seed": 42
+   },
+   "stage": "initial_rows"
+  },
+  {
+   "chain_sha256": "c49a1a389ddb532d67719563c90fa63d5d937778e3d327592e9fb9f4a8dd0a02",
+   "components": [
+    [
+     "video_sigmas",
+     "adf3aa7009a3804b42cc8d0a032456799b9e3a5720f357bba7c428e202217fcb"
+    ],
+    [
+     "audio_sigmas",
+     "698a99d0cd635599942b10afc429ce922b6bd5220c01b0e6f57fbc2fc7cd13fd"
+    ],
+    [
+     "video_timesteps",
+     "d13d4b33f8216be9523df77ec193dede1e7b21faccc3bf542ef579e2e07ae832"
+    ],
+    [
+     "audio_timesteps",
+     "44ac97368e3b7ceb2b527dd06a776dbbfb37be5110142fdf381293bad2fa9ce7"
+    ],
+    [
+     "row_timestep_plan",
+     "a12230207a6cbb5b046f978c303b6596e62abe2d3d9290cd1260f9713a14d0e2"
+    ]
+   ],
+   "provenance": {
+    "condition_noise_level": 0.999,
+    "model_evaluations": 3,
+    "num_inference_steps": 4,
+    "operator": "h3_sigma_schedule (NativeH3SigmaScheduleOp)",
+    "shifts": {
+     "audio": 3.0,
+     "video": 12.0
+    }
+   },
+   "stage": "schedule"
+  },
+  {
+   "chain_sha256": "e23af4f5b94e381e0657f7e37d76834f737c062948324ed8854b159a6feeb059",
+   "components": [
+    [
+     "trajectory",
+     "92eeff7c13c3d8d89ba5e181a6b90b5f3d2480cb7d8a505d916492f5c4963193"
+    ],
+    [
+     "transformer_probe",
+     "f8ece2c1f92aa887e7ec0cae243c0512a19419e12318fc52d55e13cdec083b15"
+    ],
+    [
+     "final_video_rows",
+     "d4162c45aec2a014464dc3987fd68da119f0fa938d3e88154a1de828f507757c"
+    ],
+    [
+     "final_audio_rows",
+     "6a666a423dd7c884d94f8ad0025fcc1d3b2d34c0573dfe7b101c290ab9266413"
+    ]
+   ],
+   "provenance": {
+    "execution": {
+     "bound": false,
+     "case_id": "P/P",
+     "mode": "provider"
+    },
+    "probe": true,
+    "sampler": "MiniMaxH3Scheduler.step (diffusers f53d552), op for op",
+    "transformer": {
+     "class": "MiniMaxH3Transformer3DModel",
+     "config_sha256": "39c6d9e7e4ffd1c64bd8c3ee947a14a14aad5fae040528f0998901d41674cc25",
+     "layer_truncated": true,
+     "layers_loaded": 4,
+     "mode": "provider",
+     "num_layers": 4,
+     "parameter_dtypes": [
+      "torch.bfloat16",
+      "torch.float32"
+     ],
+     "transformer_dir": "transformer_ref",
+     "transformer_dir_identified_as": "Ref2VA",
+     "variant": "Ref2VA"
+    }
+   },
+   "stage": "denoise"
+  },
+  {
+   "chain_sha256": "a28aa3d15fab5e80caf0a34228f20121aa7a2f155e371b676ec8163f54af51b8",
+   "components": [
+    [
+     "video_latents",
+     "f6e6c51068d36761411cfdd3de6dd4335c4bc6ffc34b0a78d0ca64bd0333fa9a"
+    ],
+    [
+     "audio_latents",
+     "f48d9769c9963712819a14c8552a4344fbb7d2ec49c491346de3a28f8c3d0fd4"
+    ]
+   ],
+   "provenance": {
+    "audio": "(2, 32, T) normalized, (left, right)",
+    "video": "(1, 24, T, H, W) normalized"
+   },
+   "stage": "unpack"
+  },
+  {
+   "chain_sha256": "cb7ed9293fe70d013d47294310c2308268c3815bbcaeed0ce2353017d8859358",
+   "components": [
+    [
+     "video",
+     "b5cfb353c2802b27812530b28bff2ddef2f6d5128d24a31283295b0d815bb387"
+    ]
+   ],
+   "provenance": {
+    "autocast_fp16": true,
+    "batch": 1,
+    "contract_id": "h3-visual-vae-f16t4d24-v1",
+    "kind": "decode",
+    "latent_stats_sha256": "1ccbe8e3bfa6e5e1205268e1f6682992dffb3d2b8143a9e6cdbd7963ab328f2d",
+    "layout": {
+     "clip_length": 17,
+     "latent_channels": 24,
+     "spatial_factor": 16,
+     "temporal_factor": 4,
+     "token_drop": 3
+    },
+    "layout_name": "f16t4d24",
+    "pixel_lut_sha256": "a5d9666da39858eb9c76c5c16f6e8acfc28a60422a1512245e2e2ae87715999d",
+    "policy": {
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "matmul_allow_tf32": false
+    },
+    "runtime": {
+     "compute_capability": [
+      10,
+      0
+     ],
+     "cuda": "13.0",
+     "cudnn": 92000,
+     "cudnn_allow_tf32": true,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "device_name": "NVIDIA B200",
+     "matmul_allow_tf32": false,
+     "torch": "2.13.0+cu130"
+    },
+    "tile_plan_sha256": "6a371c538399de2951f0b4176bbe19049097135b5dcfd1a44df34e0cd92892f2",
+    "tiles": 2
+   },
+   "stage": "video_decode"
+  },
+  {
+   "chain_sha256": "da65338cb18cb4038d68c2c10d22fc006b32b0c6cdb4ea90ae294fe9908cf687",
+   "components": [
+    [
+     "waveform",
+     "ac849b81130af73ff5401297e451e52679e505df5c7b5d7cc8cf1c3570a22628"
+    ]
+   ],
+   "provenance": {
+    "capability": [
+     10,
+     0
+    ],
+    "contract": "h3-audio-vae-v1",
+    "cuda": "13.0",
+    "cudnn": 92000,
+    "decode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": true,
+     "micro_batch": 1,
+     "name": "h3-audio-decode-strict-v1",
+     "sdpa_backend": null
+    },
+    "device": "cuda:0",
+    "encode_policy": {
+     "allow_tf32": false,
+     "cudnn_benchmark": false,
+     "cudnn_deterministic": true,
+     "cudnn_enabled": false,
+     "micro_batch": 1,
+     "name": "h3-audio-encode-strict-v1",
+     "sdpa_backend": "math"
+    },
+    "gpu": "NVIDIA B200",
+    "hop_length": 800,
+    "latent_channels": 32,
+    "latents_mean_sha256": "a77dc0fd9c612e98b8a995dffebe793db9aa47a27af9ebd93389a479ad62a096",
+    "latents_per_second": 40,
+    "latents_std_sha256": "9c2f6c097fff4a3eab12248dead0d49175538a5124ca81c76f455920c33ec5fc",
+    "row_layout": "channel-major [left T rows | right T rows] x 32",
+    "sample_rate": 32000,
+    "stereo_order": [
+     "left",
+     "right"
+    ],
+    "torch": "2.13.0+cu130"
+   },
+   "stage": "audio_decode"
+  }
+ ],
+ "trajectory": {
+  "architecture_fingerprint_sha256": "805d0ebf601a09d65ede184441fda2694aa374d80f3dc274ba4670cfcfdf0839",
+  "artifact_sha256": "fe6f6cbbecbcd8ac520c1df41c8983ef8cff0087a52b6f716cdfda31e0b2b21d",
+  "final_latent_sha256": {
+   "audio": "6a666a423dd7c884d94f8ad0025fcc1d3b2d34c0573dfe7b101c290ab9266413",
+   "video": "d4162c45aec2a014464dc3987fd68da119f0fa938d3e88154a1de828f507757c"
+  },
+  "initial_noise": {
+   "audio": {
+    "dtype": "torch.float32",
+    "sha256": "b1db607bdf6602de8d0a2db17f75b861afb622a9e43200675a7cb27c1de94b93",
+    "shape": [
+     578,
+     32
+    ]
+   },
+   "video": {
+    "dtype": "torch.float32",
+    "sha256": "5911670ffcf9954aa827968f1648ea6692551d59d12d37cc26404e1e25d425d1",
+    "shape": [
+     17344,
+     96
+    ]
+   }
+  },
+  "label": "A",
+  "metadata": {
+   "chain": "h3-phase-b-full-chain-v1",
+   "sampler": "MiniMaxH3Scheduler euler eta=0"
+  },
+  "modalities": [
+   "video",
+   "audio"
+  ],
+  "operator_trace_sha256": "",
+  "schema_version": "rlkernel.h3.trajectory.v1",
+  "seed": 42,
+  "shifts": {
+   "audio": 3.0,
+   "video": 12.0
+  },
+  "sigma_grids": {
+   "audio": [
+    "0x1.0000000000000p+0",
+    "0x1.b6db6c0000000p-1",
+    "0x1.3333320000000p-1",
+    "0x0.0p+0"
+   ],
+   "video": [
+    "0x1.0000000000000p+0",
+    "0x1.eb851e0000000p-1",
+    "0x1.b6db6c0000000p-1",
+    "0x0.0p+0"
+   ]
+  },
+  "step_records": [
+   {
+    "chain_sha256": "7b6ffe0a41e35e38854bee6ac652e38ebf64c1ee2b1b06ae764a0945e30bf2a9",
+    "index": 0,
+    "latent_sha256": {
+     "audio": "f32c5c8c3c2fd54043af6548cf967e7a253a1248705a56a74ef669303e8410b3",
+     "video": "59bd8804d9ea59b31440b02cc278118183295a4ad3da9f08a2f0d835be84c7ae"
+    },
+    "sigma": {
+     "audio": "0x1.0000000000000p+0",
+     "video": "0x1.0000000000000p+0"
+    },
+    "sigma_next": {
+     "audio": "0x1.b6db6c0000000p-1",
+     "video": "0x1.eb851e0000000p-1"
+    },
+    "velocity_sha256": {
+     "audio": "370aeac7c09156947289ff7ca55bc661bcc6f79dfc754666aaf765dbf031f90e",
+     "video": "e120893986537d958631572fcef8b227f1db9adcd805321aa5a73c91aaccc552"
+    }
+   },
+   {
+    "chain_sha256": "5efe03412076909a7ec696424125707af06a70585b2364da45148a85cf3050c3",
+    "index": 1,
+    "latent_sha256": {
+     "audio": "2c567b96eaa053a8147362fa9a1d42eede85ce792d59ce403acb7e914c255065",
+     "video": "434aed99c78c0495a73aca34be3e5f0350ebc461546955f9b5dbee32cf2ad6d3"
+    },
+    "sigma": {
+     "audio": "0x1.b6db6c0000000p-1",
+     "video": "0x1.eb851e0000000p-1"
+    },
+    "sigma_next": {
+     "audio": "0x1.3333320000000p-1",
+     "video": "0x1.b6db6c0000000p-1"
+    },
+    "velocity_sha256": {
+     "audio": "cb8d40f3ba3d7806ff3d3de3b4fa8521504a3e5964e2acfbdebcc5f2515db434",
+     "video": "10a0deb6afa10b9471febd5388c79d3dabb68ab2aef02b1ac6a2c607bc666ef4"
+    }
+   },
+   {
+    "chain_sha256": "61becce50db461e72428f40b4d97f6e4662b7c7d1871afb654c548822308a881",
+    "index": 2,
+    "latent_sha256": {
+     "audio": "6a666a423dd7c884d94f8ad0025fcc1d3b2d34c0573dfe7b101c290ab9266413",
+     "video": "d4162c45aec2a014464dc3987fd68da119f0fa938d3e88154a1de828f507757c"
+    },
+    "sigma": {
+     "audio": "0x1.3333320000000p-1",
+     "video": "0x1.b6db6c0000000p-1"
+    },
+    "sigma_next": {
+     "audio": "0x0.0p+0",
+     "video": "0x0.0p+0"
+    },
+    "velocity_sha256": {
+     "audio": "5ceb7ce4aa16949e689695f79fc49de8b9a13b70bdb649c2c9dc87fc25eaf868",
+     "video": "6959ce12481d41be460be90edced14dec76713ac98320afcbf41b3a95aa52c99"
+    }
+   }
+  ],
+  "steps": 3,
+  "variant": "Ref2VA"
+ },
+ "transformer_probe": {
+  "steps": [
+   [
+    [
+     "proj_in",
+     "751b0ea7d3597d91caf01892acea239806f45f46e54edc2294c81eda65152e4f"
+    ],
+    [
+     "audio_proj_in",
+     "6bb65157dfbfc164c80482e82ad5a4dabdd0e2d001a00bd726789a331d5fef04"
+    ],
+    [
+     "context_embedder",
+     "be5956df281cf478bdc75cc0d164cd3821c9a520072dc3315d58662033fa1198"
+    ],
+    [
+     "token_refiner",
+     "59846514f4e9d4d83da5fd751d4d903d03e656319724eebba765c7ffe17c6137"
+    ],
+    [
+     "time_embedder",
+     "ba1076614c0a4a891c587feb8e23625cc64449d3828526109f45d8a58d21f74a"
+    ],
+    [
+     "transformer_blocks.0",
+     "94c7b44427e5b32d95eee09e0259f13ab6cfa1d49998424e6e8fd5b30bb95b82"
+    ],
+    [
+     "transformer_blocks.1",
+     "0313af0a610b76310438ec79e383b4bbdad530e59b8900ab60d68d2aaccd0296"
+    ],
+    [
+     "transformer_blocks.2",
+     "b198f8167b1ee9a66b352748003d7878c22375bc09f77177308cf9ea7806827d"
+    ],
+    [
+     "transformer_blocks.3",
+     "c1b813281bcf355b49402f4cd3c86a5fa1df21b919ef32a56d9fbb88f94a04de"
+    ],
+    [
+     "norm_out",
+     "52371eb15e9b841612ae6bf916f55cc05892879d32098ef922369307dfd6b4f3"
+    ],
+    [
+     "proj_out",
+     "ee6c9699fae19041e301e7e13b35180da2def833ec8d74be15c525527c00103e"
+    ],
+    [
+     "audio_proj_out",
+     "11b0367283a6fa424e9a4ab847565b7c53f82cff1562294e4c4c9a75e3d61a1a"
+    ]
+   ],
+   [
+    [
+     "proj_in",
+     "270252d61a67044a79ab0081b6376f6fefde8b41121115f709add839cf3c2518"
+    ],
+    [
+     "audio_proj_in",
+     "c0bbb6c4d5f2b467ecb80ef3978a5e61e453bf1c43cae24fd971fe1bce64a7e3"
+    ],
+    [
+     "context_embedder",
+     "be5956df281cf478bdc75cc0d164cd3821c9a520072dc3315d58662033fa1198"
+    ],
+    [
+     "token_refiner",
+     "59846514f4e9d4d83da5fd751d4d903d03e656319724eebba765c7ffe17c6137"
+    ],
+    [
+     "time_embedder",
+     "b80aca4b29dced6b6fe81da9528707255704c072b37a411ba7d5d20da87447bd"
+    ],
+    [
+     "transformer_blocks.0",
+     "5949f549242111963fdd0bd4c652bbe37c872d5cedecb96f5adc8bbefdf71888"
+    ],
+    [
+     "transformer_blocks.1",
+     "c2042d993c695d6702675d61886f8ba181fc2e0e6b17b1199b9fcda4f14f32f0"
+    ],
+    [
+     "transformer_blocks.2",
+     "537bcd7330a4c184e37564935005714d3850eb8b43fc1d13d0ec475f95d31097"
+    ],
+    [
+     "transformer_blocks.3",
+     "dd2e0dc533acb13a8f5820b2e3acea56c2e4109a498ef296942e1a7ebc06e2a6"
+    ],
+    [
+     "norm_out",
+     "a3c9c1dbe717d3aea8f642b4f553862f212aba89b58300aa73c6060087a9f39f"
+    ],
+    [
+     "proj_out",
+     "3fd743ba5390021abf05a61295589e3a525382d8ebe92fb8b2a455c84b6bbcfd"
+    ],
+    [
+     "audio_proj_out",
+     "866d3a9af25036dfacf183ee1f621c4729c7601705d07370b8d4a69293d3144c"
+    ]
+   ],
+   [
+    [
+     "proj_in",
+     "1825eb2208c2fc28652f93a6e670bb7c77cee7f0f3823f8a69075c7d80776d35"
+    ],
+    [
+     "audio_proj_in",
+     "6cfdc3be592213df36eb3732db8135faed797c862898d06fc4d640fe90b161ad"
+    ],
+    [
+     "context_embedder",
+     "be5956df281cf478bdc75cc0d164cd3821c9a520072dc3315d58662033fa1198"
+    ],
+    [
+     "token_refiner",
+     "59846514f4e9d4d83da5fd751d4d903d03e656319724eebba765c7ffe17c6137"
+    ],
+    [
+     "time_embedder",
+     "138a4f5c1b9ffb5cda0dfb9bfdb4d8b91c25d9b7798742fab8ac8db48b1e346f"
+    ],
+    [
+     "transformer_blocks.0",
+     "970db2b8aeef48e5703d4679c07e60c0db1d837e39e5f90710b3202bb3250fda"
+    ],
+    [
+     "transformer_blocks.1",
+     "3e2b6e1f253f1ebc1986620b64a11cf3ba1767035679956f14860748493ade41"
+    ],
+    [
+     "transformer_blocks.2",
+     "9ddadb7f3c10d709dd56130ba5ee129b17bfa8b4837eb7a786e4c3bd9792cc0c"
+    ],
+    [
+     "transformer_blocks.3",
+     "ef629e47f9d8d8731162dbe2d00bf2b0d5be4c00f55014a6afd32829ed5470b2"
+    ],
+    [
+     "norm_out",
+     "4396f16e4c2ef99bd0ecdfbf0f8094c006fef9f60f1e3ca30212c944432bdf06"
+    ],
+    [
+     "proj_out",
+     "895e977c3ca135301423955d59e606a0204d3e8fa56a9effafab11eb9f5e384d"
+    ],
+    [
+     "audio_proj_out",
+     "3e6fa12ea452699bfa267f6d2bc98d02ed851e7739fcea434d6fa697cbbf457d"
+    ]
+   ]
+  ]
+ },
+ "variant": "Ref2VA",
+ "workflow": "ref2va"
+}

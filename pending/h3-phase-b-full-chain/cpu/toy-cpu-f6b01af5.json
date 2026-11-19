@@ -1,0 +1,1102 @@
+{
+ "cases": [
+  {
+   "artifact_sha256": [
+    "05322d0e4ea6b6898f9e09e995941541bc42a29c04643f588959caac115adb39",
+    "939a4cdca1e6e588ca8537af0fb172d7fa7d08036f962256fdb40dfa55fd127c"
+   ],
+   "case": "repeat",
+   "first_drift": null,
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": true,
+     "video_decode": true
+    },
+    "hard_gate": "pass",
+    "latent_trajectory_equal": true,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": true
+   },
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "keyframe_pixels.1",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     0,
+     0,
+     3,
+     0
+    ],
+    "first_row": 0,
+    "max_abs_diff": 1.0,
+    "mismatch_count": 1,
+    "numel": 12288,
+    "stage": "media_preprocess"
+   },
+   "first_index": [
+    0,
+    0,
+    0,
+    3,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "keyframe_pixels.1",
+    "module": null,
+    "row": 3,
+    "stage": "media_preprocess",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "prompt_embeds",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     4,
+     0
+    ],
+    "first_row": 4,
+    "max_abs_diff": 1.4901161193847656e-08,
+    "mismatch_count": 1,
+    "numel": 256,
+    "row": {
+     "local_row": 4,
+     "modality": "video",
+     "packed_row": 4,
+     "position_thw": [
+      4.0,
+      0.0,
+      0.0
+     ],
+     "role": "vision block (text side)",
+     "space": "text",
+     "text_row": 4
+    },
+    "stage": "text_conditions"
+   },
+   "first_index": [
+    0,
+    4,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "prompt_embeds",
+    "module": null,
+    "row": 4,
+    "stage": "text_conditions",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "condition_latents.0",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "first_row": 0,
+    "max_abs_diff": 1.862645149230957e-09,
+    "mismatch_count": 1,
+    "numel": 384,
+    "stage": "visual_vae_encode"
+   },
+   "first_index": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": true,
+     "video_decode": true
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": true
+   },
+   "injection": {
+    "component": "condition_latents.0",
+    "module": null,
+    "row": 0,
+    "stage": "visual_vae_encode",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "video_rows",
+    "differing_rows": 1,
+    "first_index": [
+     13,
+     0
+    ],
+    "first_row": 13,
+    "max_abs_diff": 5.960464477539063e-08,
+    "mismatch_count": 1,
+    "numel": 14976,
+    "row": {
+     "latent_frame": 1,
+     "local_row": 13,
+     "modality": "video",
+     "packed_row": 443,
+     "patch_col": 1,
+     "patch_row": 0,
+     "position_thw": [
+      17.666666666666668,
+      0.0,
+      16.0
+     ],
+     "role": "target",
+     "space": "video"
+    },
+    "stage": "initial_rows"
+   },
+   "first_index": [
+    13,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "video_rows",
+    "module": null,
+    "row": 13,
+    "stage": "initial_rows",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "video_latents",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     0,
+     5,
+     0,
+     0
+    ],
+    "first_row": 0,
+    "max_abs_diff": 5.960464477539063e-08,
+    "mismatch_count": 1,
+    "numel": 14208,
+    "stage": "unpack"
+   },
+   "first_index": [
+    0,
+    0,
+    5,
+    0,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": true,
+     "video_decode": true
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": true
+   },
+   "injection": {
+    "component": "video_latents",
+    "module": null,
+    "row": 5,
+    "stage": "unpack",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "video",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "first_row": 0,
+    "max_abs_diff": 2.9802322387695312e-08,
+    "mismatch_count": 1,
+    "numel": 1523712,
+    "stage": "video_decode"
+   },
+   "first_index": [
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": true,
+     "video_decode": false
+    },
+    "hard_gate": "pass",
+    "latent_trajectory_equal": true,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": true
+   },
+   "injection": {
+    "component": "video",
+    "module": null,
+    "row": 0,
+    "stage": "video_decode",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "trajectory",
+    "kind": "velocity",
+    "modality": "video",
+    "stage": "denoise",
+    "step": 0,
+    "trajectory": {
+     "differing_rows": 84,
+     "first_index": [
+      1,
+      0
+     ],
+     "first_row": 1,
+     "kind": "velocity",
+     "max_abs_diff": 4.76837158203125e-07,
+     "mismatch_count": 4183,
+     "modality": "video",
+     "numel": 14976,
+     "row": {
+      "condition_row": 1,
+      "local_row": 1,
+      "modality": "video",
+      "packed_row": 17,
+      "position_thw": [
+       16.0,
+       0.0,
+       16.0
+      ],
+      "role": "condition",
+      "space": "video"
+     },
+     "step": 0
+    },
+    "transformer": {
+     "differing_rows": 1,
+     "execution_index": 5,
+     "first_index": [
+      0,
+      20,
+      0
+     ],
+     "first_row": 20,
+     "max_abs_diff": 5.960464477539063e-08,
+     "mismatch_count": 1,
+     "module": "transformer_blocks.0",
+     "numel": 18752,
+     "row": {
+      "condition_row": 4,
+      "local_row": 20,
+      "modality": "video",
+      "packed_row": 20,
+      "position_thw": [
+       220.99999999999997,
+       0.0,
+       0.0
+      ],
+      "role": "condition",
+      "space": "packed"
+     }
+    }
+   },
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": null,
+    "module": "transformer_blocks.0",
+    "row": 20,
+    "stage": "denoise",
+    "step": 0
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "trajectory",
+    "kind": "velocity",
+    "modality": "audio",
+    "stage": "denoise",
+    "step": 2,
+    "trajectory": {
+     "differing_rows": 1,
+     "first_index": [
+      276,
+      0
+     ],
+     "first_row": 276,
+     "kind": "velocity",
+     "max_abs_diff": 1.4901161193847656e-07,
+     "mismatch_count": 29,
+     "modality": "audio",
+     "numel": 13248,
+     "row": {
+      "latent_index": 69,
+      "local_row": 276,
+      "modality": "audio",
+      "packed_row": 300,
+      "position_thw": [
+       85.0,
+       0.0,
+       16.0
+      ],
+      "role": "target",
+      "space": "audio",
+      "stereo_channel": "right"
+     },
+     "step": 2
+    },
+    "transformer": {
+     "differing_rows": 1,
+     "execution_index": 7,
+     "first_index": [
+      0,
+      300,
+      0
+     ],
+     "first_row": 300,
+     "max_abs_diff": 2.384185791015625e-07,
+     "mismatch_count": 1,
+     "module": "transformer_blocks.2",
+     "numel": 18752,
+     "row": {
+      "latent_index": 69,
+      "local_row": 300,
+      "modality": "audio",
+      "packed_row": 300,
+      "position_thw": [
+       85.0,
+       0.0,
+       16.0
+      ],
+      "role": "target",
+      "space": "packed",
+      "stereo_channel": "right"
+     }
+    }
+   },
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": true
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": null,
+    "module": "transformer_blocks.2",
+    "row": 300,
+    "stage": "denoise",
+    "step": 2
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "trajectory",
+    "kind": "velocity",
+    "modality": "video",
+    "stage": "denoise",
+    "step": 1,
+    "trajectory": {
+     "differing_rows": 121,
+     "first_index": [
+      0,
+      0
+     ],
+     "first_row": 0,
+     "kind": "velocity",
+     "max_abs_diff": 7.152557373046875e-07,
+     "mismatch_count": 6241,
+     "modality": "video",
+     "numel": 14976,
+     "row": {
+      "condition_row": 0,
+      "local_row": 0,
+      "modality": "video",
+      "packed_row": 16,
+      "position_thw": [
+       16.0,
+       0.0,
+       0.0
+      ],
+      "role": "condition",
+      "space": "video"
+     },
+     "step": 1
+    },
+    "transformer": {
+     "differing_rows": 1,
+     "execution_index": 0,
+     "first_index": [
+      0,
+      40,
+      0
+     ],
+     "first_row": 40,
+     "max_abs_diff": 2.9802322387695312e-08,
+     "mismatch_count": 1,
+     "module": "proj_in",
+     "numel": 4992,
+     "row": {
+      "latent_frame": 8,
+      "local_row": 40,
+      "modality": "video",
+      "packed_row": 470,
+      "patch_col": 0,
+      "patch_row": 0,
+      "position_thw": [
+       59.333333333333336,
+       0.0,
+       0.0
+      ],
+      "role": "target",
+      "space": "video"
+     }
+    }
+   },
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": null,
+    "module": "proj_in",
+    "row": 40,
+    "stage": "denoise",
+    "step": 1
+   },
+   "localized": true,
+   "workflow": "fl2va"
+  },
+  {
+   "artifact_sha256": [
+    "17808fc184ad9652a45fcb793769c387d3a4cc26f4fb044cbd1b5cfa73f83186",
+    "ad9a7e63f9d8893fdb01937213c8ed8fe543ad428c59511b5bc84d76f6d868bf"
+   ],
+   "case": "repeat",
+   "first_drift": null,
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": true,
+     "video_decode": true
+    },
+    "hard_gate": "pass",
+    "latent_trajectory_equal": true,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": true
+   },
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "reference.1.waveform",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     0
+    ],
+    "first_row": 0,
+    "max_abs_diff": 1.4901161193847656e-08,
+    "mismatch_count": 1,
+    "numel": 80000,
+    "stage": "media_preprocess"
+   },
+   "first_index": [
+    0,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "reference.1.waveform",
+    "module": null,
+    "row": 0,
+    "stage": "media_preprocess",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "prompt_embeds",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     9,
+     0
+    ],
+    "first_row": 9,
+    "max_abs_diff": 1.1920928955078125e-07,
+    "mismatch_count": 1,
+    "numel": 288,
+    "row": {
+     "local_row": 9,
+     "modality": "video",
+     "packed_row": 9,
+     "position_thw": [
+      9.0,
+      0.0,
+      0.0
+     ],
+     "role": "vision block (text side)",
+     "space": "text",
+     "text_row": 9
+    },
+    "stage": "text_conditions"
+   },
+   "first_index": [
+    0,
+    9,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "prompt_embeds",
+    "module": null,
+    "row": 9,
+    "stage": "text_conditions",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "condition_latents.1",
+    "differing_rows": 1,
+    "first_index": [
+     0,
+     2,
+     0,
+     0,
+     0
+    ],
+    "first_row": 0,
+    "max_abs_diff": 1.1920928955078125e-07,
+    "mismatch_count": 1,
+    "numel": 5376,
+    "stage": "visual_vae_encode"
+   },
+   "first_index": [
+    0,
+    2,
+    0,
+    0,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "condition_latents.1",
+    "module": null,
+    "row": 2,
+    "stage": "visual_vae_encode",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "audio_rows.1",
+    "differing_rows": 1,
+    "first_index": [
+     7,
+     0
+    ],
+    "first_row": 7,
+    "max_abs_diff": 2.384185791015625e-07,
+    "mismatch_count": 1,
+    "numel": 1600,
+    "stage": "audio_vae_encode"
+   },
+   "first_index": [
+    7,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "audio_rows.1",
+    "module": null,
+    "row": 7,
+    "stage": "audio_vae_encode",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "audio_rows",
+    "differing_rows": 1,
+    "first_index": [
+     61,
+     0
+    ],
+    "first_row": 61,
+    "max_abs_diff": 2.384185791015625e-07,
+    "mismatch_count": 1,
+    "numel": 18048,
+    "row": {
+     "local_row": 61,
+     "modality": "audio",
+     "packed_row": 87,
+     "position_thw": [
+      30.0,
+      0.0,
+      27.31370849898476
+     ],
+     "reference_row": 61,
+     "role": "reference",
+     "space": "audio"
+    },
+    "stage": "initial_rows"
+   },
+   "first_index": [
+    61,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": "audio_rows",
+    "module": null,
+    "row": 61,
+    "stage": "initial_rows",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "waveform",
+    "differing_rows": 1,
+    "first_index": [
+     1,
+     0
+    ],
+    "first_row": 1,
+    "max_abs_diff": 1.4901161193847656e-08,
+    "mismatch_count": 1,
+    "numel": 331200,
+    "stage": "audio_decode"
+   },
+   "first_index": [
+    1,
+    0
+   ],
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": true
+    },
+    "hard_gate": "pass",
+    "latent_trajectory_equal": true,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": true
+   },
+   "injection": {
+    "component": "waveform",
+    "module": null,
+    "row": 1,
+    "stage": "audio_decode",
+    "step": null
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "trajectory",
+    "kind": "velocity",
+    "modality": "video",
+    "stage": "denoise",
+    "step": 1,
+    "trajectory": {
+     "differing_rows": 4,
+     "first_index": [
+      135,
+      0
+     ],
+     "first_row": 135,
+     "kind": "velocity",
+     "max_abs_diff": 2.384185791015625e-07,
+     "mismatch_count": 115,
+     "modality": "video",
+     "numel": 20352,
+     "row": {
+      "latent_frame": 17,
+      "local_row": 135,
+      "modality": "video",
+      "packed_row": 717,
+      "patch_col": 1,
+      "patch_row": 1,
+      "position_thw": [
+       187.33333333333337,
+       16.0,
+       16.0
+      ],
+      "role": "target",
+      "space": "video"
+     },
+     "step": 1
+    },
+    "transformer": {
+     "differing_rows": 1,
+     "execution_index": 6,
+     "first_index": [
+      0,
+      30,
+      0
+     ],
+     "first_row": 30,
+     "max_abs_diff": 1.1920928955078125e-07,
+     "mismatch_count": 1,
+     "module": "transformer_blocks.1",
+     "numel": 25408,
+     "row": {
+      "local_row": 30,
+      "modality": "audio",
+      "packed_row": 30,
+      "position_thw": [
+       23.0,
+       0.0,
+       -6.627416997969519
+      ],
+      "reference_row": 4,
+      "role": "reference",
+      "space": "packed"
+     }
+    }
+   },
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": false,
+     "video_decode": false
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": null,
+    "module": "transformer_blocks.1",
+    "row": 30,
+    "stage": "denoise",
+    "step": 1
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "transformer_probe",
+    "note": "a transformer intermediate differs but every velocity and latent is byte-equal: the difference was rounded away before the output heads",
+    "stage": "denoise",
+    "step": 2,
+    "trajectory": null,
+    "transformer": {
+     "differing_rows": 1,
+     "execution_index": 1,
+     "first_index": [
+      0,
+      70,
+      0
+     ],
+     "first_row": 70,
+     "max_abs_diff": 2.3283064365386963e-10,
+     "mismatch_count": 1,
+     "module": "audio_proj_in",
+     "numel": 18048,
+     "row": {
+      "local_row": 70,
+      "modality": "audio",
+      "packed_row": 96,
+      "position_thw": [
+       39.0,
+       0.0,
+       27.31370849898476
+      ],
+      "reference_row": 70,
+      "role": "reference",
+      "space": "audio"
+     }
+    }
+   },
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": true,
+     "video_decode": true
+    },
+    "hard_gate": "pass",
+    "latent_trajectory_equal": true,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": null,
+    "module": "audio_proj_in",
+    "row": 70,
+    "stage": "denoise",
+    "step": 2
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  },
+  {
+   "case": "injection",
+   "first_drift": {
+    "component": "trajectory",
+    "kind": "velocity",
+    "modality": "audio",
+    "stage": "denoise",
+    "step": 0,
+    "trajectory": {
+     "differing_rows": 1,
+     "first_index": [
+      418,
+      5
+     ],
+     "first_row": 418,
+     "kind": "velocity",
+     "max_abs_diff": 5.960464477539063e-08,
+     "mismatch_count": 8,
+     "modality": "audio",
+     "numel": 18048,
+     "row": {
+      "latent_index": 61,
+      "local_row": 418,
+      "modality": "audio",
+      "packed_row": 500,
+      "position_thw": [
+       155.0,
+       0.0,
+       16.0
+      ],
+      "role": "target",
+      "space": "audio",
+      "stereo_channel": "right"
+     },
+     "step": 0
+    },
+    "transformer": {
+     "differing_rows": 1,
+     "execution_index": 8,
+     "first_index": [
+      0,
+      500,
+      0
+     ],
+     "first_row": 500,
+     "max_abs_diff": 5.960464477539063e-08,
+     "mismatch_count": 1,
+     "module": "norm_out",
+     "numel": 25408,
+     "row": {
+      "latent_index": 61,
+      "local_row": 500,
+      "modality": "audio",
+      "packed_row": 500,
+      "position_thw": [
+       155.0,
+       0.0,
+       16.0
+      ],
+      "role": "target",
+      "space": "packed",
+      "stereo_channel": "right"
+     }
+    }
+   },
+   "gate": {
+    "decoded_media_equal": {
+     "audio_decode": true,
+     "video_decode": true
+    },
+    "hard_gate": "fail",
+    "latent_trajectory_equal": false,
+    "rule": "latent trajectory equality is the gate; decoded media are secondary",
+    "transformer_intermediates_equal": false
+   },
+   "injection": {
+    "component": null,
+    "module": "norm_out",
+    "row": 500,
+    "stage": "denoise",
+    "step": 0
+   },
+   "localized": true,
+   "workflow": "ref2va"
+  }
+ ],
+ "kind": "toy",
+ "schema": "rlkernel.h3.full_chain.evidence.v1",
+ "source": {
+  "clean": true,
+  "commit": "f6b01af523b698e80acb4a168fa70893acfa15e4"
+ },
+ "summary": {
+  "injections": 18,
+  "localized": 18,
+  "repeat_runs_equal": true,
+  "runtime": {
+   "cpu_capability": "AVX512",
+   "cuda": "13.0",
+   "cudnn": 92000,
+   "cudnn_allow_tf32": true,
+   "deterministic_algorithms": false,
+   "device": "cpu",
+   "hip": null,
+   "matmul_allow_tf32": false,
+   "num_threads": 16,
+   "platform_machine": "x86_64",
+   "python": "3.12.14",
+   "torch": "2.13.0+cu130"
+  }
+ }
+}
