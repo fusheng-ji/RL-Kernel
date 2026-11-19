@@ -1,0 +1,21 @@
+commit: bbdddc67 dirty: True
+device: NVIDIA H100 [9, 0]
+required verdicts: all true
+  diffusers_batched_batch_invariant_default_flags: False -> False
+  diffusers_parity_default_flags: True -> True
+sha256 fields: 30 old, 30 new, 0 differ
+
+timing (median ms)                         1e1ff922        new
+contract / decode_video                      1126.3      602.0
+contract / encode_keyframe                     97.4       97.5
+contract / encode_video                      1849.0     1852.1
+contract_untiled / decode_video               988.7      469.4
+contract_untiled / encode_keyframe             41.9       56.9
+diffusers_default_flags / decode_video        491.2      491.3
+diffusers_default_flags / encode_keyframe       97.3       97.5
+diffusers_default_flags / encode_video       1847.1     1853.7
+diffusers_pinned_flags / decode_video         491.0      490.3
+diffusers_pinned_flags / encode_keyframe       97.3       97.5
+diffusers_pinned_flags / encode_video        1849.4     1851.0
+
+RESULT: PASS
