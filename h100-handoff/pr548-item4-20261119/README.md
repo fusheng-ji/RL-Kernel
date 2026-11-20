@@ -6,7 +6,7 @@ fixing the reductions and gradient synchronization." Items 1-3 are fixed in `cb2
 
 ## What to check out
 
-- **Round 2 (2026-11-20): round 1 stopped at step 5. Continue from step 5 at `8be525ec` as
+- **Round 2 (2026-11-20): round 1 stopped at step 5. Continue from step 5 at `19b62661` as
   `ROUND2.md` in this directory says; steps 1-4 of round 1 stay.** The rest of this README is
   the round-1 description; where it names `1bba6d19` for steps 5-6, `ROUND2.md` replaces it.
 - Fork `https://github.com/fusheng-ji/RL-Kernel`, this branch

@@ -44,4 +44,5 @@ step 5.** If the H100 run shows the same peak, step 5 stops as written and step 
 The other TP2 rows were not probed on B200.
 
 `b9e5690d` follows from this: the Megatron BF16 actor runs at TP4 only, and step 5 probes it at
-TP4.
+TP4. Round 2 continues at `19b62661`, which also covers the DeepSpeed BF16 rows; see
+`ROUND2.md` for what changed and its B200 probe of all 8 rows.
