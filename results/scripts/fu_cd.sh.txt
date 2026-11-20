@@ -1,0 +1,32 @@
+#!/bin/bash
+# node 011 sequence: FU-C (EP4 chain), FU-D (two provider-GPU workflow scripts), GDN-C (EP4 chain). Failures are recorded, not retried.
+source <HOME>/datastorage/gdn20261120/env.sh; source $D/hdr.sh
+log() { echo "[$(date -u +%FT%TZ)] $*" >> $D/out/node011-steps.txt; }
+R=tools/validation/models/qwen3_next/qwen3_next_run.py
+# ---- FU-C
+O=$D/out/FU/C; WT=$D/fu/src; PYX=$PYFU; hdr $O $WT $PYX; mkdir -p $O/runs; cd $WT; log "FU-C start"
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --ep 4 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "FU-C end"
+# ---- FU-D
+O=$D/out/FU/D; hdr $O $WT $PYX; cd $WT; log "FU-D start"
+$PYX setup.py build_ext --inplace > $O/build.log 2>&1; echo "build rc=$?" >> $O/rc.txt
+$PYX -c "import rl_engine._C as c; print(c.__file__)" > $O/c-file.txt 2>&1
+git status --porcelain --untracked-files=no > $O/status-mid.txt
+$PYX - $O <<'PY'
+import sys, yaml, pathlib
+out = pathlib.Path(sys.argv[1])
+steps = yaml.safe_load(open(".github/workflows/qwen3-next-provider-gpu.yml"))["jobs"]["provider"]["steps"]
+for name, file in (("Check pinned providers in their own process", "provider.sh"),
+                   ("Check the vLLM model contract and the EP4 real model (four GPUs)", "four-gpu.sh")):
+    (out / file).write_text(next(s for s in steps if s.get("name") == name)["run"])
+PY
+export PATH=$(dirname $PYX):$PATH
+for s in provider four-gpu; do
+  RUNNER_TEMP=$O TRITON_F32_DEFAULT=ieee PYTHONPATH=$WT bash --noprofile --norc -eo pipefail $O/$s.sh > $O/$s.log 2>&1
+  echo "$s rc=$?" >> $O/rc.txt
+done
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "FU-D end"
+# ---- GDN-C
+O=$D/out/GD/C; WT=$D/gd/src; PYX=$PYGD; hdr $O $WT $PYX; mkdir -p $O/runs; cd $WT; log "GDN-C start"
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --ep 4 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "GDN-C end"
