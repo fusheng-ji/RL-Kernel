@@ -1,0 +1,17 @@
+WARNING 11-19 15:56:40 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-19 15:56:43 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 15:56:43 [RL-Kernel]: KernelRegistry initialized for cuda
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<HOME>/q548/src/tools/validation/models/qwen3_ppo/capture_qwen3.py", line 73, in <module>
+    main()
+  File "<HOME>/q548/src/tools/validation/models/qwen3_ppo/capture_qwen3.py", line 39, in main
+    client = VllmPPOClient(
+             ^^^^^^^^^^^^^^
+  File "<HOME>/q548/src/tests/distributed/tp/vllm_ppo_client.py", line 159, in __init__
+    self.runtime = self._read()
+                   ^^^^^^^^^^^^
+  File "<HOME>/q548/src/tests/distributed/tp/vllm_ppo_client.py", line 176, in _read
+    raise RuntimeError(f"vLLM exited; see {self.directory}/runtime.log")
+RuntimeError: vLLM exited; see <HOME>/q548/results/reference/job-<JOBID>-attempt-0/rollout/vllm/runtime.log

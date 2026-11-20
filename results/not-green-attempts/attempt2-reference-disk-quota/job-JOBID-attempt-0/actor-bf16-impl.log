@@ -1,0 +1,28 @@
+WARNING 11-19 18:37:12 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-19 18:37:15 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 18:37:15 [RL-Kernel]: KernelRegistry initialized for cuda
+Loading weights:   0%|          | 0/399 [00:00<?, ?it/s]Loading weights: 100%|██████████| 399/399 [00:00<00:00, 7504.07it/s]
+Traceback (most recent call last):
+  File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/serialization.py", line 967, in save
+    _save(
+  File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/serialization.py", line 1268, in _save
+    zip_file.write_record(name, storage, num_bytes)
+RuntimeError: [enforce fail at inline_container.cc:858] . PytorchStreamWriter failed writing file data/0: file write failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<HOME>/q548/src/tools/validation/models/qwen3_ppo/hf_ppo_reference.py", line 476, in <module>
+    main()
+  File "<HOME>/q548/src/tools/validation/models/qwen3_ppo/hf_ppo_reference.py", line 437, in main
+    artifacts[f"{update}/gradient/{n}"] = write_tensor(
+                                          ^^^^^^^^^^^^^
+  File "<HOME>/q548/src/tools/validation/models/qwen3_ppo/fixed_contract.py", line 57, in write_tensor
+    torch.save(value, path)
+  File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/serialization.py", line 966, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+  File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/serialization.py", line 798, in __exit__
+    self.file_like.write_end_of_file()
+RuntimeError: [enforce fail at inline_container.cc:664] . unexpected pos 896 vs 790
