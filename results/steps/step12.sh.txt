@@ -1,0 +1,14 @@
+#!/bin/bash
+source <HOME>/datastorage/q548/env.sh
+O=$Q/out/step12; mkdir -p $O; cd $SRC
+{ git rev-parse HEAD; git status --porcelain; echo "(end status)"; nvidia-smi --query-gpu=index,name,memory.total,driver_version --format=csv; } > $O/header.txt
+s=$(date +%s)
+$TP setup.py build_ext --inplace > $O/build.log 2>&1; echo "build rc=$? $(( $(date +%s)-s ))s" >> $O/steps.txt
+$TP -c "import rl_engine._C as c; print(c.__file__)" > $O/c-file.txt 2>&1; cat $O/c-file.txt >> $O/steps.txt
+export PYTHONPATH=$SRC
+s=$(date +%s)
+RUN_TP_CUDA=1 $TP -m pytest -rs tests/integrations/common/test_tp_bitwise.py -k nccl > $O/smoke-tp-bitwise.log 2>&1; echo "tp_bitwise rc=$? $(( $(date +%s)-s ))s" >> $O/steps.txt
+s=$(date +%s)
+$TP -m pytest -rs tests/integrations/engines/train/test_qwen3_ppo_checkpoint.py > $O/smoke-checkpoint.log 2>&1; echo "checkpoint rc=$? $(( $(date +%s)-s ))s" >> $O/steps.txt
+git status --porcelain > $O/status-after.txt
+touch $O/ALLDONE

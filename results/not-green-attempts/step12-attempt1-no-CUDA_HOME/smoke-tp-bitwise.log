@@ -1,0 +1,567 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.15, pytest-9.2.0, pluggy-1.7.0
+rootdir: <HOME>/q548/src
+configfile: pyproject.toml
+plugins: anyio-4.16.0
+collected 7 items / 4 deselected / 3 selected
+
+tests/integrations/common/test_tp_bitwise.py FFF                         [100%]
+
+=================================== FAILURES ===================================
+_______________ test_nccl_reduction_tree_is_bitwise_tp_invariant _______________
+
+tmp_path = PosixPath('/tmp/q548-3607367/pytest-of-<USER>/pytest-0/test_nccl_reduction_tree_is_bi0')
+
+    @pytest.mark.skipif(os.environ.get("RUN_TP_CUDA") != "1", reason="opt-in multi-GPU validation")
+    def test_nccl_reduction_tree_is_bitwise_tp_invariant(tmp_path):
+        """The same checks with CUDA tensors use DeterministicCollective on two GPUs."""
+>       mp.start_processes(
+            _reduction_worker,
+            args=(2, str(tmp_path / "nccl"), "nccl"),
+            nprocs=2,
+            start_method="spawn",
+        )
+
+tests/integrations/common/test_tp_bitwise.py:201: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:320: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x7ed876dc8150>
+timeout = None, grace_period = None
+
+    def join(
+        self, timeout: Optional[float] = None, grace_period: Optional[float] = None
+    ):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 0 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E           from rl_engine import _C
+E       ImportError: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py)
+E       
+E       The above exception was the direct cause of the following exception:
+E       
+E       Traceback (most recent call last):
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 95, in _wrap
+E           fn(i, *args)
+E         File "<HOME>/q548/src/tests/integrations/common/test_tp_bitwise.py", line 104, in _reduction_worker
+E           assert_bitwise(deterministic_tp_all_reduce_(local.clone(), group), reference)
+E                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/tp_scalar.py", line 83, in deterministic_tp_all_reduce_
+E           return _deterministic_tp_all_reduce_(tensor, group)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/reference/logprob/linear_logp.py", line 415, in _deterministic_tp_all_reduce_
+E           collective = collective_for_group(
+E                        ^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 822, in collective_for_group
+E           collective = create_deterministic_collective(
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 778, in create_deterministic_collective
+E           return DeterministicCollective(
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E           self._load_cuda_extension()
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E           raise RuntimeError(
+E       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:220: ProcessRaisedException
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 15:37:34 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 15:37:34 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 15:37:35 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+WARNING 11-19 15:37:35 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-19 15:37:36 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 15:37:36 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-19 15:37:36 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 15:37:36 [RL-Kernel]: KernelRegistry initialized for cuda
+----------------------------- Captured stderr call -----------------------------
+W1119 15:37:37.552000 3607546 <HOME>/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:174] Terminating process 3607824 via signal SIGTERM
+------------------------------ Captured log call -------------------------------
+WARNING  torch.multiprocessing.spawn:spawn.py:174 Terminating process 3607824 via signal SIGTERM
+_________ test_nccl_partial_gradients_keep_tp_replicas_identical[fp32] _________
+
+tmp_path = PosixPath('/tmp/q548-3607367/pytest-of-<USER>/pytest-0/test_nccl_partial_gradients_ke0')
+precision = 'fp32'
+
+    @pytest.mark.skipif(os.environ.get("RUN_TP_CUDA") != "1", reason="opt-in multi-GPU validation")
+    @pytest.mark.parametrize("precision", ["fp32", "bf16"])
+    def test_nccl_partial_gradients_keep_tp_replicas_identical(tmp_path, precision):
+        """The TP1/TP2 update comparison on two GPUs through DeterministicCollective."""
+>       mp.start_processes(
+            _update_worker,
+            args=(2, str(tmp_path / "nccl"), "nccl", precision),
+            nprocs=2,
+            start_method="spawn",
+        )
+
+tests/integrations/common/test_tp_bitwise.py:355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:320: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x7ed852328690>
+timeout = None, grace_period = None
+
+    def join(
+        self, timeout: Optional[float] = None, grace_period: Optional[float] = None
+    ):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 1 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E           from rl_engine import _C
+E       ImportError: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py)
+E       
+E       The above exception was the direct cause of the following exception:
+E       
+E       Traceback (most recent call last):
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 95, in _wrap
+E           fn(i, *args)
+E         File "<HOME>/q548/src/tests/integrations/common/test_tp_bitwise.py", line 322, in _update_worker
+E           _, norm = _train(group, size, rank, precision, "partial", device)
+E                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/tests/integrations/common/test_tp_bitwise.py", line 309, in _train
+E           result = worker.train(ppo_batch(device))
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/ppo.py", line 468, in train
+E           output = self.forward(micro.rollout.inputs)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+E           return self._call_impl(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+E           return forward_call(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/tests/integrations/common/test_tp_bitwise.py", line 241, in forward
+E           logits = sum_tp_contributions(local.float(), self.group)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/tp_scalar.py", line 119, in sum_tp_contributions
+E           return _SumLocalHead.apply(value, group) if dist.get_world_size(group) > 1 else value
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/autograd/function.py", line 581, in apply
+E           return super().apply(*args, **kwargs)  # type: ignore[misc]
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/tp_scalar.py", line 102, in forward
+E           return deterministic_tp_all_reduce_(value.clone(), group)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/tp_scalar.py", line 83, in deterministic_tp_all_reduce_
+E           return _deterministic_tp_all_reduce_(tensor, group)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/reference/logprob/linear_logp.py", line 415, in _deterministic_tp_all_reduce_
+E           collective = collective_for_group(
+E                        ^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 822, in collective_for_group
+E           collective = create_deterministic_collective(
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 778, in create_deterministic_collective
+E           return DeterministicCollective(
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E           self._load_cuda_extension()
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E           raise RuntimeError(
+E       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:220: ProcessRaisedException
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 15:37:40 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 15:37:40 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 15:37:41 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+WARNING 11-19 15:37:41 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-19 15:37:41 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 15:37:41 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-19 15:37:42 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 15:37:42 [RL-Kernel]: KernelRegistry initialized for cuda
+----------------------------- Captured stderr call -----------------------------
+W1119 15:37:53.367000 3607546 <HOME>/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:174] Terminating process 3608042 via signal SIGTERM
+------------------------------ Captured log call -------------------------------
+WARNING  torch.multiprocessing.spawn:spawn.py:174 Terminating process 3608042 via signal SIGTERM
+_________ test_nccl_partial_gradients_keep_tp_replicas_identical[bf16] _________
+
+tmp_path = PosixPath('/tmp/q548-3607367/pytest-of-<USER>/pytest-0/test_nccl_partial_gradients_ke1')
+precision = 'bf16'
+
+    @pytest.mark.skipif(os.environ.get("RUN_TP_CUDA") != "1", reason="opt-in multi-GPU validation")
+    @pytest.mark.parametrize("precision", ["fp32", "bf16"])
+    def test_nccl_partial_gradients_keep_tp_replicas_identical(tmp_path, precision):
+        """The TP1/TP2 update comparison on two GPUs through DeterministicCollective."""
+>       mp.start_processes(
+            _update_worker,
+            args=(2, str(tmp_path / "nccl"), "nccl", precision),
+            nprocs=2,
+            start_method="spawn",
+        )
+
+tests/integrations/common/test_tp_bitwise.py:355: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:320: in start_processes
+    while not context.join():
+              ^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <torch.multiprocessing.spawn.ProcessContext object at 0x7ed84f9d8ed0>
+timeout = None, grace_period = None
+
+    def join(
+        self, timeout: Optional[float] = None, grace_period: Optional[float] = None
+    ):
+        r"""Join one or more processes within spawn context.
+    
+        Attempt to join one or more processes in this spawn context.
+        If one of them exited with a non-zero exit status, this function
+        kills the remaining processes (optionally with a grace period)
+        and raises an exception with the cause of the first process exiting.
+    
+        Returns ``True`` if all processes have been joined successfully,
+        ``False`` if there are more processes that need to be joined.
+    
+        Args:
+            timeout (float): Wait this long (in seconds) before giving up on waiting.
+            grace_period (float): When any processes fail, wait this long (in seconds)
+                for others to shutdown gracefully before terminating them. If they
+                still don't exit, wait another grace period before killing them.
+        """
+        # Ensure this function can be called even when we're done.
+        if len(self.sentinels) == 0:
+            return True
+    
+        # Wait for any process to fail or all of them to succeed.
+        ready = multiprocessing.connection.wait(
+            self.sentinels.keys(),
+            timeout=timeout,
+        )
+    
+        error_index = None
+        for sentinel in ready:
+            index = self.sentinels.pop(sentinel)
+            process = self.processes[index]
+            process.join()
+            if process.exitcode != 0:
+                error_index = index
+                break
+    
+        # Return if there was no error.
+        if error_index is None:
+            # Return whether or not all processes have been joined.
+            return len(self.sentinels) == 0
+        # An error occurred. Clean-up all processes before returning.
+        # First, allow a grace period for processes to shutdown themselves.
+        if grace_period is not None:
+            self._join_procs_with_timeout(grace_period)
+        # Then, terminate processes that are still alive. Try SIGTERM first.
+        for process in self.processes:
+            if process.is_alive():
+                log.warning("Terminating process %s via signal SIGTERM", process.pid)
+                process.terminate()
+    
+        # Try SIGKILL if the process isn't going down after another grace_period.
+        # The reason is related to python signal handling is limited
+        # to main thread and if that is in c/c++ land and stuck it won't
+        # to handle it. We have seen processes getting stuck not handling
+        # SIGTERM for the above reason.
+        self._join_procs_with_timeout(30 if grace_period is None else grace_period)
+        for process in self.processes:
+            if process.is_alive():
+                log.warning(
+                    "Unable to shutdown process %s via SIGTERM , forcefully exiting via SIGKILL",
+                    process.pid,
+                )
+                process.kill()
+            process.join()
+    
+        # The file will only be created if the process crashed.
+        failed_process = self.processes[error_index]
+        if not os.access(self.error_files[error_index], os.R_OK):
+            exitcode = self.processes[error_index].exitcode
+            if exitcode < 0:
+                try:
+                    name = signal.Signals(-exitcode).name
+                except ValueError:
+                    name = f"<Unknown signal {-exitcode}>"
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with signal {name}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                    signal_name=name,
+                )
+            else:
+                raise ProcessExitedException(
+                    f"process {error_index:d} terminated with exit code {exitcode:d}",
+                    error_index=error_index,
+                    error_pid=failed_process.pid,
+                    exit_code=exitcode,
+                )
+    
+        with open(self.error_files[error_index], "rb") as fh:
+            original_trace = pickle.load(fh)
+        msg = f"\n\n-- Process {error_index:d} terminated with the following error:\n"
+        msg += original_trace
+>       raise ProcessRaisedException(msg, error_index, failed_process.pid)
+E       torch.multiprocessing.spawn.ProcessRaisedException: 
+E       
+E       -- Process 1 terminated with the following error:
+E       Traceback (most recent call last):
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 255, in _load_cuda_extension
+E           from rl_engine import _C
+E       ImportError: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py)
+E       
+E       The above exception was the direct cause of the following exception:
+E       
+E       Traceback (most recent call last):
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py", line 95, in _wrap
+E           fn(i, *args)
+E         File "<HOME>/q548/src/tests/integrations/common/test_tp_bitwise.py", line 322, in _update_worker
+E           _, norm = _train(group, size, rank, precision, "partial", device)
+E                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/tests/integrations/common/test_tp_bitwise.py", line 309, in _train
+E           result = worker.train(ppo_batch(device))
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/ppo.py", line 468, in train
+E           output = self.forward(micro.rollout.inputs)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+E           return self._call_impl(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+E           return forward_call(*args, **kwargs)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/tests/integrations/common/test_tp_bitwise.py", line 241, in forward
+E           logits = sum_tp_contributions(local.float(), self.group)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/tp_scalar.py", line 119, in sum_tp_contributions
+E           return _SumLocalHead.apply(value, group) if dist.get_world_size(group) > 1 else value
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/autograd/function.py", line 581, in apply
+E           return super().apply(*args, **kwargs)  # type: ignore[misc]
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/tp_scalar.py", line 102, in forward
+E           return deterministic_tp_all_reduce_(value.clone(), group)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/integrations/common/tp_scalar.py", line 83, in deterministic_tp_all_reduce_
+E           return _deterministic_tp_all_reduce_(tensor, group)
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/reference/logprob/linear_logp.py", line 415, in _deterministic_tp_all_reduce_
+E           collective = collective_for_group(
+E                        ^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 822, in collective_for_group
+E           collective = create_deterministic_collective(
+E                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 778, in create_deterministic_collective
+E           return DeterministicCollective(
+E                  ^^^^^^^^^^^^^^^^^^^^^^^^
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 220, in __init__
+E           self._load_cuda_extension()
+E         File "<HOME>/q548/src/rl_engine/distributed/algorithms/collectives.py", line 257, in _load_cuda_extension
+E           raise RuntimeError(
+E       RuntimeError: the RL-Kernel CUDA extension is required; rebuild with `pip install --no-build-isolation -e .`
+
+<HOME>/datastorage/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:220: ProcessRaisedException
+----------------------------- Captured stdout call -----------------------------
+WARNING 11-19 15:37:56 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 15:37:56 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' (<HOME>/q548/src/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-19 15:37:56 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+WARNING 11-19 15:37:56 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-19 15:37:57 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 15:37:57 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-19 15:37:57 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-19 15:37:57 [RL-Kernel]: KernelRegistry initialized for cuda
+----------------------------- Captured stderr call -----------------------------
+W1119 15:38:04.520000 3607546 <HOME>/q548/envroot/envs/trainer/lib/python3.11/site-packages/torch/multiprocessing/spawn.py:174] Terminating process 3608289 via signal SIGTERM
+------------------------------ Captured log call -------------------------------
+WARNING  torch.multiprocessing.spawn:spawn.py:174 Terminating process 3608289 via signal SIGTERM
+======================= 3 failed, 4 deselected in 39.85s =======================
