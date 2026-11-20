@@ -1,0 +1,601 @@
+.......FFFFFFFF                                                          [100%]
+=================================== FAILURES ===================================
+__________ test_accelerator_bins_preserve_exact_sum_under_repartition __________
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    def test_accelerator_bins_preserve_exact_sum_under_repartition():
+        generator = torch.Generator(device="cuda").manual_seed(71)
+        values = torch.randn(32769, generator=generator, device="cuda")
+        values[:4] = torch.tensor([2.0**-149, -(2.0**-126), 2.0**127, 0.0], device="cuda")
+>       full = integer_square_bins([values])
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:55: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752fbb2c3920>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+_________________ test_accelerator_device_context_is_restored __________________
+
+    @pytest.mark.skipif(torch.cuda.device_count() < 2, reason="two accelerators required")
+    def test_accelerator_device_context_is_restored():
+        current = torch.cuda.current_device()
+        other = (current + 1) % torch.cuda.device_count()
+        values = torch.tensor([3.0, -4.0], device=f"cuda:{other}")
+>       assert norm_from_bins(integer_square_bins([values]).cpu().tolist()) == 5.0
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752e5f7b3590>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+_______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[1] _______
+
+length = 1
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752e5f7b3440>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[31] _______
+
+length = 31
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752e5f7b3f50>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[32] _______
+
+length = 32
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752e5f7b38f0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[33] _______
+
+length = 33
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752fbb2c2060>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+______ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[257] ______
+
+length = 257
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752e5f7f50a0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+_____ test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite[32771] _____
+
+length = 32771
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="accelerator required")
+    @pytest.mark.parametrize("length", [1, 31, 32, 33, 257, 32771])
+    def test_accelerator_warp_bins_with_mixed_exponents_and_nonfinite(length):
+        generator = torch.Generator(device="cuda").manual_seed(length)
+        values = torch.randn(length, generator=generator, device="cuda")
+        exponents = torch.randint(-120, 120, (length,), generator=generator, device="cuda")
+        values *= torch.pow(2.0, exponents)
+        if length >= 33:
+            values[:16] = 0.125
+            values[16:21] = torch.tensor(
+                [float("nan"), float("inf"), -float("inf"), 0.0, 2.0**-149], device="cuda"
+            )
+>       actual = integer_square_bins([values]).cpu().tolist()
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/ops/norm/test_reproducible_norm.py:82: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/ops/norm/reproducible.py:133: in integer_square_bins
+    return _integer_square_bins(values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:139: in _integer_square_bins
+    driver, module, function, prefix = _kernel(device)
+                                       ^^^^^^^^^^^^^^^
+rl_engine/ops/norm/reproducible.py:80: in _kernel
+    rtc = C.CDLL(sorted(libs, key=len)[0] if libs else "libnvrtc.so.12")
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <CDLL 'libnvrtc.so.12', handle 0 at 0x752e5f7f5be0>
+name = 'libnvrtc.so.12', mode = 0, handle = None, use_errno = False
+use_last_error = False, winmode = None
+
+    def __init__(self, name, mode=DEFAULT_MODE, handle=None,
+                 use_errno=False,
+                 use_last_error=False,
+                 winmode=None):
+        if name:
+            name = _os.fspath(name)
+        self._name = name
+        flags = self._func_flags_
+        if use_errno:
+            flags |= _FUNCFLAG_USE_ERRNO
+        if use_last_error:
+            flags |= _FUNCFLAG_USE_LASTERROR
+        if _sys.platform.startswith("aix"):
+            """When the name contains ".a(" and ends with ")",
+               e.g., "libFOO.a(libFOO.so)" - this is taken to be an
+               archive(member) syntax for dlopen(), and the mode is adjusted.
+               Otherwise, name is presented to dlopen() as a file argument.
+            """
+            if name and name.endswith(")") and ".a(" in name:
+                mode |= ( _os.RTLD_MEMBER | _os.RTLD_NOW )
+        if _os.name == "nt":
+            if winmode is not None:
+                mode = winmode
+            else:
+                import nt
+                mode = nt._LOAD_LIBRARY_SEARCH_DEFAULT_DIRS
+                if '/' in name or '\\' in name:
+                    self._name = nt._getfullpathname(self._name)
+                    mode |= nt._LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR
+    
+        class _FuncPtr(_CFuncPtr):
+            _flags_ = flags
+            _restype_ = self._func_restype_
+        self._FuncPtr = _FuncPtr
+    
+        if handle is None:
+>           self._handle = _dlopen(self._name, mode)
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+E           OSError: libnvrtc.so.12: cannot open shared object file: No such file or directory
+
+../../../conda_envs/rlk_ep4/lib/python3.12/ctypes/__init__.py:379: OSError
+8 failed, 7 passed in 6.22s

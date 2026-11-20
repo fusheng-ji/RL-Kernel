@@ -1,0 +1,2519 @@
+F.FFFF..F........F..F..............................s..................s. [ 13%]
+.........................................s....................s........s [ 26%]
+....................s........s....................s........s............ [ 39%]
+........s........s....................s........s....................s... [ 52%]
+.....s....................s........s....................s........s...... [ 65%]
+..............s........s....................s........s.................. [ 78%]
+..s........s....................s.........s........s........s........... [ 91%]
+......................................FFFFFFFFFFF                        [100%]
+=================================== FAILURES ===================================
+______________________ test_memory_disk_and_key_isolation ______________________
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_memory_disk_and_key_isola0')
+
+    def test_memory_disk_and_key_isolation(tmp_path):
+        """Hits come from memory, then disk; changing any signature field tunes again."""
+        tuner = PersistentAutotuner(tmp_path)
+        sig = {"device": "gpu0", "shape": [4, 8], "dtype": "float32", "version": 1}
+        first = tuner.select(sig, CANDIDATES, _timing)
+        assert first.config == FAST and first.source == "tuned"
+    
+        def unexpected(_):
+            """Fail if a cache hit benchmarks a candidate."""
+            pytest.fail("Cache hit must not benchmark")
+    
+        assert tuner.select(sig, CANDIDATES, unexpected).source == "memory"
+>       assert PersistentAutotuner(tmp_path).select(sig, CANDIDATES, unexpected).source == "disk"
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/platforms/test_persistent_autotuner.py:44: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/platforms/autotuner.py:128: in select
+    elapsed = evaluate(candidate)
+              ^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+_ = TuneConfig(options=())
+
+    def unexpected(_):
+        """Fail if a cache hit benchmarks a candidate."""
+>       pytest.fail("Cache hit must not benchmark")
+E       Failed: Cache hit must not benchmark
+
+tests/platforms/test_persistent_autotuner.py:41: Failed
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_memory_disk_and_key_isola0 is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_memory_disk_and_key_isola0 is not private (writable by group or others); using memory
+__________________ test_corrupt_cache_is_replaced[{bad json] ___________________
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced0')
+contents = '{bad json'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7ea82c54ef30>
+
+    @pytest.mark.parametrize(
+        "contents", ["{bad json", "[]", '{"schema":0}', '{"schema":1,"config":{"num_warps":999}}']
+    )
+    def test_corrupt_cache_is_replaced(tmp_path, contents, caplog):
+        """Corrupt or incompatible cache files are ignored, logged and rewritten."""
+        path = tmp_path / f"{cache_key({}, CANDIDATES)}.json"
+        path.write_text(contents)
+        result = PersistentAutotuner(tmp_path).select({}, CANDIDATES, _timing)
+        assert result.source == "tuned"
+>       assert json.loads(path.read_text())["config"] == FAST.to_dict()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/platforms/test_persistent_autotuner.py:74: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../conda_envs/rlk_ep4/lib/python3.12/json/__init__.py:346: in loads
+    return _default_decoder.decode(s)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/json/decoder.py:338: in decode
+    obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <json.decoder.JSONDecoder object at 0x7ea989d19a30>, s = '{bad json'
+idx = 0
+
+    def raw_decode(self, s, idx=0):
+        """Decode a JSON document from ``s`` (a ``str`` beginning with
+        a JSON document) and return a 2-tuple of the Python
+        representation and the index in ``s`` where the document ended.
+    
+        This can be used to decode a JSON document from a string that may
+        have extraneous data at the end.
+    
+        """
+        try:
+>           obj, end = self.scan_once(s, idx)
+                       ^^^^^^^^^^^^^^^^^^^^^^
+E           json.decoder.JSONDecodeError: Expecting property name enclosed in double quotes: line 1 column 2 (char 1)
+
+../../../conda_envs/rlk_ep4/lib/python3.12/json/decoder.py:354: JSONDecodeError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced0 is not private (writable by group or others); using memory
+______________________ test_corrupt_cache_is_replaced[[]] ______________________
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced1')
+contents = '[]'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7ea82c54fe00>
+
+    @pytest.mark.parametrize(
+        "contents", ["{bad json", "[]", '{"schema":0}', '{"schema":1,"config":{"num_warps":999}}']
+    )
+    def test_corrupt_cache_is_replaced(tmp_path, contents, caplog):
+        """Corrupt or incompatible cache files are ignored, logged and rewritten."""
+        path = tmp_path / f"{cache_key({}, CANDIDATES)}.json"
+        path.write_text(contents)
+        result = PersistentAutotuner(tmp_path).select({}, CANDIDATES, _timing)
+        assert result.source == "tuned"
+>       assert json.loads(path.read_text())["config"] == FAST.to_dict()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       TypeError: list indices must be integers or slices, not str
+
+tests/platforms/test_persistent_autotuner.py:74: TypeError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced1 is not private (writable by group or others); using memory
+_________________ test_corrupt_cache_is_replaced[{"schema":0}] _________________
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced2')
+contents = '{"schema":0}'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7ea82c3bd6a0>
+
+    @pytest.mark.parametrize(
+        "contents", ["{bad json", "[]", '{"schema":0}', '{"schema":1,"config":{"num_warps":999}}']
+    )
+    def test_corrupt_cache_is_replaced(tmp_path, contents, caplog):
+        """Corrupt or incompatible cache files are ignored, logged and rewritten."""
+        path = tmp_path / f"{cache_key({}, CANDIDATES)}.json"
+        path.write_text(contents)
+        result = PersistentAutotuner(tmp_path).select({}, CANDIDATES, _timing)
+        assert result.source == "tuned"
+>       assert json.loads(path.read_text())["config"] == FAST.to_dict()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       KeyError: 'config'
+
+tests/platforms/test_persistent_autotuner.py:74: KeyError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced2 is not private (writable by group or others); using memory
+___ test_corrupt_cache_is_replaced[{"schema":1,"config":{"num_warps":999}}] ____
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced3')
+contents = '{"schema":1,"config":{"num_warps":999}}'
+caplog = <_pytest.logging.LogCaptureFixture object at 0x7ea82c3bde50>
+
+    @pytest.mark.parametrize(
+        "contents", ["{bad json", "[]", '{"schema":0}', '{"schema":1,"config":{"num_warps":999}}']
+    )
+    def test_corrupt_cache_is_replaced(tmp_path, contents, caplog):
+        """Corrupt or incompatible cache files are ignored, logged and rewritten."""
+        path = tmp_path / f"{cache_key({}, CANDIDATES)}.json"
+        path.write_text(contents)
+        result = PersistentAutotuner(tmp_path).select({}, CANDIDATES, _timing)
+        assert result.source == "tuned"
+>       assert json.loads(path.read_text())["config"] == FAST.to_dict()
+E       AssertionError: assert {'num_warps': 999} == {'num_warps': 8}
+E         
+E         Differing items:
+E         {'num_warps': 999} != {'num_warps': 8}
+E         Use -v to get more diff
+
+tests/platforms/test_persistent_autotuner.py:74: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_corrupt_cache_is_replaced3 is not private (writable by group or others); using memory
+____________________ test_concurrent_processes_and_restart _____________________
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_concurrent_processes_and_0')
+
+    def test_concurrent_processes_and_restart(tmp_path):
+        """Three concurrent processes agree; one tunes and the others read it from disk."""
+        ctx = multiprocessing.get_context("spawn")
+        queue = ctx.Queue()
+        workers = [ctx.Process(target=_worker, args=(str(tmp_path), queue)) for _ in range(3)]
+        for worker in workers:
+            worker.start()
+        records = [queue.get(timeout=90) for _ in workers]
+        for worker in workers:
+            worker.join(timeout=90)
+            assert worker.exitcode == 0
+        assert all(config == FAST.to_dict() for config, _ in records)
+>       assert sorted(source for _, source in records) == ["disk", "disk", "tuned"]
+E       AssertionError: assert ['tuned', 'tuned', 'tuned'] == ['disk', 'disk', 'tuned']
+E         
+E         At index 0 diff: 'tuned' != 'disk'
+E         Use -v to get more diff
+
+tests/platforms/test_persistent_autotuner.py:116: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_concurrent_processes_and_0 is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_concurrent_processes_and_0 is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_concurrent_processes_and_0 is not private (writable by group or others); using memory
+______________________ test_programming_errors_propagate _______________________
+
+_ = TuneConfig(options=())
+
+    def broken(_):
+        """Simulate a kernel callback that raises ``OSError``."""
+>       raise OSError("kernel callback failed")
+E       OSError: kernel callback failed
+
+tests/platforms/test_persistent_autotuner.py:133: OSError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_programming_errors_propag0')
+
+    def test_programming_errors_propagate(tmp_path):
+        """Exceptions from ``evaluate`` propagate and leave no cache record behind."""
+    
+        def broken(_):
+            """Simulate a kernel callback that raises ``OSError``."""
+            raise OSError("kernel callback failed")
+    
+        with pytest.raises(OSError, match="kernel callback"):
+>           PersistentAutotuner(tmp_path).select({}, CANDIDATES, broken)
+
+tests/platforms/test_persistent_autotuner.py:136: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+rl_engine/platforms/autotuner.py:120: in select
+    with self._disk_lock(directory, key, persistent) as disk:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <contextlib._GeneratorContextManager object at 0x7ea82c3bea20>
+typ = <class 'OSError'>, value = OSError('kernel callback failed')
+traceback = <traceback object at 0x7ea82c3a7780>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+                self.gen.throw(value)
+            except StopIteration as exc:
+                # Suppress StopIteration *unless* it's the same exception that
+                # was passed to throw().  This prevents a StopIteration
+                # raised inside the "with" statement from being suppressed.
+                return exc is not value
+            except RuntimeError as exc:
+                # Don't re-raise the passed in exception. (issue27122)
+                if exc is value:
+                    exc.__traceback__ = traceback
+                    return False
+                # Avoid suppressing if a StopIteration exception
+                # was passed to throw() and later wrapped into a RuntimeError
+                # (see PEP 479 for sync generators; async generators also
+                # have this behavior). But do this only if the exception wrapped
+                # by the RuntimeError is actually Stop(Async)Iteration (see
+                # issue29692).
+                if (
+                    isinstance(value, StopIteration)
+                    and exc.__cause__ is value
+                ):
+                    value.__traceback__ = traceback
+                    return False
+                raise
+            except BaseException as exc:
+                # only re-raise if it's *not* the exception that was
+                # passed to throw(), because __exit__() must not raise
+                # an exception unless __exit__() itself failed.  But throw()
+                # has to raise the exception to signal propagation, so this
+                # fixes the impedance mismatch between the throw() protocol
+                # and the __exit__() protocol.
+                if exc is not value:
+                    raise
+                exc.__traceback__ = traceback
+                return False
+            try:
+>               raise RuntimeError("generator didn't stop after throw()")
+E               RuntimeError: generator didn't stop after throw()
+
+../../../conda_envs/rlk_ep4/lib/python3.12/contextlib.py:194: RuntimeError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_programming_errors_propag0 is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:165 Autotune cache unavailable; using memory: kernel callback failed
+___________________ test_created_cache_directory_is_private ____________________
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_created_cache_directory_i0')
+
+    @pytest.mark.skipif(not hasattr(os, "getuid"), reason="POSIX ownership checks only")
+    def test_created_cache_directory_is_private(tmp_path):
+        """A newly created cache directory gets mode 0o700 and stores the selection."""
+        directory = tmp_path / "new" / "cache"
+        assert PersistentAutotuner(directory).select({}, CANDIDATES, _timing).source == "tuned"
+>       assert directory.stat().st_mode & 0o777 == 0o700
+E       AssertionError: assert (17912 & 511) == 448
+E        +  where 17912 = os.stat_result(st_mode=17912, st_ino=250785911, st_dev=62, st_nlink=2, st_uid=4362386, st_gid=4271841, st_size=4096, st_atime=1795131041, st_mtime=1795131041, st_ctime=1795131041).st_mode
+E        +    where os.stat_result(st_mode=17912, st_ino=250785911, st_dev=62, st_nlink=2, st_uid=4362386, st_gid=4271841, st_size=4096, st_atime=1795131041, st_mtime=1795131041, st_ctime=1795131041) = stat()
+E        +      where stat = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_created_cache_directory_i0/new/cache').stat
+
+tests/platforms/test_persistent_autotuner.py:199: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_created_cache_directory_i0/new/cache is not private (writable by group or others); using memory
+____________ test_benchmark_paths_without_performance_claims[silu] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a3783800>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p0')
+name = 'silu'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'silu', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p0/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.activation.swiglu._silu_fwd_kernel', 'phase': 'forward', 'config': {'BLOCK': 256, 'num_warps': 4}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p0/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p0/reuse/forward is not private (writable by group or others); using memory
+___________ test_benchmark_paths_without_performance_claims[swiglu] ____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a3591670>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p1')
+name = 'swiglu'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'swiglu', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p1/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.activation.swiglu._swiglu_fwd_kernel', 'phase': 'forward', 'config': {'BLOCK': 256, 'num_warps': 4}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p1/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p1/reuse/forward is not private (writable by group or others); using memory
+____________ test_benchmark_paths_without_performance_claims[rope] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a35931d0>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p2')
+name = 'rope'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'rope', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p2/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.rope.rope._rope_kernel', 'phase': 'forward', 'config': {'num_warps': 4, 'num_stages': 1}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p2/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p2/reuse/forward is not private (writable by group or others); using memory
+__________ test_benchmark_paths_without_performance_claims[embedding] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a37c8da0>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p3')
+name = 'embedding'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'embedding', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p3/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.embedding.embedding._embedding_fwd', 'phase': 'forward', 'config': {'num_warps': 8, 'num_stages': 1}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p3/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p3/reuse/forward is not private (writable by group or others); using memory
+___________ test_benchmark_paths_without_performance_claims[rmsnorm] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a3593410>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p4')
+name = 'rmsnorm'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'rmsnorm', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p4/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.norm.rmsnorm._rmsnorm_fwd_kernel', 'phase': 'forward', 'config': {'num_stages': 2}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p4/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p4/reuse/forward is not private (writable by group or others); using memory
+__________ test_benchmark_paths_without_performance_claims[ratio_kl] ___________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a35bab10>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p5')
+name = 'ratio_kl'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'ratio_kl', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p5/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.loss.ratio_kl._ratio_kl_fwd_kernel', 'phase': 'forward', 'config': {'num_stages': 2}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p5/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p5/reuse/forward is not private (writable by group or others); using memory
+____________ test_benchmark_paths_without_performance_claims[grpo] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a35b9940>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p6')
+name = 'grpo'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'grpo', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p6/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.loss.grpo_loss._group_norm_kernel', 'phase': 'forward', 'config': {}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p6/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p6/reuse/forward is not private (writable by group or others); using memory
+____________ test_benchmark_paths_without_performance_claims[gemm] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a36f3f50>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p7')
+name = 'gemm'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'gemm', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p7/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.gemm.det_gemm._det_gemm_tree_leaf_kernel', 'phase': 'forward', 'config': {'num_stages': 1}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+----------------------------- Captured stdout call -----------------------------
+INFO 11-20 00:31:24 [RL-Kernel]: TunedGemmOp ready (fixed K-tree arithmetic).
+INFO 11-20 00:31:24 [RL-Kernel]: TritonDetGemmOp ready (fixed K-tree arithmetic).
+INFO 11-20 00:31:25 [RL-Kernel]: TunedGemmOp ready (fixed K-tree arithmetic).
+INFO 11-20 00:31:25 [RL-Kernel]: TritonDetGemmOp ready (fixed K-tree arithmetic).
+------------------------------ Captured log call -------------------------------
+INFO     RL-Kernel:det_gemm.py:1084 TunedGemmOp ready (fixed K-tree arithmetic).
+INFO     RL-Kernel:det_gemm.py:1084 TritonDetGemmOp ready (fixed K-tree arithmetic).
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p7/reuse/forward is not private (writable by group or others); using memory
+INFO     RL-Kernel:det_gemm.py:1084 TunedGemmOp ready (fixed K-tree arithmetic).
+INFO     RL-Kernel:det_gemm.py:1084 TritonDetGemmOp ready (fixed K-tree arithmetic).
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p7/reuse/forward is not private (writable by group or others); using memory
+__________ test_benchmark_paths_without_performance_claims[attention] __________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a35bbb90>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8')
+name = 'attention'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'attention', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.attention.deterministic_attn._qk_kernel', 'phase': 'forward', 'config': {'num_stages': 2}, 'source': 'tuned'}, {'kernel': 'rl_engine.backends.shared.triton.attention.deterministic_attn._masked_softmax_lse_kernel', 'phase': 'forward', 'config': {'num_stages': 1}, 'source': 'tuned'}, {'kernel': 'rl_engine.backends.shared.triton.attention.deterministic_attn._pv_kernel', 'phase': 'forward', 'config': {'num_stages': 1}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p8/reuse/forward is not private (writable by group or others); using memory
+____________ test_benchmark_paths_without_performance_claims[logp] _____________
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7ea5a35f3a40>
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p9')
+name = 'logp'
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "silu",
+            "swiglu",
+            "rope",
+            "embedding",
+            "rmsnorm",
+            "ratio_kl",
+            "grpo",
+            "gemm",
+            "attention",
+            "logp",
+        ],
+    )
+    def test_benchmark_paths_without_performance_claims(monkeypatch, tmp_path, name):
+        """Exercise the actual benchmark runners; collect no steady-state timings."""
+        from rl_engine.backends.shared.triton import autotuning
+    
+        monkeypatch.setenv("RL_KERNEL_MODE", "auto")
+        monkeypatch.setenv("RL_KERNEL_AUTOTUNE", "1")
+        monkeypatch.setattr(autotuning, "_TUNER", autotuning._TUNER)
+        monkeypatch.setattr(autotuning, "_profile_candidates", autotuning._profile_candidates)
+        phases = (
+            ("forward",)
+            if name in ("embedding", "grpo")
+            else ("forward", "backward", "forward_backward")
+        )
+        for phase in phases:
+            spec = {
+                "operator": name,
+                "preset": "small",
+                "phase": phase,
+                "dtype": "bfloat16",
+                "id": phase,
+            }
+            cold = experiment.experiment_case(spec, str(tmp_path / "reuse"), "cold", validate_only=True)
+>           restart = experiment.experiment_case(
+                spec, str(tmp_path / "reuse"), "restart", validate_only=True
+            )
+
+tests/benchmarks/test_autotuning_benchmark.py:111: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+benchmarks/tuning/autotuning_experiment.py:66: in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+spec = {'operator': 'logp', 'preset': 'small', 'phase': 'forward', 'dtype': 'bfloat16', ...}
+directory = '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p9/reuse'
+mode = 'restart', validate_only = True
+
+    def _experiment_case(spec, directory, mode, *, validate_only=False):
+        """Tune and validate one spec against the fixed baseline, then time both unless validating.
+    
+        ``mode`` is ``cold``, ``restart`` (selections must come from disk) or ``precompiled``
+        (candidates are compiled first so the first call excludes JIT).
+        """
+        import torch
+    
+        from rl_engine.backends.shared.triton import autotuning as adapter
+        from rl_engine.platforms.autotuner import PersistentAutotuner, TuneConfig
+    
+        results = []
+        torch.manual_seed(2026)
+        dtype = getattr(torch, spec["dtype"])
+        rows, width = preset_shape(spec["operator"], spec["preset"])
+        case = make_case(spec["operator"], dtype, rows=rows, width=width)
+        fixed = fixed_case(case, spec["operator"], dtype)
+        phase = spec["phase"]
+        selected_records = []
+        profile_ms = []
+        tuner = PersistentAutotuner(Path(directory) / spec["id"])
+        adapter._TUNER = tuner
+        original_select = tuner.select
+        original_profile = adapter._profile_candidates
+    
+        def select(signature, *args, **kwargs):
+            """Call the real selector and record each selection's kernel, phase, config, source."""
+            selected = original_select(signature, *args, **kwargs)
+            selected_records.append(
+                {
+                    "kernel": signature["kernel"],
+                    "phase": signature["phase"],
+                    "config": selected.config.to_dict(),
+                    "source": selected.source,
+                }
+            )
+            return selected
+    
+        tuner.select = select
+    
+        def timed_profile(*args, **kwargs):
+            """Run the original candidate profiler and record its wall time in ms."""
+            start = time.perf_counter()
+            result = original_profile(*args, **kwargs)
+            profile_ms.append((time.perf_counter() - start) * 1000)
+            return result
+    
+        adapter._profile_candidates = timed_profile
+        # Backward-only builds its graph before measurement; no forward tuning.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        outputs = ()
+        backward_graphs = {}
+        if phase == "backward":
+            for enabled in (False, True):
+                with adapter.tuning_scope(adapter.TuneState(False)):
+                    outputs = case.forward()
+                # Public operators may add view nodes around the custom Function.
+                pending = [out.grad_fn for out in outputs if out.grad_fn is not None]
+                visited = set()
+                while pending:
+                    node = pending.pop()
+                    if node in visited:
+                        continue
+                    visited.add(node)
+                    if hasattr(node, "autotune_state"):
+                        node.autotune_state = adapter.TuneState(enabled, core=True)
+                    pending.extend(child for child, _ in node.next_functions if child is not None)
+                backward_graphs[enabled] = outputs
+        grad_outputs = tuple(torch.ones_like(x) for x in outputs) if outputs else None
+    
+        def run(enabled):
+            """Run the spec's phase once: tuned path if ``enabled``, fixed path otherwise."""
+            nonlocal grad_outputs
+            if phase == "backward":
+                return torch.autograd.grad(
+                    backward_graphs[enabled], case.variables, grad_outputs, retain_graph=True
+                )
+            value = (case if enabled else fixed).forward()
+            if phase == "forward_backward":
+                if grad_outputs is None:
+                    grad_outputs = tuple(torch.ones_like(x) for x in value)
+                return torch.autograd.grad(value, case.variables, grad_outputs)
+            return value
+    
+        def call(enabled):
+            """Run the phase inside a core tuning scope enabled according to ``enabled``."""
+            with adapter.tuning_scope(adapter.TuneState(enabled, core=True)):
+                return run(enabled)
+    
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        if mode == "precompiled":
+    
+            def compile_only(candidates, args, outputs, inout, launch):
+                """Compile all candidates on private buffers; fake timings keep the default."""
+                from triton.runtime.errors import OutOfResources
+    
+                times = {}
+                for config in candidates:
+                    private = list(args)
+                    for i in outputs:
+                        private[i] = args[i].clone()
+                    try:
+                        launch(config, private)
+                        times[config] = 1.0 if config == TuneConfig() else 2.0
+                    except OutOfResources:
+                        if config == TuneConfig():
+                            raise
+                        times[config] = None
+                return times
+    
+            adapter._profile_candidates = compile_only
+            # Precompile into a separate nonpersistent tuner; no real selection survives.
+            temporary = PersistentAutotuner()
+            temporary_select = temporary.select
+            temporary.select = lambda *a, **kw: temporary_select(*a, **{**kw, "persistent": False})
+            adapter._TUNER = temporary
+            call(True)
+            torch.cuda.synchronize()
+            adapter._TUNER = tuner
+            adapter._profile_candidates = timed_profile
+    
+        torch.cuda.synchronize()
+        start = time.perf_counter()
+        selected_value = call(True)
+        torch.cuda.synchronize()
+        first_ms = (time.perf_counter() - start) * 1000
+        first_records = list(selected_records)
+        # Check selected phase output, including gradients, against the fixed implementation.
+        os.environ["RL_KERNEL_AUTOTUNE"] = "0"
+        fixed_value = call(False)
+        for a, b in zip(selected_value, fixed_value, strict=True):
+            if not adapter._bitwise_equal(a, b):
+                raise AssertionError(f"Selected output mismatch: {spec['id']}")
+        before_hot = len(selected_records)
+        os.environ["RL_KERNEL_AUTOTUNE"] = "1"
+        call(True)
+        if len(selected_records) != before_hot:
+            raise AssertionError("Hot call entered selector")
+        if mode == "restart" and any(x["source"] != "disk" for x in first_records):
+>           raise AssertionError(f"Restart missed disk cache: {first_records}")
+E           AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.logprob.batch_invariant_logp._batch_invariant_logp_kernel', 'phase': 'forward', 'config': {'num_stages': 2}, 'source': 'tuned'}]
+
+benchmarks/tuning/autotuning_experiment.py:210: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p9/reuse/forward is not private (writable by group or others); using memory
+WARNING  rl_engine.platforms.autotuner:autotuner.py:155 Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_paths_without_p9/reuse/forward is not private (writable by group or others); using memory
+__________________ test_benchmark_cache_reused_by_new_process __________________
+
+tmp_path = PosixPath('<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0')
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA/ROCm required")
+    def test_benchmark_cache_reused_by_new_process(tmp_path):
+        """A restarted worker loads every selection from disk and never re-selects."""
+        import json
+        import subprocess
+        import sys
+    
+        # Validate actual process restart without producing performance observations.
+        specs = [
+            dict(operator=name, preset="small", phase="forward_backward", dtype="bfloat16", id=name)
+            for name in ("silu", "gemm", "attention", "logp")
+        ]
+        command = [
+            sys.executable,
+            "-m",
+            "benchmarks.tuning.benchmark_autotuning",
+            "--experiment-worker",
+            json.dumps(specs),
+            "--cache-dir",
+            str(tmp_path),
+            "--experiment-validate-only",
+            "--experiment-mode",
+        ]
+        cold = json.loads(subprocess.check_output(command + ["cold"], text=True))
+>       restarted = json.loads(subprocess.check_output(command + ["restart"], text=True))
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/benchmarks/test_autotuning_benchmark.py:147: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../conda_envs/rlk_ep4/lib/python3.12/subprocess.py:466: in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+input = None, capture_output = False, timeout = None, check = True
+popenargs = (['<HOME>/conda_envs/rlk_ep4/bin/python', '-m', 'benchmarks.tuning.benchmark_...r": "logp", "preset": "small", "phase": "forward_backward", "dtype": "bfloat16", "id": "logp"}]', '--cache-dir', ...],)
+kwargs = {'stdout': -1, 'text': True}
+
+    def run(*popenargs,
+            input=None, capture_output=False, timeout=None, check=False, **kwargs):
+        """Run command with arguments and return a CompletedProcess instance.
+    
+        The returned instance will have attributes args, returncode, stdout and
+        stderr. By default, stdout and stderr are not captured, and those attributes
+        will be None. Pass stdout=PIPE and/or stderr=PIPE in order to capture them,
+        or pass capture_output=True to capture both.
+    
+        If check is True and the exit code was non-zero, it raises a
+        CalledProcessError. The CalledProcessError object will have the return code
+        in the returncode attribute, and output & stderr attributes if those streams
+        were captured.
+    
+        If timeout (seconds) is given and the process takes too long,
+         a TimeoutExpired exception will be raised.
+    
+        There is an optional argument "input", allowing you to
+        pass bytes or a string to the subprocess's stdin.  If you use this argument
+        you may not also use the Popen constructor's "stdin" argument, as
+        it will be used internally.
+    
+        By default, all communication is in bytes, and therefore any "input" should
+        be bytes, and the stdout and stderr will be bytes. If in text mode, any
+        "input" should be a string, and stdout and stderr will be strings decoded
+        according to locale encoding, or by "encoding" if set. Text mode is
+        triggered by setting any of text, encoding, errors or universal_newlines.
+    
+        The other arguments are the same as for the Popen constructor.
+        """
+        if input is not None:
+            if kwargs.get('stdin') is not None:
+                raise ValueError('stdin and input arguments may not both be used.')
+            kwargs['stdin'] = PIPE
+    
+        if capture_output:
+            if kwargs.get('stdout') is not None or kwargs.get('stderr') is not None:
+                raise ValueError('stdout and stderr arguments may not be used '
+                                 'with capture_output.')
+            kwargs['stdout'] = PIPE
+            kwargs['stderr'] = PIPE
+    
+        with Popen(*popenargs, **kwargs) as process:
+            try:
+                stdout, stderr = process.communicate(input, timeout=timeout)
+            except TimeoutExpired as exc:
+                process.kill()
+                if _mswindows:
+                    # Windows accumulates the output in a single blocking
+                    # read() call run on child threads, with the timeout
+                    # being done in a join() on those threads.  communicate()
+                    # _after_ kill() is required to collect that and add it
+                    # to the exception.
+                    exc.stdout, exc.stderr = process.communicate()
+                else:
+                    # POSIX _communicate already populated the output so
+                    # far into the TimeoutExpired exception.
+                    process.wait()
+                raise
+            except:  # Including KeyboardInterrupt, communicate handled that.
+                process.kill()
+                # We don't call process.wait() as .__exit__ does that for us.
+                raise
+            retcode = process.poll()
+            if check and retcode:
+>               raise CalledProcessError(retcode, process.args,
+                                         output=stdout, stderr=stderr)
+E               subprocess.CalledProcessError: Command '['<HOME>/conda_envs/rlk_ep4/bin/python', '-m', 'benchmarks.tuning.benchmark_autotuning', '--experiment-worker', '[{"operator": "silu", "preset": "small", "phase": "forward_backward", "dtype": "bfloat16", "id": "silu"}, {"operator": "gemm", "preset": "small", "phase": "forward_backward", "dtype": "bfloat16", "id": "gemm"}, {"operator": "attention", "preset": "small", "phase": "forward_backward", "dtype": "bfloat16", "id": "attention"}, {"operator": "logp", "preset": "small", "phase": "forward_backward", "dtype": "bfloat16", "id": "logp"}]', '--cache-dir', '<WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0', '--experiment-validate-only', '--experiment-mode', 'restart']' returned non-zero exit status 1.
+
+../../../conda_envs/rlk_ep4/lib/python3.12/subprocess.py:571: CalledProcessError
+----------------------------- Captured stderr call -----------------------------
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/silu is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/silu is not private (writable by group or others); using memory
+INFO 11-20 00:31:30 [RL-Kernel]: TunedGemmOp ready (fixed K-tree arithmetic).
+INFO 11-20 00:31:30 [RL-Kernel]: TritonDetGemmOp ready (fixed K-tree arithmetic).
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/gemm is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/gemm is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/gemm is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/attention is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/logp is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/logp is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/silu is not private (writable by group or others); using memory
+Autotune cache <WORK>/pr536/tmp/pytest-of-<USER>/pytest-0/test_benchmark_cache_reused_by0/silu is not private (writable by group or others); using memory
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "<WORK>/pr536/head/benchmarks/tuning/benchmark_autotuning.py", line 247, in <module>
+    main()
+  File "<WORK>/pr536/head/benchmarks/tuning/benchmark_autotuning.py", line 182, in main
+    experiment_worker(
+  File "<WORK>/pr536/head/benchmarks/tuning/autotuning_experiment.py", line 290, in experiment_worker
+    results.append(experiment_case(spec, directory, mode, validate_only=validate_only))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<WORK>/pr536/head/benchmarks/tuning/autotuning_experiment.py", line 66, in experiment_case
+    return _experiment_case(spec, directory, mode, validate_only=validate_only)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<WORK>/pr536/head/benchmarks/tuning/autotuning_experiment.py", line 210, in _experiment_case
+    raise AssertionError(f"Restart missed disk cache: {first_records}")
+AssertionError: Restart missed disk cache: [{'kernel': 'rl_engine.backends.shared.triton.activation.swiglu._silu_fwd_kernel', 'phase': 'forward', 'config': {'BLOCK': 256, 'num_warps': 4}, 'source': 'tuned'}, {'kernel': 'rl_engine.backends.shared.triton.activation.swiglu._silu_bwd_kernel', 'phase': 'backward', 'config': {'BLOCK': 256, 'num_warps': 4}, 'source': 'tuned'}]
+=========================== short test summary info ============================
+SKIPPED [2] tests/ops/test_autotuning_gpu.py:95: Existing operator does not support this dtype
+SKIPPED [24] tests/ops/test_autotuning_candidates.py:105: Existing unsupported dtype
+SKIPPED [3] tests/ops/test_autotuning_candidates.py:201: Existing unsupported dtype
+19 failed, 505 passed, 29 skipped in 65.28s (0:01:05)

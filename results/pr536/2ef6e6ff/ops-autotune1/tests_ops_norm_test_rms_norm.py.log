@@ -1,0 +1,32 @@
+..................F................................sssssssssssssssssssss [ 58%]
+sssssssssssssssssssssssssssssssssssssssssssssssssss                      [100%]
+=================================== FAILURES ===================================
+______________________ test_registry_dispatches_rms_norm _______________________
+
+    def test_registry_dispatches_rms_norm():
+        from rl_engine.runtime.registry import kernel_registry
+    
+        op = kernel_registry.get_op("rms_norm")
+        if device_ctx.is_musa:
+            if _TRITON_AVAILABLE:
+                assert isinstance(op, RMSNormTritonOp)
+                assert hasattr(op, "forward")
+            else:
+                assert isinstance(op, NativeRMSNormOp)
+                assert hasattr(op, "forward") and hasattr(op, "forward_fp32")
+        elif torch.cuda.is_available() and _HAS_CUDA_RMSNORM:
+>           assert isinstance(op, RMSNormCudaOp)
+E           assert False
+E            +  where False = isinstance(<rl_engine.reference.norm.rms_norm.NativeRMSNormOp object at 0x7eb84e1bc4a0>, RMSNormCudaOp)
+
+tests/ops/norm/test_rms_norm.py:263: AssertionError
+----------------------------- Captured stdout call -----------------------------
+INFO 11-20 00:49:12 [RL-Kernel]: KernelRegistry initialized for cuda
+------------------------------ Captured log call -------------------------------
+INFO     RL-Kernel:registry.py:811 KernelRegistry initialized for cuda
+=========================== short test summary info ============================
+SKIPPED [12] tests/ops/norm/test_rms_norm.py:480: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [48] tests/ops/norm/test_rms_norm.py:498: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [6] tests/ops/norm/test_rms_norm.py:527: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+SKIPPED [6] tests/ops/norm/test_rms_norm.py:551: rmsnorm_ascend kernel not compiled (needs KERNEL_ALIGN_FORCE_ASCEND=1 on an Ascend NPU host).
+1 failed, 50 passed, 72 skipped in 27.30s
