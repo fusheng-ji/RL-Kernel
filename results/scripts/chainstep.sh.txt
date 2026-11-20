@@ -1,0 +1,10 @@
+#!/bin/bash
+# usage: chainstep.sh <outdir> <worktree> <python> <launcher-args...>   (runs qwen3_next_run.py with --runs-root <outdir>/runs)
+source <HOME>/datastorage/gdn20261120/env.sh; source $D/hdr.sh
+O=$1; WT=$2; SEL=$3; shift 3; if [ $SEL = fu ]; then PYX=$PYFU; else PYX=$PYGD; fi
+mkdir -p $O/runs; hdr $O $WT $PYX; cd $WT
+echo "[$(date -u +%FT%TZ)] START $*" >> $O/steps.txt
+PYTHONUNBUFFERED=1 $PYX tools/validation/models/qwen3_next/qwen3_next_run.py "$@" --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX >> $O/launcher.log 2>&1; rc=$?
+echo "[$(date -u +%FT%TZ)] END rc=$rc" >> $O/steps.txt
+git status --porcelain --untracked-files=no > $O/status-after-$(date +%s).txt
+touch $O/DONE-$(date +%s)

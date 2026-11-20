@@ -1,0 +1,18 @@
+# usage: hdr <outdir> <worktree> <python> ; writes header.txt
+hdr() { O=$1; WT=$2; PYX=$3; mkdir -p $O
+ { echo "head: $(git -C $WT rev-parse HEAD)"; echo "git status (tracked):"; git -C $WT status --porcelain --untracked-files=no; echo "(end status)"
+   nvidia-smi --query-gpu=index,name,memory.total,driver_version,memory.used --format=csv
+   $PYX - <<'PY'
+import sys, torch
+print("python", sys.version.split()[0], "torch", torch.__version__, "cuda", torch.version.cuda)
+try:
+    import triton; print("triton", triton.__version__)
+except Exception as e: print("triton ?", e)
+for m in ("vllm","flashinfer","transformer_engine","megatron.core","fla","tvm_ffi"):
+    try:
+        mod = __import__(m, fromlist=["x"]); print(m, getattr(mod, "__version__", "?"), getattr(mod, "__file__", ""))
+    except Exception as e: print(m, "import failed:", type(e).__name__)
+PY
+   echo "env: PYTHONNOUSERSITE=$PYTHONNOUSERSITE CUDA_DEVICE_MAX_CONNECTIONS=${CUDA_DEVICE_MAX_CONNECTIONS:-<unset>} TRITON_F32_DEFAULT=${TRITON_F32_DEFAULT:-} CUDNN_HOME=set LD_LIBRARY_PATH=nccl,cudnn,cuda13 core.fileMode=false"
+   echo "other processes of this user on node:"; ps -u $USER -o pid,etime,args --sort=-etime | grep -E "python|torchrun|vllm" | grep -v grep | cut -c1-150
+ } > $O/header.txt 2>&1; }
