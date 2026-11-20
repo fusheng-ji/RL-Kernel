@@ -1,0 +1,9 @@
+#!/bin/bash
+# CPU suites (README step E) for both rounds; no GPU requested.
+source <HOME>/datastorage/gdn20261120/env.sh; source $D/hdr.sh
+for r in FU GD; do
+  if [ $r = FU ]; then WT=$D/fu/src; PYX=$PYFU; else WT=$D/gd/src; PYX=$PYGD; fi
+  O=$D/out/$r/E; hdr $O $WT $PYX; cd $WT
+  PYTHONPATH=$WT $PYX -m pytest -q -p no:cacheprovider -rs tests/models/qwen3_next/ > $O/pytest.log 2>&1; echo "rc=$?" >> $O/pytest.log
+  git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE
+done

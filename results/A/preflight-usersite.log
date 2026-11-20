@@ -1,0 +1,25 @@
+Traceback (most recent call last):
+  File "<HOME>/gdn20261120/fu/src/tools/validation/models/qwen3_next/qwen3_next_runtime.py", line 271, in <module>
+    print(json.dumps(current_identity(), sort_keys=True))
+                     ^^^^^^^^^^^^^^^^^^
+  File "<HOME>/gdn20261120/fu/src/tools/validation/models/qwen3_next/qwen3_next_runtime.py", line 167, in current_identity
+    raise RuntimeError(
+RuntimeError: environment_mismatch: the user site-packages shadows apache-tvm-ffi, cuda-bindings, cuda-pathfinder, nvidia-cutlass-dsl, nvidia-cutlass-dsl-libs-base, nvidia-cutlass-dsl-libs-core, nvidia-cutlass-dsl-libs-cu12, quack-kernels, torch-c-dlpack-ext; run with PYTHONNOUSERSITE=1 or remove those copies
+Traceback (most recent call last):
+  File "<HOME>/gdn20261120/fu/src/tools/validation/models/qwen3_next/qwen3_next_run.py", line 360, in <module>
+    main()
+  File "<HOME>/gdn20261120/fu/src/tools/validation/models/qwen3_next/qwen3_next_run.py", line 350, in main
+    run_dir, manifest = prepare(stage, previous, args)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/gdn20261120/fu/src/tools/validation/models/qwen3_next/qwen3_next_run.py", line 151, in prepare
+    environment = probe_environment(python)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/gdn20261120/fu/src/tools/validation/models/qwen3_next/qwen3_next_runtime.py", line 239, in probe_environment
+    output = subprocess.check_output(command, text=True, env=env, timeout=180)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/subprocess.py", line 466, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['<HOME>/datastorage/venvs/<ENV>/bin/python', '<HOME>/gdn20261120/fu/src/tools/validation/models/qwen3_next/qwen3_next_runtime.py', '--json']' returned non-zero exit status 1.

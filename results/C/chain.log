@@ -1,0 +1,22 @@
+[qwen3-next] preflight: <HOME>/gdn20261120/out/FU/C-rerun/runs/20261120T173732Z-preflight-8284ce2b-416373d6
+PREFLIGHT environment-lock: ['<HOME>/datastorage/venvs/<ENV>/bin/python', '-m', 'pip', 'freeze', '--all']
+PREFLIGHT build: ['<HOME>/datastorage/venvs/<ENV>/bin/python', 'setup.py', 'build_ext', '--inplace']
+PREFLIGHT operators: ['bash', 'ci/scripts/run_qwen3_next_operator_gates.sh']
+PREFLIGHT device-guards: ['<HOME>/datastorage/venvs/<ENV>/bin/python', '-m', 'pytest', '-q', 'tests/models/qwen3_next/check_qwen3_next_multigpu.py', 'tests/models/qwen3_next/check_qwen3_next_vllm_model_contract.py', 'tests/models/qwen3_next/check_qwen3_next_vllm_real_model.py', '--junitxml=<HOME>/gdn20261120/out/FU/C-rerun/runs/20261120T173732Z-preflight-8284ce2b-416373d6/attempts/0/device-guards.xml']
+PREFLIGHT tp4: ['<HOME>/datastorage/venvs/<ENV>/bin/python', '-m', 'torch.distributed.run', '--standalone', '--nproc_per_node=4', 'tools/validation/models/qwen3_next/qwen3_next_tp_probe.py', '--output', '<HOME>/gdn20261120/out/FU/C-rerun/runs/20261120T173732Z-preflight-8284ce2b-416373d6/attempts/0/tp4']
+PREFLIGHT rollout-smoke: ['<HOME>/datastorage/venvs/<ENV>/bin/python', 'tools/validation/models/qwen3_next/qwen3_next_rollout_smoke.py', '--model', '<HOME>/models/9c7f2fbe84465e40164a94cc16cd30b6999b0cc7', '--output', '<HOME>/gdn20261120/out/FU/C-rerun/runs/20261120T173732Z-preflight-8284ce2b-416373d6/attempts/0/rollout-smoke.json', '--tensor-parallel-size', '4', '--non-strict-smoke']
+WARNING 11-20 18:53:19 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-20 18:53:19 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-20 18:53:19 [RL-Kernel]: KernelRegistry initialized for cuda
+[qwen3-next] preflight: passed
+[qwen3-next] layers: <HOME>/gdn20261120/out/FU/C-rerun/runs/20261120T175323Z-layers-8284ce2b-94f26014
+WARNING 11-20 19:02:51 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-20 19:02:54 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-20 19:02:54 [RL-Kernel]: KernelRegistry initialized for cuda
+[qwen3-next] layers: passed
+[qwen3-next] l2: <HOME>/gdn20261120/out/FU/C-rerun/runs/20261120T181659Z-l2-8284ce2b-88865985
+WARNING 11-20 19:18:47 [RL-Kernel]: Core binary extension (_C) unavailable: cannot import name '_C' from 'rl_engine' (<HOME>/gdn20261120/out/FU/C-rerun/runs/20261120T181659Z-l2-8284ce2b-88865985/source/rl_engine/__init__.py). Falling back to native code.
+WARNING 11-20 19:18:48 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-20 19:18:50 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-20 19:18:50 [RL-Kernel]: KernelRegistry initialized for cuda
+[qwen3-next] l2: passed
