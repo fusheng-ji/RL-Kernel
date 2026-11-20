@@ -7,11 +7,18 @@ fixing the reductions and gradient synchronization." Items 1-3 are fixed in `cb2
 ## What to check out
 
 - Fork `https://github.com/fusheng-ji/RL-Kernel`, this branch
-  `handoff/h100-pr548-item4-20261119`. The run code is commit **`1bba6d19`**; the branch head
-  only adds this directory.
-- Make a detached worktree at `1bba6d19` and never edit it:
-  `git worktree add --detach <src> 1bba6d19`. Every script checks that `git status --porcelain`
+  `handoff/h100-pr548-item4-20261119`. The run code is commit **`b9e5690d`** (updated
+  2026-11-20); the rest of the branch only adds this directory.
+- Make a detached worktree at `b9e5690d` and never edit it:
+  `git worktree add --detach <src> b9e5690d`. Every script checks that `git status --porcelain`
   is empty. Build output (`rl_engine/_C*.so`) is ignored by git.
+- **If steps 1-4 already ran at `1bba6d19`, keep them and do not rerun them.** Before step 5,
+  run `git -C <src> checkout --detach b9e5690d`. `b9e5690d` changes only the probe and
+  candidate scripts, a document and a test: no reference code and no `csrc`, so the built
+  `_C` and the frozen reference stay valid. Record in `SUMMARY.md` which commit ran each step.
+- `b9e5690d` is `1bba6d19` plus one change: the Megatron BF16 actor row runs at TP4 only. Its
+  TP2 probe peaked at 92.9 GiB per rank on B200, above the 88 GiB limit of step 5
+  (`B200-CHECK.md`).
 - `1bba6d19` sits on `548706f3` (items 1-3) + `9e64f583` (implementation-spread control) +
   `df61088f` (control recomputes its linear layers in backward) and makes the run fit a
   94 GB GPU:
@@ -19,7 +26,8 @@ fixing the reductions and gradient synchronization." Items 1-3 are fixed in `cb2
     steps and applies the same per-tensor `torch.optim.AdamW` update on the GPU, one
     parameter at a time (values unchanged: a CUDA unit test checks this bit for bit, see
     "What was checked before");
-  - the candidate matrix is TP2/TP4 (TP1 needs about 131 GB);
+  - the candidate matrix is TP2/TP4 (TP1 needs about 131 GB), the Megatron BF16 actor TP4
+    only (`tools/validation/models/qwen3_ppo/fixed_matrix.sh`);
   - `check_qwen3_fixed --probe` and `probe_trainer_memory.sh` measure trainer memory before
     any candidate run.
 
@@ -30,10 +38,13 @@ fixing the reductions and gradient synchronization." Items 1-3 are fixed in `cb2
   load makes it fail); the TP2-vs-TP4 comparison accepts only the frozen sizes in increasing
   order; `tests/integrations/common` + `tests/integrations/engines/train`: 210 passed,
   5 skipped; mypy clean.
-- Not yet run: the full Qwen3-8B check on B200 (CPU vs GPU optimizer state on the real model,
-  HF peaks, one TP2 and one TP4 probe). It is queued; its result is added to this directory
-  when it ends and does not block this run. So this run is the first real-model run of the
-  host-resident optimizer and of `--probe`: the stop rules below cover it.
+- Full Qwen3-8B check of `1bba6d19` on B200 (2026-11-20, `B200-CHECK.md`): optimizer state on
+  the CPU equals state on the GPU bit for bit (actor FP32 and BF16, 1604 tensors each); with
+  the state on the CPU every HF run peaks at 70.3 GiB or less; probes: Megatron BF16 actor TP2
+  92.9 GiB per rank (hence `b9e5690d`), DeepSpeed FP32 critic TP4 33.0 GiB. The other rows
+  were not probed on B200.
+- `b9e5690d`: the matrix test and the dry runs of both scripts with a python stand-in
+  (`tests/validation/models/test_qwen3_fixed_matrix.py`, no GPU) pass, 12 tests.
 - Earlier B200 HF peaks with the optimizer on the GPU: 157 GiB (actor BF16 implementation
   control) and 143 GiB (critic BF16 control); about 11-12 minutes per HF run.
 
@@ -90,19 +101,21 @@ fixing the reductions and gradient synchronization." Items 1-3 are fixed in `cb2
      environment files, and push it. This commit is the proof that the bounds were frozen
      before any candidate ran. Keep the tensors on disk until we confirm.
 
-5. **Trainer memory probe (TP2, about 8 runs).**
-   `bash tools/validation/models/qwen3_ppo/probe_trainer_memory.sh <src> <trainer-python> <overlay> <checkpoint> <reference run dir> <results>/probe 2`
-   - It runs every engine/precision/role at TP2 with `--probe`: no evidence tensors, no
+5. **Trainer memory probe (8 runs).**
+   `bash tools/validation/models/qwen3_ppo/probe_trainer_memory.sh <src> <trainer-python> <overlay> <checkpoint> <reference run dir> <results>/probe`
+   - No TP size argument: it probes each engine/precision/role once at its smallest TP size,
+     seven rows at TP2 and the Megatron BF16 actor at TP4, with `--probe`: no evidence tensors, no
      acceptance manifest, so it cannot touch a bound. It keeps going past a failure and
      writes `summary.tsv` (status and peak GiB per rank).
    - **Go on to step 6 only if all 8 rows are `probe_complete` and every rank peak is at
-     most 88 GiB. Otherwise stop and hand back with `summary.tsv` and the logs.** TP4 is not
-     probed; it needs about half of TP2.
+     most 88 GiB. Otherwise stop and hand back with `summary.tsv` and the logs.** The seven
+     TP2 rows are not probed at TP4; it needs about half of TP2.
 
 6. **Candidate.**
    `bash tools/validation/models/qwen3_ppo/qualify_candidate.sbatch <src> <trainer-python> <vllm-python> <overlay> <checkpoint> <reference run dir> <reference run dir>/acceptance.json <results>/candidate`
    - Megatron and DeepSpeed x FP32/BF16 x actor/critic x TP2/TP4 against the frozen bounds,
-     a TP2-vs-TP4 comparison per row, then the tiny-GPT regression (4 GPUs).
+     except the Megatron BF16 actor at TP4 only (15 runs); a TP2-vs-TP4 comparison for each of
+     the other 7 rows; then the tiny-GPT regression (4 GPUs).
    - The script stops at the first failing comparison (exit 1). A failure is a result: keep it
      as it is, do not rerun it, and hand back.
    - The pretrained two-round vLLM topologies are not run (they do not fit 4 x 94 GB).
@@ -116,9 +129,9 @@ fixing the reductions and gradient synchronization." Items 1-3 are fixed in `cb2
   files (`*.pt`, `*.safetensors`, tensor directories) on disk until we confirm. `*.log` is
   in `.gitignore`: use `git add -f`.
 - Start with a `SUMMARY.md`: GPU model and count, memory per GPU, host RAM, driver, CUDA,
-  torch/vLLM/Megatron/DeepSpeed versions, the `1bba6d19` check, the full command of each
-  step, wall time per step, and pass/fail per step with the peak memory of each HF run and
-  each probe row.
+  torch/vLLM/Megatron/DeepSpeed versions, the commit check (`b9e5690d`, and `1bba6d19` for
+  steps that ran there), the full command of each step, wall time per step, and pass/fail per
+  step with the peak memory of each HF run and each probe row.
 - Redact before committing: cluster, partition, job and node names, hostnames, absolute
   paths, usernames, emails, IPs, GPU UUIDs and PCI bus ids, including inside JSON `command`
   fields, `slurm.txt`, `device.txt` (`nvidia-smi -q`) and `dependencies.txt`.

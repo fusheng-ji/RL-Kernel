@@ -42,3 +42,6 @@ With the state on the CPU, every HF run peaks at 70.3 GiB or less.
 **The Megatron BF16 actor TP2 probe peaks at 92.9 GiB per rank, above the 88 GiB limit of
 step 5.** If the H100 run shows the same peak, step 5 stops as written and step 6 is not run.
 The other TP2 rows were not probed on B200.
+
+`b9e5690d` follows from this: the Megatron BF16 actor runs at TP4 only, and step 5 probes it at
+TP4.
