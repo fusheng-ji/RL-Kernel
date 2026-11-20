@@ -1,6 +1,6 @@
 # PR #548 review item 4: Qwen3-8B fixed-rollout qualification on H100 (2026-11-19/20)
 
-**Status of this commit: steps 1-4 only (build, smoke, calibration, reference v2). No probe and no candidate has run yet.** This commit contains everything in the reference directory except tensor files. It exists to show that `acceptance.json` and all `*-bounds.json` were written (2026-11-20 04:41 CET at the latest) before any probe or candidate run started. The tensors (about 1.4 TB) stay on disk. `SUMMARY.md` is extended by later commits for steps 5 and 6.
+**Status: steps 1-4 passed. Step 5 (TP2 memory probe) did NOT meet its go rule (5 of 8 rows `probe_complete`), so I stopped: step 6 (candidate, tiny-GPT regression) has not been run.** Commit `b6412e38` (steps 1-4, reference without tensors) was pushed before the probe started and shows that `acceptance.json` and all `*-bounds.json` were frozen before any probe or candidate run. The tensors (about 1.4 TB, scratch) stay on disk.
 
 ## Hardware and software
 - One node, 4 x NVIDIA H100 (95830 MiB each, NVLink NV6 between all pairs, topology in `nvidia-smi.txt`), 755 GB host RAM (about 630 GB available during the reference), 64 CPU cores, driver 580.173.02, CUDA 13.0 (torch build), nothing else of mine on the node. The node belongs to a larger allocation; one other node of it was idle.
@@ -47,3 +47,22 @@ Only the `*.pt` files are not in the commit; `rollout/manifest.json`, `targets/t
 | critic-bf16-impl | 58.8 |
 
 All 12 passed; targets (score only) peak 30.6 GiB. Bounds files: `{actor,critic}-{fp32,bf16}-repeat-bounds.json` and `{actor,critic}-cross-precision-bounds.json` (8 files).
+
+## Step 5: TP2 trainer memory probe (stopped: go rule not met)
+Command: `bash tools/validation/models/qwen3_ppo/probe_trainer_memory.sh <src> <py> <overlay> <ck> <reference run dir> <results>/probe 2` (started 2026-11-20T04:17:11Z, rc 0, 4044 s). The probe writes no evidence tensors and no acceptance manifest. Rule: continue only if all 8 rows are `probe_complete` and every rank peak is at most 88 GiB. `probe/probe-*/summary.tsv` and the logs are included.
+
+| Run | Status | Peak GiB per rank | Seconds | Error |
+|---|---|---|---|---|
+| megatron-fp32-actor-tp2 | probe_complete | 66.1, 66.1 | 675 | |
+| megatron-fp32-critic-tp2 | probe_complete | 61.3, 61.3 | 623 | |
+| megatron-bf16-actor-tp2 | **failed** | 90.0, 90.0 | 366 | `torch.OutOfMemoryError`: CUDA out of memory, 93.09 GiB capacity, 90.03 GiB allocated by PyTorch (above the 88 GiB limit) |
+| megatron-bf16-critic-tp2 | probe_complete | 86.0, 86.0 | 508 | |
+| deepspeed-fp32-actor-tp2 | probe_complete | 66.1, 66.1 | 685 | |
+| deepspeed-fp32-critic-tp2 | probe_complete | 61.3, 61.3 | 620 | |
+| deepspeed-bf16-actor-tp2 | **failed** | 7.6, 7.6 | 128 | `NotImplementedError: unsupported mix of model_dtype=torch.bfloat16 and grad_accum_dtype=torch.float32` (raised in `deepspeed.initialize`, `engine.py` `_do_optimizer_sanity_check`, deepspeed 0.19.7; before any training step) |
+| deepspeed-bf16-critic-tp2 | **failed** | 7.6, 7.6 | 128 | the same `NotImplementedError` |
+
+Result: **5 of 8 `probe_complete`; 3 failed.** Two different causes: (1) Megatron BF16 actor at TP2 runs out of memory on a 93 GiB H100 (the 86.0 GiB BF16 critic row fits under 88 GiB, the actor does not); (2) DeepSpeed BF16 does not initialise in this environment (deepspeed 0.19.7, torch 2.9.1) because of the BF16 model with an FP32 gradient accumulation dtype, so those two rows measure no memory. Nothing was rerun or changed.
+
+## Not run
+Step 6 (candidate: Megatron/DeepSpeed x FP32/BF16 x actor/critic x TP2/TP4 and the tiny-GPT regression), by the stop rule of step 5. TP4 was never probed (it is outside the probe by design).
