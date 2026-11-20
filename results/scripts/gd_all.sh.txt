@@ -1,0 +1,33 @@
+#!/bin/bash
+# GDN round on one node: A (1 GPU), B (chain+bi+report+gate), D (e2e bench). Every command as in the README; failures are recorded, not retried.
+source <HOME>/datastorage/gdn20261120/env.sh; source $D/hdr.sh
+WT=$D/gd/src; PYX=$PYGD; OUT=$D/out/GD; mkdir -p $OUT/{A,B,D}; cd $WT
+log() { echo "[$(date -u +%FT%TZ)] $*" >> $OUT/steps.txt; }
+# ---- A
+O=$OUT/A; hdr $O $WT $PYX; log "A start"
+$PYX setup.py build_ext --inplace > $O/build.log 2>&1; echo "build rc=$?" >> $O/rc.txt
+$PYX -c "import rl_engine._C as c; print(c.__file__)" > $O/c-file.txt 2>&1; cat $O/c-file.txt >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-mid.txt
+export PYTHONPATH=$WT TRITON_F32_DEFAULT=ieee
+$PYX $D/gd/gdn_one_launch_probe.py $WT > $O/probe.jsonl 2> $O/probe.log; echo "probe rc=$?" >> $O/rc.txt
+$PYX -m pytest -q -p no:cacheprovider tests/models/qwen3_next/check_qwen3_next_gdn_sequence.py tests/models/qwen3_next/check_qwen3_next_gdn_bridge.py tests/models/qwen3_next/check_qwen3_next_shared_core.py tests/models/qwen3_next/check_qwen3_next_core_matrix.py tests/models/qwen3_next/check_qwen3_next_conv_bridge.py > $O/checks.log 2>&1; echo "rc=$?" >> $O/checks.log
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "A end"
+unset PYTHONPATH TRITON_F32_DEFAULT
+# ---- B
+O=$OUT/B; hdr $O $WT $PYX; log "B start"; R=tools/validation/models/qwen3_next/qwen3_next_run.py
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+L2=$(ls -d $O/runs/*-l2-* 2>/dev/null | head -n 1)
+if [ -n "$L2" ] && [ -f $L2/result.json ]; then
+  PYTHONUNBUFFERED=1 $PYX $R --stage bi --bi-suite full --previous $L2 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/bi.log 2>&1; echo "bi rc=$?" >> $O/rc.txt
+  $PYX tools/validation/models/qwen3_next/qwen3_next_chain_report.py --last $L2 --out $O/chain-report.json > $O/report.log 2>&1; echo "report rc=$?" >> $O/rc.txt
+  PY=$PYX bash ci/scripts/run_qwen3_next_chain_gate.sh $O/chain-report.json > $O/gate.log 2>&1; echo "gate rc=$?" >> $O/gate.log; tail -n 1 $O/gate.log >> $O/rc.txt
+else echo "no passed l2 run: bi, report, gate and D not run" >> $O/rc.txt; fi
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "B end"
+# ---- D
+O=$OUT/D; hdr $O $WT $PYX
+if [ -n "$L2" ] && [ -f $L2/result.json ]; then
+  log "D start"
+  $PYX benchmarks/models/qwen3_next/qwen3_next_e2e_bench.py --run $L2 --out $O/bench --phases rollout,replay > $O/bench.log 2>&1; echo "rc=$?" >> $O/bench.log
+  git status --porcelain --untracked-files=no > $O/status-after.txt; log "D end"
+fi
+touch $O/DONE

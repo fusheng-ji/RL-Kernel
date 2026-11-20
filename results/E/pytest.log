@@ -1,0 +1,1019 @@
+........................................................................ [ 10%]
+........................................................................ [ 21%]
+........................................................................ [ 32%]
+........................................................................ [ 43%]
+........................................................................ [ 54%]
+........................................................................ [ 65%]
+........................................................................ [ 76%]
+................................................FFFFF....FF..FFFF..F..FF [ 87%]
+F....................................................................... [ 98%]
+............                                                             [100%]
+=================================== FAILURES ===================================
+_______________________ test_bounded_load_calls_hdo_sync _______________________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_bounded_load_calls_hdo_sy0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x7614d3d...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7614d3d1a990>
+
+    def test_bounded_load_calls_hdo_sync(tmp_path, runtime, monkeypatch):
+        pytest.importorskip("megatron")
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:174: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+__________________ test_load_rank_fails_when_hdo_sync_skipped __________________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_load_rank_fails_when_hdo_0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416d...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x761416dab500>
+
+    def test_load_rank_fails_when_hdo_sync_skipped(tmp_path, runtime, monkeypatch):
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:192: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+________ test_rank_roundtrip_uses_parameter_state_and_restores_rng_last ________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_rank_roundtrip_uses_param0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416c...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+
+    def test_rank_roundtrip_uses_parameter_state_and_restores_rng_last(tmp_path, runtime):
+        model, optimizer, scheduler, _ = runtime
+        original_rng = state_digest(capture_rng_state())
+        original_model = state_digest(model[0].state_dict())
+>       staging, record = save_rank(tmp_path, runtime)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:248: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+_______________ test_all_small_state_files_are_weights_only_safe _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_all_small_state_files_are0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416c...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+
+    def test_all_small_state_files_are_weights_only_safe(tmp_path, runtime):
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:267: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+______________ test_native_parameter_load_corruption_is_rejected _______________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_native_parameter_load_cor0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416c...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+
+    def test_native_parameter_load_corruption_is_rejected(tmp_path, runtime):
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:273: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+__________________ test_saved_fixture_identity_cannot_change ___________________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_saved_fixture_identity_ca0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416b...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+
+    def test_saved_fixture_identity_cannot_change(tmp_path, runtime):
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:312: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+____________________ test_model_schema_rejects_dtype_change ____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_model_schema_rejects_dtyp0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416b...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+
+    def test_model_schema_rejects_dtype_change(tmp_path, runtime):
+>       staging, record = save_rank(tmp_path, runtime)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:321: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+____________ test_bounded_blocks_do_not_serialize_underlying_bucket ____________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_bounded_blocks_do_not_ser0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x7614168...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76141680fa70>
+
+    def test_bounded_blocks_do_not_serialize_underlying_bucket(tmp_path, runtime, monkeypatch):
+        import qwen3_next_optimizer_checkpoint as bounded
+    
+        monkeypatch.setattr(bounded, "BLOCK_BYTES", 48)
+        optimizer = runtime[1]
+        for key in bounded.PARAMETER_KEYS:
+            backing = torch.arange(1024 * 1024, dtype=torch.float32)
+            optimizer.states[key] = backing[100:108].view(2, 4)
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:352: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+___________ test_bounded_block_ranges_must_cover_parameter_once[gap] ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_bounded_block_ranges_must0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x7614168...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x761416ba8290>
+change = 'gap'
+
+    @pytest.mark.parametrize("change", ["gap", "overlap", "truncated"])
+    def test_bounded_block_ranges_must_cover_parameter_once(tmp_path, runtime, monkeypatch, change):
+        import qwen3_next_optimizer_checkpoint as bounded
+    
+        monkeypatch.setattr(bounded, "BLOCK_BYTES", 48)
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+_________ test_bounded_block_ranges_must_cover_parameter_once[overlap] _________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_bounded_block_ranges_must1')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416c...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x761416886e40>
+change = 'overlap'
+
+    @pytest.mark.parametrize("change", ["gap", "overlap", "truncated"])
+    def test_bounded_block_ranges_must_cover_parameter_once(tmp_path, runtime, monkeypatch, change):
+        import qwen3_next_optimizer_checkpoint as bounded
+    
+        monkeypatch.setattr(bounded, "BLOCK_BYTES", 48)
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+________ test_bounded_block_ranges_must_cover_parameter_once[truncated] ________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_bounded_block_ranges_must2')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x7614168...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x76141688a4b0>
+change = 'truncated'
+
+    @pytest.mark.parametrize("change", ["gap", "overlap", "truncated"])
+    def test_bounded_block_ranges_must_cover_parameter_once(tmp_path, runtime, monkeypatch, change):
+        import qwen3_next_optimizer_checkpoint as bounded
+    
+        monkeypatch.setattr(bounded, "BLOCK_BYTES", 48)
+>       staging, _ = save_rank(tmp_path, runtime)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:367: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:139: in save_rank
+    record = checkpoint._save_rank(
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+___________ test_native_required_files_are_bound_to_checked_manifest ___________
+
+tmp_path = PosixPath('/tmp/pytest-of-<USER>/pytest-41/test_native_required_files_are0')
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x7614168...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x761416891a30>
+
+    def test_native_required_files_are_bound_to_checked_manifest(tmp_path, runtime, monkeypatch):
+        model, optimizer, scheduler, fixture = runtime
+        staging = tmp_path / "all.partial"
+        staging.mkdir()
+        for rank in range(4):
+            monkeypatch.setattr(checkpoint.dist, "get_rank", lambda rank=rank: rank)
+>           checkpoint._save_rank(
+                model,
+                optimizer,
+                scheduler,
+                fixture,
+                staging,
+                leaves=[optimizer],
+                identity=IDENTITY,
+                step=2,
+                sample_position=8,
+                tracker=None,
+                native_args=SimpleNamespace(consumed_train_samples=8),
+                update_evidence={"native_step": 2, "gradient_norm": 1.0},
+            )
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:415: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tools/validation/models/qwen3_next/qwen3_next_training_checkpoint.py:314: in _save_rank
+    verify_hdo_optimizer_master_aliases(model, leaves)
+tools/validation/models/qwen3_next/qwen3_next_optimizer_checkpoint.py:45: in verify_hdo_optimizer_master_aliases
+    from megatron.core.optimizer.cpu_offloading.hybrid_optimizer import HybridDeviceOptimizer
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+___ test_hdo_alias_check_uses_the_sharded_parameter_not_the_model_parameter ____
+
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x761416d...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x761416890440>
+
+    def test_hdo_alias_check_uses_the_sharded_parameter_not_the_model_parameter(runtime, monkeypatch):
+        model, optimizer, _, _ = runtime
+>       hdo = _wire_sharded_hdo(optimizer, monkeypatch)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:526: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:511: in _wire_sharded_hdo
+    monkeypatch.setattr(
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/_pytest/monkeypatch.py:107: in derive_importpath
+    target = resolve(module)
+             ^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/_pytest/monkeypatch.py:82: in resolve
+    importlib.import_module(used)
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:999: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+_______ test_hdo_alias_check_rejects_broken_wiring[kwargs0-not aliased] ________
+
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x7614167...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7614167fd220>
+kwargs = {'break_alias': True}, message = 'not aliased'
+
+    @pytest.mark.parametrize(
+        "kwargs, message",
+        [
+            ({"break_alias": True}, "not aliased"),
+            ({"diverge": True}, "diverged"),
+        ],
+    )
+    def test_hdo_alias_check_rejects_broken_wiring(runtime, monkeypatch, kwargs, message):
+        model, optimizer, _, _ = runtime
+>       _wire_sharded_hdo(optimizer, monkeypatch, **kwargs)
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:540: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:511: in _wire_sharded_hdo
+    monkeypatch.setattr(
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/_pytest/monkeypatch.py:107: in derive_importpath
+    target = resolve(module)
+             ^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/_pytest/monkeypatch.py:82: in resolve
+    importlib.import_module(used)
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:999: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+_________ test_hdo_alias_check_rejects_broken_wiring[kwargs1-diverged] _________
+
+runtime = ([ProtocolModel()], <tests.models.qwen3_next.test_qwen3_next_training_checkpoint.ProtocolOptimizer object at 0x7614161...r-baseline-required-in-production', content_sha256='fbbb7145aa9f626619685b5aaa6eee6056bf3f0e8f9577a840ff19fa8ca797df'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7614161d7230>
+kwargs = {'diverge': True}, message = 'diverged'
+
+    @pytest.mark.parametrize(
+        "kwargs, message",
+        [
+            ({"break_alias": True}, "not aliased"),
+            ({"diverge": True}, "diverged"),
+        ],
+    )
+    def test_hdo_alias_check_rejects_broken_wiring(runtime, monkeypatch, kwargs, message):
+        model, optimizer, _, _ = runtime
+>       _wire_sharded_hdo(optimizer, monkeypatch, **kwargs)
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:540: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py:511: in _wire_sharded_hdo
+    monkeypatch.setattr(
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/_pytest/monkeypatch.py:107: in derive_importpath
+    target = resolve(module)
+             ^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/_pytest/monkeypatch.py:82: in resolve
+    importlib.import_module(used)
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1331: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:935: in _load_unlocked
+    ???
+<frozen importlib._bootstrap_external>:999: in exec_module
+    ???
+<frozen importlib._bootstrap>:488: in _call_with_frames_removed
+    ???
+<HOME>/datastorage/Megatron-LM/megatron/core/__init__.py:7: in <module>
+    from megatron.core.inference_params import InferenceParams
+<HOME>/datastorage/Megatron-LM/megatron/core/inference_params.py:3: in <module>
+    from .inference.contexts import (  # noqa: F401 # pylint: disable=unused-import
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:16: in <module>
+    from .dynamic_context import (
+<HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/dynamic_context.py:55: in <module>
+    import flashinfer  # pylint: disable=unused-import
+    ^^^^^^^^^^^^^^^^^
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/__init__.py:111: in <module>
+    from .gdn_prefill import chunk_gated_delta_rule as chunk_gated_delta_rule
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_prefill.py:25: in <module>
+    from .gdn_kernels import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/__init__.py:26: in <module>
+    from .gdn_decode_bf16_state import (
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/gdn_decode_bf16_state.py:2703: in <module>
+    NUM_SMS = torch.cuda.get_device_properties(0).multi_processor_count
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+device = 0
+
+    def get_device_properties(device: Device = None) -> _CudaDeviceProperties:
+        r"""Get the properties of a device.
+    
+        Args:
+            device (torch.device or int or str, optional): device for which to return the
+                properties of the device.  It uses the current device, given by
+                :func:`~torch.cuda.current_device`, if :attr:`device` is ``None``
+                (default).
+    
+        Returns:
+            _CudaDeviceProperties: the properties of the device
+        """
+        _lazy_init()  # will define _get_device_properties
+        device = _get_device_index(device, optional=True)
+        if device < 0 or device >= device_count():
+>           raise AssertionError("Invalid device id")
+E           AssertionError: Invalid device id
+
+<HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/cuda/__init__.py:740: AssertionError
+=============================== warnings summary ===============================
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py::test_bounded_load_calls_hdo_sync
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py::test_bounded_load_calls_hdo_sync
+  <HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/jit/_script.py:1488: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py: 14 warnings
+  <HOME>/datastorage/conda_envs/<ENV>/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py::test_bounded_load_calls_hdo_sync
+  <HOME>/datastorage/Megatron-LM/megatron/core/tensor_parallel/random.py:28: DeprecationWarning: Using deprecated internal API from Transformer Engine. transformer_engine.pytorch.fp8 will be removed in a future release.
+    from transformer_engine.pytorch.fp8 import FP8GlobalStateManager, fp8_autocast
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py::test_bounded_load_calls_hdo_sync
+  <HOME>/datastorage/Megatron-LM/megatron/core/extensions/transformer_engine.py:2531: DeprecationWarning: transformer_engine.pytorch.float8_tensor is deprecated and will be removed in a future release. Float8Tensor should be imported directly through `from transformer_engine.pytorch import Float8Tensor`
+    from transformer_engine.pytorch.float8_tensor import Float8Tensor
+
+tests/models/qwen3_next/test_qwen3_next_training_checkpoint.py: 15 warnings
+  <HOME>/datastorage/Megatron-LM/megatron/core/inference/contexts/__init__.py:9: DeprecationWarning: The following imports from `dynamic_context.py` will be removed in this file in `megatron-core` 0.14. The imports here result in a cyclic import issue that causes rotary embeddings to import from Apex rather than Transformer Engine.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+15 failed, 645 passed, 33 warnings in 84.41s (0:01:24)
+rc=1

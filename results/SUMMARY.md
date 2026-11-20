@@ -1,0 +1,23 @@
+# H100 round, follow-up branch `feat/qwen3-next-followup-20261119` @ `8284ce2b` (2026-11-20)
+
+Results for the README of `handoff/h100-qwen3-next-followup-20261119`. Hardware: 4 x NVIDIA H100 per node (95830 MiB each, NVLink NV6 between all pairs, `nvidia-smi.txt`), driver 580.173.02, CUDA 13.0, torch 2.13.0+cu130, triton 3.7.1, vLLM 0.30.0, FlashInfer 0.6.18.post1, transformer_engine 2.18.0, megatron-core 0.16.0rc0, apache-tvm-ffi 0.1.11 (from the base environment), Python 3.12.15 (`pip-list-filtered.txt`, `A..E/header.txt`). Code: detached worktree at `8284ce2b4ad4d7b63bb38dabed756e152c59675a`, `core.fileMode=false`, `git status --porcelain --untracked-files=no` empty before and after every step (`header.txt`, `status-after*.txt`). `PYTHONNOUSERSITE=1` for B-E (not set for A, as asked), `CUDA_DEVICE_MAX_CONNECTIONS` unset in the launching shell, `CUDNN_HOME` and `LD_LIBRARY_PATH` pointing at the base environment's nvidia directories. Environment: unchanged `venv` of the previous round (no flash-linear-attention).
+
+## One row per step
+| Step | Result |
+|---|---|
+| A user-site guard | **as expected.** Without `PYTHONNOUSERSITE`, both the identity (`identity-usersite.err`) and the preflight (`preflight-usersite.log`) exit 1 with `environment_mismatch: the user site-packages shadows apache-tvm-ffi, cuda-bindings, cuda-pathfinder, nvidia-cutlass-dsl, ...`. The preflight stops before any GPU use (its run directory has only `source`, no `attempts`). With `PYTHONNOUSERSITE=1` the identity prints and exits 0. The user site does hold shadowing copies (apache-tvm-ffi and others). |
+| B TP4 chain + `bi` full | **passed on the rerun**; the first attempt failed (below). Rerun: `preflight passed, layers passed, l2 passed, bi passed`; every stage records `source_commit` `8284ce2b`; `l2` passed **without** `CUDA_DEVICE_MAX_CONNECTIONS` exported (the stages do not log their environment; the launcher sets it in code, `qwen3_next_run.py`); `bi-matrix.json` has 97 cells, all passed; chain report `passed=True first_drift=None cells=16`; gate rc 0 (`gate.log`; the gate was run as `bash ci/scripts/run_qwen3_next_chain_gate.sh`, without `PY=`). |
+| C EP4 chain | **preflight passed, layers passed, l2 passed** (rerun; first attempt in `not-green-attempts/`). |
+| D provider-GPU workflow scripts | **both rc 0**: `provider` 196 passed; `four-gpu` 21 passed; no `skipped` and no `::error` in either log. `_C` built in the worktree (`c-file.txt`). |
+| E CPU suite | **15 failed, 645 passed, 33 warnings** (`pytest.log`, `-rs`, no skips reported). All 15 failures are `AssertionError: Invalid device id` in the training-checkpoint tests (`test_qwen3_next_training_checkpoint.py`), the known group named in the GDN handoff; the follow-up README expected no failures, so this differs from its expectation. The count of tests differs from the B200 `264 passed, 108 skipped`. |
+
+## Not-green attempts (kept unedited, `not-green-attempts/`)
+Another job of the same user (an unrelated job, not started by me) was running on GPUs 2 and 3 of node 1 of this allocation at about this time. I saw it on the node only after these attempts had failed (and it is listed in the process lines of a later attempt's `header.txt` on that node); for these two attempts' own `header.txt` the process list is empty, so I cannot prove it was present at the moment of the failure. The failure messages (memory held by processes that are not mine; fewer than four usable GPUs) are consistent with it, and the attempts passed on an idle node, but treat them as **not clean results**:
+- **B first attempt**: `preflight` and `layers` passed; `l2` failed with `RuntimeError: gpu_memory_not_released: [<pid>, GPU-..., 22236 MiB ...]` after the rollout (`launcher.log`). `bi`, report and gate were not run for it. The rerun, on a node with no foreign process, passed.
+- **C first attempt**: `preflight` failed (`test_real_vllm_model_on_four_ranks` raised `Four allocated GPUs are required`).
+The reruns (`B-rerun`, `C-rerun` in `results/B`, `results/C`) were run on an idle node, as the README asks (their `header.txt` lists no other process).
+
+## Deviations and notes
+- The README's `PY=` for the gate: not passed in this round's rerun script; the gate used the `python3` on `PATH` of the shell that launched it and exited 0.
+- `D`: the two `run:` blocks were extracted from `.github/workflows/qwen3-next-provider-gpu.yml` exactly as in the README (`provider.sh`, `four-gpu.sh`), with the venv's `bin` first on `PATH` (the scripts call bare `python`).
+- Times are UTC in `steps.txt`, `scripts/node*-steps.txt`; node and allocation names are redacted.
