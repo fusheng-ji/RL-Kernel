@@ -1,0 +1,174 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.7.0 -- <HOME>/conda_envs/rlk_ep4/bin/python
+rootdir: <WORK>/pr536/head
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 10 items
+
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape0-cuda-deterministic_gemm] PASSED [ 10%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape0-triton-deterministic_gemm_triton] PASSED [ 20%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape1-cuda-deterministic_gemm] PASSED [ 30%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape1-triton-deterministic_gemm_triton] PASSED [ 40%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape2-cuda-deterministic_gemm] PASSED [ 50%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape2-triton-deterministic_gemm_triton] PASSED [ 60%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape3-cuda-deterministic_gemm] FAILED [ 70%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape3-triton-deterministic_gemm_triton] FAILED [ 80%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape4-cuda-deterministic_gemm] FAILED [ 90%]
+tests/ops/gemm/test_det_gemm.py::test_target_shapes_invariance[shape4-triton-deterministic_gemm_triton] FAILED [100%]
+
+=================================== FAILURES ===================================
+________ test_target_shapes_invariance[shape3-cuda-deterministic_gemm] _________
+
+name = 'cuda', gemm = <function deterministic_gemm at 0x72d5d01fd620>
+shape = (4096, 14336, 4096)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+        torch.manual_seed(6)
+        M, K, N = shape
+        b = _rand(K, N)
+        row = _rand(1, K)
+        big = _rand(64, K)
+        big[0] = row[0]
+>       assert torch.equal(
+            gemm(row, b)[0], gemm(big, b)[0]
+        ), f"{name}: batch-invariance broken at shape {shape}"
+E       torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E       Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+
+tests/ops/gemm/test_det_gemm.py:491: AcceleratorError
+____ test_target_shapes_invariance[shape3-triton-deterministic_gemm_triton] ____
+
+name = 'triton', gemm = <function deterministic_gemm_triton at 0x72d5c52f6480>
+shape = (4096, 14336, 4096)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+>       torch.manual_seed(6)
+
+tests/ops/gemm/test_det_gemm.py:485: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/random.py:59: in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/random.py:67: in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/random.py:128: in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/__init__.py:460: in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/random.py:126: AcceleratorError
+________ test_target_shapes_invariance[shape4-cuda-deterministic_gemm] _________
+
+name = 'cuda', gemm = <function deterministic_gemm at 0x72d5d01fd620>
+shape = (4096, 4096, 32000)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+>       torch.manual_seed(6)
+
+tests/ops/gemm/test_det_gemm.py:485: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/random.py:59: in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/random.py:67: in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/random.py:128: in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/__init__.py:460: in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/random.py:126: AcceleratorError
+____ test_target_shapes_invariance[shape4-triton-deterministic_gemm_triton] ____
+
+name = 'triton', gemm = <function deterministic_gemm_triton at 0x72d5c52f6480>
+shape = (4096, 4096, 32000)
+
+    @pytest.mark.parametrize("name,gemm", _BACKENDS)
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (4096, 4096, 12288),  # qkv
+            (4096, 4096, 4096),  # o_proj
+            (4096, 4096, 14336),  # mlp_up
+            (4096, 14336, 4096),  # mlp_dn
+            (4096, 4096, 32000),  # lm_head
+        ],
+    )
+    def test_target_shapes_invariance(name, gemm, shape):
+        # Standard-Transformer projection shapes stay batch-invariant.
+>       torch.manual_seed(6)
+
+tests/ops/gemm/test_det_gemm.py:485: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/random.py:59: in manual_seed
+    return _manual_seed_impl(seed)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/random.py:67: in _manual_seed_impl
+    torch.cuda.manual_seed_all(seed)
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/random.py:128: in manual_seed_all
+    _lazy_call(cb, seed_all=True)
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/__init__.py:460: in _lazy_call
+    callable()
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def cb():
+        for i in range(device_count()):
+            default_generator = torch.cuda.default_generators[i]
+>           default_generator.manual_seed(seed)
+E           torch.AcceleratorError: CUDA error: an illegal memory access was encountered
+E           Search for `cudaErrorIllegalAddress' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+
+../../../conda_envs/rlk_ep4/lib/python3.12/site-packages/torch/cuda/random.py:126: AcceleratorError
+========================= 4 failed, 6 passed in 7.41s ==========================

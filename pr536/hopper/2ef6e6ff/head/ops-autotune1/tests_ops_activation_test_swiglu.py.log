@@ -1,0 +1,288 @@
+........................................................................ [ 39%]
+................................FFFFFF.........................sssssssss [ 78%]
+sssssssssssssssssssssssssssssssssssssss                                  [100%]
+=================================== FAILURES ===================================
+______ test_triton_swiglu_launchers_use_input_device_and_stream[0-dtype0] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e183c7252b0>
+dtype = torch.float16, target = 0
+
+    @requires_cuda
+    @requires_triton_activation
+    @pytest.mark.skipif(torch.cuda.device_count() < 2, reason="requires at least two CUDA devices")
+    @pytest.mark.parametrize("dtype", (torch.float16, torch.bfloat16, torch.float32))
+    @pytest.mark.parametrize("target", (0, 1))
+    def test_triton_swiglu_launchers_use_input_device_and_stream(monkeypatch, dtype, target):
+        """Direct backward must also be guarded, without relying on autograd's device switch."""
+        from rl_engine.backends.shared.triton.activation import swiglu
+    
+        device = torch.device("cuda", target)
+        caller = 1 - target
+        stream = torch.cuda.Stream(device=device)
+        launches = []
+    
+        def record_launch(kernel):
+            original_run = kernel.run
+    
+            def run(*args, **kwargs):
+                launches.append((torch.cuda.current_device(), torch.cuda.current_stream()))
+                return original_run(*args, **kwargs)
+    
+            monkeypatch.setattr(kernel, "run", run)
+    
+        for kernel in (
+            swiglu._swiglu_fwd_kernel,
+            swiglu._swiglu_bwd_kernel,
+            swiglu._swiglu_dgate_kernel,
+        ):
+>           record_launch(kernel)
+
+tests/ops/activation/test_swiglu.py:688: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kernel = <rl_engine.backends.shared.triton.autotuning.TunableKernel object at 0x7e1a6c3d0e90>
+
+    def record_launch(kernel):
+>       original_run = kernel.run
+                       ^^^^^^^^^^
+E       AttributeError: 'TunableKernel' object has no attribute 'run'
+
+tests/ops/activation/test_swiglu.py:675: AttributeError
+______ test_triton_swiglu_launchers_use_input_device_and_stream[0-dtype1] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e183c75a360>
+dtype = torch.bfloat16, target = 0
+
+    @requires_cuda
+    @requires_triton_activation
+    @pytest.mark.skipif(torch.cuda.device_count() < 2, reason="requires at least two CUDA devices")
+    @pytest.mark.parametrize("dtype", (torch.float16, torch.bfloat16, torch.float32))
+    @pytest.mark.parametrize("target", (0, 1))
+    def test_triton_swiglu_launchers_use_input_device_and_stream(monkeypatch, dtype, target):
+        """Direct backward must also be guarded, without relying on autograd's device switch."""
+        from rl_engine.backends.shared.triton.activation import swiglu
+    
+        device = torch.device("cuda", target)
+        caller = 1 - target
+        stream = torch.cuda.Stream(device=device)
+        launches = []
+    
+        def record_launch(kernel):
+            original_run = kernel.run
+    
+            def run(*args, **kwargs):
+                launches.append((torch.cuda.current_device(), torch.cuda.current_stream()))
+                return original_run(*args, **kwargs)
+    
+            monkeypatch.setattr(kernel, "run", run)
+    
+        for kernel in (
+            swiglu._swiglu_fwd_kernel,
+            swiglu._swiglu_bwd_kernel,
+            swiglu._swiglu_dgate_kernel,
+        ):
+>           record_launch(kernel)
+
+tests/ops/activation/test_swiglu.py:688: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kernel = <rl_engine.backends.shared.triton.autotuning.TunableKernel object at 0x7e1a6c3d0e90>
+
+    def record_launch(kernel):
+>       original_run = kernel.run
+                       ^^^^^^^^^^
+E       AttributeError: 'TunableKernel' object has no attribute 'run'
+
+tests/ops/activation/test_swiglu.py:675: AttributeError
+______ test_triton_swiglu_launchers_use_input_device_and_stream[0-dtype2] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e183c12bf50>
+dtype = torch.float32, target = 0
+
+    @requires_cuda
+    @requires_triton_activation
+    @pytest.mark.skipif(torch.cuda.device_count() < 2, reason="requires at least two CUDA devices")
+    @pytest.mark.parametrize("dtype", (torch.float16, torch.bfloat16, torch.float32))
+    @pytest.mark.parametrize("target", (0, 1))
+    def test_triton_swiglu_launchers_use_input_device_and_stream(monkeypatch, dtype, target):
+        """Direct backward must also be guarded, without relying on autograd's device switch."""
+        from rl_engine.backends.shared.triton.activation import swiglu
+    
+        device = torch.device("cuda", target)
+        caller = 1 - target
+        stream = torch.cuda.Stream(device=device)
+        launches = []
+    
+        def record_launch(kernel):
+            original_run = kernel.run
+    
+            def run(*args, **kwargs):
+                launches.append((torch.cuda.current_device(), torch.cuda.current_stream()))
+                return original_run(*args, **kwargs)
+    
+            monkeypatch.setattr(kernel, "run", run)
+    
+        for kernel in (
+            swiglu._swiglu_fwd_kernel,
+            swiglu._swiglu_bwd_kernel,
+            swiglu._swiglu_dgate_kernel,
+        ):
+>           record_launch(kernel)
+
+tests/ops/activation/test_swiglu.py:688: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kernel = <rl_engine.backends.shared.triton.autotuning.TunableKernel object at 0x7e1a6c3d0e90>
+
+    def record_launch(kernel):
+>       original_run = kernel.run
+                       ^^^^^^^^^^
+E       AttributeError: 'TunableKernel' object has no attribute 'run'
+
+tests/ops/activation/test_swiglu.py:675: AttributeError
+______ test_triton_swiglu_launchers_use_input_device_and_stream[1-dtype0] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e183c12aa50>
+dtype = torch.float16, target = 1
+
+    @requires_cuda
+    @requires_triton_activation
+    @pytest.mark.skipif(torch.cuda.device_count() < 2, reason="requires at least two CUDA devices")
+    @pytest.mark.parametrize("dtype", (torch.float16, torch.bfloat16, torch.float32))
+    @pytest.mark.parametrize("target", (0, 1))
+    def test_triton_swiglu_launchers_use_input_device_and_stream(monkeypatch, dtype, target):
+        """Direct backward must also be guarded, without relying on autograd's device switch."""
+        from rl_engine.backends.shared.triton.activation import swiglu
+    
+        device = torch.device("cuda", target)
+        caller = 1 - target
+        stream = torch.cuda.Stream(device=device)
+        launches = []
+    
+        def record_launch(kernel):
+            original_run = kernel.run
+    
+            def run(*args, **kwargs):
+                launches.append((torch.cuda.current_device(), torch.cuda.current_stream()))
+                return original_run(*args, **kwargs)
+    
+            monkeypatch.setattr(kernel, "run", run)
+    
+        for kernel in (
+            swiglu._swiglu_fwd_kernel,
+            swiglu._swiglu_bwd_kernel,
+            swiglu._swiglu_dgate_kernel,
+        ):
+>           record_launch(kernel)
+
+tests/ops/activation/test_swiglu.py:688: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kernel = <rl_engine.backends.shared.triton.autotuning.TunableKernel object at 0x7e1a6c3d0e90>
+
+    def record_launch(kernel):
+>       original_run = kernel.run
+                       ^^^^^^^^^^
+E       AttributeError: 'TunableKernel' object has no attribute 'run'
+
+tests/ops/activation/test_swiglu.py:675: AttributeError
+______ test_triton_swiglu_launchers_use_input_device_and_stream[1-dtype1] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e183c12af90>
+dtype = torch.bfloat16, target = 1
+
+    @requires_cuda
+    @requires_triton_activation
+    @pytest.mark.skipif(torch.cuda.device_count() < 2, reason="requires at least two CUDA devices")
+    @pytest.mark.parametrize("dtype", (torch.float16, torch.bfloat16, torch.float32))
+    @pytest.mark.parametrize("target", (0, 1))
+    def test_triton_swiglu_launchers_use_input_device_and_stream(monkeypatch, dtype, target):
+        """Direct backward must also be guarded, without relying on autograd's device switch."""
+        from rl_engine.backends.shared.triton.activation import swiglu
+    
+        device = torch.device("cuda", target)
+        caller = 1 - target
+        stream = torch.cuda.Stream(device=device)
+        launches = []
+    
+        def record_launch(kernel):
+            original_run = kernel.run
+    
+            def run(*args, **kwargs):
+                launches.append((torch.cuda.current_device(), torch.cuda.current_stream()))
+                return original_run(*args, **kwargs)
+    
+            monkeypatch.setattr(kernel, "run", run)
+    
+        for kernel in (
+            swiglu._swiglu_fwd_kernel,
+            swiglu._swiglu_bwd_kernel,
+            swiglu._swiglu_dgate_kernel,
+        ):
+>           record_launch(kernel)
+
+tests/ops/activation/test_swiglu.py:688: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kernel = <rl_engine.backends.shared.triton.autotuning.TunableKernel object at 0x7e1a6c3d0e90>
+
+    def record_launch(kernel):
+>       original_run = kernel.run
+                       ^^^^^^^^^^
+E       AttributeError: 'TunableKernel' object has no attribute 'run'
+
+tests/ops/activation/test_swiglu.py:675: AttributeError
+______ test_triton_swiglu_launchers_use_input_device_and_stream[1-dtype2] ______
+
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7e183c12b650>
+dtype = torch.float32, target = 1
+
+    @requires_cuda
+    @requires_triton_activation
+    @pytest.mark.skipif(torch.cuda.device_count() < 2, reason="requires at least two CUDA devices")
+    @pytest.mark.parametrize("dtype", (torch.float16, torch.bfloat16, torch.float32))
+    @pytest.mark.parametrize("target", (0, 1))
+    def test_triton_swiglu_launchers_use_input_device_and_stream(monkeypatch, dtype, target):
+        """Direct backward must also be guarded, without relying on autograd's device switch."""
+        from rl_engine.backends.shared.triton.activation import swiglu
+    
+        device = torch.device("cuda", target)
+        caller = 1 - target
+        stream = torch.cuda.Stream(device=device)
+        launches = []
+    
+        def record_launch(kernel):
+            original_run = kernel.run
+    
+            def run(*args, **kwargs):
+                launches.append((torch.cuda.current_device(), torch.cuda.current_stream()))
+                return original_run(*args, **kwargs)
+    
+            monkeypatch.setattr(kernel, "run", run)
+    
+        for kernel in (
+            swiglu._swiglu_fwd_kernel,
+            swiglu._swiglu_bwd_kernel,
+            swiglu._swiglu_dgate_kernel,
+        ):
+>           record_launch(kernel)
+
+tests/ops/activation/test_swiglu.py:688: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+kernel = <rl_engine.backends.shared.triton.autotuning.TunableKernel object at 0x7e1a6c3d0e90>
+
+    def record_launch(kernel):
+>       original_run = kernel.run
+                       ^^^^^^^^^^
+E       AttributeError: 'TunableKernel' object has no attribute 'run'
+
+tests/ops/activation/test_swiglu.py:675: AttributeError
+=========================== short test summary info ============================
+SKIPPED [39] tests/ops/activation/test_swiglu.py:928: Ascend NPU required
+SKIPPED [3] tests/ops/activation/test_swiglu.py:972: Ascend NPU required
+SKIPPED [3] tests/ops/activation/test_swiglu.py:990: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:1013: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:1030: Ascend NPU required
+SKIPPED [1] tests/ops/activation/test_swiglu.py:1046: Ascend NPU required
+6 failed, 129 passed, 48 skipped in 112.08s (0:01:52)
