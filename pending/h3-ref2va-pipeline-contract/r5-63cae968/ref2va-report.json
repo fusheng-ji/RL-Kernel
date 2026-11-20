@@ -1,0 +1,294 @@
+{
+ "environment": {
+  "checkpoint_pin": "MiniMaxAI/MiniMax-H3@42ed227ee7df40d41602854ae760620d6eb651fe",
+  "commit": "63cae968867043ee1c457f66e1874f15312af235",
+  "diffusers": "0.40.0.dev0",
+  "gpus": [
+   "NVIDIA B200",
+   "NVIDIA B200",
+   "NVIDIA B200",
+   "NVIDIA B200",
+   "NVIDIA B200",
+   "NVIDIA B200",
+   "NVIDIA B200",
+   "NVIDIA B200"
+  ],
+  "machine": "x86_64",
+  "numpy": "2.3.5",
+  "pillow": "12.3.0",
+  "provider_pin": "huggingface/diffusers@f53d552036a0d1bd5570782a39cd40cfabf112bc",
+  "provider_source_sha256": "b959c0ce2290be529e09ea379365786ffc1946dd950e82db96f5b938a48fd376",
+  "python": "3.12.14",
+  "sglang": "0.5.21",
+  "torch": "2.13.0+cu130",
+  "torchaudio": "2.11.0+cu130",
+  "tracked_tree_dirty": false
+ },
+ "findings": {
+  "video_span_summation": {
+   "count_below_200": 179,
+   "default": "neumaier",
+   "interpreter": "CPython 3.12.14",
+   "interpreter_sum_is": "neumaier",
+   "latent_frames_where_neumaier_differs_from_sequential": [
+    6,
+    10,
+    11,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50,
+    51,
+    52,
+    53,
+    57
+   ],
+   "note": "Diffusers and SGLang sum a video reference's clock advance with Python's sum(), which is Neumaier-compensated from CPython 3.12 and plain left-to-right before; the released reference therefore depends on the interpreter. RL-Kernel writes both out and records the choice in the layout geometry.",
+   "random_requests": {
+    "layouts": 300,
+    "rows": 23684270,
+    "rows_with_fp32_difference_after_cast": 0,
+    "rows_with_fp64_difference": 6449788
+   },
+   "released_reference_latent_frame_counts_affected": [
+    17,
+    22,
+    32,
+    37,
+    42,
+    47,
+    52,
+    57,
+    62,
+    67,
+    72,
+    77,
+    82,
+    87,
+    92,
+    97,
+    102,
+    107,
+    112,
+    117
+   ]
+  }
+ },
+ "identity": {
+  "checkpoint_component_sha256": {
+   "FL2VA": {
+    "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+    "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+    "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+    "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+    "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+    "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+    "transformer": "422af2a84dc63c5ff53b93a231ed3982b1570157879d07e0d7f0499c3ca74f62",
+    "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+   },
+   "Ref2VA": {
+    "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+    "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+    "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+    "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+    "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+    "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+    "transformer": "2043e25af70d94796436a98423ee13a2b868442a162373f671c9ad4d4ea4eef0",
+    "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+   }
+  },
+  "local_transformer_dir": {
+   "identified_as": "FL2VA",
+   "source": "Hub download metadata or cache blob names (no shard read)"
+  },
+  "preprocessing_recipe_sha256": {
+   "FL2VA": "d56ca503a4adb57a23ff4e7b17b464083a679c252cb54cbfa0d1e1de9ef9daa0",
+   "Ref2VA": "112dcefe5b748fa7223122feb954f2c3b7e8dfa714bb555f5a4d0f06102b918c"
+  },
+  "transformer_shards_differ": 14
+ },
+ "passed": true,
+ "reference": {
+  "diffusers_media": {
+   "bitwise_equal": 16,
+   "cases": 16,
+   "what": "Ref2VASetupStep video (5 rates) / audio (3 rates, torchaudio) normalisation, image short-edge resize (4 sizes), conditioner frame sampling (4 lengths)"
+  },
+  "diffusers_static": {
+   "bitwise_equal": 200,
+   "cases": 200,
+   "span_summation": "neumaier",
+   "what": "MiniMaxH3Ref2VAPrepareLayoutStep.build_ref2va_packed_sequence on 200 random requests (1-6 references of every kind, with and without sound)"
+  },
+  "sglang_prefix": {
+   "bitwise_equal": 100,
+   "cases": 100,
+   "span_summation": "neumaier",
+   "what": "minimax_h3_packed_sequence_ref2va_blocks on 100 random requests, first `used` rows (SGLang pads to 64 rows tagged -1)"
+  }
+ },
+ "repeatability": {
+  "image": {
+   "artifact_sha256": "ffd35d2b12c84da7f6789c66fa6f777479d8cb8f046782536e5e8d9cc1d450e3",
+   "identical": true,
+   "input_sha256": {
+    "initial_audio_rows": "ac404e2647bd4d309796649f9503497d7fff5ef59e592e58fe70c961dba72e62",
+    "initial_video_rows": "db46540acfacaac05cf3a499ffc24e2bdd2d71378a73b1e3f095a9ca35cffc9b",
+    "ref0_image": "e28c12d5d23addb4aac98695aa3246ca5d088e7f8faa2f905c15dbf5740af696",
+    "token_ids": "d8af9a59e1902f355e8b84a5341195fb0bdf35bd730572fe38cbf6a224f72697"
+   },
+   "layout_component_sha256": {
+    "audio_indices": "ca73fbd69eb90e89374cad46a17ed029792367a33260f98f1a45bf1bbfb73c40",
+    "position_ids": "16886717ed73660e589e8acfa831f1cb596cf2fd6580800902944439de7cc66a",
+    "text_indices": "92e0ac0f91bb962a7103796aefaae5666a2ce48b1c1709591f99a21b1c890347",
+    "token_tags": "11eb8f0d90184e6929e436119e32577e0c79c7baa06d9bf502375c83cc39397d",
+    "video_indices": "f31cf08766f860e2884a29708ce74e4bda19cfba8b9a51805034244f6d787bf3"
+   },
+   "pipeline_identity": {
+    "checkpoint_component_sha256": {
+     "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+     "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+     "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+     "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+     "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+     "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+     "transformer": "2043e25af70d94796436a98423ee13a2b868442a162373f671c9ad4d4ea4eef0",
+     "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+    },
+    "preprocessing_recipe_sha256": "112dcefe5b748fa7223122feb954f2c3b7e8dfa714bb555f5a4d0f06102b918c",
+    "structural_workflow": "ref2va",
+    "transformer_dir": "transformer_ref",
+    "variant": "Ref2VA",
+    "workflow": "ref2va"
+   },
+   "runs": 6,
+   "sequence_length": 48674
+  },
+  "image_video_audio": {
+   "artifact_sha256": "72bca65a4549bdbacff920e0998a043a409efb73db2bcd4b7f0ebfd21b52a016",
+   "identical": true,
+   "input_sha256": {
+    "initial_audio_rows": "9ceb6d2f5831b3d322ca8d71b23e7a193fc9bb37e479750ef77b74c476584b21",
+    "initial_video_rows": "bdcdf9752f2542182f1b8ca2ddddad3c815ac3fce9bc55403bf72379c94f8cbf",
+    "ref0_image": "e28c12d5d23addb4aac98695aa3246ca5d088e7f8faa2f905c15dbf5740af696",
+    "ref1_audio": "f69c8b7bd97b06d394acabb953fa951f881ef18017ff6d93413ef16823121055",
+    "ref1_frames": "37b398ed93082bc96ca108df9fb6d55c84e96018f06f27c67a5283eb585991d2",
+    "ref2_audio": "12e4e30588b5242dd178c9b8c4f7f0048f6e24b72743f660cae1ff16831532c4",
+    "token_ids": "996c67ce15f5a2b2ddf32ed8d43ffe6c21dda2ca7f1dc112c2818477cfffb3a2"
+   },
+   "layout_component_sha256": {
+    "audio_indices": "86ae40135df581c506a8e26aa7dc2c411e14427451095c1ce6e9aa962095bfb3",
+    "position_ids": "1068df1056d695b3ce7c00b34302a8eba029f9a872aa8dded5772ea6b213be8a",
+    "text_indices": "026216667c25ac346a30213b716a52e7e30d1821f7a71ead6e8b3d1a7c6362ee",
+    "token_tags": "791fbdcbc99b8486161badf6521ac5a7868ef2af1034b2b7979505e5efcb0f40",
+    "video_indices": "f32477aa981328091c89418a4aaa3b26870c5aa95a7ae635bf9a76311f705b4e"
+   },
+   "pipeline_identity": {
+    "checkpoint_component_sha256": {
+     "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+     "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+     "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+     "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+     "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+     "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+     "transformer": "2043e25af70d94796436a98423ee13a2b868442a162373f671c9ad4d4ea4eef0",
+     "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+    },
+    "preprocessing_recipe_sha256": "112dcefe5b748fa7223122feb954f2c3b7e8dfa714bb555f5a4d0f06102b918c",
+    "structural_workflow": "ref2va",
+    "transformer_dir": "transformer_ref",
+    "variant": "Ref2VA",
+    "workflow": "ref2va"
+   },
+   "runs": 6,
+   "sequence_length": 69566
+  },
+  "two_videos": {
+   "artifact_sha256": "fb03e1a5e7fa4f0e3849936f0006595187e60cd6f9c7b72bbb0bc3266d93665a",
+   "identical": true,
+   "input_sha256": {
+    "initial_audio_rows": "911ba2b87e4d78ad9722be767ffb39de757676ff78e70890c7209cefd47c9e3a",
+    "initial_video_rows": "45a24122ae7d87de6efc19c64ae7a0ab874348e579ab7365ff904b675f5705ee",
+    "ref0_audio": "f69c8b7bd97b06d394acabb953fa951f881ef18017ff6d93413ef16823121055",
+    "ref0_frames": "37b398ed93082bc96ca108df9fb6d55c84e96018f06f27c67a5283eb585991d2",
+    "ref1_frames": "41deb8b284416bd5621810e533b70080e367cf6cbf85f16987f0dfab84a906ff",
+    "token_ids": "9c1a517d840b043277285eb1ecae1b89cf359e2a930e11c6ef89a6f016f9b141"
+   },
+   "layout_component_sha256": {
+    "audio_indices": "0339e90219878e1f3787d4e1ef2432de525cd169cc99bfcb36901f2aefcc138c",
+    "position_ids": "fbd94514f75d441294477c2ffe9ca64f8a929c5c09559fa89075e42686689093",
+    "text_indices": "c6d6be810c5f592204c229c70069117e15372a3f398372672224a7385ef76943",
+    "token_tags": "b575aab0879b70a532710c5d4052da36c91cfc64b610815b93b001b4d2823288",
+    "video_indices": "17bd9fafb2f0a1aca5be05bc8348c03fc7e14e951b970cbd9d16363f9b4191e3"
+   },
+   "pipeline_identity": {
+    "checkpoint_component_sha256": {
+     "audio_scheduler": "dc8edef0db5c133b968057cc6e0f2ef744444a9ece7ae5814cf77b877c40c356",
+     "audio_vae": "65e6a637a33ad44563a5f3285706b4134370591838fde6adfb93e4d5cf72fa38",
+     "processor": "7cfa7904c3a1db6893170b0ace80e97a6dd73a4e390036cd2cf4d63b90595d15",
+     "scheduler": "e60054558dcfb74246af86d5da946fdb79e5445c0c710bfcfe165e3c5da1f3a9",
+     "text_encoder": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+     "tokenizer": "b1f7d0443124c52e292b24e2b62327143cbdebcc6d849ceffa6eb9c0d5941f52",
+     "transformer": "2043e25af70d94796436a98423ee13a2b868442a162373f671c9ad4d4ea4eef0",
+     "video_vae": "65c38c7e255b7be4a8a802dc47687ad7a18c4e4eeaf99d3840d27ea8ccc85cb3"
+    },
+    "preprocessing_recipe_sha256": "112dcefe5b748fa7223122feb954f2c3b7e8dfa714bb555f5a4d0f06102b918c",
+    "structural_workflow": "ref2va",
+    "transformer_dir": "transformer_ref",
+    "variant": "Ref2VA",
+    "workflow": "ref2va"
+   },
+   "runs": 6,
+   "sequence_length": 78462
+  }
+ },
+ "row": "ref2va_pipeline_contract",
+ "schema": "rlkernel.h3.pipeline_contract_report.v1",
+ "timing": {
+  "diffusers": {
+   "median_ms": 1.0751895606517792,
+   "min_ms": 1.0569114238023758,
+   "runs": 15
+  },
+  "rl_kernel": {
+   "label": "Ref2VA image+video(sound)+audio layout, 768x1344, 124 frames",
+   "median_ms": 3.1560398638248444,
+   "min_ms": 3.121655434370041,
+   "runs": 15
+  },
+  "sglang": {
+   "median_ms": 1.0531134903430939,
+   "min_ms": 1.0433346033096313,
+   "runs": 15
+  }
+ }
+}
