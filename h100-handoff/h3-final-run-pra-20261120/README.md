@@ -21,16 +21,16 @@ Everything below has run on one 8 x B200 node (reference numbers in each step). 
 
 ## Code
 
-`h3-final-run-pra-20261120.bundle` in this directory holds one ref, `feat/h3-final-run-transition-norm` at `70afabbd`. Its prerequisite is `12e81c36`, the head of upstream `test-h3`. The branch is local only, not pushed.
+`h3-final-run-pra-20261120.bundle` in this directory holds one ref, `feat/h3-final-run-transition-norm` at `164a5ebd`. PR A is stacked on PR #730 (`perf/h3-fixed-order-row-mean` at `23ea31cc`, the fixed-order row mean of the CPS log-prob), which is its prerequisite; #730 sits on upstream `test-h3` `12e81c36`. The PR A branch is local only, not pushed.
 
 ```bash
 cd <REPO>
-git fetch https://github.com/RL-Align/RL-Kernel.git test-h3              # provides 12e81c36
+git fetch https://github.com/RL-Align/RL-Kernel.git pull/730/head        # provides 23ea31cc (PR #730)
 git bundle verify <THIS_DIR>/h3-final-run-pra-20261120.bundle
 git fetch <THIS_DIR>/h3-final-run-pra-20261120.bundle \
   'refs/heads/feat/h3-final-run-transition-norm:refs/heads/feat/h3-final-run-transition-norm'
-git worktree add --detach <SRC> feat/h3-final-run-transition-norm      # 70afabbd
-git worktree add --detach <BASE> 12e81c36                              # test-h3, for the before / after rows
+git worktree add --detach <SRC> feat/h3-final-run-transition-norm      # 164a5ebd
+git worktree add --detach <BASE> 23ea31cc                              # PR #730, the base for the before / after rows
 ```
 
 The probe scripts are in this directory: `compare_sample_h3_transition.py`, `logprob_batch_probe.py`, `norm_partition_probe.py`, `multirank_norm_probe.py`, `hook_before_after.py`, `timing_probe.py`. Run them from `<SRC>` with `PYTHONPATH=<SRC>` so that `rl_engine` is the checkout's.
@@ -55,18 +55,18 @@ CUDA_VISIBLE_DEVICES=0 MASTER_PORT=29811 <E1>/bin/python <THIS_DIR>/hook_before_
 ```
 
 **Expected (B200 reference, same scripts):**
-- `megatron-hook.json`: `all_equal: true` on the 3 cases. The `test-h3` side needs `libnvrtc.so.12` on the loader path; if it fails with `libnvrtc.so.12: cannot open shared object file`, that is the bug PR A fixes: report it, and say which NVRTC files the environment has.
+- `megatron-hook.json`: `all_equal: true` on the 3 cases. The base side (#730, whose norm code is `test-h3`'s) needs `libnvrtc.so.12` on the loader path; if it fails with `libnvrtc.so.12: cannot open shared object file`, that is the bug PR A fixes: report it, and say which NVRTC files the environment has.
 - `norm-partition.json`: `exact_bitwise_equal` 16 / 16. B200 gave `torch_bitwise_equal` 15 / 16 (the 4-shard original order differs by one FP32 ulp); on H100 report whatever torch gives.
 - `timing.json`, B200 medians:
 
   | Call | torch / verl-omni (ms) | RL-Kernel (ms) |
   |---|---|---|
-  | norm | 1.45 | 8.99 |
-  | norm + clip | 1.91 | 9.54 |
-  | transition, video, sampling | 0.38 | 97.50 |
-  | transition, video, scoring | 0.34 | 97.43 |
-  | transition, audio, sampling | 0.31 | 0.41 |
-  | transition, audio, scoring | 0.28 | 0.39 |
+  | norm | 1.45 | 8.95 |
+  | norm + clip | 1.92 | 9.49 |
+  | transition, video, sampling | 0.39 | 0.27 |
+  | transition, video, scoring | 0.34 | 0.23 |
+  | transition, audio, sampling | 0.31 | 0.23 |
+  | transition, audio, scoring | 0.28 | 0.20 |
 
 ## B. verl-omni comparisons (`<E2>`, one GPU, about 15 min)
 
@@ -78,7 +78,7 @@ CUDA_VISIBLE_DEVICES=0 VERL_OMNI_PATH=<VERL_OMNI> <E2>/bin/python -m pytest \
   "tests/models/minimax_h3/test_h3_runtime_integration.py::TestTransition" -p no:cacheprovider -q -rfs > <OUT>/B/transition-tests.txt 2>&1
 ```
 
-**Expected:** `verl-omni-compare.json` has 560 cases with `prev_sample`, `prev_sample_mean`, `std_dev_t` and `sqrt_dt` all 560 / 560; `log_prob` is not expected to be equal (B200: 8 / 560, max abs difference 6.3e-06). `logprob-batch.json` has `rl_kernel_differ: 0` (B200: `verl_omni_differ: 27` of 144). `transition-tests.txt`: 9 passed. Any RL-Kernel `log_prob` that differs from its batch-of-1 value, or any non-log-prob output that differs from verl-omni, is the main finding: send it as is.
+**Expected:** `verl-omni-compare.json` has 560 cases with `prev_sample`, `prev_sample_mean`, `std_dev_t` and `sqrt_dt` all 560 / 560; `log_prob` is not expected to be equal (B200 at `164a5ebd`: 206 / 560, max abs difference 1.8e-07). `logprob-batch.json` has `rl_kernel_differ: 0` (B200: `verl_omni_differ: 27` of 144). `transition-tests.txt`: 9 passed. Any RL-Kernel `log_prob` that differs from its batch-of-1 value, or any non-log-prob output that differs from verl-omni, is the main finding: send it as is.
 
 ## C. Multi-GPU norm (`<E1>`, about 15 min)
 
@@ -99,19 +99,19 @@ The 8-rank run writes the report on global rank 0 (node-a).
 
 **Expected (B200: all true):** for TP2, TP4, TP8 and TP4 x CP2, `exact_norm_equal_all_ranks` and `exact_clipped_equal` true and `exact_norm_values` one value, equal to `one_gpu.exact_norm`. Report the torch columns as they come: B200 gave the one-GPU norm and clipped bytes on all four layouts.
 
-## D. Test suite, head vs `test-h3` (`<E1>`, one node, 2 + 2 GPUs, about 25 min)
+## D. Test suite, head vs #730 (`<E1>`, one node, 2 + 2 GPUs, about 25 min)
 
 ```bash
 for side in head base; do W=<SRC>; [ $side = base ] && W=<BASE>
   (cd $W && RL_KERNEL_H3_STRICT=1 RL_KERNEL_REQUIRE_EXT=1 <E1>/bin/python setup.py build_ext --inplace > <OUT>/D/build-$side.log 2>&1)
   (cd $W && PYTHONPATH=$W <E1>/bin/python -c "import rl_engine._C as c; print(c.__file__)") > <OUT>/D/c-file-$side.txt   # inside $W
 done
-(cd <SRC> && CUDA_VISIBLE_DEVICES=0,1 PYTHONPATH=<SRC>:<PROVIDER>/src:<OVERLAY> <E1>/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 tests/ops/norm > <OUT>/D/suite-head.txt 2>&1) &
-(cd <BASE> && CUDA_VISIBLE_DEVICES=2,3 PYTHONPATH=<BASE>:<PROVIDER>/src:<OVERLAY> <E1>/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 tests/ops/norm > <OUT>/D/suite-base.txt 2>&1) &
+(cd <SRC> && CUDA_VISIBLE_DEVICES=0,1 PYTHONPATH=<SRC>:<PROVIDER>/src:<OVERLAY> <E1>/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 tests/ops/norm tests/backends/shared > <OUT>/D/suite-head.txt 2>&1) &
+(cd <BASE> && CUDA_VISIBLE_DEVICES=2,3 PYTHONPATH=<BASE>:<PROVIDER>/src:<OVERLAY> <E1>/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 tests/ops/norm tests/backends/shared > <OUT>/D/suite-base.txt 2>&1) &
 wait
 ```
 
-**Expected:** nothing fails only at head. B200: head 1562 passed / 2 failed / 148 skipped, `test-h3` 1539 / 2 / 148; the 2 failures on both are `test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-257]` (a B200 bound; it passed on H100 in earlier rounds) and `test_rms_norm.py::test_registry_dispatches_rms_norm`. List every failure on each side.
+**Expected:** nothing fails only at head. B200: head 1589 passed / 2 failed / 148 skipped, #730 `23ea31cc` 1566 / 2 / 148; the 2 failures on both are `test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-257]` (a B200 bound; it passed on H100 in earlier rounds) and `test_rms_norm.py::test_registry_dispatches_rms_norm`. List every failure on each side.
 
 ## What to send back
 
