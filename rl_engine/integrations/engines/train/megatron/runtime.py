@@ -1083,20 +1083,35 @@ def _patch_strict_logp_output_layer(
     linear_cross_entropy_cls.forward = wrapped
 
 
+_OUTPUT_LAYER_MODES = ("linear_cross_entropy", "external")
+
+
 def install_megatron_integration(
     plan: IntegrationPlan,
     *,
     attention_classes: Iterable[type[Any]] | None = None,
     ffn_classes: Iterable[type[Any]] | None = None,
+    output_layer_mode: str = "linear_cross_entropy",
 ) -> MegatronIntegration:
-    """Install Attention, dense FFN and structural Logp routes in one actor."""
+    """Install Attention, dense FFN and structural Logp routes in one actor.
 
+    ``output_layer_mode="external"`` installs the strict Logp operator but leaves
+    the LM head to the caller (for example a framework adapter that scores
+    hidden states itself). It never patches ``LinearCrossEntropyModule``.
+    """
+
+    if output_layer_mode not in _OUTPUT_LAYER_MODES:
+        raise ValueError(f"unsupported output_layer_mode: {output_layer_mode!r}")
     existing = get_active_integration("megatron")
     if existing is not None:
         if not isinstance(existing, MegatronIntegration):
             raise RuntimeError("active Megatron integration has an unexpected type")
         if existing.plan != plan:
             raise RuntimeError("Megatron integration is already installed with another plan")
+        if getattr(existing, "_rl_kernel_output_layer_mode", output_layer_mode) != (
+            output_layer_mode
+        ):
+            raise RuntimeError("Megatron integration is already installed with another LM head")
         return existing
 
     rl_kernel_operators: dict[str, Any] = {}
@@ -1122,12 +1137,20 @@ def install_megatron_integration(
     if plan.implementation_for("ffn", "training") is Implementation.RL_KERNEL and not resolved_ffn:
         raise RuntimeError("R/R Megatron FFN selected but no supported class was found")
 
+    integration._rl_kernel_output_layer_mode = output_layer_mode
     set_active_integration("megatron", integration)
     _patch_layer_alignment_diagnostics()
-    if plan.implementation_for("logp", "training") is Implementation.RL_KERNEL:
+    if (
+        plan.implementation_for("logp", "training") is Implementation.RL_KERNEL
+        and output_layer_mode == "linear_cross_entropy"
+    ):
         _patch_strict_logp_output_layer()
     if plan.implementation_for("attention", "training") is Implementation.RL_KERNEL:
         _patch_strict_rocm_rope()
+        from rl_engine.integrations.common import cuda_rope
+
+        if cuda_rope.enabled():
+            cuda_rope.install_megatron()
         _patch_strict_attention_projections()
         if plan.implementation_for("ffn", "training") is Implementation.RL_KERNEL:
             _patch_strict_te_rms_norm()
@@ -1145,7 +1168,10 @@ def install_megatron_integration(
             "ffn",
             ",".join(f"{cls.__module__}.{cls.__name__}.forward" for cls in resolved_ffn),
         )
-    if plan.implementation_for("logp", "training") is Implementation.RL_KERNEL:
+    if (
+        plan.implementation_for("logp", "training") is Implementation.RL_KERNEL
+        and output_layer_mode == "linear_cross_entropy"
+    ):
         integration.record_installed_hook(
             "logp",
             "rl_engine.integrations.orchestrators.vime.providers.linear_logp_provider.provider,"

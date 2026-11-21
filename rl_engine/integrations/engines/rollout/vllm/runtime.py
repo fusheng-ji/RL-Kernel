@@ -596,7 +596,9 @@ def _patch_qwen_lm_head_padding() -> None:
         return
     real_vocab = int(os.environ["RL_KERNEL_VLLM_REAL_VOCAB_SIZE"])
     padded_vocab = int(os.environ["RL_KERNEL_VLLM_PADDED_VOCAB_SIZE"])
-    if padded_vocab <= real_vocab or padded_vocab % 2:
+    # Equal sizes are valid: e.g. Qwen3-8B's 151936 rows already split evenly
+    # across TP shards, so Megatron (mbridge) adds no padding rows.
+    if real_vocab <= 0 or padded_vocab < real_vocab or padded_vocab % 2:
         raise RuntimeError(
             f"invalid strict rollout vocab contract: real={real_vocab}, padded={padded_vocab}"
         )
@@ -1096,6 +1098,10 @@ def _patch_qwen3_strict_model(
     assert attention_cls is not None
     if rotary_cls is not None:
         _patch_strict_rocm_rotary_embedding(rotary_cls)
+        from rl_engine.integrations.common import cuda_rope
+
+        if cuda_rope.enabled():
+            cuda_rope.install_vllm(rotary_cls)
     if det_gemm is None:
         det_gemm = _strict_attention_projection_op()
     rocm_linear_all_reduce = None
@@ -1527,6 +1533,34 @@ def _patch_rocm_top_p_scan(integration: VllmIntegration) -> None:
     )
 
 
+def _guard_explicit_v1_sampler_route() -> None:
+    """Fail closed if an explicitly V1-only strict run reaches the V2 sampler.
+
+    The strict CUDA Logp route patches ``vllm.v1.sample.sampler.Sampler``. A V2
+    model runner samples elsewhere and would silently return native logp.
+    """
+
+    if os.getenv("RL_KERNEL_VLLM_REQUIRE_V1", "").strip() != "1":
+        return
+    if os.getenv("VLLM_USE_V2_MODEL_RUNNER", "").strip() != "0":
+        raise RuntimeError("RL_KERNEL_VLLM_REQUIRE_V1=1 requires VLLM_USE_V2_MODEL_RUNNER=0")
+    try:
+        from vllm.v1.worker.gpu.sample.sampler import Sampler
+    except ImportError:
+        return
+    marker = "_rl_kernel_v1_only_guard"
+    if getattr(Sampler, marker, False):
+        return
+
+    def rejected(instance: Any, *args: Any, **kwargs: Any) -> Any:
+        raise RuntimeError(
+            "strict V1 rollout reached the unsupported V2 sampler; refusing native logp bypass"
+        )
+
+    Sampler.__call__ = rejected
+    setattr(Sampler, marker, True)
+
+
 def _patch_sampler(integration: VllmIntegration, *, strict_linear_logp: bool) -> None:
     from vllm.v1.sample.sampler import Sampler
 
@@ -1944,6 +1978,8 @@ def install_vllm_integration(plan: IntegrationPlan) -> VllmIntegration:
         # Current ROCm deployments use vLLM's V2 runner and its worker sampler.
         _patch_worker_sampler(integration, strict_linear_logp=strict_linear_logp)
     else:
+        if strict_linear_logp:
+            _guard_explicit_v1_sampler_route()
         _patch_sampler(integration, strict_linear_logp=strict_linear_logp)
     if strict_linear_logp:
         sampler_hook = (
