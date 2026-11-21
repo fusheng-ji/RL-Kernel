@@ -1,0 +1,54 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+......................................................................s. [ 16%]
+.....s.................................................................. [ 21%]
+........................................................................ [ 26%]
+........................................................................ [ 32%]
+........................................................................ [ 37%]
+........................................................................ [ 42%]
+........................................................................ [ 48%]
+........................................................................ [ 53%]
+........................................................................ [ 58%]
+......................................................s................. [ 64%]
+........................................................................ [ 69%]
+..ss...ss...ss...ss...ss............ssss................................ [ 75%]
+........................................................................ [ 80%]
+..............................s......................................... [ 85%]
+.sssssssss.............................................................. [ 91%]
+................s....................................F.................. [ 96%]
+................................................                         [100%]
+=================================== FAILURES ===================================
+E   AssertionError: swiglu
+    assert 0.012112910519658411 <= ((1.25 * 0.008155954869872396) + 0.001)
+----------------------------- Captured stdout call -----------------------------
+INFO 11-21 19:19:23 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-21 19:19:23 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-21 19:19:23 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-21 19:19:23 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+------------------------------ Captured log call -------------------------------
+INFO     RL-Kernel:registry.py:1197 KernelRegistry initialized for cuda
+INFO     RL-Kernel:det_gemm.py:1378 TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO     RL-Kernel:deterministic_attn.py:118 Successfully linked to _C.deterministic_attention_forward/backward.
+INFO     RL-Kernel:swiglu.py:112 Successfully linked to precompiled _C.swiglu_forward kernel.
+<base>/tests/models/minimax_h3/test_h3_token_refiner.py:84: AssertionError: swiglu
+=============================== warnings summary ===============================
+tests/models/minimax_h3/test_h3_sglang_rollout.py: 14 warnings
+  <repo-env>/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-257]
+SKIPPED [1] tests/models/minimax_h3/test_h3_checkpoint_mapper_vllm.py:72: could not import 'vllm_omni.diffusion.models.minimax_h3.fasth3': No module named 'vllm_omni'
+SKIPPED [1] tests/models/minimax_h3/test_h3_checkpoint_mapper_vllm.py:215: could not import 'vllm_omni.diffusion.models.minimax_h3.minimax_h3_transformer': No module named 'vllm_omni'
+SKIPPED [1] tests/models/minimax_h3/test_h3_parallel_model.py:371: needs 8 GPUs
+SKIPPED [5] tests/models/minimax_h3/test_h3_ring_attention.py:122: needs 5 GPUs
+SKIPPED [5] tests/models/minimax_h3/test_h3_ring_attention.py:122: needs 8 GPUs
+SKIPPED [1] tests/models/minimax_h3/test_h3_ring_attention.py:238: needs 6 GPUs
+SKIPPED [2] tests/models/minimax_h3/test_h3_ring_attention.py:238: needs 8 GPUs
+SKIPPED [1] tests/models/minimax_h3/test_h3_ring_attention.py:238: needs 7 GPUs
+SKIPPED [1] tests/models/minimax_h3/test_h3_runtime_integration.py:320: set VERL_OMNI_PATH to a verl-omni checkout
+SKIPPED [8] tests/models/minimax_h3/test_h3_sglang_rollout.py:581: could not import 'sglang.multimodal_gen.runtime.models.dits.minimax_h3': No module named 'sglang'
+SKIPPED [1] tests/models/minimax_h3/test_h3_sglang_rollout.py:623: needs 8 GPUs
+SKIPPED [1] tests/models/minimax_h3/test_h3_timestep_sinusoid.py:129: could not import 'sglang.kernels.ops.diffusion.modulate.timestep_embedding_jit': No module named 'sglang'
+1 failed, 1315 passed, 28 skipped, 14 warnings in 1850.69s (0:30:50)
