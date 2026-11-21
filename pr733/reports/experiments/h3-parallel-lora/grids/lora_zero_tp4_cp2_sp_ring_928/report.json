@@ -1,0 +1,677 @@
+{
+ "contract": "h3-parallel-model-v1",
+ "tp": 4,
+ "cp": 2,
+ "sp": true,
+ "cp_mode": "ring",
+ "attention": "h3_full",
+ "size": "928",
+ "packed_rows": 1008,
+ "inject": null,
+ "sharded": true,
+ "lora": {
+  "contract": "h3-parallel-lora-v1",
+  "rank": 64,
+  "alpha": 128.0,
+  "seed": 7,
+  "b_zero": true,
+  "scale": 2.0
+ },
+ "strict_boundaries": false,
+ "world": 8,
+ "spans": [
+  [
+   0,
+   126
+  ],
+  [
+   126,
+   252
+  ],
+  [
+   252,
+   378
+  ],
+  [
+   378,
+   504
+  ],
+  [
+   504,
+   630
+  ],
+  [
+   630,
+   756
+  ],
+  [
+   756,
+   882
+  ],
+  [
+   882,
+   1008
+  ]
+ ],
+ "all_bitwise": true,
+ "ranks": [
+  {
+   "rank": 0,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 15.726106381043792,
+    "canonical": 4.914893496781588,
+    "parallel": 8.136181296780705
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 0,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 0,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     0,
+     4
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 10.134697142988443,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  },
+  {
+   "rank": 1,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 14.178416393697262,
+    "canonical": 4.900036057457328,
+    "parallel": 8.09203340113163
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 1,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 1,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     1,
+     5
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 10.222062217071652,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  },
+  {
+   "rank": 2,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 15.992466755211353,
+    "canonical": 4.903515879064798,
+    "parallel": 8.096269370988011
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 2,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 2,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     2,
+     6
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 10.391208099201322,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  },
+  {
+   "rank": 3,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 15.419055825099349,
+    "canonical": 4.893147358670831,
+    "parallel": 8.085703298449516
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 3,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 3,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     3,
+     7
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 10.175668904557824,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  },
+  {
+   "rank": 4,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 18.55248001217842,
+    "canonical": 4.933192554861307,
+    "parallel": 5.6105274595320225
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 4,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 0,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     0,
+     4
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 12.643291603773832,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  },
+  {
+   "rank": 5,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 17.59539974294603,
+    "canonical": 4.9552062433212996,
+    "parallel": 6.125789299607277
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 5,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 1,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     1,
+     5
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 12.109011765569448,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  },
+  {
+   "rank": 6,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 19.28829082287848,
+    "canonical": 5.0739516466856,
+    "parallel": 5.280819155275822
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 6,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 2,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     2,
+     6
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 12.951685335487127,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  },
+  {
+   "rank": 7,
+   "host": "node0",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true,
+    "lora_gradients_bitwise": true
+   },
+   "weight_shards_compared": 1000,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 650,
+   "lora_shards_mismatched": [],
+   "lora_bytes": {
+    "canonical": 665190400,
+    "grid": 321126400
+   },
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 18.48044421710074,
+    "canonical": 4.94186794385314,
+    "parallel": 5.595062492415309
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v1",
+    "rank": 7,
+    "tp": 4,
+    "cp": 2,
+    "sp": true,
+    "tp_rank": 3,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     3,
+     7
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 12.645447354763746,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39797902848
+   }
+  }
+ ],
+ "torch": "2.13.0+cu130",
+ "device": "NVIDIA B200"
+}

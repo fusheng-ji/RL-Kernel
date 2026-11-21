@@ -1,0 +1,228 @@
+{
+ "torch": "2.13.0+cu130",
+ "device": "NVIDIA B200",
+ "rows_per_case": 256,
+ "lora": {
+  "rank": 64,
+  "seed": 7,
+  "b": "random"
+ },
+ "cases": [
+  {
+   "target": "attn.to_out.0",
+   "sum": "row: z = x A^T",
+   "dtype": "bfloat16",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 6132,
+   "max_abs": 0.03125
+  },
+  {
+   "target": "attn.to_out.0",
+   "sum": "row: z = x A^T",
+   "dtype": "bfloat16",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 8192,
+   "max_abs": 0.03125
+  },
+  {
+   "target": "attn.to_out.0",
+   "sum": "row: z = x A^T",
+   "dtype": "bfloat16",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 9648,
+   "max_abs": 0.03125
+  },
+  {
+   "target": "attn.to_out.0",
+   "sum": "row: z = x A^T",
+   "dtype": "float32",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 12448,
+   "max_abs": 1.430511474609375e-06
+  },
+  {
+   "target": "attn.to_out.0",
+   "sum": "row: z = x A^T",
+   "dtype": "float32",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 14636,
+   "max_abs": 1.9073486328125e-06
+  },
+  {
+   "target": "attn.to_out.0",
+   "sum": "row: z = x A^T",
+   "dtype": "float32",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 14550,
+   "max_abs": 1.9073486328125e-06
+  },
+  {
+   "target": "ff.net.2",
+   "sum": "row: z = x A^T",
+   "dtype": "bfloat16",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 6193,
+   "max_abs": 0.03125
+  },
+  {
+   "target": "ff.net.2",
+   "sum": "row: z = x A^T",
+   "dtype": "bfloat16",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 8233,
+   "max_abs": 0.03125
+  },
+  {
+   "target": "ff.net.2",
+   "sum": "row: z = x A^T",
+   "dtype": "bfloat16",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 9725,
+   "max_abs": 0.0625
+  },
+  {
+   "target": "ff.net.2",
+   "sum": "row: z = x A^T",
+   "dtype": "float32",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 15140,
+   "max_abs": 2.86102294921875e-06
+  },
+  {
+   "target": "ff.net.2",
+   "sum": "row: z = x A^T",
+   "dtype": "float32",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 15148,
+   "max_abs": 2.86102294921875e-06
+  },
+  {
+   "target": "ff.net.2",
+   "sum": "row: z = x A^T",
+   "dtype": "float32",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 15096,
+   "max_abs": 2.86102294921875e-06
+  },
+  {
+   "target": "attn.to_q",
+   "sum": "col: dz = dy B",
+   "dtype": "bfloat16",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 6157,
+   "max_abs": 0.03125
+  },
+  {
+   "target": "attn.to_q",
+   "sum": "col: dz = dy B",
+   "dtype": "bfloat16",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 8212,
+   "max_abs": 0.046875
+  },
+  {
+   "target": "attn.to_q",
+   "sum": "col: dz = dy B",
+   "dtype": "bfloat16",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 9701,
+   "max_abs": 0.0625
+  },
+  {
+   "target": "attn.to_q",
+   "sum": "col: dz = dy B",
+   "dtype": "float32",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 14913,
+   "max_abs": 2.384185791015625e-06
+  },
+  {
+   "target": "attn.to_q",
+   "sum": "col: dz = dy B",
+   "dtype": "float32",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 14938,
+   "max_abs": 2.384185791015625e-06
+  },
+  {
+   "target": "attn.to_q",
+   "sum": "col: dz = dy B",
+   "dtype": "float32",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 14931,
+   "max_abs": 2.384185791015625e-06
+  },
+  {
+   "target": "ff.net.0.proj",
+   "sum": "col: dz = dy B",
+   "dtype": "bfloat16",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 6097,
+   "max_abs": 0.0625
+  },
+  {
+   "target": "ff.net.0.proj",
+   "sum": "col: dz = dy B",
+   "dtype": "bfloat16",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 8247,
+   "max_abs": 0.125
+  },
+  {
+   "target": "ff.net.0.proj",
+   "sum": "col: dz = dy B",
+   "dtype": "bfloat16",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 9770,
+   "max_abs": 0.09375
+  },
+  {
+   "target": "ff.net.0.proj",
+   "sum": "col: dz = dy B",
+   "dtype": "float32",
+   "tp": 2,
+   "elements": 16384,
+   "differ_from_tp1": 15536,
+   "max_abs": 8.58306884765625e-06
+  },
+  {
+   "target": "ff.net.0.proj",
+   "sum": "col: dz = dy B",
+   "dtype": "float32",
+   "tp": 4,
+   "elements": 16384,
+   "differ_from_tp1": 15569,
+   "max_abs": 7.867813110351562e-06
+  },
+  {
+   "target": "ff.net.0.proj",
+   "sum": "col: dz = dy B",
+   "dtype": "float32",
+   "tp": 8,
+   "elements": 16384,
+   "differ_from_tp1": 15565,
+   "max_abs": 8.046627044677734e-06
+  }
+ ]
+}
