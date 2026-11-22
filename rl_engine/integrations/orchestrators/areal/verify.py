@@ -330,6 +330,9 @@ def _spec_from_args(args: argparse.Namespace) -> launch.ExperimentSpec:
         padded_vocab_size=args.padded_vocab_size or vocab,
         dataset_path=args.dataset_path,
         extra_env=extra_env,
+        profile_steps=tuple(
+            sorted({int(item) for item in (args.profile_steps or "").split(",") if item})
+        ),
     )
 
 
@@ -615,6 +618,8 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--real-vocab-size", type=int)
     run.add_argument("--padded-vocab-size", type=int)
     run.add_argument("--env", action="append", help="extra KEY=VALUE for the RL-Kernel arm")
+    run.add_argument("--profile-steps", default="",
+                     help="comma-separated actor versions to torch.profile on rank 0 (both arms)")
     run.add_argument("--dataset-path",
                      help="local GSM8K dataset (default: openai/gsm8k from the HF hub)")
     run.add_argument("--base-config", help=f"default: <areal-root>/{launch.DEFAULT_CONFIG}")

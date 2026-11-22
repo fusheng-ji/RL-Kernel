@@ -56,6 +56,20 @@ def test_rlkernel_arm_swaps_only_the_actor_worker_command(tmp_path):
     assert env["RL_KERNEL_VLLM_CUDAGRAPH_MAX_CAPTURE_SIZE"] == str(spec.max_num_seqs)
 
 
+def test_fa4_jit_cache_is_persistent_on_the_rlkernel_arm_only(tmp_path, monkeypatch):
+    monkeypatch.delenv("FLASH_ATTENTION_CUTE_DSL_CACHE_DIR", raising=False)
+    kwargs = dict(readback_dir=tmp_path / "rb", stats_path=tmp_path / "s.jsonl")
+    env = launch.arm_environment(_spec(), "rlkernel", **kwargs)
+    assert env["FLASH_ATTENTION_CUTE_DSL_CACHE_ENABLED"] == "1"
+    assert "FLASH_ATTENTION_CUTE_DSL_CACHE_DIR" not in env
+    native = launch.arm_environment(_spec(), "native", **kwargs)
+    assert not any(key.startswith("FLASH_ATTENTION_CUTE_DSL") for key in native)
+
+    monkeypatch.setenv("FLASH_ATTENTION_CUTE_DSL_CACHE_DIR", str(tmp_path / "fa4"))
+    env = launch.arm_environment(_spec(), "rlkernel", **kwargs)
+    assert env["FLASH_ATTENTION_CUTE_DSL_CACHE_DIR"] == str(tmp_path / "fa4")
+
+
 def test_native_sync_arm_is_stock_and_async_native_only_observes(tmp_path):
     sync_env = launch.arm_environment(_spec(), "native", readback_dir=tmp_path,
                                       stats_path=tmp_path / "s")
@@ -125,6 +139,25 @@ def test_multi_node_validation():
               rollout_dp=2).validate()
     with pytest.raises(ValueError, match="positive"):
         _spec(n_nodes=0).validate()
+
+
+def test_profile_steps_reach_both_arms_through_the_worker(tmp_path):
+    spec = _spec(steps=4, profile_steps=(3,))
+    spec.validate()
+    for arm in launch.ARMS:
+        env = launch.arm_environment(spec, arm, readback_dir=tmp_path / "rb",
+                                     stats_path=tmp_path / arm / "stats.jsonl")
+        config = launch.build_config(BASE, spec, arm, arm_dir=tmp_path, env_vars=env,
+                                     trial_name="t")
+        assert env[launch.PROFILE_STEPS_ENV] == "3"
+        assert env[launch.PROFILE_DIR_ENV] == str(tmp_path / arm / "profile")
+        assert config["actor"]["scheduling_spec"][0]["cmd"] == launch.WORKER_CMD
+        assert launch.scrubbed_environment(env).get(launch.PROFILE_STEPS_ENV) == "3"
+    plain = launch.arm_environment(_spec(), "native", readback_dir=tmp_path,
+                                   stats_path=tmp_path / "s")
+    assert launch.PROFILE_STEPS_ENV not in plain
+    with pytest.raises(ValueError, match="profile_steps"):
+        _spec(steps=4, profile_steps=(4,)).validate()
 
 
 def test_scrubbed_environment_removes_numeric_switches():

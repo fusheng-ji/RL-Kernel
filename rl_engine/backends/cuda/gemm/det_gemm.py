@@ -80,7 +80,7 @@ def det_gemm_backend_id() -> str:
 
 def _report_strict_route_once() -> None:
     global _ROUTE_REPORTED
-    if torch._dynamo.is_compiling():
+    if _ROUTE_REPORTED or torch._dynamo.is_compiling():
         return
     if not route_report_enabled():
         return
@@ -372,10 +372,13 @@ class DetGemmOp:
         if det_gemm_backend() != _CUBLASLT_BACKEND:
             a = a.contiguous()
             weight = weight.contiguous()
+        needs_grad = torch.is_grad_enabled() and (a.requires_grad or weight.requires_grad)
         if out is not None:
-            if torch.is_grad_enabled() and (a.requires_grad or weight.requires_grad):
+            if needs_grad:
                 raise RuntimeError("direct-output deterministic GEMM is inference-only")
             return det_gemm_linear(a, weight, out=out)
+        if not needs_grad:
+            return det_gemm_linear(a, weight)
         return _DetLinearFn.apply(a, weight)
 
     def forward_fp32(self, a: torch.Tensor, b: torch.Tensor) -> torch.Tensor:

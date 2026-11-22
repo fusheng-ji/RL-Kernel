@@ -82,3 +82,89 @@ def test_patches_install_observe_mode_only_wraps_actor(monkeypatch):
     assert patches.install("strict") == "strict"
     assert registered == [patches.ACTOR_MODULE, patches.ENGINE_MODULE]
     monkeypatch.delenv("RL_KERNEL_AREAL_MODE", raising=False)
+
+
+def _packed_table(lengths, *, exact):
+    from rl_engine.integrations.engines.train.megatron.runtime import (
+        _strict_rocm_rope_positions,
+    )
+
+    tokens = sum(lengths)
+    cu_seqlens = torch.tensor([0, *torch.tensor(lengths).cumsum(0).tolist()], dtype=torch.int32)
+    rows = tokens if exact else max(lengths)
+    if exact:
+        channel = torch.cat([torch.arange(n, dtype=torch.float32) for n in lengths])
+    else:
+        channel = torch.arange(rows, dtype=torch.float32)
+    freqs = channel.reshape(rows, 1, 1, 1).expand(rows, 1, 1, 8).contiguous()
+    tensor = torch.empty(tokens, 2, 8)
+    expected = cuda_rope.logical_positions(
+        freqs, _strict_rocm_rope_positions(tensor, freqs, cu_seqlens, None)
+    )
+    return tensor, freqs, cu_seqlens, expected
+
+
+@pytest.mark.parametrize("exact", [True, False])
+def test_packed_cp1_indices_match_host_builder(exact):
+    for lengths in ([5], [3, 1, 7], [2, 9, 4, 4, 1, 6]):
+        tensor, freqs, cu_seqlens, expected = _packed_table(lengths, exact=exact)
+        indices = cuda_rope.packed_cp1_indices(cu_seqlens, tensor.size(0), freqs.size(0))
+        assert torch.equal(cuda_rope.logical_positions(freqs, indices), expected)
+    with pytest.raises(RuntimeError, match="invalid cu_seqlens"):
+        cuda_rope.packed_cp1_indices(torch.tensor([0, 3, 3]), 3, 2)
+    with pytest.raises(RuntimeError, match="invalid cu_seqlens"):
+        cuda_rope.packed_cp1_indices(torch.tensor([0, 3]), 4, 2)
+
+
+def test_packed_position_cache_reuses_one_layout_only():
+    calls = []
+
+    def fallback(tensor, freqs, cu_seqlens, cp_group):
+        calls.append(cp_group)
+        return torch.zeros(tensor.size(0), dtype=torch.int64)
+
+    cache = cuda_rope.PackedPositionCache(fallback)
+    tensor, freqs, cu_seqlens, expected = _packed_table([3, 4], exact=False)
+    first = cache(tensor, freqs, cu_seqlens, None)
+    assert torch.equal(first, expected)
+    assert cache(tensor, freqs, cu_seqlens, None) is first
+    assert cache(tensor, freqs, cu_seqlens.clone(), None) is not first
+    other = cu_seqlens.clone()
+    cache(tensor, freqs, other, None)
+    other[1] = 4  # in-place edit bumps the version
+    assert torch.equal(cache(tensor, freqs, other, None), torch.tensor([0, 1, 2, 3, 0, 1, 2]))
+    assert calls == []
+
+    class _Group:
+        def size(self):
+            return 2
+
+    cache(tensor, freqs, cu_seqlens, _Group())
+    cache(torch.empty(7, 1, 2, 8), freqs, None, None)
+    assert len(calls) == 2
+
+
+def test_shared_rope_tables_are_reused_and_bitwise_equal():
+    from rl_engine.backends.cuda.rope import rope
+
+    positions = torch.tensor([0, 1, 2, 0, 1, 7])
+    half, theta = 4, cuda_rope.QWEN3_THETA
+    inv_freq = 1.0 / (theta ** (torch.arange(0, half, dtype=torch.float32) / half))
+    freqs = positions.float().reshape(-1, 1) * inv_freq
+    plain = rope._build_cos_sin(positions, half, theta, positions.device)
+    assert rope._build_cos_sin(positions, half, theta, positions.device)[0] is not plain[0]
+    assert torch.equal(plain[0], freqs.cos()) and torch.equal(plain[1], freqs.sin())
+    shared = rope.share_rope_tables(positions.view(-1))
+    first = rope._build_cos_sin(shared, half, theta, shared.device)
+    assert rope._build_cos_sin(shared, half, theta, shared.device) is first
+    assert torch.equal(first[0], plain[0]) and torch.equal(first[1], plain[1])
+    assert not hasattr(positions, "_rlk_rope_cos_sin")
+
+
+def test_identity_temperature_skips_only_scalar_one():
+    from rl_engine.integrations.common.linear_logp import _is_identity_scalar_temperature
+
+    assert _is_identity_scalar_temperature(None)
+    assert _is_identity_scalar_temperature(1.0) and _is_identity_scalar_temperature(1)
+    assert not _is_identity_scalar_temperature(0.7)
+    assert not _is_identity_scalar_temperature(torch.tensor(1.0))

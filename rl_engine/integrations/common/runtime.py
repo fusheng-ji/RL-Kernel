@@ -6,6 +6,7 @@
 from __future__ import annotations
 
 import atexit
+import copy
 import json
 import os
 from collections import Counter
@@ -60,6 +61,7 @@ class FrameworkOperatorIntegration:
         self._fallbacks: list[dict[str, str]] = []
         self._reported_routes: set[str] = set()
         self._persisted_route_fingerprints: dict[str, tuple[Any, ...]] = {}
+        self._execute_memo: dict[str, tuple[Any, Any, Any]] = {}
         self._lock = Lock()
         if os.getenv("RL_KERNEL_READBACK_DIR", "").strip():
             atexit.register(self._persist_readback)
@@ -121,19 +123,36 @@ class FrameworkOperatorIntegration:
         if torch._dynamo.is_compiling():
             return result
         raw_provenance = getattr(selected, "provenance", {})
+        result_provenance = getattr(result, "provenance", None)
+        # Same operator and provenance equal to the last fully recorded call: every
+        # check below would see the same evidence, so only the call is counted.
+        memo = self._execute_memo.get(normalized)
+        if memo is not None and memo[0] is selected:
+            if _same_evidence(memo[1], raw_provenance) and _same_evidence(
+                memo[2], result_provenance
+            ):
+                with self._lock:
+                    self._counts[normalized] += 1
+                return result
         if _contains_profile_only(raw_provenance):
             self.record_profile_call(normalized)
-        else:
-            self.record_execution(
-                normalized,
-                selected,
-                execution_provenance=_execution_provenance(
-                    selected=selected,
-                    args=args,
-                    kwargs=kwargs,
-                    result=result,
-                ),
-            )
+            return result
+        self.record_execution(
+            normalized,
+            selected,
+            execution_provenance=_execution_provenance(
+                selected=selected,
+                args=args,
+                kwargs=kwargs,
+                result=result,
+            ),
+        )
+        # An inferred platform depends on the call's tensors, not on provenance.
+        if _runtime_platform(raw_provenance) or _runtime_platform(result_provenance):
+            snapshot = (_evidence_snapshot(raw_provenance), _evidence_snapshot(result_provenance))
+            if _UNSNAPSHOTTABLE not in snapshot:
+                with self._lock:
+                    self._execute_memo[normalized] = (selected, *snapshot)
         return result
 
     def record_profile_call(self, module: str) -> None:
@@ -193,6 +212,8 @@ class FrameworkOperatorIntegration:
             _runtime_platform(provenance),
         )
         with self._lock:
+            # Any direct record (e.g. graph evidence) must win over execute's memo.
+            self._execute_memo.pop(normalized, None)
             self._counts[normalized] += 1
             case = self.plan.cases[normalized]
             self._readbacks[normalized] = OperatorReadback(
@@ -238,7 +259,8 @@ class FrameworkOperatorIntegration:
                 "fallbacks": list(self._fallbacks),
                 "profile_calls": dict(self._profile_counts),
                 "operators": {
-                    module: readback.to_dict() for module, readback in self._readbacks.items()
+                    module: {**readback.to_dict(), "call_count": self._counts[module]}
+                    for module, readback in self._readbacks.items()
                 },
             }
 
@@ -294,6 +316,25 @@ class FrameworkOperatorIntegration:
             encoding="utf-8",
         )
         temporary.replace(path)
+
+
+_UNSNAPSHOTTABLE = object()
+
+
+def _evidence_snapshot(value: Any) -> Any:
+    """Deep copy of provenance (operators may mutate theirs in place later)."""
+
+    try:
+        return copy.deepcopy(value)
+    except Exception:
+        return _UNSNAPSHOTTABLE
+
+
+def _same_evidence(snapshot: Any, value: Any) -> bool:
+    try:
+        return bool(snapshot == value)
+    except Exception:  # e.g. tensors inside provenance
+        return False
 
 
 def _contains_triton(value: Any) -> bool:

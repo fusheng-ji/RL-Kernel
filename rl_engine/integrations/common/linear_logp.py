@@ -94,6 +94,12 @@ class _HipSparseNucleusLogp(torch.autograd.Function):
         return grad_logits, None, None, None, None
 
 
+def _is_identity_scalar_temperature(temperature: Any) -> bool:
+    return temperature is None or (
+        not isinstance(temperature, torch.Tensor) and float(temperature) == 1.0
+    )
+
+
 def _alignment_diagnostics_enabled() -> bool:
     return os.getenv("RL_KERNEL_ALIGNMENT_DIAGNOSTICS", "").strip().lower() in {
         "1",
@@ -878,10 +884,16 @@ class LinearLogpWrapper:
             )
             contract_version = "rocm-det-gemm-vocab-parallel-logp-ws2-v1"
         else:
-            temperature_tensor = self._temperature_tensor(
-                temperature,
-                rows=local_logits.size(0),
-                device=local_logits.device,
+            # A scalar 1.0 would cost a full FP32 round trip of the logits shard in
+            # forward and backward; BF16 -> FP32 / 1 -> BF16 is exact, so skip it.
+            temperature_tensor = (
+                None
+                if _is_identity_scalar_temperature(temperature)
+                else self._temperature_tensor(
+                    temperature,
+                    rows=local_logits.size(0),
+                    device=local_logits.device,
+                )
             )
             from rl_engine.backends.cuda.logprob.linear_logp import (
                 sm90_deterministic_logp_from_local_logits_tp,

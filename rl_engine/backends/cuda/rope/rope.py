@@ -17,12 +17,51 @@ from rl_engine.backends.extension import _C, _EXT_AVAILABLE
 from rl_engine.utils.logger import logger
 
 
+_INV_FREQ: dict[tuple[int, float, torch.device], Tensor] = {}
+_TABLES_ATTR = "_rlk_rope_cos_sin"
+
+
+def _capturing() -> bool:
+    return torch.cuda.is_available() and torch.cuda.is_current_stream_capturing()
+
+
+def _inv_freq(half: int, theta: float, device: torch.device) -> Tensor:
+    key = (half, theta, device)
+    cached = _INV_FREQ.get(key)
+    if cached is not None:
+        return cached
+    inv_freq = 1.0 / (theta ** (torch.arange(0, half, dtype=torch.float32, device=device) / half))
+    # A tensor first written inside a CUDA graph capture holds no values until replay.
+    if not _capturing():
+        _INV_FREQ[key] = inv_freq
+    return inv_freq
+
+
+def share_rope_tables(positions: Tensor) -> Tensor:
+    """Let every RoPE call on this ``positions`` object reuse one cos/sin table.
+
+    Only for position tensors that are never written again while referenced:
+    the table is keyed by object identity, not by content.
+    """
+
+    if not torch.compiler.is_compiling():
+        setattr(positions, _TABLES_ATTR, {})
+    return positions
+
+
 def _build_cos_sin(positions: Tensor, half: int, theta: float, device: torch.device):
     """fp32 cos/sin caches of shape [S, half], identical math to NativeRoPEOp."""
-    inv_freq = 1.0 / (theta ** (torch.arange(0, half, dtype=torch.float32, device=device) / half))
+    tables = getattr(positions, _TABLES_ATTR, None)
+    key = (half, theta, device)
+    if tables is not None and key in tables:
+        return tables[key]
+    inv_freq = _inv_freq(half, theta, device)
     pos = positions.to(device=device, dtype=torch.float32).reshape(-1, 1)
     freqs = pos * inv_freq  # [S, half]
-    return freqs.cos().contiguous(), freqs.sin().contiguous()
+    result = freqs.cos().contiguous(), freqs.sin().contiguous()
+    if tables is not None:
+        tables[key] = result
+    return result
 
 
 def _rope_table(x: Tensor, positions: Tensor, theta: float) -> tuple[Tensor, Tensor, Tensor]:
@@ -107,11 +146,35 @@ def _rope_apply(x: Tensor, cos: Tensor, sin: Tensor, sin_sign: float) -> Tensor:
     return _C.rope_apply_sm90(x, cos, sin, sin_sign)
 
 
+_IS_HOPPER: dict[torch.device, bool] = {}
+
+
 def _is_hopper(device: torch.device) -> bool:
+    cached = _IS_HOPPER.get(device)
+    if cached is not None:
+        return cached
     try:
-        return torch.cuda.get_device_capability(device)[0] == 9
+        value = torch.cuda.get_device_capability(device)[0] == 9
     except Exception:
         return False
+    _IS_HOPPER[device] = value
+    return value
+
+
+def _token_major_cos_sin(
+    positions: Tensor, heads: int, half: int, theta: float, device: torch.device
+) -> tuple[Tensor, Tensor]:
+    """Per-row tables for a token-major ``[T * H, D]`` view: row ``t * H + h`` uses ``t``."""
+
+    tables = getattr(positions, _TABLES_ATTR, None)
+    key = ("token_major", heads, half, theta, device)
+    if tables is not None and key in tables:
+        return tables[key]
+    cos, sin = _build_cos_sin(positions, half, theta, device)
+    result = cos.repeat_interleave(heads, dim=0), sin.repeat_interleave(heads, dim=0)
+    if tables is not None:
+        tables[key] = result
+    return result
 
 
 class RoPESM90Op:
@@ -145,6 +208,28 @@ class RoPESM90Op:
             )
         return _RoPEFunction.apply(x, positions, theta)
 
+    def token_major(
+        self, value: Tensor, positions: Tensor, head_dim: int, *, theta: float = 1_000_000.0
+    ) -> Tensor | None:
+        """Rotate ``[T, H * D]`` in place of layout, or None when autograd is needed.
+
+        The kernel is a per-row rotation, so feeding token-major rows with a table
+        repeated per head computes exactly what the head-major path computes,
+        without its two transposed copies per tensor.
+        """
+
+        if torch.is_grad_enabled() and value.requires_grad:
+            return None
+        if value.device.type != "cuda" or not _is_hopper(value.device):
+            return None
+        if positions.dim() != 1 or value.dim() != 2 or value.shape[0] != positions.shape[0]:
+            return None
+        x_2d = value.contiguous().reshape(-1, head_dim)
+        cos, sin = _token_major_cos_sin(
+            positions, value.shape[1] // head_dim, head_dim // 2, float(theta), value.device
+        )
+        return _rope_apply(x_2d, cos, sin, 1.0).reshape(value.shape)
+
 
 class RocmDeterministicRoPEOp:
     """Precompiled HIP RoPE path shared by ROCm training and rollout."""
@@ -172,4 +257,4 @@ class RocmDeterministicRoPEOp:
         return _RoPEFunction.apply(x, positions, theta)
 
 
-__all__ = ["RoPESM90Op", "RocmDeterministicRoPEOp"]
+__all__ = ["RoPESM90Op", "RocmDeterministicRoPEOp", "share_rope_tables"]

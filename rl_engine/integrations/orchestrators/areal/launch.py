@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import copy
 import json
+import os
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -40,6 +41,9 @@ VLLM_EAGER = "eager"
 VLLM_GRAPH = "graph"
 VLLM_EXECUTIONS = (VLLM_EAGER, VLLM_GRAPH)
 VLLM_SERVER_ARGS_ENV = "RL_KERNEL_AREAL_VLLM_SERVER_ARGS"
+# Not RL_KERNEL_-prefixed, so the scrubbing below keeps them for the native arm too.
+PROFILE_STEPS_ENV = "RLK_AREAL_PROFILE_STEPS"
+PROFILE_DIR_ENV = "RLK_AREAL_PROFILE_DIR"
 
 # Environment that would change numerics; scrubbed from every arm, then the
 # RL-Kernel arm sets exactly what it needs.
@@ -74,6 +78,8 @@ class ExperimentSpec:
     padded_vocab_size: int | None = None
     dataset_path: str | None = None
     extra_env: Mapping[str, str] = field(default_factory=dict)
+    # Actor versions profiled with torch.profiler on rank 0 (both arms); empty = off.
+    profile_steps: tuple[int, ...] = ()
 
     def validate(self) -> None:
         if self.mode not in (MODE_SYNC, MODE_ASYNC):
@@ -90,6 +96,8 @@ class ExperimentSpec:
             raise ValueError(f"scheduler must be one of {SCHEDULERS}")
         if self.n_nodes <= 0 or self.n_gpus_per_node <= 0:
             raise ValueError("n_nodes and n_gpus_per_node must be positive")
+        if any(step < 0 or step >= self.steps for step in self.profile_steps):
+            raise ValueError(f"profile_steps must lie in [0, {self.steps})")
         if self.n_nodes > 1 and self.scheduler != SCHEDULER_RAY:
             raise ValueError(
                 f"n_nodes={self.n_nodes} needs scheduler={SCHEDULER_RAY!r}; "
@@ -202,6 +210,9 @@ def arm_environment(
     if arm not in ARMS:
         raise ValueError(f"unknown arm {arm!r}")
     env: dict[str, str] = {"RL_KERNEL_AREAL_STATS_JSONL": str(stats_path)}
+    if spec.profile_steps:
+        env[PROFILE_STEPS_ENV] = ",".join(str(step) for step in sorted(spec.profile_steps))
+        env[PROFILE_DIR_ENV] = str(Path(stats_path).parent / "profile")
     overrides = vllm_server_overrides(spec)
     if overrides:
         env[VLLM_SERVER_ARGS_ENV] = json.dumps(overrides, separators=(",", ":"))
@@ -234,8 +245,16 @@ def arm_environment(
             "CUBLAS_WORKSPACE_CONFIG": ":16:8",
             "CUBLASLT_WORKSPACE_SIZE": "1",
             "NCCL_NVLS_ENABLE": "0",
+            # FA4 CuTe JIT-compiles every kernel on first use (the decode kernel
+            # alone costs ~6 s of vLLM graph capture). The persistent cache is
+            # keyed by the compile key and a fingerprint of the FA4 sources, so
+            # later runs load the identical kernel instead of rebuilding it.
+            "FLASH_ATTENTION_CUTE_DSL_CACHE_ENABLED": "1",
         }
     )
+    cache_dir = os.environ.get("FLASH_ATTENTION_CUTE_DSL_CACHE_DIR")
+    if cache_dir:
+        env["FLASH_ATTENTION_CUTE_DSL_CACHE_DIR"] = cache_dir
     env.update({str(k): str(v) for k, v in spec.extra_env.items()})
     return env
 
@@ -308,7 +327,9 @@ def build_config(
     # AReaL's shared compute_logp metric free of reference-model scoring.
     config.pop("ref", None)
     mode = worker_mode(arm, spec.mode)
-    actor_cmd = WORKER_CMD if mode is not None else DEFAULT_RPC_CMD
+    # The profiler is installed by the RL-Kernel worker, which runs AReaL's RPC
+    # server unchanged when no adapter mode is selected.
+    actor_cmd = WORKER_CMD if mode is not None or spec.profile_steps else DEFAULT_RPC_CMD
     actor_base = config.get("actor", {}).get("scheduling_spec")
     config["actor"]["scheduling_spec"] = _scheduling_spec(
         actor_base, cmd=actor_cmd, env_vars=env_vars
@@ -335,6 +356,8 @@ __all__ = [
     "DEFAULT_CONFIG",
     "DEFAULT_EXAMPLE",
     "DEFAULT_RPC_CMD",
+    "PROFILE_DIR_ENV",
+    "PROFILE_STEPS_ENV",
     "ExperimentSpec",
     "MODE_ASYNC",
     "MODE_SYNC",

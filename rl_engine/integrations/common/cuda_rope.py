@@ -71,9 +71,14 @@ def token_major_rope(
         value = value.reshape(value.shape[0], -1)
     if value.ndim != 2 or value.shape[1] % head_dim:
         raise ValueError("CUDA RoPE expects [tokens, heads * head_dim]")
-    flat_positions = positions.reshape(-1)
+    flat_positions = positions if positions.ndim == 1 else positions.reshape(-1)
     if flat_positions.numel() != value.shape[0]:
         raise ValueError("CUDA RoPE position count differs from token count")
+    token_major = getattr(operator, "token_major", None)
+    if token_major is not None:
+        result = token_major(value, flat_positions, head_dim, theta=theta)
+        if result is not None:
+            return result.reshape(original_shape)
     heads = value.reshape(value.shape[0], -1, head_dim).transpose(0, 1).contiguous()
     result = operator(heads, flat_positions, theta=theta)
     return result.transpose(0, 1).contiguous().reshape(original_shape)
@@ -91,9 +96,72 @@ def logical_positions(freqs: torch.Tensor, indices: torch.Tensor) -> torch.Tenso
     flat = indices.reshape(-1).to(device=channel_zero.device, dtype=torch.int64)
     values = channel_zero.index_select(0, flat)
     positions = torch.round(values).to(torch.int64)
-    if not torch.equal(positions.to(values.dtype), values):
-        raise RuntimeError("strict CUDA RoPE frequency table is not integer-position aligned")
+    # Asynchronous on CUDA: a host-side check here would stall every layer.
+    torch._assert_async(
+        (positions.to(values.dtype) == values).all(),
+        "strict CUDA RoPE frequency table is not integer-position aligned",
+    )
     return positions.reshape(indices.shape).to(indices.device)
+
+
+def packed_cp1_indices(cu_seqlens: torch.Tensor, tokens: int, table_rows: int) -> torch.Tensor:
+    """Frequency-table rows for packed THD tokens without context parallelism.
+
+    Device-side equivalent of the host loop in ``_strict_rocm_rope_positions``
+    for ``cp_size == 1``: a table with one row per packed token is indexed by the
+    packed token, otherwise by the offset inside the token's own sequence.
+    """
+
+    cu = cu_seqlens.to(dtype=torch.int64)
+    lengths = cu[1:] - cu[:-1]
+    torch._assert_async(
+        (cu.numel() >= 2) & (cu[0] == 0) & (cu[-1] == tokens) & (lengths > 0).all(),
+        "strict CUDA THD RoPE received invalid cu_seqlens",
+    )
+    index = torch.arange(tokens, device=cu.device, dtype=torch.int64)
+    if table_rows == tokens:
+        return index
+    sequence = torch.repeat_interleave(
+        torch.arange(lengths.numel(), device=cu.device), lengths, output_size=tokens
+    )
+    return index - cu[:-1].index_select(0, sequence)
+
+
+class PackedPositionCache:
+    """Logical RoPE positions for Megatron, reused across the layers of one layout.
+
+    Every layer applies RoPE to Q and K with the same ``cu_seqlens`` and table,
+    so the positions of the last packed CP=1 layout are kept. The entry holds
+    strong references, so identity plus version cannot match a different tensor.
+    Other layouts go through ``fallback`` (the shared host-side position builder).
+    """
+
+    def __init__(self, fallback: Any) -> None:
+        self._fallback = fallback
+        self._entry: dict[str, Any] = {}
+
+    def __call__(
+        self, tensor: torch.Tensor, freqs: torch.Tensor, cu_seqlens: Any, cp_group: Any
+    ) -> torch.Tensor:
+        cp_size = 1 if cp_group is None else int(cp_group.size())
+        if tensor.ndim != 3 or cu_seqlens is None or cp_size != 1:
+            return logical_positions(freqs, self._fallback(tensor, freqs, cu_seqlens, cp_group))
+        key = (int(tensor.size(0)), cu_seqlens._version, freqs._version, tensor.device)
+        entry = self._entry
+        if entry.get("cu_seqlens") is cu_seqlens and entry.get("freqs") is freqs:
+            if entry["key"] == key:
+                return entry["positions"]
+        indices = packed_cp1_indices(
+            cu_seqlens.to(tensor.device), int(tensor.size(0)), int(freqs.size(0))
+        )
+        positions = logical_positions(freqs, indices).to(tensor.device)
+        # Cached positions are never written, so every layer can share one cos/sin table.
+        from rl_engine.backends.cuda.rope.rope import share_rope_tables
+
+        share_rope_tables(positions)
+        self._entry = {"cu_seqlens": cu_seqlens, "freqs": freqs, "key": key,
+                       "positions": positions}
+        return positions
 
 
 def install_vllm(rotary_cls: type[Any]) -> None:
@@ -101,7 +169,7 @@ def install_vllm(rotary_cls: type[Any]) -> None:
 
     if hasattr(rotary_cls, _VLLM_MARKER):
         return
-    from rl_engine.backends.cuda.rope.rope import RoPESM90Op
+    from rl_engine.backends.cuda.rope.rope import RoPESM90Op, share_rope_tables
 
     operator = RoPESM90Op()
     original = rotary_cls.forward_cuda
@@ -121,6 +189,10 @@ def install_vllm(rotary_cls: type[Any]) -> None:
             raise ValueError("strict CUDA Qwen3 RoPE requires theta=1000000")
         if not torch.compiler.is_compiling():
             _record_call("rollout", "rlkernel.cuda.rope_sm90")
+        # vLLM rewrites its positions buffer between steps; a fresh view lets only
+        # this call's Q and K share one cos/sin table.
+        flat = positions.reshape(-1)
+        positions = share_rope_tables(flat.view(flat.shape) if flat is positions else flat)
         rotated_query = token_major_rope(query, positions, head_dim, operator)
         rotated_key = None if key is None else token_major_rope(key, positions, head_dim, operator)
         return rotated_query, rotated_key
@@ -182,6 +254,7 @@ def install_megatron() -> None:
         state["validated"] = True
 
     original_apply = attention.apply_rotary_pos_emb
+    positions_for = PackedPositionCache(_strict_rocm_rope_positions)
 
     @functools.wraps(original_apply)
     def apply(
@@ -207,10 +280,7 @@ def install_megatron() -> None:
             raise ValueError("strict CUDA RoPE requires [S, 1, 1, head_dim] frequencies")
         if freqs.shape[-1] != tensor.shape[-1]:
             raise ValueError("strict CUDA RoPE requires full-dimension frequencies")
-        indices = _strict_rocm_rope_positions(
-            tensor, freqs, cu_seqlens, _context_parallel_group(cp_group)
-        )
-        positions = logical_positions(freqs, indices)
+        positions = positions_for(tensor, freqs, cu_seqlens, _context_parallel_group(cp_group))
         _record_call("training", "rlkernel.cuda.rope_sm90")
         return _apply_strict_rocm_rope(tensor, positions, operator)
 
@@ -221,11 +291,13 @@ def install_megatron() -> None:
 
 __all__ = [
     "ENV_FLAG",
+    "PackedPositionCache",
     "QWEN3_THETA",
     "call_counts",
     "enabled",
     "install_megatron",
     "install_vllm",
     "logical_positions",
+    "packed_cp1_indices",
     "token_major_rope",
 ]

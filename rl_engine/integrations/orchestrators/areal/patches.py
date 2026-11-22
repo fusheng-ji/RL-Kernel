@@ -169,15 +169,19 @@ def patch_actor(module: ModuleType) -> None:
 def install(mode: str | None = None) -> str | None:
     """Register lazy patches for the current process; returns the active mode."""
 
+    from rl_engine.integrations.orchestrators.areal import profiling
+
     selected = contract.adapter_mode() if mode is None else mode
-    if selected is None:
-        return None
-    if selected not in contract.MODES:
-        raise ValueError(f"unknown AReaL adapter mode {selected!r}")
-    os.environ[contract.MODE_ENV] = selected
-    when_imported(ACTOR_MODULE, patch_actor)
-    if selected == contract.MODE_STRICT:
-        when_imported(ENGINE_MODULE, patch_megatron_engine)
+    if selected is not None:
+        if selected not in contract.MODES:
+            raise ValueError(f"unknown AReaL adapter mode {selected!r}")
+        os.environ[contract.MODE_ENV] = selected
+        when_imported(ACTOR_MODULE, patch_actor)
+        if selected == contract.MODE_STRICT:
+            when_imported(ENGINE_MODULE, patch_megatron_engine)
+    # Registered last so its ranges wrap the strict routes installed above.
+    if profiling.enabled():
+        when_imported(ENGINE_MODULE, profiling.install_engine_profiler)
     return selected
 
 

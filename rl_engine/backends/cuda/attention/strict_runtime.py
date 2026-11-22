@@ -311,6 +311,63 @@ class StrictCUDAAttentionRuntime:
             },
         )
 
+    def forward_packed_with_lse(
+        self,
+        q: torch.Tensor,
+        k: torch.Tensor,
+        v: torch.Tensor,
+        *,
+        cu_seqlens: torch.Tensor,
+        max_seqlen: int,
+        causal: bool,
+        scale: float | None,
+    ) -> StrictCUDAAttentionResult:
+        """Run CP=1 training Attention over packed [T, H, D] sequences in one launch."""
+
+        self._require_nvidia_cuda(q)
+        packed_core = getattr(self._core, "forward_varlen_with_lse", None)
+        if not callable(packed_core):
+            raise RuntimeError("strict CUDA packed Attention requires a varlen FA4 core")
+        result = packed_core(
+            q,
+            k,
+            v,
+            cu_seqlens=cu_seqlens,
+            max_seqlen=max_seqlen,
+            causal=causal,
+            scale=scale,
+            output_dtype=q.dtype,
+        )
+        self.communication_executed = False
+        backend = result.provenance.get("attention_backend") or getattr(
+            self._core, "backend_id", None
+        )
+        return StrictCUDAAttentionResult(
+            out=result.out,
+            lse=result.lse,
+            provenance={
+                "strict_core_id": self.core_id,
+                "strict_schedule": self.strict_schedule,
+                "actual_backend": self.backend_id,
+                "communication_backend": "none",
+                "communication_executed": False,
+                "native_attention_arithmetic": True,
+                "production_ready": True,
+                "fallback": False,
+                "fallback_reason": None,
+                "reference_only": False,
+                "split_kv": "disabled",
+                "framework_position_reorder": False,
+                "query_schedule": "packed_varlen_causal_single_launch",
+                "backward_schedule": "fa4_deterministic_varlen",
+                "core_row_count": q.size(0),
+                "core_launch_count": 1,
+                "core_batch_size": cu_seqlens.numel() - 1,
+                "core_query_length": max_seqlen,
+                "core_actual_backends": [] if backend is None else [str(backend)],
+            },
+        )
+
     def forward_paged_with_lse(
         self,
         q: torch.Tensor,

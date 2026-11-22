@@ -495,6 +495,78 @@ def test_megatron_packed_attention_runs_each_sequence_in_thd_order(monkeypatch):
     ]
 
 
+def test_megatron_packed_attention_uses_one_varlen_launch_at_cp1(monkeypatch):
+    packed_calls: list[tuple[torch.Tensor, dict[str, object]]] = []
+
+    class Runtime:
+        core_id = megatron_operators.STRICT_ATTENTION_PRODUCTION_CORE_ID
+        strict_schedule = megatron_operators.STRICT_ATTENTION_FA4_SCHEDULE_ID
+
+        def forward_packed_with_lse(self, q, k, v, **kwargs):
+            del k, v
+            packed_calls.append((q, kwargs))
+            return SimpleNamespace(
+                out=q.clone(),
+                lse=torch.zeros(q.size(1), q.size(0)),
+                provenance={"actual_backend": "rlkernel.cuda.attention.fa4_ag_rs.v1"},
+            )
+
+    class Operator:
+        def bind_accelerator_runtime(self, tensor, *, process_group=None):
+            assert process_group is None
+            return Runtime()
+
+        def __call__(self, *args, **kwargs):
+            raise AssertionError("CP=1 packed Attention must not take the grouped path")
+
+    class Handle:
+        provenance = {}
+
+        def get(self, tensor, *, topology):
+            return Operator()
+
+    parallel_state = SimpleNamespace(
+        get_context_parallel_world_size=lambda: 1,
+        get_context_parallel_rank=lambda: 0,
+        get_tensor_model_parallel_world_size=lambda: 2,
+        get_tensor_model_parallel_rank=lambda: 0,
+    )
+    monkeypatch.setattr(megatron_operators, "_megatron_parallel_state", lambda: parallel_state)
+    monkeypatch.setattr(megatron_operators, "_require_attention_accelerator", lambda tensor: "cuda")
+    packed = SimpleNamespace(
+        qkv_format="thd",
+        cu_seqlens_q=torch.tensor([0, 3, 8, 11], dtype=torch.int32),
+        cu_seqlens_kv=torch.tensor([0, 3, 8, 11], dtype=torch.int32),
+    )
+    query = torch.arange(11 * 2 * 4, dtype=torch.float32).reshape(11, 2, 4)
+    key = torch.zeros(11, 1, 4)
+    adapter = MegatronAttentionOperator(handle=Handle())
+
+    for _ in range(2):
+        output = adapter(
+            SimpleNamespace(softmax_scale=0.5),
+            query,
+            key,
+            key,
+            None,
+            packed_seq_params=packed,
+            num_splits=1,
+        )
+
+    assert torch.equal(output, query.flatten(start_dim=1))
+    assert len(packed_calls) == 2
+    first, second = (kwargs for _q, kwargs in packed_calls)
+    assert first["cu_seqlens"].tolist() == [0, 3, 8, 11]
+    assert first["cu_seqlens"].dtype == torch.int32
+    assert second["cu_seqlens"] is first["cu_seqlens"]
+    assert first["max_seqlen"] == 5
+    assert first["causal"] is True and first["scale"] == 0.5
+    execution = adapter.provenance["execution"]
+    assert execution["sequence_batching"] == "packed_varlen"
+    assert execution["launch_group_count"] == 1
+    assert execution["packed_sequence_count"] == 3
+
+
 def test_megatron_attention_binds_rocm_core_and_schedule(monkeypatch):
     calls = []
 

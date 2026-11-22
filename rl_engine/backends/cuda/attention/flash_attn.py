@@ -229,6 +229,23 @@ class StrictFlashAttention4Core:
                 output_dtype=dtype,
             )
             result.out.sum().backward()
+            if core._paged_op is not None:
+                half = sequence_length // 2
+                cu_seqlens = torch.tensor(
+                    (0, half, sequence_length), dtype=torch.int32, device=target
+                )
+                packed = core.forward_varlen_with_lse(
+                    q[0],
+                    k[0],
+                    v[0],
+                    cu_seqlens=cu_seqlens,
+                    max_seqlen=sequence_length - half,
+                    causal=True,
+                    scale=head_dim**-0.5,
+                    output_dtype=dtype,
+                )
+                packed.out.sum().backward()
+                del packed, cu_seqlens
         torch.cuda.synchronize(target)
         del result, q, k, v, positions, core
 
@@ -398,6 +415,111 @@ class StrictFlashAttention4Core:
                 "native_attention_arithmetic": self.native_attention_arithmetic,
                 "production_ready": self.production_ready,
                 "reference_only": self.reference_only,
+            },
+        )
+
+    def forward_varlen_with_lse(
+        self,
+        q: torch.Tensor,
+        k: torch.Tensor,
+        v: torch.Tensor,
+        *,
+        cu_seqlens: torch.Tensor,
+        max_seqlen: int,
+        causal: bool = True,
+        scale: float | None = None,
+        output_dtype: torch.dtype | None = None,
+    ) -> DeterministicAttentionCoreResult:
+        """Run strict FA4 once over packed [T, H, D] sequences.
+
+        Every sequence keeps its own query/key blocks, so output, LSE and the
+        deterministic backward are bitwise equal to the per-length batched
+        launch while avoiding its stack/transpose copies.
+        """
+
+        if self._paged_op is None:
+            raise StrictFlashAttentionUnavailable(
+                "strict packed Attention requires flash_attn_varlen_func"
+            )
+        if q.ndim != 3 or k.ndim != 3 or v.ndim != 3:
+            raise ValueError("strict packed Attention expects [T, H, D] Q/K/V")
+        if q.size(0) != k.size(0) or k.shape != v.shape:
+            raise ValueError("strict packed self-Attention requires matching Q/K/V tokens")
+        if q.size(-1) != k.size(-1) or q.size(1) % k.size(1):
+            raise ValueError("strict packed Attention requires GQA-compatible Q/K/V heads")
+        if q.dtype not in (torch.float16, torch.bfloat16) or not (q.dtype == k.dtype == v.dtype):
+            raise ValueError("strict packed Attention requires matching FP16 or BF16 Q/K/V")
+        if q.device.type != "cuda" or k.device != q.device or v.device != q.device:
+            raise ValueError("strict packed Attention requires Q/K/V on one CUDA device")
+        if (
+            not isinstance(cu_seqlens, torch.Tensor)
+            or cu_seqlens.ndim != 1
+            or cu_seqlens.numel() < 2
+            or cu_seqlens.dtype != torch.int32
+            or cu_seqlens.device != q.device
+        ):
+            raise ValueError("strict packed Attention cu_seqlens must be int32 on the Q device")
+        if isinstance(max_seqlen, bool) or not isinstance(max_seqlen, int) or max_seqlen <= 0:
+            raise ValueError("strict packed Attention max_seqlen must be a positive int")
+        resolved_dtype = q.dtype if output_dtype is None else output_dtype
+        if resolved_dtype != q.dtype:
+            raise ValueError("strict Attention output_dtype must match the Q/K/V input dtype")
+
+        result = self._paged_op(
+            q,
+            k,
+            v,
+            cu_seqlens_q=cu_seqlens,
+            cu_seqlens_k=cu_seqlens,
+            max_seqlen_q=max_seqlen,
+            max_seqlen_k=max_seqlen,
+            softmax_scale=scale,
+            causal=causal,
+            num_splits=self.num_splits,
+            pack_gqa=q.size(1) > k.size(1),
+            deterministic=self.deterministic_backward,
+            return_lse=True,
+        )
+        if not isinstance(result, tuple) or len(result) != 2:
+            raise StrictFlashAttentionUnavailable(
+                "FlashAttention CuTe must return exactly (out, lse) when return_lse=True"
+            )
+        out_fa, lse = result
+        expected_lse_shape = (q.size(1), q.size(0))
+        if not isinstance(out_fa, torch.Tensor) or tuple(out_fa.shape) != tuple(q.shape):
+            raise StrictFlashAttentionUnavailable(
+                f"packed FlashAttention output must have shape {tuple(q.shape)}"
+            )
+        if not isinstance(lse, torch.Tensor) or tuple(lse.shape) != expected_lse_shape:
+            raise StrictFlashAttentionUnavailable(
+                f"packed FlashAttention LSE must have shape {expected_lse_shape}"
+            )
+        if out_fa.dtype != resolved_dtype or lse.dtype != torch.float32:
+            raise StrictFlashAttentionUnavailable(
+                "packed FlashAttention returned an incompatible output dtype"
+            )
+        return DeterministicAttentionCoreResult(
+            out=out_fa,
+            lse=lse,
+            provenance={
+                "strict_core_id": self.core_id,
+                "strict_schedule": self.strict_schedule,
+                "attention_backend": f"{self.backend_id}.varlen",
+                "fa_api_source": self.api_source,
+                "fa_package_version": self.package_version,
+                "num_splits": self.num_splits,
+                "deterministic_backward": self.deterministic_backward,
+                "dropout_p": 0.0,
+                "split_kv": self.split_kv.resolve(max_seqlen, backend=self.backend_id).to_dict(),
+                "merge_order": self.merge_order,
+                "accum_dtype": self.accum_dtype,
+                "downcast_at": self.downcast_at,
+                "kv_layout": "packed_varlen_thd",
+                "fallback": False,
+                "fallback_reason": None,
+                "native_attention_arithmetic": True,
+                "production_ready": True,
+                "reference_only": False,
             },
         )
 

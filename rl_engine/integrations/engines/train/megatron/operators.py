@@ -173,6 +173,7 @@ class MegatronAttentionOperator:
         self._packed_layout_owner: Any | None = None
         self._packed_layout_key: tuple[Any, ...] | None = None
         self._packed_layout_value: tuple[tuple[int, ...], tuple[int, ...]] | None = None
+        self._packed_cu_seqlens_value: tuple[tuple[int, ...], torch.Tensor] | None = None
         self._position_ids_cache: dict[tuple[Any, ...], torch.Tensor] = {}
 
     @staticmethod
@@ -242,6 +243,18 @@ class MegatronAttentionOperator:
         self._packed_layout_value = value
         return value
 
+    def _packed_cu_seqlens(
+        self,
+        local_offsets: tuple[int, ...],
+        device: torch.device,
+    ) -> torch.Tensor:
+        cached = self._packed_cu_seqlens_value
+        if cached is not None and cached[0] == local_offsets and cached[1].device == device:
+            return cached[1]
+        value = torch.tensor(local_offsets, dtype=torch.int32, device=device)
+        self._packed_cu_seqlens_value = (local_offsets, value)
+        return value
+
     @property
     def provenance(self) -> Mapping[str, Any]:
         return {
@@ -251,6 +264,78 @@ class MegatronAttentionOperator:
             "semantic_instance": self._handle.provenance,
             "execution": dict(self._last_provenance),
         }
+
+    @staticmethod
+    def _grouped_packed(
+        query: torch.Tensor,
+        key: torch.Tensor,
+        value: torch.Tensor,
+        local_offsets: tuple[int, ...],
+        global_lengths: tuple[int, ...],
+        execute_sequence: Any,
+    ) -> tuple[torch.Tensor, dict[str, Any]]:
+        grouped_sequences: dict[tuple[int, int], list[tuple[int, int, int]]] = {}
+        for sequence_index, (start, end, global_length) in enumerate(
+            zip(
+                local_offsets[:-1],
+                local_offsets[1:],
+                global_lengths,
+                strict=True,
+            )
+        ):
+            grouped_sequences.setdefault((end - start, global_length), []).append(
+                (sequence_index, start, end)
+            )
+
+        outputs: list[torch.Tensor | None] = [None] * len(global_lengths)
+        sequence_provenance: list[dict[str, Any] | None] = [None] * len(global_lengths)
+        launch_group_count = 0
+        for (local_length, global_length), sequences in grouped_sequences.items():
+            # Stack the cheap [H, T, D] views directly into FA4's
+            # [B, H, T, D] layout.  Stacking before permuting would first
+            # materialize [B, T, H, D] and then copy the entire tensor a
+            # second time for every layer and microbatch.
+            q_ready = torch.stack(
+                [query[start:end].permute(1, 0, 2) for _index, start, end in sequences],
+                dim=0,
+            )
+            k_ready = torch.stack(
+                [key[start:end].permute(1, 0, 2) for _index, start, end in sequences],
+                dim=0,
+            )
+            v_ready = torch.stack(
+                [value[start:end].permute(1, 0, 2) for _index, start, end in sequences],
+                dim=0,
+            )
+            result = execute_sequence(
+                q_ready,
+                k_ready,
+                v_ready,
+                global_sequence_length=global_length,
+            )
+            group_output = result.out.permute(0, 2, 1, 3).contiguous().flatten(start_dim=2)
+            operator_provenance = _compact_attention_provenance(result.provenance)
+            for batch_index, (sequence_index, _start, _end) in enumerate(sequences):
+                outputs[sequence_index] = group_output[batch_index]
+                sequence_provenance[sequence_index] = {
+                    "sequence_index": sequence_index,
+                    "local_tokens": local_length,
+                    "global_tokens": global_length,
+                    "operator": operator_provenance,
+                }
+            launch_group_count += 1
+        if any(item is None for item in outputs) or any(
+            item is None for item in sequence_provenance
+        ):
+            raise RuntimeError("packed Attention failed to materialize every sequence")
+        output = torch.cat(cast(list[torch.Tensor], outputs), dim=0)
+        execution_provenance = {
+            "packed_sequence_count": len(global_lengths),
+            "launch_group_count": launch_group_count,
+            "sequence_batching": "equal_length_rows",
+            "sequences": cast(list[dict[str, Any]], sequence_provenance),
+        }
+        return output, execution_provenance
 
     def __call__(
         self,
@@ -294,7 +379,7 @@ class MegatronAttentionOperator:
                 "context_parallel_size": cp_world,
             },
         )
-        operator.bind_accelerator_runtime(query, process_group=cp_group)
+        runtime = operator.bind_accelerator_runtime(query, process_group=cp_group)
         scale = float(getattr(module, "softmax_scale", query.size(-1) ** -0.5))
 
         def execute_sequence(
@@ -368,67 +453,39 @@ class MegatronAttentionOperator:
                 local_query_tokens=query.size(0),
                 local_kv_tokens=key.size(0),
             )
-            grouped_sequences: dict[tuple[int, int], list[tuple[int, int, int]]] = {}
-            for sequence_index, (start, end, global_length) in enumerate(
-                zip(
-                    local_offsets[:-1],
-                    local_offsets[1:],
+            packed_runtime = getattr(runtime, "forward_packed_with_lse", None)
+            if (
+                cp_world == 1
+                and runtime_platform == "cuda"
+                and callable(packed_runtime)
+                and getattr(runtime, "core_id", None) == strict_core_id
+                and getattr(runtime, "strict_schedule", None) == strict_schedule
+            ):
+                result = packed_runtime(
+                    query,
+                    key,
+                    value,
+                    cu_seqlens=self._packed_cu_seqlens(local_offsets, query.device),
+                    max_seqlen=max(global_lengths),
+                    causal=True,
+                    scale=scale,
+                )
+                output = result.out.flatten(start_dim=1)
+                execution_provenance = {
+                    "packed_sequence_count": len(global_lengths),
+                    "launch_group_count": 1,
+                    "sequence_batching": "packed_varlen",
+                    "operator": _compact_attention_provenance(result.provenance),
+                }
+            else:
+                output, execution_provenance = self._grouped_packed(
+                    query,
+                    key,
+                    value,
+                    local_offsets,
                     global_lengths,
-                    strict=True,
+                    execute_sequence,
                 )
-            ):
-                grouped_sequences.setdefault((end - start, global_length), []).append(
-                    (sequence_index, start, end)
-                )
-
-            outputs: list[torch.Tensor | None] = [None] * len(global_lengths)
-            sequence_provenance: list[dict[str, Any] | None] = [None] * len(global_lengths)
-            launch_group_count = 0
-            for (local_length, global_length), sequences in grouped_sequences.items():
-                # Stack the cheap [H, T, D] views directly into FA4's
-                # [B, H, T, D] layout.  Stacking before permuting would first
-                # materialize [B, T, H, D] and then copy the entire tensor a
-                # second time for every layer and microbatch.
-                q_ready = torch.stack(
-                    [query[start:end].permute(1, 0, 2) for _index, start, end in sequences],
-                    dim=0,
-                )
-                k_ready = torch.stack(
-                    [key[start:end].permute(1, 0, 2) for _index, start, end in sequences],
-                    dim=0,
-                )
-                v_ready = torch.stack(
-                    [value[start:end].permute(1, 0, 2) for _index, start, end in sequences],
-                    dim=0,
-                )
-                result = execute_sequence(
-                    q_ready,
-                    k_ready,
-                    v_ready,
-                    global_sequence_length=global_length,
-                )
-                group_output = result.out.permute(0, 2, 1, 3).contiguous().flatten(start_dim=2)
-                operator_provenance = _compact_attention_provenance(result.provenance)
-                for batch_index, (sequence_index, _start, _end) in enumerate(sequences):
-                    outputs[sequence_index] = group_output[batch_index]
-                    sequence_provenance[sequence_index] = {
-                        "sequence_index": sequence_index,
-                        "local_tokens": local_length,
-                        "global_tokens": global_length,
-                        "operator": operator_provenance,
-                    }
-                launch_group_count += 1
-            if any(item is None for item in outputs) or any(
-                item is None for item in sequence_provenance
-            ):
-                raise RuntimeError("packed Attention failed to materialize every sequence")
-            output = torch.cat(cast(list[torch.Tensor], outputs), dim=0)
-            execution_provenance = {
-                "packed_sequence_count": len(global_lengths),
-                "launch_group_count": launch_group_count,
-                "sequence_batching": "equal_length_rows",
-                "sequences": cast(list[dict[str, Any]], sequence_provenance),
-            }
         self._last_provenance = {
             "framework_layout": (
                 "megatron_thd_packed_zigzag_cp"
