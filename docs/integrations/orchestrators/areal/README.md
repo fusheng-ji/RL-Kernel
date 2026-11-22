@@ -101,7 +101,26 @@ verifier passes them through `RL_KERNEL_AREAL_VLLM_SERVER_ARGS` and
 `run_trainer` appends them to the arguments `vLLMConfig.build_args` returns.
 Both arms receive the same value. Extra environment for
 the RL-Kernel arm (for example an FA4 compatibility layer) goes through
-`--env KEY=VALUE` or `RLK_ENV`.
+`--env KEY=VALUE` or `RLK_ENV`. The RL-Kernel arm also enables the persistent
+FA4 CuTe JIT cache (`FLASH_ATTENTION_CUTE_DSL_CACHE_ENABLED=1`;
+`FLASH_ATTENTION_CUTE_DSL_CACHE_DIR` is passed through when set), so later runs
+load the compiled kernels instead of rebuilding them.
+
+On clusters without an eight-GPU node, `--nodes 2 --gpus 4 --scheduler ray`
+runs the same layout on two nodes through AReaL's Ray scheduler (`--gpus` is
+per node; training TP×CP and rollout TP must each fit in one node). Start the
+Ray cluster first and export `RAY_ADDRESS`. If the first data-service worker on
+a remote node needs more than AReaL's fixed 30 s to start, set
+`RLK_AREAL_WORKERS_READY_TIMEOUT` (seconds); both arms get the same value.
+
+`--profile-steps 3` (comma-separated actor versions) wraps every recomputed-logp
+`forward_batch` and PPO `train_batch` call of those versions on actor rank 0
+in `torch.profiler`, for both arms. Coarse `rlk::attention`, `rlk::mlp`,
+`rlk::rope`, `rlk::lm_head` and `rlk::det_collective` ranges sit around the same
+Megatron entry points in both arms, so the profiles aggregate into comparable
+buckets. A JSON summary and the `key_averages` table per call land in
+`<arm>/profile/`. Profiled steps include the profiler's own overhead and are
+attribution data, not timing evidence.
 
 ## Outputs and verdicts
 

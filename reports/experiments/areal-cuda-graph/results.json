@@ -1,0 +1,247 @@
+{
+  "description": "AReaL x RL-Kernel on Qwen3-8B / GSM8K, 2 nodes x 4 H100 (Megatron TP4 actor on one node, vLLM TP4 rollout on the other). Times are steady-state means with the first step skipped.",
+  "baseline_run": {
+    "S2-smoke-graph/rlkernel": {
+      "mode": "sync",
+      "vllm_execution": "graph",
+      "steps": 2,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 3.754,
+        "recompute_logp": 3.382,
+        "train_step": 7.315,
+        "update_weights": 2.636,
+        "step_seconds": 18.463
+      },
+      "rollout_tokens_per_gpu_s": 272.8,
+      "startup_s": 804.5,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 25.0,
+      "consistency": {
+        "compared_tokens": 8192,
+        "mismatching_tokens": 0,
+        "max_abs_diff": 0.0,
+        "same_version_tokens": 8192,
+        "same_version_mismatching_tokens": 0,
+        "verdict": "PASS"
+      }
+    },
+    "S3-sync-graph/native": {
+      "mode": "sync",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 10.276,
+        "recompute_logp": 18.078,
+        "train_step": 38.465,
+        "update_weights": 2.68,
+        "step_seconds": 72.668
+      },
+      "rollout_tokens_per_gpu_s": 3102.5,
+      "startup_s": 728.1,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 7.0,
+      "consistency": {
+        "compared_tokens": 1273280,
+        "mismatching_tokens": null,
+        "max_abs_diff": 2.054748058319092,
+        "same_version_tokens": null,
+        "same_version_mismatching_tokens": null,
+        "verdict": "REPORT_ONLY"
+      }
+    },
+    "S3-sync-graph/rlkernel": {
+      "mode": "sync",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 12.908,
+        "recompute_logp": 25.819,
+        "train_step": 48.48,
+        "update_weights": 2.617,
+        "step_seconds": 93.265
+      },
+      "rollout_tokens_per_gpu_s": 2423.5,
+      "startup_s": 848.9,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 25.0,
+      "consistency": {
+        "compared_tokens": 1255011,
+        "mismatching_tokens": 0,
+        "max_abs_diff": 0.0,
+        "same_version_tokens": 1255011,
+        "same_version_mismatching_tokens": 0,
+        "verdict": "PASS"
+      }
+    },
+    "S4-async-graph/native": {
+      "mode": "async",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 0.004,
+        "recompute_logp": 18.011,
+        "train_step": 37.727,
+        "update_weights": 2.628,
+        "step_seconds": 61.815
+      },
+      "rollout_tokens_per_gpu_s": null,
+      "startup_s": 778.5,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 8.0,
+      "consistency": {
+        "compared_tokens": 1274848,
+        "mismatching_tokens": 815585,
+        "max_abs_diff": 2.7315938472747803,
+        "same_version_tokens": 129764,
+        "same_version_mismatching_tokens": 84056,
+        "verdict": "REPORT_ONLY"
+      }
+    },
+    "S4-async-graph/rlkernel": {
+      "mode": "async",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 0.009,
+        "recompute_logp": 24.359,
+        "train_step": 44.807,
+        "update_weights": 2.641,
+        "step_seconds": 75.042
+      },
+      "rollout_tokens_per_gpu_s": null,
+      "startup_s": 901.3,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 25.0,
+      "consistency": {
+        "compared_tokens": 1273785,
+        "mismatching_tokens": 494321,
+        "max_abs_diff": 1.6463165283203125,
+        "same_version_tokens": 129431,
+        "same_version_mismatching_tokens": 0,
+        "verdict": "PASS"
+      }
+    },
+    "S5-sync-eager/native": {
+      "mode": "sync",
+      "vllm_execution": "eager",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 26.905,
+        "recompute_logp": 18.007,
+        "train_step": 37.582,
+        "update_weights": 2.547,
+        "step_seconds": 88.223
+      },
+      "rollout_tokens_per_gpu_s": 1182.5,
+      "startup_s": 737.3,
+      "vllm_cudagraph_mode": "NONE",
+      "vllm_capture_s": null,
+      "consistency": {
+        "compared_tokens": 1274564,
+        "mismatching_tokens": null,
+        "max_abs_diff": 2.977159261703491,
+        "same_version_tokens": null,
+        "same_version_mismatching_tokens": null,
+        "verdict": "REPORT_ONLY"
+      }
+    },
+    "S5-sync-eager/rlkernel": {
+      "mode": "sync",
+      "vllm_execution": "eager",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 95.251,
+        "recompute_logp": 25.634,
+        "train_step": 47.642,
+        "update_weights": 2.662,
+        "step_seconds": 174.844
+      },
+      "rollout_tokens_per_gpu_s": 331.1,
+      "startup_s": 981.9,
+      "vllm_cudagraph_mode": "NONE",
+      "vllm_capture_s": null,
+      "consistency": {
+        "compared_tokens": 1264929,
+        "mismatching_tokens": 0,
+        "max_abs_diff": 0.0,
+        "same_version_tokens": 1264929,
+        "same_version_mismatching_tokens": 0,
+        "verdict": "PASS"
+      }
+    }
+  },
+  "round1_run": {
+    "S3-sync-graph/rlkernel": {
+      "mode": "sync",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 13.241,
+        "recompute_logp": 6.587,
+        "train_step": 13.24,
+        "update_weights": 2.599,
+        "step_seconds": 39.052
+      },
+      "rollout_tokens_per_gpu_s": 2383.2,
+      "startup_s": 661.6,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 19.0,
+      "consistency": {
+        "compared_tokens": 1264805,
+        "mismatching_tokens": 0,
+        "max_abs_diff": 0.0,
+        "same_version_tokens": 1264805,
+        "same_version_mismatching_tokens": 0,
+        "verdict": "PASS"
+      }
+    }
+  },
+  "vllm_single_gpu_probe": {
+    "setup": "Qwen3-8B, TP1, batch 128, 128 prompt + 128 generated tokens",
+    "arms": {
+      "native-graph": {
+        "init_s": 32.1186,
+        "prefill_s": 0.4022,
+        "decode_step_ms": 13.1145
+      },
+      "rlkernel-before-graph": {
+        "init_s": 54.5019,
+        "prefill_s": 0.5444,
+        "decode_step_ms": 15.6591
+      },
+      "rlkernel-round1-graph": {
+        "init_s": 44.2576,
+        "prefill_s": 0.5378,
+        "decode_step_ms": 14.5827
+      },
+      "native-eager": {
+        "init_s": 25.6058,
+        "prefill_s": 0.4011,
+        "decode_step_ms": 23.7945
+      },
+      "rlkernel-before-eager": {
+        "init_s": 25.7918,
+        "prefill_s": 0.5445,
+        "decode_step_ms": 87.3922
+      },
+      "rlkernel-round1-eager": {
+        "init_s": 25.9185,
+        "prefill_s": 0.5383,
+        "decode_step_ms": 69.5347
+      }
+    },
+    "graph_capture_s": {
+      "native-graph": 6,
+      "rlkernel-before-graph": 22,
+      "rlkernel-round1-graph": 17
+    }
+  }
+}
