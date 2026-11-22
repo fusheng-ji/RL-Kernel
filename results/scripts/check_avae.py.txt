@@ -1,0 +1,59 @@
+"""README "Expected" 1-7 against the results (handoff cb058e1c, source 25d95ccd)."""
+import json, os, re
+OUT = os.path.expanduser('<HOME>/datastorage/h3avae_20261122/out/results')
+a = json.load(open(f'{OUT}/h3-audio-vae-h100.json'))
+b = json.load(open(f'{OUT}/h3-audio-vae-h100-rerun.json'))
+
+tail = open(f'{OUT}/pytest-h100.txt').read().strip().splitlines()[-1]
+print('1. pytest:', tail, '| skips listed:', len(re.findall(r'^SKIPPED', open(f'{OUT}/pytest-h100.txt').read(), re.M)))
+
+for name, d in (('run-a', a), ('run-b', b)):
+    s = d['provenance']['source']; c = d['checkpoint']
+    print(f'2. {name}: schema {d["schema"]}, source {s["commit"][:8]} clean {s["clean"]}, '
+          f'remote sha == local sha {c["remote_model_safetensors_sha256"] == c["model_safetensors_sha256"]}')
+
+for name, d in (('run-a', a), ('run-b', b)):
+    bad = []
+    for case in d['cases']:
+        for kind in ('encode', 'decode'):
+            e = case['paths']['ours'][kind]
+            if e['batch_invariant'] is not True: bad.append((case['video_frames'], kind, 'batch_invariant'))
+            bad += [(case['video_frames'], kind, 'bitwise_equal.' + k) for k, v in e['bitwise_equal'].items() if v is not True]
+            bad += [(case['video_frames'], kind, 'max_abs.' + k, v) for k, v in e['max_abs'].items() if v != 0]
+    cs = d['cold_start']['ours']
+    print(f'3. {name}: ours over {len(d["cases"])} cases ({[c["video_frames"] for c in d["cases"]]}): failures {bad}; '
+          f'cold_start.ours encode {cs["encode_first_vs_third_bitwise"]} decode {cs["decode_first_vs_third_bitwise"]}')
+
+for name, d in (('run-a', a), ('run-b', b)):
+    v = d['cold_start']['vllm-omni']
+    print(f'4. {name}: vllm-omni encode_first_vs_third_bitwise {v["encode_first_vs_third_bitwise"]} '
+          f'(max_abs {v["encode_first_vs_third_max_abs"]}); decode {v["decode_first_vs_third_bitwise"]}')
+
+diff = []
+for ca, cb in zip(a['cases'], b['cases']):
+    if ca['video_frames'] != cb['video_frames']: diff.append(('case order', ca['video_frames'], cb['video_frames']))
+    if ca['rows_sha256'] != cb['rows_sha256']: diff.append((ca['video_frames'], 'rows_sha256'))
+    for p in ca['paths']:
+        for kind in ('encode', 'decode'):
+            if ca['paths'][p][kind]['sha256'] != cb['paths'][p][kind]['sha256']:
+                diff.append((ca['video_frames'], p, kind))
+n = sum(1 + 2 * len(c['paths']) for c in a['cases'])
+print(f'5. across the two JSONs: {len(a["cases"])} vs {len(b["cases"])} cases, {n} hashes compared '
+      f'(paths {sorted(a["cases"][0]["paths"])}), differing {diff}')
+
+left = [f for f in os.listdir(OUT) if f.startswith('h3-audio-vae-cold-start-')]
+print('6. leftovers in <OUT>:', left, '| after each step:',
+      {f: open(f'{OUT}/{f}').read().count('No such file') for f in sorted(os.listdir(OUT)) if f.startswith('leftovers-after-')})
+
+# B200 reference: #722's description links the fork's pr_assets commit 44af60a9,
+# pending/h3-audio-vae-contract/r2-53b944ed/h3-audio-vae-b200.json (fetched read-only to out/b200-ref.json)
+r = json.load(open(os.path.join(OUT, '..', 'b200-ref.json')))
+same = total = 0
+for ca, cr in zip(a['cases'], r['cases']):
+    assert ca['video_frames'] == cr['video_frames']
+    pairs = [(ca['rows_sha256'], cr['rows_sha256'])] + [
+        (ca['paths'][p][k]['sha256'], cr['paths'][p][k]['sha256']) for p in ca['paths'] if p in cr['paths'] for k in ('encode', 'decode')]
+    same += sum(x == y for x, y in pairs); total += len(pairs)
+print(f'7. against B200 ({r["provenance"]["gpu"]}, source {r["provenance"]["source"]["commit"][:8]}, pr_assets 44af60a9): '
+      f'{same} of {total} hashes equal (rows_sha256 and paths.*.{{encode,decode}}.sha256); '
+      f'checkpoint sha256 equal {a["checkpoint"]["model_safetensors_sha256"] == r["checkpoint"]["model_safetensors_sha256"]}')

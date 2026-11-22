@@ -1,0 +1,26 @@
+#!/bin/bash
+# On node-a (one srun step; GPU 0 only, the others idle): the README's commands at 25d95ccd, one after another, <E1>.
+source <HOME>/datastorage/h3avae_20261122/env.sh; cd $W
+export RL_KERNEL_H3_AUDIO_VAE=$AUDIO_VAE
+pre() { rec $OUT $W $E1 before-$1; nvidia-smi > $OUT/nvidia-smi-before-$1.txt 2>&1; cfile $OUT $W $E1 $1 || { echo "$1: _C not inside" >> $OUT/rc.txt; exit 1; }; log "$1 start"; }
+post() { echo "$1 rc=$2" >> $OUT/rc.txt; rec $OUT $W $E1 after-$1
+  ls -d $OUT/h3-audio-vae-cold-start-* > $OUT/leftovers-after-$1.txt 2>&1; log "$1 end rc=$2"; }
+pre pytest
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W:$PROVIDER/src $E1/bin/python -m pytest -q -rs -p no:cacheprovider \
+  tests/models/minimax_h3/test_h3_audio_vae.py --junitxml=$OUT/pytest-audio-vae-h100.xml | tee $OUT/pytest-h100.txt
+post pytest ${PIPESTATUS[0]}
+A="--checkpoint $RL_KERNEL_H3_AUDIO_VAE --diffusers-src $PROVIDER/src"
+pre run-a
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W $E1/bin/python benchmarks/models/benchmark_h3_audio_vae.py $A --repeats 10 --plot \
+  --out $OUT/h3-audio-vae-h100.json | tee $OUT/run-a.txt
+post run-a ${PIPESTATUS[0]}
+pre run-b
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W $E1/bin/python benchmarks/models/benchmark_h3_audio_vae.py $A --repeats 0 \
+  --out $OUT/h3-audio-vae-h100-rerun.json | tee $OUT/run-b.txt
+post run-b ${PIPESTATUS[0]}
+pre markdown
+PYTHONPATH=$W $E1/bin/python benchmarks/models/benchmark_h3_audio_vae.py --out $OUT/h3-audio-vae-h100.json --markdown \
+  > $OUT/tables-h100.md
+post markdown $?
+git -C $W status --porcelain --untracked-files=no | wc -l > $OUT/status-final-count.txt
+log "node end"

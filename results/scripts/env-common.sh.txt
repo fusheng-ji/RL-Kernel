@@ -1,0 +1,20 @@
+export H=$HOME/datastorage WS=$HOME/datastorage/h3gemm_20261122
+export TD=$WS/handoff/h100-handoff/h3-gemm-rows-20261122 TDB=$WS/td/h100-handoff/h3-final-run-pra-20261120 OUT=$WS/out
+export E1=$H/venvs/<ENV> E2=$H/venvs/<ENV> VERL_OMNI=$H/h3pra_20261122/verl-omni PROVIDER=$H/h3_full_h100/diffusers_src
+export WEIGHTS=$SCRATCH/h3ckpt CKPT=$SCRATCH/h3ckpt/hf_full
+export CUDA_HOME=$H/cuda13_home PATH=$H/extra_ninja/bin:$H/cuda13_home/bin:$PATH
+export TORCH_CUDA_ARCH_LIST=9.0 MAX_JOBS=32 PYTHONNOUSERSITE=1 HF_HUB_OFFLINE=1 TOKENIZERS_PARALLELISM=false
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.fileMode GIT_CONFIG_VALUE_0=false
+export J=<JOBID> NA=node-a NB=node-b
+unset PYTHONPATH
+log() { echo "[$(date -u +%FT%TZ)] $*" >> $OUT/steps.txt; }
+# rec <dir> <checkout> <python-or-venv> [tag]: commit, env line, tree status, other processes (nvidia-smi is taken on the node by smi)
+rec() { local O=$1 W=$2 P=$3 T=${4:-before}; [ -d "$P" ] && P=$P/bin/python; mkdir -p $O; git -C $W rev-parse HEAD > $O/commit.txt
+  $P -c "import torch, sys; print(torch.__version__, torch.version.cuda, sys.version)" > $O/env.txt 2>&1
+  git -C $W status --porcelain --untracked-files=no > $O/status-$T.txt
+  ps -u $USER -o pid,etime,args | grep -E "python|torchrun|vllm" | grep -vE "grep|ps -u" | cut -c1-150 > $O/other-processes-$T.txt; }
+# smi <dir> <node> <tag>: nvidia-smi on the node, under the job
+smi() { srun --jobid=$J -w $2 --overlap -N1 -n1 --mem=0 nvidia-smi > $1/nvidia-smi-$3.txt 2>&1; }
+# cfile <dir> <checkout> <venv> <tag>: rl_engine._C.__file__, and whether it is inside the checkout
+cfile() { (cd $2 && PYTHONPATH=$2 $3/bin/python -c "import rl_engine._C as c; print(c.__file__)") > $1/c-file-$4.txt 2>&1
+  case "$(realpath "$(tail -1 $1/c-file-$4.txt)" 2>/dev/null)" in $(realpath $2)/*) echo "inside" >> $1/c-file-$4.txt; return 0;; *) echo "NOT inside" >> $1/c-file-$4.txt; return 1;; esac; }
