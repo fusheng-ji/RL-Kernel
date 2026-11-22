@@ -121,3 +121,21 @@ Every other TP4 tensor stays at or below 0.53 of its bound (next: `0/update/mode
 As ROUND2.md says, the script stops at the first failing comparison; this is the result, kept as it is and not rerun. The script runs with `set -euo pipefail`, so it exited right after run 2's comparison. Not reached: the Megatron FP32 actor TP2-vs-TP4 comparison (next in the loop), the Megatron FP32 critic, both Megatron BF16 rows, all DeepSpeed rows, the other four TP2-vs-TP4 comparisons, and the tiny-GPT regressions.
 
 Directory names: the job-local run directories are written `job-JOBID-attempt-N`.
+
+### Round 2 diagnosis (CPU only): the one TP4 update over its bound
+Done as in `h100-handoff/pr548-item4-20261119/ROUND2-DIAGNOSIS.md` (handoff branch at `197afeb5`): `diagnose_update_sensitivity.py` run from the handoff checkout, `<src>` at `19b62661` with `PYTHONPATH=<src>`, tree clean before and after (`round2/diagnosis/pre-checks.txt`, `status-after.txt`). Step 6 was not rerun; no bound or acceptance file was touched. Both commands as in the README, on a compute node (CPU only), 2026-11-22: command 1 (three tensors x five runs, `--copy-to`) 7 s, rc 0; command 2 (`--scan` of the TP4 run) 752 s, rc 0 (`round2/diagnosis/steps.txt`).
+
+**The hypothesis holds for the failing element.** `update-sensitivity.json`, `megatron-fp32-actor-tp4`, `model.layers.17.post_attention_layernorm.weight`: `max_abs_observed` 7.749e-07; the first `top` element is index 3486 with `clipped_gradient_over_eps` 0.464; its `update_difference` -7.749e-07 against `predicted_update_difference` -7.931e-07; `residual` 5.95e-08 (one FP32 ulp of this tensor's weights, which are below 1 in magnitude).
+
+| Run | grad norm | max_abs_observed | max_abs_predicted | residual | top element (index, `clipped_gradient_over_eps`) |
+|---|---:|---:|---:|---:|---|
+| `actor-fp32-1` (HF repeat) | 76.92475 | 0 | 0 | 0 | identical gradient |
+| `actor-fp32-impl` (HF implementation control) | 76.92383 | 5.96e-08 | 5.75e-08 | 2.98e-08 | 3486, 0.464 |
+| `megatron-fp32-actor-tp2` | 76.92379 | 2.384e-07 | 2.338e-07 | 2.98e-08 | 3486, 0.464 |
+| `megatron-fp32-actor-tp4` | 76.92346 | 7.749e-07 | 7.931e-07 | 5.95e-08 | 3486, 0.464 |
+
+The same element (3486) carries the largest update difference in the implementation control, TP2 and TP4, growing with the gradient difference there (reference gradient -3.567e-07; impl -3.662e-07, TP2 -3.194e-07, TP4 -2.396e-07). The two other tensors of command 1 (`model.layers.24.post_attention_layernorm.weight`, `model.layers.8.input_layernorm.weight`) have residuals at most 5.1e-08 in every run.
+
+**Scan of the TP4 run** (`update-sensitivity-scan-tp4.json`, 399 step-0 update tensors): `max_residual` 4.765e-07, at `model.layers.34.input_layernorm.weight`. This is above the README's "at most about 1.2e-07". Five tensors are above 1.2e-07, all `input_layernorm` of layers 30-35 (4.77e-07, 4.70e-07, 2.38e-07, 2.38e-07, 2.33e-07); every other tensor is at most 1.19e-07. Their `max_abs_observed` values are exactly 2^-21 (4.768e-07) and 2^-22 (2.384e-07): one FP32 ulp of a weight in [4, 8) or [2, 4). The README's 1.2e-07 is one ulp for weights in [1, 2). I added one read-only check of the checkpoint (`extra-weight-magnitudes.py.txt` / `.txt`, not part of the handoff): these layernorm weights are mostly 2 or larger (layer 34: 99.9% of elements at least 2, 10% at least 4, max 28.1; layer 35: 100% and 8.5%, max 17.6), so a one-ulp difference of the stored update is 2.4e-07 or 4.8e-07 there. So the large residuals look like the FP32 rounding of updates on large weights, not an optimizer difference, but the scan reports per tensor only, so the element behind each of these residuals is not identified. Sent as is.
+
+Files: `round2/diagnosis/update-sensitivity.{json,log}`, `update-sensitivity-scan-tp4.{json,log}`, `tensors/<run>/` (step-0 gradient, update and grad norm of the three tensors per run, as written by `--copy-to`), `run_diag.sh.txt` (the wrapper used).

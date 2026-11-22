@@ -1,0 +1,13 @@
+# Added by the H100 runner (not part of the handoff): read-only check of the checkpoint's FP32 ulp
+# for the tensors with the largest scan residuals. Reads <checkpoint>/model.safetensors.
+import json, math, os, sys
+from safetensors import safe_open
+ck = sys.argv[1]; idx = json.load(open(ck + '/model.safetensors.index.json'))['weight_map']
+scan = json.load(open(sys.argv[2]))['runs']['megatron-fp32-actor-tp4']['scan']['rows']
+rows = sorted(scan.items(), key=lambda kv: -kv[1]['residual'])[:15]
+names = [k for k, _ in rows] + ['model.layers.17.post_attention_layernorm.weight']
+print('tensor | scan residual | max_abs_observed | max|w| | fraction |w|>=2 | fraction |w|>=4 | ulp at |w| in [2,4) / [4,8)')
+for n in names:
+    with safe_open(ck + '/' + idx[n], 'pt') as f: w = f.get_tensor(n).float().abs()
+    r = scan[n]
+    print(f"{n} | {r['residual']:.3e} | {r['max_abs_observed']:.3e} | {w.max().item():.3f} | {(w >= 2).float().mean().item():.3f} | {(w >= 4).float().mean().item():.3f} | {2**-22:.3e} / {2**-21:.3e}")
