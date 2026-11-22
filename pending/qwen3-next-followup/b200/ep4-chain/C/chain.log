@@ -1,0 +1,21 @@
+[qwen3-next] preflight: <DATA>/rl-kernel-428-handoff/jobs/b200-followup-20261119/out/job<JOBID>/C/runs/20261120T010142Z-preflight-8284ce2b-801f8d12
+PREFLIGHT environment-lock: ['<DATA>/venvs/<ENV>/bin/python', '-m', 'pip', 'freeze', '--all']
+PREFLIGHT build: ['<DATA>/venvs/<ENV>/bin/python', 'setup.py', 'build_ext', '--inplace']
+PREFLIGHT operators: ['bash', 'ci/scripts/run_qwen3_next_operator_gates.sh']
+PREFLIGHT device-guards: ['<DATA>/venvs/<ENV>/bin/python', '-m', 'pytest', '-q', 'tests/models/qwen3_next/check_qwen3_next_multigpu.py', 'tests/models/qwen3_next/check_qwen3_next_vllm_model_contract.py', 'tests/models/qwen3_next/check_qwen3_next_vllm_real_model.py', '--junitxml=<DATA>/rl-kernel-428-handoff/jobs/b200-followup-20261119/out/job<JOBID>/C/runs/20261120T010142Z-preflight-8284ce2b-801f8d12/attempts/0/device-guards.xml']
+PREFLIGHT tp4: ['<DATA>/venvs/<ENV>/bin/python', '-m', 'torch.distributed.run', '--standalone', '--nproc_per_node=4', 'tools/validation/models/qwen3_next/qwen3_next_tp_probe.py', '--output', '<DATA>/rl-kernel-428-handoff/jobs/b200-followup-20261119/out/job<JOBID>/C/runs/20261120T010142Z-preflight-8284ce2b-801f8d12/attempts/0/tp4']
+PREFLIGHT rollout-smoke: ['<DATA>/venvs/<ENV>/bin/python', 'tools/validation/models/qwen3_next/qwen3_next_rollout_smoke.py', '--model', '<DATA>/qwen3-next-80b/9c7f2fbe84465e40164a94cc16cd30b6999b0cc7', '--output', '<DATA>/rl-kernel-428-handoff/jobs/b200-followup-20261119/out/job<JOBID>/C/runs/20261120T010142Z-preflight-8284ce2b-801f8d12/attempts/0/rollout-smoke.json', '--tensor-parallel-size', '4', '--non-strict-smoke']
+WARNING 11-20 01:19:07 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-20 01:19:07 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-20 01:19:07 [RL-Kernel]: KernelRegistry initialized for cuda
+[qwen3-next] preflight: passed
+[qwen3-next] layers: <DATA>/rl-kernel-428-handoff/jobs/b200-followup-20261119/out/job<JOBID>/C/runs/20261120T011913Z-layers-8284ce2b-25c775da
+WARNING 11-20 01:29:15 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-20 01:29:17 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-20 01:29:17 [RL-Kernel]: KernelRegistry initialized for cuda
+[qwen3-next] layers: passed
+[qwen3-next] l2: <DATA>/rl-kernel-428-handoff/jobs/b200-followup-20261119/out/job<JOBID>/C/runs/20261120T014336Z-l2-8284ce2b-9660cd3f
+WARNING 11-20 01:47:34 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-20 01:47:37 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 13.0)
+INFO 11-20 01:47:37 [RL-Kernel]: KernelRegistry initialized for cuda
+[qwen3-next] l2: passed

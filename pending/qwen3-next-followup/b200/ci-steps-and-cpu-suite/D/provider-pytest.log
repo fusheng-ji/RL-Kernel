@@ -1,0 +1,31 @@
+........................................................................ [ 36%]
+........................................................................ [ 73%]
+....................................................                     [100%]
+=============================== warnings summary ===============================
+../../../../../../../../..<HOME>/miniconda3/envs/<ENV>/lib/python3.12/site-packages/torch/jit/_script.py:365: 14 warnings
+  <HOME>/miniconda3/envs/<ENV>/lib/python3.12/site-packages/torch/jit/_script.py:365: DeprecationWarning: `torch.jit.script_method` is deprecated. Please switch to `torch.compile` or `torch.export`.
+    warnings.warn(
+
+tests/models/qwen3_next/check_qwen3_next_attention.py::test_d256_input_device_guard_and_nondefault_stream
+  <HOME>/miniconda3/envs/<ENV>/lib/python3.12/site-packages/torch/autograd/graph.py:979: UserWarning: The AccumulateGrad node's stream does not match the stream of the node that produced the incoming gradient. This may incur unnecessary synchronization and break CUDA graph capture if the AccumulateGrad node's stream is the default stream. This mismatch is caused by an AccumulateGrad node created prior to the current iteration being kept alive. This can happen if the autograd graph is still being kept alive by tensors such as the loss, or if you are using DDP, which will stash a reference to the node. To resolve the mismatch, delete all references to the autograd graph or ensure that DDP initialization is performed under the same stream as subsequent forwards. If the mismatch is intentional, you can use torch.autograd.graph.set_warn_on_accumulate_grad_stream_mismatch(False) to suppress this warning. (Triggered internally at /__w/pytorch/pytorch/torch/csrc/autograd/input_buffer.cpp:310.)
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+
+tests/models/qwen3_next/check_qwen3_next_batch_invariance.py::test_flashinfer_chunked_prefill_deviation_stays_rounding_scale
+  <HOME>/miniconda3/envs/<ENV>/lib/python3.12/site-packages/flashinfer/cute_dsl/availability.py:195: DeprecationWarning: Arch from arch.py is deprecated. Use Arch from enums.py instead.
+    from cutlass.base_dsl.arch import Arch
+
+tests/models/qwen3_next/check_qwen3_next_batch_invariance.py::test_flashinfer_chunked_prefill_deviation_stays_rounding_scale
+  <HOME>/miniconda3/envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/blackwell/gated_delta_net_cp_prefill.py:2986: DSLOptimizationWarning: This static loop has 64 iterations, which may be very slow to compile, consider using `cutlass.range(..., unroll_full=True)` instead.
+    for k in cutlass.range_constexpr(cute.size(tTR_tCcShared)):
+
+tests/models/qwen3_next/check_qwen3_next_batch_invariance.py::test_flashinfer_chunked_prefill_deviation_stays_rounding_scale
+tests/models/qwen3_next/check_qwen3_next_batch_invariance.py::test_flashinfer_chunked_prefill_deviation_stays_rounding_scale
+  <HOME>/miniconda3/envs/<ENV>/lib/python3.12/site-packages/nvidia_cutlass_dsl/dsl_packages/cutlass/_mlir_helpers/op.py:360: DeprecationWarning: FastDivmodDivisor is deprecated in favor of cute.FastDivmodDivisorV2 / cute.fast_divmod_create_divisor_v2. V2 additionally carries the scalar divisor across kernel boundaries (2 MLIR values per object instead of 1), so '.divisor' is readable inside kernels; arithmetic (divmod, //, %) is unchanged.
+    res_or_list = opFunc(*args, **kwargs, loc=loc)
+
+tests/models/qwen3_next/check_qwen3_next_batch_invariance.py::test_flashinfer_chunked_prefill_deviation_stays_rounding_scale
+  <HOME>/miniconda3/envs/<ENV>/lib/python3.12/site-packages/flashinfer/gdn_kernels/blackwell/gated_delta_net_chunked.py:4484: DSLOptimizationWarning: This static loop has 64 iterations, which may be very slow to compile, consider using `cutlass.range(..., unroll_full=True)` instead.
+    for k in cutlass.range_constexpr(cute.size(tTR_tCcShared)):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+196 passed, 20 warnings in 141.43s (0:02:21)

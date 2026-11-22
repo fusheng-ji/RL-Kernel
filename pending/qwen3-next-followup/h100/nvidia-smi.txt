@@ -1,0 +1,36 @@
+name, driver_version
+NVIDIA H100, 580.173.02
+NVIDIA H100, 580.173.02
+NVIDIA H100, 580.173.02
+NVIDIA H100, 580.173.02
+	[4mGPU0	GPU1	GPU2	GPU3	NIC0	NIC1	NIC2	NIC3	NIC4	NIC5	CPU Affinity	NUMA Affinity	GPU NUMA ID[0m
+GPU0	 X 	NV6	NV6	NV6	NODE	NODE	NODE	PXB	SYS	SYS	0-15,48-63	0		N/A
+GPU1	NV6	 X 	NV6	NV6	NODE	NODE	PXB	NODE	SYS	SYS	0-15,48-63	0		N/A
+GPU2	NV6	NV6	 X 	NV6	SYS	SYS	SYS	SYS	NODE	PXB	24-39,72-87	1		N/A
+GPU3	NV6	NV6	NV6	 X 	SYS	SYS	SYS	SYS	PXB	NODE	24-39,72-87	1		N/A
+NIC0	NODE	NODE	SYS	SYS	 X 	PIX	NODE	NODE	SYS	SYS				
+NIC1	NODE	NODE	SYS	SYS	PIX	 X 	NODE	NODE	SYS	SYS				
+NIC2	NODE	PXB	SYS	SYS	NODE	NODE	 X 	NODE	SYS	SYS				
+NIC3	PXB	NODE	SYS	SYS	NODE	NODE	NODE	 X 	SYS	SYS				
+NIC4	SYS	SYS	NODE	PXB	SYS	SYS	SYS	SYS	 X 	NODE				
+NIC5	SYS	SYS	PXB	NODE	SYS	SYS	SYS	SYS	NODE	 X 				
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+
+NIC Legend:
+
+  NIC0: mlx5_0
+  NIC1: mlx5_1
+  NIC2: mlx5_2
+  NIC3: mlx5_3
+  NIC4: mlx5_4
+  NIC5: mlx5_5
+

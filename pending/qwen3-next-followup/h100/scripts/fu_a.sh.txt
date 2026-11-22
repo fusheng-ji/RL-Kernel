@@ -1,0 +1,11 @@
+#!/bin/bash
+source <HOME>/datastorage/gdn20261120/env.sh; source $D/hdr.sh
+O=$D/out/FU/A; mkdir -p $O; WT=$D/fu/src; PYX=$PYFU
+hdr $O $WT $PYX; cd $WT
+unset PYTHONNOUSERSITE
+echo "A: PYTHONNOUSERSITE unset for the two commands below" >> $O/header.txt
+$PYX tools/validation/models/qwen3_next/qwen3_next_runtime.py --json > $O/identity-usersite.json 2> $O/identity-usersite.err; echo "rc=$?" > $O/rc-usersite.txt
+$PYX tools/validation/models/qwen3_next/qwen3_next_run.py --stage preflight --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/preflight-usersite.log 2>&1; echo "rc=$?" >> $O/rc-usersite.txt
+PYTHONNOUSERSITE=1 $PYX tools/validation/models/qwen3_next/qwen3_next_runtime.py --json > $O/identity-nousersite.json 2> $O/identity-nousersite.err; echo "rc=$?" > $O/rc-nousersite.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt
+touch $O/DONE

@@ -1,0 +1,24 @@
+#!/bin/bash
+# on node-b after GDN D has finished: reruns requested by the user (original failed attempts stay untouched): FU-B, GDN-C, FU-C.
+source <HOME>/datastorage/gdn20261120/env.sh; source $D/hdr.sh
+while [ ! -f $D/out/GD/D/DONE ]; do sleep 30; done
+log() { echo "[$(date -u +%FT%TZ)] $*" >> $D/out/node-b-rerun-steps.txt; }
+R=tools/validation/models/qwen3_next/qwen3_next_run.py
+# FU-B rerun
+O=$D/out/FU/B-rerun; WT=$D/fu/src; PYX=$PYFU; hdr $O $WT $PYX; mkdir -p $O/runs; cd $WT; log "FU-B rerun start"
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+L2=$(ls -d $O/runs/*-l2-* 2>/dev/null | head -n 1)
+if [ -n "$L2" ] && [ -f $L2/result.json ]; then
+  PYTHONUNBUFFERED=1 $PYX $R --stage bi --bi-suite full --previous $L2 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/bi.log 2>&1; echo "bi rc=$?" >> $O/rc.txt
+  $PYX tools/validation/models/qwen3_next/qwen3_next_chain_report.py --last $L2 --out $O/chain-report.json > $O/report.log 2>&1; echo "report rc=$?" >> $O/rc.txt
+  bash ci/scripts/run_qwen3_next_chain_gate.sh $O/chain-report.json > $O/gate.log 2>&1; echo "gate rc=$?" >> $O/gate.log; tail -n 1 $O/gate.log >> $O/rc.txt
+else echo "no passed l2: bi, report, gate not run" >> $O/rc.txt; fi
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "FU-B rerun end"
+# GDN-C rerun
+O=$D/out/GD/C-rerun; WT=$D/gd/src; PYX=$PYGD; hdr $O $WT $PYX; mkdir -p $O/runs; cd $WT; log "GDN-C rerun start"
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --ep 4 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "GDN-C rerun end"
+# FU-C rerun
+O=$D/out/FU/C-rerun; WT=$D/fu/src; PYX=$PYFU; hdr $O $WT $PYX; mkdir -p $O/runs; cd $WT; log "FU-C rerun start"
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --ep 4 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "FU-C rerun end"
