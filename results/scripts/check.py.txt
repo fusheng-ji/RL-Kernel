@@ -1,0 +1,87 @@
+"""Prints, per task, the README's expectations against what the result files hold."""
+import json, os, re, sys
+OUT = os.path.expanduser('<HOME>/datastorage/h3gemm_20261122/out')
+GiB = 2**30
+
+
+def j(p):
+    try:
+        return json.load(open(p))
+    except Exception as e:
+        return {'_error': repr(e)}
+
+
+def tail(p, n=3):
+    try:
+        return ' | '.join(l.strip() for l in open(p).read().splitlines()[-n:])
+    except Exception as e:
+        return repr(e)
+
+
+def h2b():
+    print('== H2.b')
+    for run in ('sharded_tp4_sp_928', 'sharded_tp4_cp2_ring_925', 'sharded_tp8_sp_928', 'lora_random_tp4_cp2_sp_ulysses_928',
+                'lora_zero_tp4_cp2_ring_925', 'inject_sharded_tp4_cp2_ring_925'):
+        d = j(f'{OUT}/H2/{run}/report.json')
+        if '_error' in d:
+            print(run, 'NO REPORT', d['_error']); continue
+        drift = sorted({(str(r.get('first_drift_forward')), str(r.get('first_drift_backward'))) for r in d['ranks']})
+        bad = sorted({k for r in d['ranks'] for k, v in r['checks'].items() if not v})
+        print(run, 'all_bitwise', d['all_bitwise'], 'strict', d['strict_boundaries'], 'world', d['world'], 'failed checks', bad,
+              'mismatched shards', sum(len(r['weight_shards_mismatched']) + len(r['lora_shards_mismatched']) for r in d['ranks']))
+        if run.startswith('inject'):
+            for f, b in drift:
+                print('   drift fwd', f[:300], '\n   drift bwd', b[:300])
+
+
+def h3():
+    print('== H3')
+    for run in ('random_ring_928', 'random_ulysses_928', 'zero_ring_928', 'random_ring_928_clip', 'inject_ring_928', 'random_ring_recipe'):
+        d = j(f'{OUT}/H3/{run}/report.json')
+        if '_error' in d:
+            print(run, 'NO REPORT', d['_error']); continue
+        s = d['summary']
+        failing = [r['rank'] for r in s['ranks'] if not r['pass']]
+        flags = {k: all(r[k] for r in s['ranks']) for k in ('blocks_bitwise', 'refiner_bitwise', 'repeat_blocks_bitwise', 'repeat_refiner_bitwise')}
+        peaks = [r['grid_peak_bytes'] / GiB for r in d['ranks']]
+        print(run, 'pass', s['pass'], 'failing ranks', failing, flags, 'strict', {r['strict_boundaries'] for r in d['ranks']},
+              'export equal', all(r['export']['file_digests_equal'] for r in d['ranks']),
+              'peak GiB', ' '.join(f'{p:.2f}' for p in peaks))
+        if run.startswith('inject'):
+            for r in d['ranks']:
+                if 'inject' in r:
+                    print('   rank', r['rank'], r['inject'], 'blocks_bitwise', r['grid_vs_canonical']['blocks_bitwise'])
+
+
+def h1():
+    print('== H1')
+    print('binding', tail(f'{OUT}/H1/binding-tests.txt', 2))
+    for f in ('block-replay', 'refiner-report'):
+        print(f, open(f'{OUT}/H1/rc.txt').read().count(f'{f} rc=0') if os.path.exists(f'{OUT}/H1/rc.txt') else '-')
+    for s in ('head', 'base'):
+        print('suite', s, tail(f'{OUT}/H1/suite-{s}.txt', 1))
+
+
+def h2a():
+    print('== H2.a')
+    d = j(f'{OUT}/H2/crosscheck.json')
+    print('crosscheck pass', d.get('pass'), d.get('_error', ''))
+    print('kernel', tail(f'{OUT}/H2/kernel-tests.txt', 2))
+    for s in ('head', 'base'):
+        print('suite', s, tail(f'{OUT}/H2/suite-{s}.txt', 1))
+
+
+def h4():
+    print('== H4')
+    print('rc', open(f'{OUT}/H4/rc.txt').read().replace('\n', '; ') if os.path.exists(f'{OUT}/H4/rc.txt') else '-')
+    for f in ('B/transition-tests.txt', 'transition-upstream.txt', 'omni-cpu.txt', 'omni-gpu.txt'):
+        print(f, tail(f'{OUT}/H4/{f}', 1))
+
+
+def h5():
+    print('== H5')
+    print(tail(f'{OUT}/H5/ring-attention.txt', 2))
+
+
+for t in sys.argv[1:] or ['h2b', 'h3', 'h1', 'h2a', 'h4', 'h5']:
+    globals()[t]()

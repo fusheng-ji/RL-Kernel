@@ -1,0 +1,910 @@
+{
+ "contract": "h3-parallel-model-v1",
+ "tp": 4,
+ "cp": 2,
+ "sp": false,
+ "cp_mode": "ring",
+ "attention": "h3_full",
+ "size": "925",
+ "packed_rows": 925,
+ "inject": "17:5:3",
+ "sharded": true,
+ "lora": null,
+ "strict_boundaries": true,
+ "world": 8,
+ "spans": [
+  [
+   0,
+   463
+  ],
+  [
+   0,
+   463
+  ],
+  [
+   0,
+   463
+  ],
+  [
+   0,
+   463
+  ],
+  [
+   463,
+   925
+  ],
+  [
+   463,
+   925
+  ],
+  [
+   463,
+   925
+  ],
+  [
+   463,
+   925
+  ]
+ ],
+ "all_bitwise": false,
+ "ranks": [
+  {
+   "rank": 0,
+   "host": "node-a",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 74.03248598612845,
+    "canonical": 4.598655978217721,
+    "parallel": 4.003343628719449
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 0,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 0,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     0,
+     4
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 41.22627399303019,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39434085376
+   }
+  },
+  {
+   "rank": 1,
+   "host": "node-a",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 75.50049032643437,
+    "canonical": 4.650385847315192,
+    "parallel": 2.7041321601718664
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 1,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 1,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     1,
+     5
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 42.497834499925375,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39434085376
+   }
+  },
+  {
+   "rank": 2,
+   "host": "node-a",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 70.31390183232725,
+    "canonical": 4.554068693891168,
+    "parallel": 3.941532716155052
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 2,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 2,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     2,
+     6
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 41.37636684626341,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39434085376
+   }
+  },
+  {
+   "rank": 3,
+   "host": "node-a",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 70.29398888535798,
+    "canonical": 4.546776868402958,
+    "parallel": 3.8952341098338366
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 3,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 3,
+    "cp_rank": 0,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "cp_group_ranks": [
+     3,
+     7
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 41.490199893713,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39433991680
+   }
+  },
+  {
+   "rank": 4,
+   "host": "node-b",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 75.68425199016929,
+    "canonical": 4.477220989763737,
+    "parallel": 3.0113147292286158
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 4,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 0,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     0,
+     4
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 42.37222017534077,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39434096128
+   }
+  },
+  {
+   "rank": 5,
+   "host": "node-b",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 77.35950747318566,
+    "canonical": 4.527733338996768,
+    "parallel": 2.6301571410149336
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 5,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 1,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     1,
+     5
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 42.730107456445694,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39434096128
+   }
+  },
+  {
+   "rank": 6,
+   "host": "node-b",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 73.07218962907791,
+    "canonical": 4.42727511189878,
+    "parallel": 3.0916614830493927
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 6,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 2,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     2,
+     6
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 42.36343996040523,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39434096128
+   }
+  },
+  {
+   "rank": 7,
+   "host": "node-b",
+   "checks": {
+    "video_velocity_bitwise": false,
+    "audio_velocity_bitwise": false,
+    "input_grad.hidden_states": false,
+    "input_grad.audio_hidden_states": false,
+    "input_grad.encoder_hidden_states": false,
+    "block_outputs_bitwise": false,
+    "block_output_gradients_bitwise": false,
+    "weight_shard_gradients_bitwise": false
+   },
+   "weight_shards_compared": 350,
+   "weight_shards_mismatched": [
+    "0.attn.to_k.weight",
+    "0.attn.to_out.0.weight",
+    "0.attn.to_q.weight",
+    "0.attn.to_v.weight",
+    "0.ff.gate",
+    "0.ff.hidden",
+    "0.ff.net.2.weight",
+    "1.attn.to_k.weight",
+    "1.attn.to_out.0.weight",
+    "1.attn.to_q.weight"
+   ],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": {
+    "node": "block.17",
+    "first_row": 5,
+    "rows_differing": 1,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "text"
+   },
+   "first_drift_backward": {
+    "node": "block.49.grad",
+    "first_row": 77,
+    "rows_differing": 848,
+    "owner_ranks": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "modality": "audio"
+   },
+   "seconds": {
+    "load": 73.19982611760497,
+    "canonical": 4.417655887082219,
+    "parallel": 3.199620557948947
+   },
+   "readback": {
+    "contract": "h3-parallel-model-v1",
+    "parallel_contract": "h3-parallel-v2",
+    "rank": 7,
+    "tp": 4,
+    "cp": 2,
+    "sp": false,
+    "tp_rank": 3,
+    "cp_rank": 1,
+    "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+    "tp_group_ranks": [
+     4,
+     5,
+     6,
+     7
+    ],
+    "cp_group_ranks": [
+     3,
+     7
+    ],
+    "tp_collective": {
+     "backend": "cuda_ipc_fixed_tree",
+     "class": "DeterministicCollective",
+     "world_size": 4,
+     "local_size": null,
+     "groups": null
+    },
+    "cp_mode": "ring",
+    "cp_contract": "h3-ring-cp-v1",
+    "attention": "h3_full",
+    "kernels": {
+     "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+     "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+     "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+     "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+     "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+     "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+     "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+     "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp"
+    }
+   },
+   "sharded": {
+    "load_seconds": 42.40322110801935,
+    "resident_param_bytes": 37379054080,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 39434096128
+   }
+  }
+ ],
+ "torch": "2.13.0+cu130",
+ "device": "NVIDIA H100"
+}

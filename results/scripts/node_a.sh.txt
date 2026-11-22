@@ -1,0 +1,38 @@
+#!/bin/bash
+# On node-a (inside one srun step with the node's 4 GPUs): H1 (refs/h100/h3-strict-gemm-rows, base 9388feed), then H2.a and the H2 suites
+# (refs/h100/h3-parallel-v2-gemm-rows, base 81a87617). <E1>. Commands as in the README.
+source <HOME>/datastorage/h3gemm_20261122/env.sh; export RL_KERNEL_H3_WEIGHTS=$WEIGHTS
+side() { O=$1; W=$2; tag=$3; git -C $W rev-parse HEAD > $O/commit-$tag.txt; git -C $W status --porcelain --untracked-files=no > $O/status-$tag.txt; }
+suites() { O=$1; H=$2; B=$3; nvidia-smi > $O/nvidia-smi-suites.txt 2>&1; side $O $H suites-head-before; side $O $B suites-base-before
+  cfile $O $H $E1 suite-head || { echo "suite-head: _C not inside" >> $O/rc.txt; return; }; cfile $O $B $E1 suite-base || { echo "suite-base: _C not inside" >> $O/rc.txt; return; }
+  log "$(basename $O) suites start"
+  (cd $H && CUDA_VISIBLE_DEVICES=0,1 PYTHONPATH=$H:$PROVIDER/src $E1/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 > $O/suite-head.txt 2>&1; echo "suite-head rc=$?" >> $O/rc.txt) &
+  (cd $B && CUDA_VISIBLE_DEVICES=2,3 PYTHONPATH=$B:$PROVIDER/src $E1/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 > $O/suite-base.txt 2>&1; echo "suite-base rc=$?" >> $O/rc.txt) &
+  wait; side $O $H suites-head-after; side $O $B suites-base-after; log "$(basename $O) suites end"; }
+
+# H1
+O=$OUT/H1; W=$WS/w1; rec $O $W $E1; nvidia-smi > $O/nvidia-smi-before.txt 2>&1
+if cfile $O $W $E1 head; then cd $W; export PYTHONPATH=$W:$PROVIDER/src; log "H1 start"
+  CUDA_VISIBLE_DEVICES=0 $E1/bin/python -m pytest -q -p no:cacheprovider -rfs \
+    tests/models/minimax_h3/test_h3_one_block.py tests/models/minimax_h3/test_h3_token_refiner.py \
+    tests/models/minimax_h3/test_h3_operator_trace.py tests/models/minimax_h3/test_h3_full_model.py \
+    > $O/binding-tests.txt 2>&1; echo "binding-tests rc=$?" >> $O/rc.txt
+  CUDA_VISIBLE_DEVICES=0 $E1/bin/python tools/validation/models/h3_block_replay.py \
+    --layouts tiny,small,medium --out $O/block-replay.json > $O/block-replay.log 2>&1; echo "block-replay rc=$?" >> $O/rc.txt
+  CUDA_VISIBLE_DEVICES=0 $E1/bin/python tools/validation/models/h3_refiner_report.py \
+    --tokens 12 257 925 --out $O/refiner-report.json > $O/refiner-report.log 2>&1; echo "refiner-report rc=$?" >> $O/rc.txt
+  unset PYTHONPATH; rec $O $W $E1 after; log "H1 tools end"
+  suites $O $WS/w1 $WS/b1
+else echo "H1: _C not inside" >> $O/rc.txt; fi
+
+# H2.a
+O=$OUT/H2; W=$WS/w2; mkdir -p $O; rec $O $W $E1 before-H2a; nvidia-smi > $O/nvidia-smi-before-H2a.txt 2>&1
+if cfile $O $W $E1 head-H2a; then cd $W; export PYTHONPATH=$W:$PROVIDER/src; log "H2.a start"
+  CUDA_VISIBLE_DEVICES=0 $E1/bin/python tools/validation/models/h3_gemm_rows_crosscheck.py \
+    --rows 264 925 4296 --out $O/crosscheck.json > $O/crosscheck.log 2>&1; echo "crosscheck rc=$?" >> $O/rc.txt
+  CUDA_VISIBLE_DEVICES=0 $E1/bin/python -m pytest -q -p no:cacheprovider -rfs \
+    tests/models/minimax_h3/test_h3_fixed_fp32_gemm.py > $O/kernel-tests.txt 2>&1; echo "kernel-tests rc=$?" >> $O/rc.txt
+  unset PYTHONPATH; rec $O $W $E1 after-H2a; log "H2.a end"
+  suites $O $WS/w2 $WS/b2
+else echo "H2.a: _C not inside" >> $O/rc.txt; fi
+log "node-a end"

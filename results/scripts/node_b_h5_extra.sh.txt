@@ -1,0 +1,12 @@
+#!/bin/bash
+# Supplementary to H5 (not a README command): the same test with -v, on 2 GPUs (names the two that pass) and on 4 GPUs.
+source <HOME>/datastorage/h3gemm_20261122/env.sh
+O=$OUT/H5/supplementary; W=$WS/w5; mkdir -p $O; rec $O $W $E1; nvidia-smi > $O/nvidia-smi-before.txt 2>&1
+if cfile $O $W $E1 head; then cd $W; log "H5 supplementary start"
+  for g in 0,1 0,1,2,3; do n=$(echo $g | tr -cd , | wc -c); n=$((n+1))
+    PYTHONPATH=$W:$PROVIDER/src RL_KERNEL_H3_WEIGHTS=$WEIGHTS CUDA_VISIBLE_DEVICES=$g $E1/bin/python -m pytest -v -p no:cacheprovider -rfs \
+      "tests/models/minimax_h3/test_h3_ring_attention.py::test_block_with_h3_attention_equals_single_gpu_bitwise" \
+      > $O/ring-attention-${n}gpu-v.txt 2>&1; echo "ring-attention-${n}gpu-v rc=$?" >> $O/rc.txt
+  done
+  rec $O $W $E1 after; log "H5 supplementary end"
+fi

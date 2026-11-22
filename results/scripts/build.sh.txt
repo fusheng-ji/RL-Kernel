@@ -1,0 +1,11 @@
+#!/bin/bash
+# build.sh <node> <name:venv>...: builds _C in each checkout on <node>, one after another, then records _C's file and the tree status.
+source <HOME>/datastorage/h3gemm_20261122/env.sh; N=$1; shift; B=$OUT/build; mkdir -p $B
+for x in "$@"; do w=${x%%:*}; V=${x#*:}; Wd=$WS/$w
+  git -C $Wd status --porcelain --untracked-files=no > $B/status-before-build-$w.txt
+  log "build $w ($(basename $V)) on $N start"
+  srun --jobid=$J -w $N --overlap -N1 -n1 -c 64 --mem=0 bash -c "cd $Wd && RL_KERNEL_H3_STRICT=1 RL_KERNEL_REQUIRE_EXT=1 $V/bin/python setup.py build_ext --inplace" > $B/build-$w.log 2>&1
+  rc=$?; echo "build-$w rc=$rc" >> $B/rc.txt; log "build $w end rc=$rc"
+  cfile $B $Wd $V $w
+  git -C $Wd status --porcelain --untracked-files=no > $B/status-after-build-$w.txt
+done

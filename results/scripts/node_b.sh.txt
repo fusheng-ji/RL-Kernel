@@ -1,0 +1,33 @@
+#!/bin/bash
+# On node-b (inside one srun step with the node's 4 GPUs): H4 (<E2>: #731 f67d96d1, refs/h100/pr735-f3dbae37-with-734), then H5 (<E1>, #733 0b5b87c3).
+source <HOME>/datastorage/h3gemm_20261122/env.sh
+
+# H4, #731 f67d96d1: step B of handoff/h100-h3-final-run-pra-20261120 as written there, then the transition-upstream tests
+O=$OUT/H4; W=$WS/w4a; mkdir -p $O/B; rec $O $W $E2 before-731; nvidia-smi > $O/nvidia-smi-before-731.txt 2>&1
+cfile $O $W $E2 731 || echo "731: _C not inside the checkout (see build/build-w4a.log); step B runs without it, as at b446400f" >> $O/rc.txt
+cd $W; export PYTHONPATH=$W; log "H4 731 start"
+CUDA_VISIBLE_DEVICES=0 $E2/bin/python $TDB/compare_sample_h3_transition.py --out $O/B/verl-omni-compare.json > $O/B/verl-omni-compare.log 2>&1; echo "compare rc=$?" >> $O/rc.txt
+CUDA_VISIBLE_DEVICES=0 $E2/bin/python $TDB/logprob_batch_probe.py --out $O/B/logprob-batch.json > $O/B/logprob-batch.log 2>&1; echo "logprob-batch rc=$?" >> $O/rc.txt
+CUDA_VISIBLE_DEVICES=0 VERL_OMNI_PATH=$VERL_OMNI $E2/bin/python -m pytest \
+  "tests/models/minimax_h3/test_h3_runtime_integration.py::TestTransition" -p no:cacheprovider -q -rfs > $O/B/transition-tests.txt 2>&1; echo "transition rc=$?" >> $O/rc.txt
+CUDA_VISIBLE_DEVICES=0 VERL_OMNI_PATH=$VERL_OMNI $E2/bin/python -m pytest -q -p no:cacheprovider -rfs \
+  tests/models/minimax_h3/test_h3_transition_upstream.py > $O/transition-upstream.txt 2>&1; echo "transition-upstream rc=$?" >> $O/rc.txt
+unset PYTHONPATH; rec $O $W $E2 after-731; log "H4 731 end"
+
+# H4, #735 f3dbae37 with #734
+W=$WS/w4b; rec $O $W $E2 before-735; mv $O/commit.txt $O/commit-735.txt; git -C $WS/w4a rev-parse HEAD > $O/commit-731.txt; nvidia-smi > $O/nvidia-smi-before-735.txt 2>&1
+if cfile $O $W $E2 735; then cd $W; export PYTHONPATH=$W RL_KERNEL_H3_WEIGHTS=$WEIGHTS; log "H4 735 start"
+  CUDA_VISIBLE_DEVICES="" $E2/bin/python -m pytest -q -p no:cacheprovider -rfs tests/models/minimax_h3/test_h3_omni_model.py > $O/omni-cpu.txt 2>&1; echo "omni-cpu rc=$?" >> $O/rc.txt
+  CUDA_VISIBLE_DEVICES=0 $E2/bin/python -m pytest -q -p no:cacheprovider -rfs tests/models/minimax_h3/test_h3_omni_model.py > $O/omni-gpu.txt 2>&1; echo "omni-gpu rc=$?" >> $O/rc.txt
+  unset PYTHONPATH RL_KERNEL_H3_WEIGHTS; rec $O $W $E2 after-735; rm -f $O/commit.txt; log "H4 735 end"
+else echo "735: _C not inside" >> $O/rc.txt; fi
+
+# H5
+O=$OUT/H5; W=$WS/w5; rec $O $W $E1; nvidia-smi > $O/nvidia-smi-before.txt 2>&1
+if cfile $O $W $E1 head; then cd $W; log "H5 start"
+  PYTHONPATH=$W:$PROVIDER/src RL_KERNEL_H3_WEIGHTS=$WEIGHTS CUDA_VISIBLE_DEVICES=0,1 $E1/bin/python -m pytest -q -p no:cacheprovider -rfs \
+    "tests/models/minimax_h3/test_h3_ring_attention.py::test_block_with_h3_attention_equals_single_gpu_bitwise" \
+    > $O/ring-attention.txt 2>&1; echo "ring-attention rc=$?" >> $O/rc.txt
+  rec $O $W $E1 after; log "H5 end"
+else echo "H5: _C not inside" >> $O/rc.txt; fi
+log "node-b end"

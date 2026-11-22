@@ -1,0 +1,8 @@
+#!/bin/bash
+# chain.sh <pid of run_multi.sh>: after H3, the H2.b rerun on both nodes, then node-a (H1, H2.a) and node-b (H4, H5) side by side.
+source <HOME>/datastorage/h3gemm_20261122/env.sh; cd $WS
+while kill -0 $1 2>/dev/null; do sleep 30; done
+./run_h2b.sh > $OUT/run-h2b.out 2>&1
+srun --jobid=$J -w $NA --overlap -N1 -n1 -c 64 --gres=gpu:4 --mem=0 bash $WS/node_a.sh > $OUT/node-a.out 2>&1 &
+srun --jobid=$J -w $NB --overlap -N1 -n1 -c 64 --gres=gpu:4 --mem=0 bash $WS/node_b.sh > $OUT/node-b.out 2>&1 &
+wait; log "chain end"

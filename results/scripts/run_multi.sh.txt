@@ -1,0 +1,32 @@
+#!/bin/bash
+# H2.b (h3_parallel_full_model.py at refs/h100/h3-parallel-v2-gemm-rows) and H3 (h3_grid_train_step.py at refs/h100/h3-integrated), <E1>.
+# Run from the login node: every run is an srun step with one task per GPU (the tools read the SLURM rank variables), global rank 0 on node-a.
+source <HOME>/datastorage/h3gemm_20261122/env.sh; export MASTER_ADDR=$NA; PORT=29840
+W2=$WS/w2; W3=$WS/w3
+for w in w2 w3; do cfile $OUT/build $WS/$w $E1 pre-multi-$w || { log "multi: _C of $w not inside the checkout, stop"; exit 1; }; done
+run() { T=$1; W=$2; tool=$3; name=$4; ranks=$5; shift 5; O=$OUT/$T/$name; mkdir -p $O; PORT=$((PORT+3))
+  rec $O $W $E1; cfile $O $W $E1 before || { echo "$name: _C not inside" >> $OUT/$T/rc.txt; return; }
+  smi $O $NA node-a; if [ $ranks = 8 ]; then smi $O $NB node-b; L="-N2 -w $NA,$NB --ntasks-per-node=4 -n8 --gres=gpu:4"; else L="-N1 -w $NA -n$ranks --gres=gpu:$ranks"; fi
+  echo "tool: $tool" > $O/command.txt; echo "flags: $*" | sed "s|$CKPT|<CKPT>|g; s|$OUT|<OUT>|g" >> $O/command.txt
+  echo "launch: srun $L (one task per GPU), MASTER_PORT=$PORT" >> $O/command.txt
+  log "$T $name start"
+  ( cd $W && MASTER_PORT=$PORT PYTHONPATH=$W:$PROVIDER/src srun --jobid=$J --overlap $L -c 16 --mem=0 --kill-on-bad-exit=1 \
+      $E1/bin/python $tool "$@" > $O/run.log 2>&1 ); rc=$?
+  echo "$name rc=$rc" >> $OUT/$T/rc.txt; git -C $W status --porcelain --untracked-files=no > $O/status-after.txt; log "$T $name end rc=$rc"; }
+P=tools/validation/models/h3_parallel_full_model.py
+h2() { name=$1; ranks=$2; shift 2; run H2 $W2 $P $name $ranks --checkpoint $CKPT --attention h3_full --out $OUT/H2/$name --sharded "$@"; }
+h2 sharded_tp4_sp_928 4 --tp 4 --sp --size 928
+h2 sharded_tp4_cp2_ring_925 8 --tp 4 --cp 2 --cp-mode ring --size 925
+h2 sharded_tp8_sp_928 8 --tp 8 --sp --size 928 --local-size 4
+h2 lora_random_tp4_cp2_sp_ulysses_928 8 --tp 4 --cp 2 --sp --cp-mode ulysses --size 928 --lora-rank 64 --lora-alpha 128 --lora-seed 7
+h2 lora_zero_tp4_cp2_ring_925 8 --tp 4 --cp 2 --cp-mode ring --size 925 --lora-rank 64 --lora-alpha 128 --lora-seed 7 --lora-b-zero
+h2 inject_sharded_tp4_cp2_ring_925 8 --tp 4 --cp 2 --cp-mode ring --size 925 --inject 17:5:3
+G=tools/validation/models/h3_grid_train_step.py
+h3() { name=$1; shift; run H3 $W3 $G $name 8 --checkpoint $CKPT --tp 4 --cp 2 --sp --repeat --passes 3 --optimizer-steps 2 "$@" --out $OUT/H3/$name; }
+h3 random_ring_928 --cp-mode ring --size 928
+h3 random_ulysses_928 --cp-mode ulysses --size 928
+h3 zero_ring_928 --cp-mode ring --size 928 --lora-b-zero
+h3 random_ring_928_clip --cp-mode ring --size 928 --max-norm 1e-3
+h3 inject_ring_928 --cp-mode ring --size 928 --max-norm 1e9 --inject 17.attn.to_v.A:2
+h3 random_ring_recipe --cp-mode ring --size recipe
+log "multi end"

@@ -1,0 +1,54 @@
+"""H1: block-replay.json and refiner-report.json against the README's expectations (bounds as in the tests at 775e98e7)."""
+import json, os
+OUT = os.path.expanduser('<HOME>/datastorage/h3gemm_20261122/out/H1')
+FF, FL = 1.25, 1e-3   # FORWARD_FACTOR, FORWARD_FLOOR
+BF, BL, ULPS = 1.5, 5e-3, 6.0  # BACKWARD_FACTOR, BACKWARD_FLOOR, BACKWARD_BF16_EXCESS_ULPS
+ROWS = {'o_proj': 'H3AttentionOGemmOp', 'ffn_gate_up': 'H3FFNGateUpGemmOp', 'ffn_down': 'H3FFNDownGemmOp', 'attention': 'H3FullAttentionOp'}
+
+
+def forward(cases, tag):
+    for c in cases:
+        by = {n['node']: n for n in c['nodes']}
+        rows = {k: (by[k]['status'], by[k]['backend'].rsplit('.', 1)[-1]) for k in ROWS if k in by}
+        rows_ok = all(by[k]['status'] == 'row' and by[k]['backend'].endswith(v) for k, v in ROWS.items() if k in by)
+        missing = [k for k in ROWS if k not in by]
+        rep = [n['node'] for n in c['nodes'] if n.get('repeat_bitwise_equal') is False]
+        bat = [n['node'] for n in c['nodes'] if n.get('batch_row_bitwise_equal') is False]
+        over = [(n['node'], n['candidate_rel_err_vs_golden'], n['provider_rel_err_vs_golden']) for n in c['nodes']
+                if 'candidate_rel_err_vs_golden' in n and n['candidate_rel_err_vs_golden'] > FF * n['provider_rel_err_vs_golden'] + FL]
+        interim = [n['node'] for n in c['nodes'] if n['status'] != 'row']
+        print(f"{tag} fwd {c.get('layout', c.get('tokens'))} S={c.get('seq_len', '')}: rows ok {rows_ok} {rows} missing {missing} "
+              f"repeat-not-equal {rep} batch-not-equal {bat} over-bound {over} non-row nodes {interim}")
+
+
+def backward(cases, tag):
+    for c in cases:
+        rep = [n['node'] for n in c['nodes'] if n.get('grad_repeat_bitwise_equal') is False]
+        bat = [n['node'] for n in c['nodes'] if n.get('grad_batch_row_bitwise_equal') is False]
+        over = []
+        for name, e in c['leaves'].items():
+            if 'candidate_rel_err_vs_golden' not in e:
+                continue
+            ok = e['candidate_rel_err_vs_golden'] <= BF * e['provider_rel_err_vs_golden'] + BL or (
+                e.get('storage_dtype') == 'bfloat16' and e['candidate_ulps_vs_golden'] <= e['provider_ulps_vs_golden'] + ULPS)
+            if not ok:
+                over.append(name)
+        leaf_rep = [k for k, e in c['leaves'].items() if e.get('repeat_bitwise_equal') is False]
+        na = [n['node'] for n in c['nodes'] if n.get('grad_batch_row_bitwise_equal') is None]
+        print(f"{tag} bwd (batch-row not applicable: {na}) {c.get('layout', c.get('tokens'))}: node grad repeat-not-equal {rep} batch-not-equal {bat} "
+              f"leaf repeat-not-equal {leaf_rep} leaves over bound {over} drifts {c.get('first_grad_repeat_drift')} {c.get('first_grad_batch_drift')}")
+
+
+b = json.load(open(f'{OUT}/block-replay.json'))
+print('block-replay commit', b['rl_kernel_commit'][:8], 'dirty', b['tracked_tree_dirty'])
+forward(b['forward_cases'], 'block')
+backward(b['backward_cases'], 'block')
+r = json.load(open(f'{OUT}/refiner-report.json'))
+print('refiner keys', list(r.keys()))
+for k in ('forward_cases', 'cases'):
+    if k in r:
+        forward(r[k], 'refiner')
+if 'backward_cases' in r:
+    backward(r['backward_cases'], 'refiner')
+if 'nodes' in r:
+    print('refiner nodes', [(n['node'], n['status'], n['backend'].rsplit('.', 1)[-1]) for n in r['nodes']])

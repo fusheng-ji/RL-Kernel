@@ -1,0 +1,3 @@
+tool: tools/validation/models/h3_parallel_full_model.py
+flags: --checkpoint <CKPT> --attention h3_full --out <OUT>/H2/lora_random_tp4_cp2_sp_ulysses_928 --sharded --tp 4 --cp 2 --sp --cp-mode ulysses --size 928 --lora-rank 64 --lora-alpha 128 --lora-seed 7
+launch: srun -N2 -w node-a,node-b --ntasks-per-node=4 -n8 --gres=gpu:4 (one task per GPU), MASTER_PORT=29909

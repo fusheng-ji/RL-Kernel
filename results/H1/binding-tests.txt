@@ -1,0 +1,94 @@
+.............................F.......................................... [ 75%]
+........................                                                 [100%]
+=================================== FAILURES ===================================
+______________________ test_backward_against_fp32_golden _______________________
+
+refiner_weights = {'token_refiner.refiner_blocks.0.norm1.weight': tensor([0.9492, 0.7734, 0.9023,  ..., 0.8359, 0.7656, 0.8984], device=...     [-0.0776,  0.0403,  0.0126,  ..., -0.0128,  0.0439,  0.0193]],
+       device='cuda:0', dtype=torch.bfloat16), ...}
+
+    @needs_gpu
+    def test_backward_against_fp32_golden(refiner_weights):
+        ops = hb.CandidateOps()
+        block = 0
+        leaves = [f"{hr.PREFIX}.{block}.{leaf}" for leaf in hr.PARAM_LEAVES]
+        gen = torch.Generator("cpu").manual_seed(2)
+        hidden0 = torch.randn(1, 33, hr.HIDDEN, generator=gen).bfloat16().cuda()
+        grad_out = torch.randn(1, 33, hr.HIDDEN, generator=gen).bfloat16().cuda()
+    
+        def grads(mode, dtype):
+            weights = {
+                n: refiner_weights[n].detach().to(dtype).clone().requires_grad_() for n in leaves
+            }
+            hidden = hidden0.detach().to(dtype).clone().requires_grad_()
+            ctx = {"weights": weights, "prefix": f"{hr.PREFIX}.{block}", "hidden": hidden}
+            out = hr.run_graph(mode, ctx, ops)[hr.OUTPUT]
+            out.backward(grad_out.to(out.dtype))
+            return {"hidden": hidden.grad, **{n: weights[n].grad for n in leaves}}
+    
+>       cand = grads("candidate", torch.bfloat16)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/models/minimax_h3/test_h3_token_refiner.py:163: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/models/minimax_h3/test_h3_token_refiner.py:159: in grads
+    out = hr.run_graph(mode, ctx, ops)[hr.OUTPUT]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/validation/models/h3_refiner.py:219: in run_graph
+    values[node.name] = node.candidate(ops, ctx, *args)
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+rl_engine/validation/models/h3_refiner.py:112: in <lambda>
+    candidate=lambda ops, ctx, x: hb.cand_gemm(
+rl_engine/validation/models/h3_block.py:233: in cand_gemm
+    out = op(flat, weight, logical_keys=_row_keys(x), parameter_id=parameter_id)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = <rl_engine.ops.gemm.h3_projections.H3AttentionOGemmOp object at 0x72b4592bc860>
+x = tensor([[-1.0703, -0.1279, -1.6797,  ..., -3.0938,  3.4844,  0.8359],
+        [ 6.6875,  1.8125,  0.1768,  ...,  3.437...562,  0.8906,  ...,  2.8594,  1.8516, -0.2168]],
+       device='cuda:0', dtype=torch.bfloat16, grad_fn=<ViewBackward0>)
+weight = tensor([[ 0.1035, -0.1875, -0.1523,  ..., -0.1104, -0.0356, -0.0291],
+        [-0.0430,  0.0835,  0.0591,  ..., -0.047...  0.0347,  0.1748,  ...,  0.0287, -0.1348, -0.0364]],
+       device='cuda:0', dtype=torch.bfloat16, requires_grad=True)
+logical_keys = tensor([[ 0,  0],
+        [ 0,  1],
+        [ 0,  2],
+        [ 0,  3],
+        [ 0,  4],
+        [ 0,  5],
+        [ ...  [ 0, 27],
+        [ 0, 28],
+        [ 0, 29],
+        [ 0, 30],
+        [ 0, 31],
+        [ 0, 32]], device='cuda:0')
+parameter_id = 'token_refiner.refiner_blocks.0.attn.to_out.0.weight'
+
+    def __call__(self, x, weight, *, logical_keys=None, parameter_id=None):
+        _validate_inputs(x, weight, self.kind)
+        input_dim, output_dim = SPECS[self.kind]
+        parameter_id = self.kind + ".weight" if parameter_id is None else parameter_id
+        if torch.compiler.is_compiling():
+            raise RuntimeError("this H3 profile currently supports eager execution only")
+        _require_backend(x.device, self.backend)
+        use, keys = None, None
+        if torch.is_grad_enabled() and weight.requires_grad:
+            session = active_session()
+            if session is None:
+>               raise RuntimeError("weight gradients require an active canonical backward session")
+E               RuntimeError: weight gradients require an active canonical backward session
+
+rl_engine/ops/gemm/h3_projections.py:232: RuntimeError
+----------------------------- Captured stdout call -----------------------------
+INFO 11-22 19:59:03 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-22 19:59:03 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-22 19:59:03 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-22 19:59:03 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+------------------------------ Captured log call -------------------------------
+INFO     RL-Kernel:registry.py:1235 KernelRegistry initialized for cuda
+INFO     RL-Kernel:det_gemm.py:1425 TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO     RL-Kernel:deterministic_attn.py:118 Successfully linked to _C.deterministic_attention_forward/backward.
+INFO     RL-Kernel:swiglu.py:112 Successfully linked to precompiled _C.swiglu_forward kernel.
+=========================== short test summary info ============================
+FAILED tests/models/minimax_h3/test_h3_token_refiner.py::test_backward_against_fp32_golden
+1 failed, 95 passed in 14.86s

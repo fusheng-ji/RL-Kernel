@@ -1,0 +1,43 @@
+== H2.b
+sharded_tp4_sp_928 all_bitwise True strict True world 4 failed checks [] mismatched shards 0
+sharded_tp4_cp2_ring_925 all_bitwise True strict True world 8 failed checks [] mismatched shards 0
+sharded_tp8_sp_928 all_bitwise True strict True world 8 failed checks [] mismatched shards 0
+lora_random_tp4_cp2_sp_ulysses_928 all_bitwise True strict True world 8 failed checks [] mismatched shards 0
+lora_zero_tp4_cp2_ring_925 all_bitwise True strict True world 8 failed checks [] mismatched shards 0
+inject_sharded_tp4_cp2_ring_925 all_bitwise False strict True world 8 failed checks ['audio_velocity_bitwise', 'block_output_gradients_bitwise', 'block_outputs_bitwise', 'input_grad.audio_hidden_states', 'input_grad.encoder_hidden_states', 'input_grad.hidden_states', 'video_velocity_bitwise', 'weight_shard_gradients_bitwise'] mismatched shards 80
+   drift fwd {'node': 'block.17', 'first_row': 5, 'rows_differing': 1, 'owner_ranks': [0, 1, 2, 3], 'modality': 'text'} 
+   drift bwd {'node': 'block.49.grad', 'first_row': 77, 'rows_differing': 848, 'owner_ranks': [0, 1, 2, 3], 'modality': 'audio'}
+== H3
+random_ring_928 pass True failing ranks [] {'blocks_bitwise': True, 'refiner_bitwise': True, 'repeat_blocks_bitwise': True, 'repeat_refiner_bitwise': True} strict {True} export equal True peak GiB 37.50 37.50 37.50 37.50 37.50 37.50 37.50 37.50
+random_ulysses_928 pass True failing ranks [] {'blocks_bitwise': True, 'refiner_bitwise': True, 'repeat_blocks_bitwise': True, 'repeat_refiner_bitwise': True} strict {True} export equal True peak GiB 37.50 37.50 37.50 37.50 37.50 37.50 37.50 37.50
+zero_ring_928 pass True failing ranks [] {'blocks_bitwise': True, 'refiner_bitwise': True, 'repeat_blocks_bitwise': True, 'repeat_refiner_bitwise': True} strict {True} export equal True peak GiB 37.50 37.50 37.50 37.50 37.50 37.50 37.50 37.50
+random_ring_928_clip pass True failing ranks [] {'blocks_bitwise': True, 'refiner_bitwise': True, 'repeat_blocks_bitwise': True, 'repeat_refiner_bitwise': True} strict {True} export equal True peak GiB 37.50 37.50 37.50 37.50 37.50 37.50 37.50 37.50
+inject_ring_928 pass False failing ranks [2] {'blocks_bitwise': False, 'refiner_bitwise': True, 'repeat_blocks_bitwise': False, 'repeat_refiner_bitwise': True} strict {True} export equal True peak GiB 37.50 37.50 37.50 37.50 37.50 37.50 37.50 37.50
+   rank 0 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': False, 'mismatches_here': 0} blocks_bitwise True
+   rank 1 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': False, 'mismatches_here': 0} blocks_bitwise True
+   rank 2 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': True, 'mismatches_here': 1} blocks_bitwise False
+   rank 3 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': False, 'mismatches_here': 0} blocks_bitwise True
+   rank 4 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': False, 'mismatches_here': 0} blocks_bitwise True
+   rank 5 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': False, 'mismatches_here': 0} blocks_bitwise True
+   rank 6 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': False, 'mismatches_here': 0} blocks_bitwise True
+   rank 7 {'tensor': '17.attn.to_v.A', 'rank': 2, 'reported_here': False, 'mismatches_here': 0} blocks_bitwise True
+random_ring_recipe pass True failing ranks [] {'blocks_bitwise': True, 'refiner_bitwise': True, 'repeat_blocks_bitwise': True, 'repeat_refiner_bitwise': True} strict {True} export equal True peak GiB 39.67 39.67 39.67 39.67 39.67 39.67 39.67 39.67
+== H1
+binding FAILED tests/models/minimax_h3/test_h3_token_refiner.py::test_backward_against_fp32_golden | 1 failed, 95 passed in 14.86s
+block-replay 1
+refiner-report 1
+suite head 1 failed, 1474 passed, 81 skipped, 14 warnings in 860.43s (0:14:20)
+suite base 1470 passed, 81 skipped, 14 warnings in 854.91s (0:14:14)
+== H2.a
+crosscheck pass True 
+kernel ..............                                                           [100%] | 14 passed in 3.61s
+suite head 1525 passed, 87 skipped, 14 warnings in 954.03s (0:15:54)
+suite base 1511 passed, 87 skipped, 14 warnings in 946.03s (0:15:46)
+== H4
+rc 731: _C not inside the checkout (see build/build-w4a.log); step B runs without it, as at b446400f; compare rc=0; logprob-batch rc=0; transition rc=0; transition-upstream rc=0; omni-cpu rc=0; omni-gpu rc=0; 
+B/transition-tests.txt 9 passed in 9.79s
+transition-upstream.txt 16 passed in 3.10s
+omni-cpu.txt 41 passed, 3 skipped in 2.28s
+omni-gpu.txt 44 passed, 17 warnings in 88.56s (0:01:28)
+== H5
+SKIPPED [1] tests/models/minimax_h3/test_h3_ring_attention.py:238: needs 7 GPUs | 2 passed, 8 skipped in 49.22s
