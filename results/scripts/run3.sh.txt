@@ -1,0 +1,26 @@
+#!/bin/bash
+# Task 3 on one exclusive node: A build, B chain+bi+report+gate, C bench (rollout,replay), D CPU suite. Commands as in the README; failures recorded, not retried.
+source <HOME>/datastorage/stp2_20261122/env.sh; source $D/hdr.sh
+WT=$S/src; PYX=$PYGD; OUT=$S/out; mkdir -p $OUT/{A,B,C,D}; cd $WT
+log() { echo "[$(date -u +%FT%TZ)] $*" >> $OUT/steps.txt; }
+O=$OUT/A; hdr $O $WT $PYX; nvidia-smi > $O/nvidia-smi-start.txt; log "A start"
+$PYX setup.py build_ext --inplace > $O/build.log 2>&1; echo "build rc=$?" >> $O/rc.txt
+$PYX -c "import rl_engine._C as c; print(c.__file__)" > $O/c-file.txt 2>&1; cat $O/c-file.txt >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "A end"
+case "$(realpath $(cat $O/c-file.txt))" in $(realpath $WT)/*) ;; *) log "c-file not inside worktree: stop"; exit 1;; esac
+O=$OUT/B; hdr $O $WT $PYX; nvidia-smi > $O/nvidia-smi-start.txt; log "B start"; R=tools/validation/models/qwen3_next/qwen3_next_run.py
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+L2=$(ls -d $O/runs/*-l2-* 2>/dev/null | head -n 1)
+if [ -n "$L2" ] && grep -q '^  "status": "passed"' $L2/result.json 2>/dev/null; then
+  PYTHONUNBUFFERED=1 $PYX $R --stage bi --bi-suite full --previous $L2 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/bi.log 2>&1; echo "bi rc=$?" >> $O/rc.txt
+  $PYX tools/validation/models/qwen3_next/qwen3_next_chain_report.py --last $L2 --out $O/chain-report.json > $O/report.log 2>&1; echo "report rc=$?" >> $O/rc.txt
+  PY=$PYX bash ci/scripts/run_qwen3_next_chain_gate.sh $O/chain-report.json > $O/gate.log 2>&1; echo "gate rc=$?" >> $O/gate.log; tail -n 1 $O/gate.log >> $O/rc.txt
+  git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "B end"
+  O=$OUT/C; hdr $O $WT $PYX; nvidia-smi > $O/nvidia-smi-start.txt; log "C start"
+  $PYX -c "import rl_engine._C as c; print(c.__file__)" > $O/c-file.txt 2>&1
+  $PYX benchmarks/models/qwen3_next/qwen3_next_e2e_bench.py --run $L2 --out $O/bench --phases rollout,replay > $O/bench.log 2>&1; echo "rc=$?" >> $O/bench.log
+  git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "C end"
+else echo "no passed l2 run: bi, report, gate and C not run" >> $O/rc.txt; touch $O/DONE; log "B end (no passed l2)"; fi
+O=$OUT/D; hdr $O $WT $PYX; log "D start"
+PYTHONPATH=$WT $PYX -m pytest -q -p no:cacheprovider tests/models/qwen3_next/ > $O/pytest.log 2>&1; echo "rc=$?" >> $O/pytest.log
+git status --porcelain --untracked-files=no > $O/status-after.txt; touch $O/DONE; log "D end"
