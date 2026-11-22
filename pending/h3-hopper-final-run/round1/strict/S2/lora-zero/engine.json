@@ -1,0 +1,458 @@
+{
+ "tp": 4,
+ "checkpoint": "MiniMax-H3 (released)",
+ "steps": 2,
+ "max_num_seqs": 2,
+ "install": [
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 0,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 1,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 2,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 3,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  }
+ ],
+ "lora": {
+  "rank": 64,
+  "alpha": 128.0,
+  "seed": 7,
+  "b_zero": true,
+  "shards_per_rank": [
+   650,
+   650,
+   650,
+   650
+  ],
+  "tampered": {
+   "rank": 2,
+   "block": 17,
+   "target": "attn.to_v.A",
+   "at": [
+    3,
+    5
+   ]
+  },
+  "tampered_sync_refused": "rlk_h3_load_lora: ['RPC \\'rlk_h3_load_lora\\' failed on worker rank(s): rank 0: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 1: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 2: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 3: RuntimeError: rlk_h3_load_lora r",
+  "every_rank_kept_the_decoy": true,
+  "every_rank_has_the_senders_digests": true,
+  "pass": true
+ },
+ "seconds": {
+  "A-alone": 8.513461095280945,
+  "B-alone": 4.792048501782119,
+  "A+B together": 9.185527446679771
+ },
+ "ranks": [
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 0,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 6,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    }
+   ]
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 1,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 6,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    }
+   ]
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 2,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 6,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    }
+   ]
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v1",
+   "tp": 4,
+   "tp_rank": 3,
+   "attention": "h3_full",
+   "strict_boundaries": true,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 6,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "2c3893e5be06fa0b84dd576a1db81e3f8ce203ce0d7f7254eb9db8977e2d7f9e",
+     "video": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+     "audio": "91843ad9d45eb8f51e31c96c476e42ac2f8be4ecf95d67793d67e96111ec44c4"
+    },
+    {
+     "call": 4,
+     "num_requests": 2,
+     "inputs": "e4de552eed68296dac8cf66f97eb29ca0d4584d316d0e04ecc8c42ee74c8938f",
+     "video": "7988dd68e14a6a7ef5610cc2fc3a3bc650d59dacf843b004c49bde53c4cecbfc",
+     "audio": "678c450078f8cd3c661c1d2061c9da789e4d539635973b519913d73a4352fd67"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "af87e5b0e49c1a4a15e171997be3d83487026bd113ca6f8a1f4fac5faeb803d3",
+     "video": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+     "audio": "0b40437958ddaeef9c730e9dae748f13eb33e29998d6201dba39806c4e47f42d"
+    },
+    {
+     "call": 5,
+     "num_requests": 2,
+     "inputs": "fdf9129ffaada4f0544ca0176a72f92e456e4d7ab0bbea81741f581b55225db8",
+     "video": "a9de2f65a1d3a4b7b11c8695ddfc71de84bc8138499b16ef3335ac71235670a4",
+     "audio": "cc45ef02e255ec5f84986c2c33d3dedb999513619ef6c4e371b40fb4f582e29c"
+    }
+   ]
+  }
+ ],
+ "calls_per_rank": [
+  8,
+  8,
+  8,
+  8
+ ],
+ "ranks_agree": true,
+ "request_calls": 8,
+ "request_calls_in_batches": 4,
+ "distinct_inputs": 4,
+ "same_inputs_same_outputs": true,
+ "batched_calls_with_an_alone_twin": 4,
+ "batched_calls_without_an_alone_twin": 0,
+ "captures": [
+  {
+   "call": "call0",
+   "video_digest": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+   "in_run": true
+  },
+  {
+   "call": "call1",
+   "video_digest": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+   "in_run": true
+  }
+ ],
+ "record_errors": [],
+ "pass": true,
+ "stage": "engine",
+ "torch": "2.14.0+cu130",
+ "device": "NVIDIA H100"
+}

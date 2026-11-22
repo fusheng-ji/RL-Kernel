@@ -1,0 +1,53 @@
+{
+ "grid": "Grid(1, 1), one GPU",
+ "strict_boundaries": true,
+ "lora": {
+  "rank": 64,
+  "alpha": 128.0,
+  "seed": 7,
+  "b_zero": true,
+  "shards_per_rank": [
+   650,
+   650,
+   650,
+   650
+  ],
+  "tampered": {
+   "rank": 2,
+   "block": 17,
+   "target": "attn.to_v.A",
+   "at": [
+    3,
+    5
+   ]
+  },
+  "tampered_sync_refused": "rlk_h3_load_lora: ['RPC \\'rlk_h3_load_lora\\' failed on worker rank(s): rank 0: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 1: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 2: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 3: RuntimeError: rlk_h3_load_lora r",
+  "every_rank_kept_the_decoy": true,
+  "every_rank_has_the_senders_digests": true,
+  "pass": true
+ },
+ "calls": [
+  {
+   "call": "call0",
+   "rows": 3957,
+   "video_bitwise": true,
+   "audio_bitwise": true,
+   "video_digest": "14e9436941143743d7126e3040452e16e8f83f76a5dc659dd7934300b5611b27",
+   "in_rollout_digests": true,
+   "max_abs_video": 0.0
+  },
+  {
+   "call": "call1",
+   "rows": 3957,
+   "video_bitwise": true,
+   "audio_bitwise": true,
+   "video_digest": "aca0142ca6bebdb558baa8f64f9451ff694780576d92aeb836528407dd1820b5",
+   "in_rollout_digests": true,
+   "max_abs_video": 0.0
+  }
+ ],
+ "pass": true,
+ "stage": "canonical",
+ "torch": "2.14.0+cu130",
+ "device": "NVIDIA H100"
+}
