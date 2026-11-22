@@ -1,5 +1,7 @@
 # PR #548 review item 4: Qwen3-8B fixed-rollout qualification on H100 (2026-11-19/20)
 
+**Round 2 (2026-11-22, `19b62661`): see the "Round 2" section at the end. Unit tests 26 passed; step 5 probe: all 8 rows `probe_complete`, highest peak 86.0 GiB per rank, so step 6 runs.**
+
 **Status: steps 1-4 passed. Step 5 (TP2 memory probe) did NOT meet its go rule (5 of 8 rows `probe_complete`), so I stopped: step 6 (candidate, tiny-GPT regression) has not been run.** Commit `b6412e38` (steps 1-4, reference without tensors) was pushed before the probe started and shows that `acceptance.json` and all `*-bounds.json` were frozen before any probe or candidate run. The tensors (about 1.4 TB, scratch) stay on disk.
 
 ## Hardware and software
@@ -66,3 +68,35 @@ Result: **5 of 8 `probe_complete`; 3 failed.** Two different causes: (1) Megatro
 
 ## Not run
 Step 6 (candidate: Megatron/DeepSpeed x FP32/BF16 x actor/critic x TP2/TP4 and the tiny-GPT regression), by the stop rule of step 5. TP4 was never probed (it is outside the probe by design).
+
+## Round 2 (2026-11-22): `19b62661`, from step 5
+
+Done as in `h100-handoff/pr548-item4-20261119/ROUND2.md` (handoff branch at `2027aa21`). Steps 1-4 were not rerun; the frozen reference of round 1 (`results/reference/`, tensors still on disk) is the one used. The round-1 probe directory is unchanged; the new probe wrote `results/probe/probe-20261122T000414Z/`.
+
+### Commit check
+- `git -C <src> fetch origin handoff/h100-pr548-item4-20261119` (tip `2027aa21`), `git -C <src> checkout --detach 19b62661`; `git status --porcelain` empty before and after every step (`results/steps/r2-probe.status-after.txt` is empty).
+- `<py> -c "import rl_engine._C as c; print(c.__file__)"`: the `_C` built in round 1, inside `<src>` (no `csrc` change between `1bba6d19` and `19b62661`).
+
+### Unit tests (CPU)
+`PYTHONPATH=<src>:<overlay> <py> -m pytest -rs -q -p no:cacheprovider tests/integrations/engines/train/deepspeed/test_deepspeed_ppo_zero_stage.py tests/integrations/engines/train/deepspeed/test_deepspeed_bf16_flat_layout.py tests/integrations/engines/train/deepspeed/test_deepspeed_bf16_zero_norm_step.py tests/validation/models/test_qwen3_fixed_matrix.py`: **26 passed** in 27 s (`results/round2/unit-tests.log`).
+
+### Step 5 again: trainer memory probe
+`bash tools/validation/models/qwen3_ppo/probe_trainer_memory.sh <src> <py> <overlay> <checkpoint> <reference run dir> <results>/probe` (no TP size argument), on an idle node (4 x H100, 95830 MiB each), 2026-11-22T00:04:13Z to 01:27:28Z, wall 4995 s, rc 0.
+
+**All 8 rows `probe_complete`; highest peak 86.0 GiB per rank (Megatron BF16 critic, TP2), so the go rule (every rank at most 88 GiB) is met.**
+
+| Probe | Status | Peak per rank (H100, round 2) | B200 pre-check | Round 1 on H100 | Seconds |
+|---|---|---:|---:|---:|---:|
+| Megatron, FP32 actor, TP2 | `probe_complete` | 66.1 GiB | 66.1 GiB | 66.1 GiB | 672 |
+| Megatron, FP32 critic, TP2 | `probe_complete` | 61.3 GiB | 61.2 GiB | 61.3 GiB | 597 |
+| Megatron, BF16 actor, TP4 | `probe_complete` | 46.6 GiB | 46.6 GiB | (TP2: OOM at 90.0 GiB) | 543 |
+| Megatron, BF16 critic, TP2 | `probe_complete` | 86.0 GiB | 86.0 GiB | 86.0 GiB | 529 |
+| DeepSpeed, FP32 actor, TP2 | `probe_complete` | 66.1 GiB | 66.1 GiB | 66.1 GiB | 699 |
+| DeepSpeed, FP32 critic, TP2 | `probe_complete` | 61.3 GiB | 61.2 GiB | 61.3 GiB | 634 |
+| DeepSpeed, BF16 actor, TP4 | `probe_complete` | 53.7 GiB | 53.6 GiB | (TP2: failed at init) | 526 |
+| DeepSpeed, BF16 critic, TP4 | `probe_complete` | 49.6 GiB | 49.6 GiB | (TP2: failed at init) | 453 |
+
+Every rank of a row has the same peak (`summary.tsv`); H100 and the B200 pre-check agree within 0.1 GiB on all 8 rows.
+
+### Step 6
+Committed and pushed this probe first, as ROUND2.md asks; the candidate (`qualify_candidate.sbatch`, 13 runs, 5 TP2-vs-TP4 comparisons, tiny-GPT regression) follows in the next commit.
