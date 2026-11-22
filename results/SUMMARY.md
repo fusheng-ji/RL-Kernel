@@ -119,3 +119,5 @@ The one failure (`megatron-fp32-actor-tp4/comparison.json`, `failures`):
 Every other TP4 tensor stays at or below 0.53 of its bound (next: `0/update/model.layers.24.post_attention_layernorm.weight`, 0.53). The relative L2 of the failing tensor is 1.22e-03 at TP4 against 3.94e-04 at TP2. The two runs' losses (-0.0712526 vs -0.0712537) and gradient norms (76.9235 vs 76.9238) are close.
 
 As ROUND2.md says, the script stops at the first failing comparison; this is the result, kept as it is and not rerun. The script runs with `set -euo pipefail`, so it exited right after run 2's comparison. Not reached: the Megatron FP32 actor TP2-vs-TP4 comparison (next in the loop), the Megatron FP32 critic, both Megatron BF16 rows, all DeepSpeed rows, the other four TP2-vs-TP4 comparisons, and the tiny-GPT regressions.
+
+Directory names: the job-local run directories are written `job-JOBID-attempt-N`.
