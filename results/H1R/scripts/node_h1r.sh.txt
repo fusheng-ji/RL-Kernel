@@ -1,0 +1,18 @@
+#!/bin/bash
+# On node-a (one srun step with the node's 4 GPUs): H1 rerun at refs/h100/h3-strict-gemm-rows + fix.patch (<W1R>), <E1>, one step after another.
+source <HOME>/datastorage/h3gemm_20261122/env.sh
+O=$OUT/H1R; W=$WS/w1r; cd $W; export PYTHONPATH=$W:$PROVIDER/src RL_KERNEL_H3_WEIGHTS=$WEIGHTS
+step() { tag=$1; gpus=$2; out=$3; shift 3
+  rec $O $W $E1 before-$tag; nvidia-smi > $O/nvidia-smi-before-$tag.txt 2>&1
+  cfile $O $W $E1 $tag || { echo "$tag: _C not inside" >> $O/rc.txt; return; }
+  log "H1R $tag start"
+  CUDA_VISIBLE_DEVICES=$gpus $E1/bin/python -m pytest "$@" > $O/$out 2>&1; echo "$tag rc=$?" >> $O/rc.txt
+  rec $O $W $E1 after-$tag; log "H1R $tag end"; }
+step binding 0 binding-tests.txt -q -p no:cacheprovider -rfs \
+  tests/models/minimax_h3/test_h3_one_block.py tests/models/minimax_h3/test_h3_token_refiner.py
+step binding-readme 0 binding-tests-readme.txt -q -p no:cacheprovider -rfs \
+  tests/models/minimax_h3/test_h3_one_block.py tests/models/minimax_h3/test_h3_token_refiner.py \
+  tests/models/minimax_h3/test_h3_operator_trace.py tests/models/minimax_h3/test_h3_full_model.py
+step suite-head 0,1 suite-head.txt -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3
+{ echo "HEAD $(git -C $W rev-parse HEAD)"; echo "tree $(git -C $W rev-parse HEAD^{tree})"; echo "parent $(git -C $W rev-parse HEAD^)"; git -C $W log -1 --format='subject %s%nauthor %an <%ae>'; } > $O/commit.txt
+log "H1R end"

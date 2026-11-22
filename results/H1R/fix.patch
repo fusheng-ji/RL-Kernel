@@ -1,0 +1,35 @@
+From 02a0ef348e6efa5cb47ac3c5410729c44ea40c82 Mon Sep 17 00:00:00 2001
+From: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+Date: Sun, 22 Nov 2026 19:47:00 +0000
+Subject: [PATCH] test(h3): open the GEMM rows' session in the refiner backward
+ test
+
+test_backward_against_fp32_golden calls run_graph and backward directly.
+On SM90 CandidateOps() binds the O, gate/up and down rows, whose weight
+gradients need an active canonical backward session; the block and
+refiner runners open one (gemm_session), this test did not.
+
+Signed-off-by: Wenbo Ji <36562829+fusheng-ji@users.noreply.github.com>
+---
+ tests/models/minimax_h3/test_h3_token_refiner.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/tests/models/minimax_h3/test_h3_token_refiner.py b/tests/models/minimax_h3/test_h3_token_refiner.py
+index 7f5d3c80b..96d008469 100644
+--- a/tests/models/minimax_h3/test_h3_token_refiner.py
++++ b/tests/models/minimax_h3/test_h3_token_refiner.py
+@@ -156,8 +156,10 @@ def test_backward_against_fp32_golden(refiner_weights):
+         }
+         hidden = hidden0.detach().to(dtype).clone().requires_grad_()
+         ctx = {"weights": weights, "prefix": f"{hr.PREFIX}.{block}", "hidden": hidden}
+-        out = hr.run_graph(mode, ctx, ops)[hr.OUTPUT]
+-        out.backward(grad_out.to(out.dtype))
++        # the GEMM rows' weight gradients need a canonical session (opened when they are bound)
++        with hb.gemm_session(ops if mode == "candidate" else None):
++            out = hr.run_graph(mode, ctx, ops)[hr.OUTPUT]
++            out.backward(grad_out.to(out.dtype))
+         return {"hidden": hidden.grad, **{n: weights[n].grad for n in leaves}}
+ 
+     cand = grads("candidate", torch.bfloat16)
+-- 
+2.51.1
