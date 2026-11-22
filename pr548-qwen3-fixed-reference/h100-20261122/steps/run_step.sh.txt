@@ -1,0 +1,11 @@
+#!/bin/bash
+# usage: run_step.sh <name> <script-relative> args...   (args may use $VARS expanded by caller env)
+source <HOME>/datastorage/q548/env.sh
+N=$1; shift; S=$1; shift
+O=$Q/out/steps; mkdir -p $O
+echo "[$(date -u +%FT%TZ)] START $N: bash $S $*" >> $O/steps.txt
+s=$(date +%s)
+cd $SRC; bash $SRC/tools/validation/models/qwen3_ppo/$S "$@" > $O/$N.log 2>&1; rc=$?
+echo "[$(date -u +%FT%TZ)] END $N rc=$rc wall=$(( $(date +%s)-s ))s" >> $O/steps.txt
+git status --porcelain > $O/$N.status-after.txt
+touch $O/$N.DONE

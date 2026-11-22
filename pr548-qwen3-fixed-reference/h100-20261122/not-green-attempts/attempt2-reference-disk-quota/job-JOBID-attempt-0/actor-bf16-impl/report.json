@@ -1,0 +1,39 @@
+{
+  "commit": "1bba6d193233a8279fb85203d26389b0e453712c",
+  "job_id": "<JOBID>",
+  "model_revision": "b968826d9c46dd6066d109eabc6255188de91218",
+  "torch": "2.9.1+cu130",
+  "config": {
+    "gamma": 1.0,
+    "gae_lambda": 0.95,
+    "policy_clip": 0.2,
+    "value_clip": 0.2,
+    "kl_coefficient": 0.01,
+    "epochs": 2,
+    "minibatch_size": 2,
+    "max_grad_norm": 1.0,
+    "microbatch_size": 1,
+    "canonical_tp": null
+  },
+  "optimizer": {
+    "lr": 1e-05,
+    "betas": [
+      0.9,
+      0.999
+    ],
+    "eps": 1e-08,
+    "weight_decay": 0.01
+  },
+  "role": "actor",
+  "precision": "bf16",
+  "rollout_manifest_sha256": "64b1efa0b1e726ccd524c6649462bb28654d4262e04ebd33f38713a050295f43",
+  "implementation_control": {
+    "attention": "sdpa",
+    "linear": "tokens, output features and input features each split into 3 chunks; input-feature partials summed in reverse order in FP32",
+    "log_softmax": "logsumexp merged over 3 vocabulary chunks"
+  },
+  "optimizer_state": "cpu",
+  "targets_manifest_sha256": "9c5b6e21d161e24db3fc1eb7bea5b0004378141c2333bc0c5fa4b8e386c4a118",
+  "status": "failed",
+  "error": "RuntimeError: [enforce fail at inline_container.cc:664] . unexpected pos 896 vs 790"
+}
