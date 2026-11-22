@@ -1,6 +1,6 @@
 # PR #548 review item 4: Qwen3-8B fixed-rollout qualification on H100 (2026-11-19/20)
 
-**Round 2 (2026-11-22, `19b62661`): see the "Round 2" section at the end. Unit tests 26 passed; step 5 probe: all 8 rows `probe_complete`, highest peak 86.0 GiB per rank, so step 6 runs.**
+**Round 2 (2026-11-22, `19b62661`): see the "Round 2" section at the end. Unit tests 26 passed; step 5 probe: all 8 rows `probe_complete`, highest peak 86.0 GiB per rank. Step 6 candidate: run 1 (Megatron FP32 actor TP2) passed, run 2 (Megatron FP32 actor TP4) failed on one tensor of 1604 (`0/update/model.layers.17.post_attention_layernorm.weight`, 2.29 x its bound); the script stopped there (rc 1).**
 
 **Status: steps 1-4 passed. Step 5 (TP2 memory probe) did NOT meet its go rule (5 of 8 rows `probe_complete`), so I stopped: step 6 (candidate, tiny-GPT regression) has not been run.** Commit `b6412e38` (steps 1-4, reference without tensors) was pushed before the probe started and shows that `acceptance.json` and all `*-bounds.json` were frozen before any probe or candidate run. The tensors (about 1.4 TB, scratch) stay on disk.
 
@@ -98,5 +98,24 @@ Done as in `h100-handoff/pr548-item4-20261119/ROUND2.md` (handoff branch at `202
 
 Every rank of a row has the same peak (`summary.tsv`); H100 and the B200 pre-check agree within 0.1 GiB on all 8 rows.
 
-### Step 6
-Committed and pushed this probe first, as ROUND2.md asks; the candidate (`qualify_candidate.sbatch`, 13 runs, 5 TP2-vs-TP4 comparisons, tiny-GPT regression) follows in the next commit.
+### Step 6: candidate (stopped at run 2: one tensor over its bound)
+The probe above was committed and pushed first, as ROUND2.md asks (`fb9a4538`).
+
+`bash tools/validation/models/qwen3_ppo/qualify_candidate.sbatch <src> <trainer-python> <vllm-python> <overlay> <checkpoint> <reference run dir> <reference run dir>/acceptance.json <results>/candidate`, unchanged, on an idle node (4 x H100, no other process; `results/steps/candidate.nvidia-smi-start.txt`), 2026-11-22T03:44:30Z to 06:18:58Z, wall 9269 s, **rc 1**. The tree stayed clean (`results/steps/candidate.status-after.txt` is empty). Run directory: `results/candidate/job-JOBID-attempt-0/` (tensors stay on disk).
+
+`verify_reference` on the frozen reference passed (about 52 min, CPU). Then:
+
+| # | Run | Status | Peak allocated per rank | Run seconds | Against frozen FP32 repeat bounds |
+|---|---|---|---:|---:|---|
+| 1 | Megatron, FP32 actor, TP2 | `fixed_candidate_complete` | 66.1 GiB | 1322 | **passed** (1604 tensors; tightest 0.82 of its bound, `0/update/model.layers.8.input_layernorm.weight`) |
+| 2 | Megatron, FP32 actor, TP4 | `fixed_candidate_complete` | 35.6 GiB | 1209 | **failed**: 1 of 1604 tensors over its bound |
+
+The one failure (`megatron-fp32-actor-tp4/comparison.json`, `failures`):
+
+| Tensor | max_abs (TP4) | bound (`actor-fp32-repeat-bounds.json`) | ratio | same tensor at TP2 |
+|---|---:|---:|---:|---:|
+| `0/update/model.layers.17.post_attention_layernorm.weight` | 7.749e-07 | 3.384e-07 | 2.29 | 2.384e-07 (0.70) |
+
+Every other TP4 tensor stays at or below 0.53 of its bound (next: `0/update/model.layers.24.post_attention_layernorm.weight`, 0.53). The relative L2 of the failing tensor is 1.22e-03 at TP4 against 3.94e-04 at TP2. The two runs' losses (-0.0712526 vs -0.0712537) and gradient norms (76.9235 vs 76.9238) are close.
+
+As ROUND2.md says, the script stops at the first failing comparison; this is the result, kept as it is and not rerun. The script runs with `set -euo pipefail`, so it exited right after run 2's comparison. Not reached: the Megatron FP32 actor TP2-vs-TP4 comparison (next in the loop), the Megatron FP32 critic, both Megatron BF16 rows, all DeepSpeed rows, the other four TP2-vs-TP4 comparisons, and the tiny-GPT regressions.
