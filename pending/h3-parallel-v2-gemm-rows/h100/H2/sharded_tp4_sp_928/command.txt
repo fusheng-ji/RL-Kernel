@@ -1,0 +1,3 @@
+tool: tools/validation/models/h3_parallel_full_model.py
+flags: --checkpoint <CKPT> --attention h3_full --out <OUT>/H2/sharded_tp4_sp_928 --sharded --tp 4 --sp --size 928
+launch: srun -N1 -w node-a -n4 --gres=gpu:4 (one task per GPU), MASTER_PORT=29843

@@ -1,0 +1,458 @@
+{
+ "tp": 4,
+ "checkpoint": "MiniMax-H3 (released)",
+ "steps": 2,
+ "max_num_seqs": 1,
+ "install": [
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 0,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 1,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 2,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 3,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 0,
+   "lora": false,
+   "record_errors": [],
+   "resident_param_bytes": 37379054144
+  }
+ ],
+ "lora": {
+  "rank": 64,
+  "alpha": 128.0,
+  "seed": 7,
+  "b_zero": false,
+  "shards_per_rank": [
+   650,
+   650,
+   650,
+   650
+  ],
+  "tampered": {
+   "rank": 2,
+   "block": 17,
+   "target": "attn.to_v.A",
+   "at": [
+    3,
+    5
+   ]
+  },
+  "tampered_sync_refused": "rlk_h3_load_lora: ['RPC \\'rlk_h3_load_lora\\' failed on worker rank(s): rank 0: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 1: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 2: RuntimeError: rlk_h3_load_lora refused on TP ranks {2: \"RuntimeError: LoRA sync digest mismatch on 1 shards, e.g. [\\'17.attn.to_v.A\\']\"}; no rank changed; rank 3: RuntimeError: rlk_h3_load_lora r",
+  "every_rank_kept_the_decoy": true,
+  "every_rank_has_the_senders_digests": true,
+  "pass": true
+ },
+ "seconds": {
+  "A-alone": 10.008995704352856,
+  "B-alone": 3.674492321908474,
+  "A+B together": 7.238870887085795
+ },
+ "ranks": [
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 0,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 8,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    },
+    {
+     "call": 4,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 5,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 6,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 7,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    }
+   ]
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 1,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 8,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    },
+    {
+     "call": 4,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 5,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 6,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 7,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    }
+   ]
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 2,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 8,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    },
+    {
+     "call": 4,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 5,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 6,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 7,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    }
+   ]
+  },
+  {
+   "contract": "h3-omni-rollout-v1",
+   "parallel_contract": "h3-parallel-v2",
+   "tp": 4,
+   "tp_rank": 3,
+   "attention": "h3_full",
+   "strict_boundaries": false,
+   "sdpa_backends_outside_the_call": {
+    "cudnn": false,
+    "flash": true,
+    "efficient": true,
+    "math": true
+   },
+   "tp_collective": "DeterministicCollective",
+   "engine_parameter_bytes_released": 16570990400,
+   "calls": 8,
+   "lora": true,
+   "record_errors": [],
+   "digests": [
+    {
+     "call": 0,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 1,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 2,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 3,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    },
+    {
+     "call": 4,
+     "num_requests": 1,
+     "inputs": "e0ca75388ea8967748f43b765a62ec27503a52288379ba84097d26031a29e308",
+     "video": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+     "audio": "28dad8937b916063ce564df5db0074208c9519d7194f723a449d11713144ec76"
+    },
+    {
+     "call": 5,
+     "num_requests": 1,
+     "inputs": "49f44e32419f610c430f807f0e03653ab013af18edaa901bc261c06a9037c19c",
+     "video": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+     "audio": "459a853e22cd0f1fc689a05e35c530b961f5a88e165a452becc506f71974c101"
+    },
+    {
+     "call": 6,
+     "num_requests": 1,
+     "inputs": "b963d10dd41930e97fdc91e875b7fd1bf8a6cd574f4e03428a5624024e19c1a9",
+     "video": "49aabe154ee271b6dfae67a67c0d3640ed71f9360ae2c543b6ffbab12323372f",
+     "audio": "361473553d5f699b6d4bb213a6426077db6c7f7231cc3ce62d39490cfd9a1202"
+    },
+    {
+     "call": 7,
+     "num_requests": 1,
+     "inputs": "4a9e098484003d5e1eaf8cccd8d89326af51cc0e1abccef46ca95a499dc9a824",
+     "video": "92ed22c16e05ce4b2187aba5f86415e5833cce83d1ed4328dae9311b166770db",
+     "audio": "2426d8352b28b4cec9e345366b02a30aa0999cca284cd2f12b088b35bc33179c"
+    }
+   ]
+  }
+ ],
+ "calls_per_rank": [
+  8,
+  8,
+  8,
+  8
+ ],
+ "ranks_agree": true,
+ "request_calls": 8,
+ "request_calls_in_batches": 0,
+ "distinct_inputs": 4,
+ "same_inputs_same_outputs": true,
+ "batched_calls_with_an_alone_twin": 0,
+ "batched_calls_without_an_alone_twin": 0,
+ "captures": [
+  {
+   "call": "call0",
+   "video_digest": "c4f45f0c5c37145f6e9d9f48a91e332e98d854283be3b77042a2c84e17977356",
+   "in_run": true
+  },
+  {
+   "call": "call1",
+   "video_digest": "23b12687d74a1d57e13339bade74790ea7183c524a3d9a28ea78afe57607bf9f",
+   "in_run": true
+  }
+ ],
+ "record_errors": [],
+ "pass": false,
+ "stage": "engine",
+ "torch": "2.14.0+cu130",
+ "device": "NVIDIA B200"
+}
