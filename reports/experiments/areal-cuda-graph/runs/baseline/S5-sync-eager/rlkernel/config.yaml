@@ -1,0 +1,207 @@
+experiment_name: rlk-verify-sync
+trial_name: rlkernel-20261122-065559
+seed: 1
+enable_offload: false
+total_train_epochs: 10
+tokenizer_path: ${actor.path}
+cluster:
+  n_nodes: 2
+  n_gpus_per_node: 4
+  fileroot: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/fileroot
+  name_resolve:
+    type: nfs
+    nfs_record_root: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/name_resolve
+scheduler:
+  type: ray
+rollout:
+  backend: vllm:d1p1t4
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  max_concurrent_rollouts: 256
+  queue_size: null
+  consumer_batch_size: ${train_dataset.batch_size}
+  max_head_offpolicyness: 0
+  enable_rollout_tracing: false
+  scheduling_spec:
+  - task_type: worker
+    port_count: 2
+    gpu: 1
+    mem: 32
+    cmd: python3 -m areal.infra.rpc.rpc_server
+    env_vars:
+      RL_KERNEL_AREAL_STATS_JSONL: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/stats.jsonl
+      RL_KERNEL_AREAL_MODE: strict
+      RL_KERNEL_ATTENTION_CASE: R/R
+      RL_KERNEL_FFN_CASE: R/R
+      RL_KERNEL_LOGP_CASE: R/R
+      VIME_RL_KERNEL_STRICT: '1'
+      RL_KERNEL_CUDA_ONLY: '1'
+      RL_KERNEL_CUDA_ROPE: '1'
+      RL_KERNEL_VLLM_INTEGRATION: '1'
+      RL_KERNEL_VLLM_REQUIRE_V1: '1'
+      RL_KERNEL_VLLM_REAL_VOCAB_SIZE: '151936'
+      RL_KERNEL_VLLM_PADDED_VOCAB_SIZE: '151936'
+      RL_KERNEL_VLLM_CUDAGRAPH_MAX_CAPTURE_SIZE: '128'
+      RL_KERNEL_DET_GEMM_BACKEND: cublaslt_nosplitk
+      RL_KERNEL_READBACK_DIR: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/readback
+      VLLM_PLUGINS: rl_kernel
+      VLLM_ATTENTION_BACKEND: FLASH_ATTN
+      VLLM_USE_V2_MODEL_RUNNER: '0'
+      CUBLAS_WORKSPACE_CONFIG: :16:8
+      CUBLASLT_WORKSPACE_SIZE: '1'
+      NCCL_NVLS_ENABLE: '0'
+  fileroot: ${cluster.fileroot}
+  tokenizer_path: ${tokenizer_path}
+  dump_to_file: true
+  agent:
+    mode: inline
+    export_style: individual
+    turn_discount: 1.0
+gconfig:
+  n_samples: 4
+  min_new_tokens: 0
+  max_new_tokens: 1024
+  max_tokens: 2048
+  greedy: false
+  temperature: 1.0
+  top_p: 1.0
+actor:
+  backend: megatron:d1p1t4
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: $STORE/models/Qwen3-8B
+  init_from_scratch: false
+  disable_dropout: true
+  gradient_checkpointing: false
+  dtype: bfloat16
+  mb_spec:
+    max_tokens_per_mb: 16384
+  optimizer:
+    type: adam
+    lr: 3e-6
+    weight_decay: 0.003
+    beta1: 0.9
+    beta2: 0.999
+    eps: 1e-8
+    lr_scheduler_type: constant
+    gradient_clipping: 1.0
+    warmup_steps_proportion: 0.001
+  eps_clip: 0.4
+  temperature: ${gconfig.temperature}
+  reward_scaling: 10.0
+  reward_bias: -0.5
+  kl_ctl: 0.0
+  ppo_n_minibatches: 1
+  recompute_logprob: true
+  use_decoupled_loss: true
+  rejection_sampling:
+    metric: ratio
+    upper: 5.0
+  reward_norm:
+    mean_level: group
+    std_level: group
+    group_size: ${gconfig.n_samples}
+  adv_norm:
+    mean_level: batch
+    std_level: batch
+  max_new_tokens: ${gconfig.max_new_tokens}
+  scheduling_spec:
+  - task_type: worker
+    port_count: 2
+    gpu: 1
+    mem: 32
+    cmd: python3 -m rl_engine.integrations.orchestrators.areal.worker
+    env_vars:
+      RL_KERNEL_AREAL_STATS_JSONL: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/stats.jsonl
+      RL_KERNEL_AREAL_MODE: strict
+      RL_KERNEL_ATTENTION_CASE: R/R
+      RL_KERNEL_FFN_CASE: R/R
+      RL_KERNEL_LOGP_CASE: R/R
+      VIME_RL_KERNEL_STRICT: '1'
+      RL_KERNEL_CUDA_ONLY: '1'
+      RL_KERNEL_CUDA_ROPE: '1'
+      RL_KERNEL_VLLM_INTEGRATION: '1'
+      RL_KERNEL_VLLM_REQUIRE_V1: '1'
+      RL_KERNEL_VLLM_REAL_VOCAB_SIZE: '151936'
+      RL_KERNEL_VLLM_PADDED_VOCAB_SIZE: '151936'
+      RL_KERNEL_VLLM_CUDAGRAPH_MAX_CAPTURE_SIZE: '128'
+      RL_KERNEL_DET_GEMM_BACKEND: cublaslt_nosplitk
+      RL_KERNEL_READBACK_DIR: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/readback
+      VLLM_PLUGINS: rl_kernel
+      VLLM_ATTENTION_BACKEND: FLASH_ATTN
+      VLLM_USE_V2_MODEL_RUNNER: '0'
+      CUBLAS_WORKSPACE_CONFIG: :16:8
+      CUBLASLT_WORKSPACE_SIZE: '1'
+      NCCL_NVLS_ENABLE: '0'
+  prox_logp_method: recompute
+  megatron:
+    enable_chunked_logits: true
+    lm_head_loss_chunk_size: 4096
+    entropy_requires_grad: false
+sglang:
+  model_path: ${actor.path}
+  random_seed: ${seed}
+  skip_tokenizer_init: true
+  dtype: ${actor.dtype}
+  max_running_requests: null
+  context_length: 32768
+  mem_fraction_static: 0.8
+vllm:
+  model: ${actor.path}
+  seed: 1
+  skip_tokenizer_init: false
+  dtype: ${actor.dtype}
+  max_model_len: 32768
+  gpu_memory_utilization: 0.9
+  max_num_seqs: 128
+  enforce_eager: true
+train_dataset:
+  batch_size: 32
+  shuffle: true
+  pin_memory: true
+  num_workers: 4
+  path: $STORE/datasets/gsm8k
+  type: rl
+  max_length: 1024
+valid_dataset:
+  batch_size: 32
+  pin_memory: true
+  num_workers: 4
+  path: $STORE/datasets/gsm8k
+  type: rl
+saver:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: null
+  freq_secs: null
+recover:
+  mode: disabled
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: 3600
+evaluator:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: null
+  freq_secs: null
+stats_logger:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/fileroot
+  wandb:
+    mode: disabled
+perf_tracer:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  enabled: false
+  session_tracer:
+    enabled: false
+total_train_steps: 10

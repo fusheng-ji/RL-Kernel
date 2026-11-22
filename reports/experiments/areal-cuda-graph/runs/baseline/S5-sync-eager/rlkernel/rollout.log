@@ -1,0 +1,542 @@
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:04:33.069 SyncRPCServer INFO: Werkzeug log level: WARNING[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:04:33.077 Guard INFO: Starting Guard on <ip-3>:35961 for worker rollout/0[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:04:34.747 EngineBP INFO: Engine thread started[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:04:34.747 EngineBP INFO: Engine thread initialized[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:04:36.617 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:04:36.617 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:04:36.642 EngineBP INFO: Engine 'rollout/0' (class: areal.engine.vllm_remote.RemotevLLMEngine) instantiated successfully[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:04:36.658 vLLMEngine INFO: Launching vLLM server with command: python3 -m areal.engine.vllm_ext.areal_vllm_server --tokenizer $STORE/models/Qwen3-8B --load-format auto --trust-remote-code --tensor-parallel-size 4 --pipeline-parallel-size 1 --model $STORE/models/Qwen3-8B --seed 1 --enforce-eager --dtype bfloat16 --distributed-executor-backend mp --max-num-seqs 128 --block-size 16 --cpu-offload-gb 0.0 --disable-sliding-window --max-model-len 32768 --no-enable-prefix-caching --gpu-memory-utilization 0.9 --worker-extension-cls areal.engine.vllm_ext.vllm_worker_extension.VLLMWorkerExtension --uvicorn-log-level warning --max-lora-rank 16 --max-loras 8 --host <ip-3> --port 25304[0m
+WARNING 11-22 07:05:01 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-22 07:05:01 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 12.9)
+INFO 11-22 07:05:01 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-22 07:05:02 [RL-Kernel]: Successfully linked to precompiled _C.rope_apply_sm90 kernel.
+[W1122 07:05:02.448387678 Context.cpp:534] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+[RL-Kernel][route] mode=strict module=gemm requested=cublaslt_nosplitk actual=rlkernel.det_gemm.cublaslt_nosplitk.v1 fallback=false
+(APIServer pid=3294082) INFO 11-22 07:05:02 [utils.py:299] 
+(APIServer pid=3294082) INFO 11-22 07:05:02 [utils.py:299]        █     █     █▄   ▄█
+(APIServer pid=3294082) INFO 11-22 07:05:02 [utils.py:299]  ▄▄ ▄█ █     █     █ ▀▄▀ █  version 0.19.1
+(APIServer pid=3294082) INFO 11-22 07:05:02 [utils.py:299]   █▄█▀ █     █     █     █  model   $STORE/models/Qwen3-8B
+(APIServer pid=3294082) INFO 11-22 07:05:02 [utils.py:299]    ▀▀  ▀▀▀▀▀ ▀▀▀▀▀ ▀     ▀
+(APIServer pid=3294082) INFO 11-22 07:05:02 [utils.py:299] 
+(APIServer pid=3294082) INFO 11-22 07:05:02 [utils.py:233] non-default args: {'host': '<ip-3>', 'port': 25304, 'uvicorn_log_level': 'warning', 'model': '$STORE/models/Qwen3-8B', 'tokenizer': '$STORE/models/Qwen3-8B', 'trust_remote_code': True, 'dtype': 'bfloat16', 'seed': 1, 'max_model_len': 32768, 'enforce_eager': True, 'disable_sliding_window': True, 'distributed_executor_backend': 'mp', 'tensor_parallel_size': 4, 'worker_extension_cls': 'areal.engine.vllm_ext.vllm_worker_extension.VLLMWorkerExtension', 'block_size': 16, 'enable_prefix_caching': False, 'max_loras': 8, 'max_num_seqs': 128}
+(APIServer pid=3294082) WARNING 11-22 07:05:02 [system_utils.py:289] Found ulimit of 51200 and failed to automatically increase with error current limit exceeds maximum limit. This can cause fd limit errors like `OSError: [Errno 24] Too many open files`. Consider increasing with ulimit -n
+(APIServer pid=3294082) WARNING 11-22 07:05:02 [envs.py:1744] Unknown vLLM environment variable detected: VLLM_ATTENTION_BACKEND
+(APIServer pid=3294082) INFO 11-22 07:05:26 [model.py:549] Resolved architecture: Qwen3ForCausalLM
+(APIServer pid=3294082) INFO 11-22 07:05:26 [model.py:1678] Using max model len 32768
+(APIServer pid=3294082) INFO 11-22 07:05:26 [scheduler.py:238] Chunked prefill is enabled with max_num_batched_tokens=8192.
+(APIServer pid=3294082) INFO 11-22 07:05:26 [vllm.py:790] Asynchronous scheduling is enabled.
+(APIServer pid=3294082) WARNING 11-22 07:05:26 [vllm.py:848] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(APIServer pid=3294082) WARNING 11-22 07:05:26 [vllm.py:859] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(APIServer pid=3294082) INFO 11-22 07:05:26 [vllm.py:1025] Cudagraph is disabled under eager mode
+(APIServer pid=3294082) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(APIServer pid=3294082) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(APIServer pid=3294082) INFO 11-22 07:05:27 [compilation.py:292] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:05:36.833 RemoteInfEngine INFO: Still waiting for inference server at <ip-3>:25304 to become healthy (60s elapsed, timeout 300s, process alive=True)[0m
+(EngineCore pid=3294666) WARNING 11-22 07:05:48 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+(EngineCore pid=3294666) INFO 11-22 07:05:48 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 12.9)
+(EngineCore pid=3294666) INFO 11-22 07:05:48 [RL-Kernel]: KernelRegistry initialized for cuda
+(EngineCore pid=3294666) INFO 11-22 07:05:50 [RL-Kernel]: Successfully linked to precompiled _C.rope_apply_sm90 kernel.
+[W1122 07:05:50.167985914 Context.cpp:534] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+(EngineCore pid=3294666) [RL-Kernel][route] mode=strict module=gemm requested=cublaslt_nosplitk actual=rlkernel.det_gemm.cublaslt_nosplitk.v1 fallback=false
+(EngineCore pid=3294666) INFO 11-22 07:05:50 [core.py:105] Initializing a V1 LLM engine (v0.19.1) with config: model='$STORE/models/Qwen3-8B', speculative_config=None, tokenizer='$STORE/models/Qwen3-8B', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=True, dtype=torch.bfloat16, max_seq_len=32768, download_dir=None, load_format=auto, tensor_parallel_size=4, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=1, served_model_name=$STORE/models/Qwen3-8B, enable_prefix_caching=False, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_images_per_batch': 0, 'compile_sizes': [], 'compile_ranges_endpoints': [256, 8192], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': True}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': True, 'static_all_moe_layers': []}
+(EngineCore pid=3294666) INFO 11-22 07:05:50 [multiproc_executor.py:134] DP group leader: node_rank=0, node_rank_within_dp=0, master_addr=127.0.0.1, mq_connect_ip=<ip-2> (local), world_size=4, local_world_size=4
+WARNING 11-22 07:06:16 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-22 07:06:16 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 12.9)
+INFO 11-22 07:06:16 [RL-Kernel]: KernelRegistry initialized for cuda
+WARNING 11-22 07:06:18 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-22 07:06:18 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 12.9)
+INFO 11-22 07:06:18 [RL-Kernel]: KernelRegistry initialized for cuda
+WARNING 11-22 07:06:18 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-22 07:06:18 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 12.9)
+INFO 11-22 07:06:18 [RL-Kernel]: KernelRegistry initialized for cuda
+WARNING 11-22 07:06:18 [RL-Kernel]: MUSA availability check failed: No module named 'torch_musa'
+INFO 11-22 07:06:18 [RL-Kernel]: RL-Engine initialized with NVIDIA CUDA backend (Version: 12.9)
+INFO 11-22 07:06:18 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-22 07:06:18 [RL-Kernel]: Successfully linked to precompiled _C.rope_apply_sm90 kernel.
+[W1122 07:06:18.512170561 Context.cpp:534] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+[RL-Kernel][route] mode=strict module=gemm requested=cublaslt_nosplitk actual=rlkernel.det_gemm.cublaslt_nosplitk.v1 fallback=false
+INFO 11-22 07:06:18 [worker_base.py:269] Injected <class 'areal.engine.vllm_ext.vllm_worker_extension.VLLMWorkerExtension'> into <class 'vllm.v1.worker.gpu_worker.Worker'> for extended collective_rpc calls ['_areal_begin_weight_update', '_areal_needs_layerwise_reload', 'areal_finalize_weight_update', 'areal_init_update_weight_group', 'areal_set_weight_meta', 'areal_set_weight_meta_lora', 'areal_update_weight_lora_xccl', 'areal_update_weight_xccl', 'areal_update_weights', 'areal_update_weights_lora', 'sync']
+(Worker pid=3294891) INFO 11-22 07:06:19 [parallel_state.py:1400] world_size=4 rank=3 local_rank=3 distributed_init_method=tcp://127.0.0.1:40371 backend=nccl
+INFO 11-22 07:06:20 [RL-Kernel]: Successfully linked to precompiled _C.rope_apply_sm90 kernel.
+[W1122 07:06:20.010443846 Context.cpp:534] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+[RL-Kernel][route] mode=strict module=gemm requested=cublaslt_nosplitk actual=rlkernel.det_gemm.cublaslt_nosplitk.v1 fallback=false
+INFO 11-22 07:06:20 [worker_base.py:269] Injected <class 'areal.engine.vllm_ext.vllm_worker_extension.VLLMWorkerExtension'> into <class 'vllm.v1.worker.gpu_worker.Worker'> for extended collective_rpc calls ['_areal_begin_weight_update', '_areal_needs_layerwise_reload', 'areal_finalize_weight_update', 'areal_init_update_weight_group', 'areal_set_weight_meta', 'areal_set_weight_meta_lora', 'areal_update_weight_lora_xccl', 'areal_update_weight_xccl', 'areal_update_weights', 'areal_update_weights_lora', 'sync']
+(Worker pid=3294889) INFO 11-22 07:06:20 [parallel_state.py:1400] world_size=4 rank=1 local_rank=1 distributed_init_method=tcp://127.0.0.1:40371 backend=nccl
+INFO 11-22 07:06:21 [RL-Kernel]: Successfully linked to precompiled _C.rope_apply_sm90 kernel.
+[W1122 07:06:21.716846373 Context.cpp:534] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+[RL-Kernel][route] mode=strict module=gemm requested=cublaslt_nosplitk actual=rlkernel.det_gemm.cublaslt_nosplitk.v1 fallback=false
+INFO 11-22 07:06:21 [worker_base.py:269] Injected <class 'areal.engine.vllm_ext.vllm_worker_extension.VLLMWorkerExtension'> into <class 'vllm.v1.worker.gpu_worker.Worker'> for extended collective_rpc calls ['_areal_begin_weight_update', '_areal_needs_layerwise_reload', 'areal_finalize_weight_update', 'areal_init_update_weight_group', 'areal_set_weight_meta', 'areal_set_weight_meta_lora', 'areal_update_weight_lora_xccl', 'areal_update_weight_xccl', 'areal_update_weights', 'areal_update_weights_lora', 'sync']
+(Worker pid=3294888) INFO 11-22 07:06:21 [parallel_state.py:1400] world_size=4 rank=0 local_rank=0 distributed_init_method=tcp://127.0.0.1:40371 backend=nccl
+INFO 11-22 07:06:21 [RL-Kernel]: Successfully linked to precompiled _C.rope_apply_sm90 kernel.
+[W1122 07:06:21.148622724 Context.cpp:534] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+[RL-Kernel][route] mode=strict module=gemm requested=cublaslt_nosplitk actual=rlkernel.det_gemm.cublaslt_nosplitk.v1 fallback=false
+INFO 11-22 07:06:21 [worker_base.py:269] Injected <class 'areal.engine.vllm_ext.vllm_worker_extension.VLLMWorkerExtension'> into <class 'vllm.v1.worker.gpu_worker.Worker'> for extended collective_rpc calls ['_areal_begin_weight_update', '_areal_needs_layerwise_reload', 'areal_finalize_weight_update', 'areal_init_update_weight_group', 'areal_set_weight_meta', 'areal_set_weight_meta_lora', 'areal_update_weight_lora_xccl', 'areal_update_weight_xccl', 'areal_update_weights', 'areal_update_weights_lora', 'sync']
+(Worker pid=3294890) INFO 11-22 07:06:21 [parallel_state.py:1400] world_size=4 rank=2 local_rank=2 distributed_init_method=tcp://127.0.0.1:40371 backend=nccl
+(Worker pid=3294888) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=3294888) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=3294891) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=3294888) INFO 11-22 07:06:22 [pynccl.py:111] vLLM is using nccl==2.27.5
+(Worker pid=3294891) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=3294890) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=3294890) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=3294889) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(Worker pid=3294889) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(Worker pid=3294889) WARNING 11-22 07:06:26 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3294888) WARNING 11-22 07:06:26 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3294891) WARNING 11-22 07:06:26 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3294890) WARNING 11-22 07:06:26 [symm_mem.py:106] SymmMemCommunicator: symmetric memory multicast operations are not supported.
+(Worker pid=3294888) INFO 11-22 07:06:26 [parallel_state.py:1716] rank 0 in world size 4 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+(Worker_TP0 pid=3294888) INFO 11-22 07:06:27 [gpu_model_runner.py:4735] Starting to load model $STORE/models/Qwen3-8B...
+(Worker_TP0 pid=3294888) INFO 11-22 07:06:28 [cuda.py:334] Using FLASH_ATTN attention backend out of potential backends: ['FLASH_ATTN', 'FLASHINFER', 'TRITON_ATTN', 'FLEX_ATTENTION'].
+(Worker_TP0 pid=3294888) INFO 11-22 07:06:28 [flash_attn.py:596] Using FlashAttention version 3
+(Worker_TP0 pid=3294888) Loading safetensors checkpoint shards:   0% Completed | 0/5 [00:00<?, ?it/s]
+(Worker_TP0 pid=3294888) Loading safetensors checkpoint shards:  20% Completed | 1/5 [00:00<00:03,  1.00it/s]
+(Worker_TP0 pid=3294888) Loading safetensors checkpoint shards:  40% Completed | 2/5 [00:02<00:03,  1.02s/it]
+(Worker_TP0 pid=3294888) Loading safetensors checkpoint shards:  60% Completed | 3/5 [00:03<00:02,  1.03s/it]
+(Worker_TP0 pid=3294888) Loading safetensors checkpoint shards:  80% Completed | 4/5 [00:03<00:00,  1.12it/s]
+(Worker_TP0 pid=3294888) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:04<00:00,  1.47it/s]
+(Worker_TP0 pid=3294888) Loading safetensors checkpoint shards: 100% Completed | 5/5 [00:04<00:00,  1.23it/s]
+(Worker_TP0 pid=3294888) 
+(Worker_TP0 pid=3294888) INFO 11-22 07:06:33 [default_loader.py:384] Loading weights took 4.07 seconds
+(Worker_TP0 pid=3294888) INFO 11-22 07:06:33 [gpu_model_runner.py:4820] Model loading took 4.01 GiB memory and 5.073233 seconds
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:06:36.994 RemoteInfEngine INFO: Still waiting for inference server at <ip-3>:25304 to become healthy (120s elapsed, timeout 300s, process alive=True)[0m
+(Worker_TP1 pid=3294889) [RL-Kernel RoPE] rollout backend=rlkernel.cuda.rope_sm90 theta=1e+06
+(Worker_TP3 pid=3294891) [RL-Kernel RoPE] rollout backend=rlkernel.cuda.rope_sm90 theta=1e+06
+(Worker_TP2 pid=3294890) [RL-Kernel RoPE] rollout backend=rlkernel.cuda.rope_sm90 theta=1e+06
+(Worker_TP1 pid=3294889) [RL-Kernel][route] framework=vllm target=rollout module=attention requested=rl_kernel actual=rlkernel.attention.deterministic.v1 fallback=false
+(Worker_TP3 pid=3294891) [RL-Kernel][route] framework=vllm target=rollout module=attention requested=rl_kernel actual=rlkernel.attention.deterministic.v1 fallback=false
+(Worker_TP2 pid=3294890) [RL-Kernel][route] framework=vllm target=rollout module=attention requested=rl_kernel actual=rlkernel.attention.deterministic.v1 fallback=false
+(Worker_TP0 pid=3294888) [RL-Kernel RoPE] rollout backend=rlkernel.cuda.rope_sm90 theta=1e+06
+(Worker_TP0 pid=3294888) [RL-Kernel][route] framework=vllm target=rollout module=attention requested=rl_kernel actual=rlkernel.attention.deterministic.v1 fallback=false
+(Worker_TP1 pid=3294889) [RL-Kernel][route] framework=vllm target=rollout module=ffn requested=rl_kernel actual=rlkernel.cuda.det_gemm_swiglu fallback=false
+(Worker_TP3 pid=3294891) [RL-Kernel][route] framework=vllm target=rollout module=ffn requested=rl_kernel actual=rlkernel.cuda.det_gemm_swiglu fallback=false
+(Worker_TP2 pid=3294890) [RL-Kernel][route] framework=vllm target=rollout module=ffn requested=rl_kernel actual=rlkernel.cuda.det_gemm_swiglu fallback=false
+(Worker_TP0 pid=3294888) [RL-Kernel][route] framework=vllm target=rollout module=ffn requested=rl_kernel actual=rlkernel.cuda.det_gemm_swiglu fallback=false
+(Worker_TP0 pid=3294888) INFO 11-22 07:06:38 [gpu_worker.py:436] Available KV cache memory: 78.9 GiB
+(EngineCore pid=3294666) INFO 11-22 07:06:38 [kv_cache_utils.py:1319] GPU KV cache size: 2,298,048 tokens
+(EngineCore pid=3294666) INFO 11-22 07:06:38 [kv_cache_utils.py:1324] Maximum concurrency for 32,768 tokens per request: 70.13x
+(Worker_TP1 pid=3294889) 2026-11-22 07:06:38,496 - INFO - autotuner.py:262 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(Worker_TP0 pid=3294888) 2026-11-22 07:06:38,496 - INFO - autotuner.py:262 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(Worker_TP2 pid=3294890) 2026-11-22 07:06:38,496 - INFO - autotuner.py:262 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(Worker_TP3 pid=3294891) 2026-11-22 07:06:38,496 - INFO - autotuner.py:262 - flashinfer.jit: [Autotuner]: Autotuning process starts ...
+(Worker_TP1 pid=3294889) 2026-11-22 07:06:38,583 - INFO - autotuner.py:268 - flashinfer.jit: [Autotuner]: Autotuning process ends
+(Worker_TP3 pid=3294891) 2026-11-22 07:06:38,584 - INFO - autotuner.py:268 - flashinfer.jit: [Autotuner]: Autotuning process ends
+(Worker_TP0 pid=3294888) 2026-11-22 07:06:38,585 - INFO - autotuner.py:268 - flashinfer.jit: [Autotuner]: Autotuning process ends
+(Worker_TP2 pid=3294890) 2026-11-22 07:06:38,586 - INFO - autotuner.py:268 - flashinfer.jit: [Autotuner]: Autotuning process ends
+(EngineCore pid=3294666) INFO 11-22 07:06:38 [core.py:283] init engine (profile, create kv cache, warmup model) took 4.60 seconds
+(EngineCore pid=3294666) INFO 11-22 07:06:40 [vllm.py:790] Asynchronous scheduling is enabled.
+(EngineCore pid=3294666) WARNING 11-22 07:06:40 [vllm.py:848] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(EngineCore pid=3294666) WARNING 11-22 07:06:40 [vllm.py:859] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=3294666) INFO 11-22 07:06:40 [vllm.py:1025] Cudagraph is disabled under eager mode
+(EngineCore pid=3294666) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.cudart module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.runtime module instead.
+(EngineCore pid=3294666) <frozen importlib._bootstrap_external>:1301: FutureWarning: The cuda.nvrtc module is deprecated and will be removed in a future release, please switch to use the cuda.bindings.nvrtc module instead.
+(EngineCore pid=3294666) INFO 11-22 07:06:41 [compilation.py:292] Enabled custom fusions: norm_quant, act_quant, allreduce_rms
+(APIServer pid=3294082) INFO 11-22 07:06:41 [api_server.py:592] Supported tasks: ['generate']
+(APIServer pid=3294082) WARNING 11-22 07:06:41 [api_router.py:30] LoRA dynamic loading & unloading is enabled in the API server. This should ONLY be used for local development!
+(APIServer pid=3294082) WARNING 11-22 07:06:41 [model.py:1435] Default vLLM sampling parameters have been overridden by the model's `generation_config.json`: `{'temperature': 0.6, 'top_k': 20, 'top_p': 0.95}`. If this is not intended, please relaunch vLLM instance with `--generation-config vllm`.
+(APIServer pid=3294082) INFO 11-22 07:06:41 [hf.py:314] Detected the chat template content format to be 'string'. You can set `--chat-template-content-format` to override this.
+(APIServer pid=3294082) INFO 11-22 07:06:41 [api_server.py:596] Starting vLLM server on http://<ip-3>:25304
+(APIServer pid=3294082) INFO 11-22 07:06:41 [launcher.py:37] Available routes are:
+(APIServer pid=3294082) INFO 11-22 07:06:41 [launcher.py:46] Route: /openapi.json, Methods: HEAD, GET
+(APIServer pid=3294082) INFO 11-22 07:06:41 [launcher.py:46] Route: /docs, Methods: HEAD, GET
+(APIServer pid=3294082) INFO 11-22 07:06:41 [launcher.py:46] Route: /docs/oauth2-redirect, Methods: HEAD, GET
+(APIServer pid=3294082) INFO 11-22 07:06:41 [launcher.py:46] Route: /redoc, Methods: HEAD, GET
+(APIServer pid=3294082) INFO 11-22 07:06:41 [launcher.py:46] Route: /metrics, Methods: GET
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:06:43.083 [RemoteInfEngine Rank 0] INFO: Get server addresses from the local subprocess.[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:06:43.083 [RemoteInfEngine Rank 0] INFO: Waiting for server ready...[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:06:43.086 [RemoteInfEngine Rank 0] INFO: Servers are all ready![0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:06:43.128 Guard INFO: Forking new worker process for role 'eval-rollout' index 0[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:06:43.132 Guard INFO: Forked worker logs will be written to: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/fileroot/logs/user/rlk-verify-sync/rlkernel-20261122-065559/eval-rollout.log[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:06:43.134 Guard INFO: Forked worker for role 'eval-rollout' index 0 spawned (pid=3296134)[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:01.070 SyncRPCServer INFO: Werkzeug log level: WARNING[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:01.075 Guard INFO: Starting Guard on <ip-3>:23268 for worker eval-rollout/0[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:01.226 EngineBP INFO: Engine thread started[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:01.226 EngineBP INFO: Engine thread initialized[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:02.971 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:02.971 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:03.003 EngineBP INFO: Engine 'eval-rollout/0' (class: areal.engine.vllm_remote.RemotevLLMEngine) instantiated successfully[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:03.027 [RemoteInfEngine Rank 0] INFO: Get server addresses from the `addr` argument.[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:03.027 [RemoteInfEngine Rank 0] INFO: Waiting for server ready...[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:03.031 [RemoteInfEngine Rank 0] INFO: Servers are all ready![0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:03.161 [RemoteInfEngine Rank 0] INFO: Initializing weight update group: group=update_weight_group_0, addresses=['<ip-3>:25304'][0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:03.194 [RemoteInfEngine Rank 0] INFO: Initialized NCCL group for distributed weight update for update_weight_group_0.[0m
+[92m[1;38;2;180;140;80m(AReaL)[0m [92m20261122-07:07:06.030 PerfTracer INFO: Configured global PerfTracer: enabled=False, session_tracing=False, rank=0, role=rollout[0m
+[92m[1;38;2;180;140;80m(AReaL)[0m [92m20261122-07:07:06.037 PerfTracer INFO: Configured global PerfTracer: enabled=False, session_tracing=False, rank=0, role=eval-rollout[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:06.707 Guard INFO: Forking new worker process for role 'proxy-rollout' index 0[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:06.707 Guard INFO: Forked worker logs will be written to: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/fileroot/logs/user/rlk-verify-sync/rlkernel-20261122-065559/proxy-rollout.log[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:06.709 Guard INFO: Forked worker for role 'proxy-rollout' index 0 spawned (pid=3296306)[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:25.359 ProxyRolloutServer INFO: Starting proxy rollout server on <ip-3>:16039 for worker proxy-rollout/0[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:27.303 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:27.303 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:27.503 [RemoteInfEngine Rank 5fc69be463494fadac40fe093b9a408d] INFO: Get server addresses from the `addr` argument.[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:27.503 [RemoteInfEngine Rank 5fc69be463494fadac40fe093b9a408d] INFO: Waiting for server ready...[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:27.507 [RemoteInfEngine Rank 5fc69be463494fadac40fe093b9a408d] INFO: Servers are all ready![0m
+[33m[1;38;2;180;140;80m(AReaL)[0m [33m20261122-07:07:28.855 HTTPUtils WARNING: Using default admin API key. Change 'AgentConfig.admin_api_key' before exposing this server on a network.[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:28.876 Guard INFO: Forking new worker process for role 'proxy-eval-rollout' index 0[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:28.877 Guard INFO: Forked worker logs will be written to: $STORE/rlkg-out-1122-0435/S5-sync-eager/rlkernel/fileroot/logs/user/rlk-verify-sync/rlkernel-20261122-065559/proxy-eval-rollout.log[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:28.878 Guard INFO: Forked worker for role 'proxy-eval-rollout' index 0 spawned (pid=3296691)[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:07:47.517 ProxyRolloutServer INFO: Starting proxy rollout server on <ip-3>:21454 for worker proxy-eval-rollout/0[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:49.472 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:49.472 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:49.674 [RemoteInfEngine Rank b5c43f5276524a2e999c33a3959f5770] INFO: Get server addresses from the `addr` argument.[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:49.675 [RemoteInfEngine Rank b5c43f5276524a2e999c33a3959f5770] INFO: Waiting for server ready...[0m
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:07:49.678 [RemoteInfEngine Rank b5c43f5276524a2e999c33a3959f5770] INFO: Servers are all ready![0m
+[33m[1;38;2;180;140;80m(AReaL)[0m [33m20261122-07:07:51.023 HTTPUtils WARNING: Using default admin API key. Change 'AgentConfig.admin_api_key' before exposing this server on a network.[0m
+(Worker_TP2 pid=3294890) [RL-Kernel][route] framework=vllm target=rollout module=logp requested=rl_kernel actual=rlkernel.linear_logp.bitwise.v1 fallback=false
+(Worker_TP1 pid=3294889) [RL-Kernel][route] framework=vllm target=rollout module=logp requested=rl_kernel actual=rlkernel.linear_logp.bitwise.v1 fallback=false
+(Worker_TP0 pid=3294888) [RL-Kernel][route] framework=vllm target=rollout module=logp requested=rl_kernel actual=rlkernel.linear_logp.bitwise.v1 fallback=false
+(Worker_TP3 pid=3294891) [RL-Kernel][route] framework=vllm target=rollout module=logp requested=rl_kernel actual=rlkernel.linear_logp.bitwise.v1 fallback=false
+(APIServer pid=3294082) INFO 11-22 07:08:02 [loggers.py:259] Engine 000: Avg prompt throughput: 958.8 tokens/s, Avg generation throughput: 203.7 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:08:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1395.0 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:08:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.4 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.8%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:08:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.2 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:08:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.9 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:08:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.6 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:09:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.6 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:09:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1386.9 tokens/s, Running: 125 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:09:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1367.8 tokens/s, Running: 122 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:09:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1341.4 tokens/s, Running: 122 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.8%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:09:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 184.1 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:09:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.171 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:12:36 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.218 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:12:36 [block_pool.py:472] Successfully reset prefix cache
+(Worker_TP3 pid=3294891) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.713 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+(Worker_TP2 pid=3294890) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.713 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+(Worker_TP3 pid=3294891) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.714 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+(Worker_TP2 pid=3294890) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.714 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+(Worker_TP1 pid=3294889) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.714 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+(Worker_TP1 pid=3294889) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.715 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+(Worker_TP0 pid=3294888) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.714 PlatformInit INFO: Detected CUDA device: NVIDIA H100[0m
+(Worker_TP0 pid=3294888) [96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:12:36.716 PlatformInit INFO: Initializing CUDA platform (NVIDIA).[0m
+(Worker_TP0 pid=3294888) $STORE/areal-rlkg-1121/AReaL/.venv/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+(Worker_TP0 pid=3294888)   return func(*args, **kwargs)
+[rank0]:[W1122 07:12:36.451419378 ProcessGroupNCCL.cpp:5138] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+(EngineCore pid=3294666) INFO 11-22 07:12:37 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:37 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:38 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:38 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:38 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:38 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:38 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:38 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:38 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:39 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:39 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:39 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:39 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:39 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:39 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:12:39 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:12:40.167 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:12:42 [loggers.py:259] Engine 000: Avg prompt throughput: 8.4 tokens/s, Avg generation throughput: 0.1 tokens/s, Running: 3 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:12:52 [loggers.py:259] Engine 000: Avg prompt throughput: 1093.2 tokens/s, Avg generation throughput: 1200.5 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:13:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.2 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:13:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1408.0 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:13:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.6 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:13:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.3 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:13:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1402.7 tokens/s, Running: 125 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:13:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1366.6 tokens/s, Running: 124 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:14:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1364.0 tokens/s, Running: 124 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:14:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1355.5 tokens/s, Running: 121 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:14:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 566.2 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:14:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:15:28.432 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:15:28 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:15:28.479 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:15:28 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:28 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:28 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:29 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:29 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:29 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:29 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:29 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:29 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:29 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:30 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:30 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:30 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:30 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:30 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:30 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:15:30 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:15:31.177 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:15:32 [loggers.py:259] Engine 000: Avg prompt throughput: 17.1 tokens/s, Avg generation throughput: 0.8 tokens/s, Running: 5 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:15:42 [loggers.py:259] Engine 000: Avg prompt throughput: 968.8 tokens/s, Avg generation throughput: 1325.8 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:15:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.3 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:16:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1395.1 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:16:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.9 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:16:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1404.8 tokens/s, Running: 126 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:16:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1385.3 tokens/s, Running: 126 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:16:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1371.5 tokens/s, Running: 125 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:16:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1359.0 tokens/s, Running: 123 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:17:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1329.3 tokens/s, Running: 118 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:17:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 507.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:17:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:18:19.415 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:18:19 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:18:19.460 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:18:19 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:19 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:19 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:19 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:20 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:20 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:20 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:20 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:20 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:20 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:20 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:21 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:21 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:21 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:21 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:21 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:18:21 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:18:22.055 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:18:32 [loggers.py:259] Engine 000: Avg prompt throughput: 1072.4 tokens/s, Avg generation throughput: 1248.2 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:18:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1382.2 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:18:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1394.5 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:19:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.1 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:19:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1406.7 tokens/s, Running: 127 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:19:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1396.3 tokens/s, Running: 127 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:19:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1392.8 tokens/s, Running: 126 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:19:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1379.0 tokens/s, Running: 124 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:19:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1349.8 tokens/s, Running: 120 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:20:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 578.5 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:20:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:21:11.843 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:21:11 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:21:11.886 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:21:11 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:12 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:12 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:12 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:12 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:12 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:12 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:13 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:13 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:13 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:13 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:13 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:13 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:14 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:14 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:14 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:21:14 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:21:14.612 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:21:22 [loggers.py:259] Engine 000: Avg prompt throughput: 1000.4 tokens/s, Avg generation throughput: 693.4 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.8%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:21:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.3 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:21:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.3 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:21:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.4 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:22:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1395.1 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:22:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1403.5 tokens/s, Running: 126 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.8%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:22:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1385.3 tokens/s, Running: 126 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:22:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1401.8 tokens/s, Running: 123 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:22:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1317.2 tokens/s, Running: 114 reqs, Waiting: 0 reqs, GPU KV cache usage: 5.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:22:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 983.5 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:23:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:24:05.492 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:24:05 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:24:05.537 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:24:05 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:05 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:05 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:06 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:06 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:06 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:06 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:06 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:06 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:06 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:07 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:07 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:07 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:07 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:07 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:07 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:24:07 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:24:08.035 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:24:12 [loggers.py:259] Engine 000: Avg prompt throughput: 906.8 tokens/s, Avg generation throughput: 410.6 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:24:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.1 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:24:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1433.0 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:24:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1433.0 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:24:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.2 tokens/s, Running: 127 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:25:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1398.0 tokens/s, Running: 124 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:25:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1330.6 tokens/s, Running: 119 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:25:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1277.9 tokens/s, Running: 112 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:25:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1228.8 tokens/s, Running: 107 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:25:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1041.5 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:25:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:26:59.929 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:26:59 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:26:59.968 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:27:00 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:00 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:00 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:00 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:00 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:00 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:00 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:01 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:01 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:01 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:01 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:01 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:01 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:01 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:02 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:02 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:27:02 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:27:02.477 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:27:12 [loggers.py:259] Engine 000: Avg prompt throughput: 1042.8 tokens/s, Avg generation throughput: 1222.7 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:27:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.7 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:27:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1433.0 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:27:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1418.8 tokens/s, Running: 127 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:27:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1421.6 tokens/s, Running: 127 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:28:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1394.7 tokens/s, Running: 124 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:28:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1374.4 tokens/s, Running: 122 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:28:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1309.9 tokens/s, Running: 115 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.8%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:28:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1172.1 tokens/s, Running: 98 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:28:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 374.8 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:28:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:29:57.198 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:29:57 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:29:57.242 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:29:57 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:57 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:57 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:57 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:57 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:58 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:58 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:58 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:58 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:58 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:58 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:58 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:59 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:59 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:59 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:59 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:29:59 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:29:59.860 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:30:02 [loggers.py:259] Engine 000: Avg prompt throughput: 1032.7 tokens/s, Avg generation throughput: 128.9 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:30:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.9 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:30:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.7 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.8%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:30:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.9 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:30:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.4 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:30:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.3 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.6%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:31:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1370.4 tokens/s, Running: 121 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:31:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1327.6 tokens/s, Running: 116 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:31:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1278.8 tokens/s, Running: 111 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:31:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1194.1 tokens/s, Running: 104 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:31:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 207.1 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:31:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:32:51.120 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:32:51 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:32:51.163 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:32:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:32:53 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:32:53.735 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:33:02 [loggers.py:259] Engine 000: Avg prompt throughput: 944.0 tokens/s, Avg generation throughput: 1004.2 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:33:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.2 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:33:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.8 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:33:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.0 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:33:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1419.0 tokens/s, Running: 127 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:33:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1414.7 tokens/s, Running: 126 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:34:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1366.8 tokens/s, Running: 116 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:34:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1251.3 tokens/s, Running: 108 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:34:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1124.6 tokens/s, Running: 94 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.3%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:34:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 489.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:34:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:35:51.491 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:35:51 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:35:51.534 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:35:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:51 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:35:53 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:35:54.014 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+(APIServer pid=3294082) INFO 11-22 07:36:02 [loggers.py:259] Engine 000: Avg prompt throughput: 995.1 tokens/s, Avg generation throughput: 984.8 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.9%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:36:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1420.2 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 1.5%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:36:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1407.4 tokens/s, Running: 128 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:36:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1396.5 tokens/s, Running: 125 reqs, Waiting: 0 reqs, GPU KV cache usage: 2.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:36:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1355.3 tokens/s, Running: 122 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.2%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:36:52 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1315.4 tokens/s, Running: 118 reqs, Waiting: 0 reqs, GPU KV cache usage: 3.7%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:37:02 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1269.3 tokens/s, Running: 113 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.1%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:37:12 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1223.5 tokens/s, Running: 108 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:37:22 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 1142.4 tokens/s, Running: 97 reqs, Waiting: 0 reqs, GPU KV cache usage: 4.4%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:37:32 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 607.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+(APIServer pid=3294082) INFO 11-22 07:37:42 [loggers.py:259] Engine 000: Avg prompt throughput: 0.0 tokens/s, Avg generation throughput: 0.0 tokens/s, Running: 0 reqs, Waiting: 0 reqs, GPU KV cache usage: 0.0%, Prefix cache hit rate: 0.0%
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:38:52.488 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) started[0m
+(EngineCore pid=3294666) INFO 11-22 07:38:52 [block_pool.py:472] Successfully reset prefix cache
+[96m[1;38;2;180;140;80m(AReaL)[0m [96m20261122-07:38:52.531 [RemoteInfEngine Rank 0] INFO: Inference pause stage 1/1 (default) completed in 0.0s[0m
+(EngineCore pid=3294666) INFO 11-22 07:38:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:52 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:53 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:54 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:54 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:54 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:54 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:54 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:54 [block_pool.py:472] Successfully reset prefix cache
+(EngineCore pid=3294666) INFO 11-22 07:38:54 [block_pool.py:472] Successfully reset prefix cache
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:38:55.020 DataBP INFO: Cleared 288 batch shards. Stats: {'status': 'ok', 'cleared_count': 288, 'num_tensors': 0, 'total_bytes': 0}[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:38:58.638 ProcUtils INFO: Sending SIGTERM to process 3296691 and 4 children[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:38:58.985 ProcUtils INFO: Successfully cleaned up process tree for PID 3296691[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:38:58.986 Guard INFO: Killed forked worker proxy-eval-rollout/0 (pid=3296691)[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:38:59.092 ProcUtils INFO: Sending SIGTERM to process 3296134 and 4 children[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:39:00.698 ProcUtils INFO: Successfully cleaned up process tree for PID 3296134[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:39:00.698 Guard INFO: Killed forked worker eval-rollout/0 (pid=3296134)[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:39:00.997 ProcUtils INFO: Sending SIGTERM to process 3296306 and 4 children[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:39:01.345 ProcUtils INFO: Successfully cleaned up process tree for PID 3296306[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:39:01.345 Guard INFO: Killed forked worker proxy-rollout/0 (pid=3296306)[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:39:01.474 ProcUtils INFO: Sending SIGTERM to process 3294082 and 6 children[0m
+(Worker_TP3 pid=3294891) WARNING 11-22 07:39:01 [multiproc_executor.py:871] WorkerProc was terminated
+(Worker_TP1 pid=3294889) WARNING 11-22 07:39:01 [multiproc_executor.py:871] WorkerProc was terminated
+(Worker_TP2 pid=3294890) WARNING 11-22 07:39:01 [multiproc_executor.py:871] WorkerProc was terminated
+(Worker_TP0 pid=3294888) WARNING 11-22 07:39:01 [multiproc_executor.py:871] WorkerProc was terminated
+(EngineCore pid=3294666) INFO 11-22 07:39:01 [core.py:1210] Shutdown initiated (timeout=0)
+(EngineCore pid=3294666) INFO 11-22 07:39:01 [core.py:1233] Shutdown complete
+(Worker_TP0 pid=3294888) INFO 11-22 07:39:01 [multiproc_executor.py:764] Parent process exited, terminating worker queues
+[33m[1;38;2;180;140;80m(AReaL)[0m [33m20261122-07:39:06.481 ProcUtils WARNING: Force killing 7 processes that didn't terminate gracefully[0m
+[37m[1;38;2;180;140;80m(AReaL)[0m [37m20261122-07:39:06.691 ProcUtils INFO: Successfully cleaned up process tree for PID 3294082[0m

@@ -1,0 +1,66 @@
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg    # of Calls  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+                                         rlk::attention         0.00%       0.000us         0.00%       0.000us       0.000us       13.643s       541.88%       13.643s      42.107ms           324  
+                                              rlk::rope         0.00%       0.000us         0.00%       0.000us       0.000us        7.844s       311.57%        7.844s      12.105ms           648  
+                                               rlk::mlp         0.00%       0.000us         0.00%       0.000us       0.000us        1.175s        46.66%        1.175s       3.625ms           324  
+                         rlk::det_collective.all_reduce         0.00%       0.000us         0.00%       0.000us       0.000us     940.189ms        37.34%     940.189ms       1.451ms           648  
+void (anonymous namespace)::deterministic_all_reduce...         0.00%       0.000us         0.00%       0.000us       0.000us     797.880ms        31.69%     797.880ms       1.231ms           648  
+                                               aten::mm         3.76%        1.043s         4.40%        1.219s     934.097us     669.715ms        26.60%     669.715ms     513.191us          1305  
+                              _DeterministicFFNFunction         1.10%     305.165ms         4.04%        1.121s       3.459ms     493.044ms        19.58%     970.250ms       2.995ms           324  
+                     _DeterministicTensorParallelReduce         0.21%      56.876ms         1.19%     328.732ms       1.015ms     487.812ms        19.38%     487.812ms       1.506ms           324  
+              nvjet_tst_192x192_64x4_2x1_v_bz_coopB_TNN         0.00%       0.000us         0.00%       0.000us       0.000us     364.102ms        14.46%     364.102ms     674.263us           540  
+                                           rlk::lm_head         0.00%       0.000us         0.00%       0.000us       0.000us     254.119ms        10.09%     254.119ms      28.235ms             9  
+                                            aten::copy_         3.23%     894.810ms         8.51%        2.359s      86.396us     194.360ms         7.72%     196.083ms       7.181us         27307  
+              nvjet_tst_256x128_64x4_1x2_h_bz_coopA_TNT         0.00%       0.000us         0.00%       0.000us       0.000us     174.882ms         6.95%     174.882ms     285.755us           612  
+void at::native::elementwise_kernel<128, 4, at::nati...         0.00%       0.000us         0.00%       0.000us       0.000us     127.096ms         5.05%     127.096ms       9.780us         12996  
+                                  aten::_fused_rms_norm         0.36%     100.254ms         1.07%     296.165ms     226.946us     122.208ms         4.85%     126.525ms      96.954us          1305  
+void at::native::(anonymous namespace)::vectorized_l...         0.00%       0.000us         0.00%       0.000us       0.000us     122.208ms         4.85%     122.208ms      93.646us          1305  
+                                             aten::add_         0.25%      68.429ms         0.47%     130.703ms     191.086us     110.486ms         4.39%     110.666ms     161.792us           684  
+void at::native::vectorized_elementwise_kernel<8, at...         0.00%       0.000us         0.00%       0.000us       0.000us     110.440ms         4.39%     110.440ms     170.432us           648  
+                         Memcpy DtoD (Device -> Device)         0.00%       0.000us         0.00%       0.000us       0.000us      85.356ms         3.39%      85.356ms       8.438us         10116  
+                                             aten::sort         1.56%     432.627ms         6.50%        1.801s     532.144us      81.247ms         3.23%      96.750ms      28.591us          3384  
+              nvjet_tst_320x128_64x3_1x2_h_bz_coopB_TNT         0.00%       0.000us         0.00%       0.000us       0.000us      76.250ms         3.03%      76.250ms     529.517us           144  
+void (anonymous namespace)::swiglu_packed_forward_ke...         0.00%       0.000us         0.00%       0.000us       0.000us      67.492ms         2.68%      67.492ms     208.308us           324  
+                                           aten::gather         2.11%     586.247ms         3.57%     990.676ms     108.663us      65.216ms         2.59%      65.224ms       7.154us          9117  
+              nvjet_tst_160x256_64x4_2x1_v_bz_coopA_TNN         0.00%       0.000us         0.00%       0.000us       0.000us      53.442ms         2.12%      53.442ms       5.938ms             9  
+                                              aten::cat         1.46%     403.741ms         2.52%     699.159ms     126.728us      51.301ms         2.04%      51.350ms       9.308us          5517  
+void at::native::_scatter_gather_elementwise_kernel<...         0.00%       0.000us         0.00%       0.000us       0.000us      46.574ms         1.85%      46.574ms       9.175us          5076  
+void at::native::radixSortKVInPlace<2, -1, 64, 32, l...         0.00%       0.000us         0.00%       0.000us       0.000us      42.110ms         1.67%      42.110ms      25.429us          1656  
+void at::native::unrolled_elementwise_kernel<at::nat...         0.00%       0.000us         0.00%       0.000us       0.000us      39.542ms         1.57%      39.542ms      29.334us          1348  
+                                          FlashAttnFunc         4.34%        1.204s         5.44%        1.507s     890.713us      39.535ms         1.57%      39.535ms      23.366us          1692  
+kernel_cutlass_kernel_flash_attncuteflash_fwd_sm90Fl...         0.00%       0.000us         0.00%       0.000us       0.000us      39.535ms         1.57%      39.535ms      23.366us          1692  
+(anonymous namespace)::wait_for_previous_done_kernel...         0.00%       0.000us         0.00%       0.000us       0.000us      34.906ms         1.39%      34.906ms      53.868us           648  
+void at::native::(anonymous namespace)::CatArrayBatc...         0.00%       0.000us         0.00%       0.000us       0.000us      32.463ms         1.29%      32.463ms      13.069us          2484  
+void at::native::radixSortKVInPlace<-2, -1, 32, 32, ...         0.00%       0.000us         0.00%       0.000us       0.000us      30.265ms         1.20%      30.265ms      24.727us          1224  
+                                              aten::bmm         0.02%       6.383ms         0.03%       6.956ms     772.834us      23.417ms         0.93%      23.417ms       2.602ms             9  
+void gemv2T_kernel_val<int, int, float, float, float...         0.00%       0.000us         0.00%       0.000us       0.000us      23.417ms         0.93%      23.417ms       2.602ms             9  
+                                              aten::div         0.19%      51.461ms         0.26%      73.284ms     111.543us      22.933ms         0.91%      22.933ms      34.906us           657  
+void at::native::elementwise_kernel<128, 2, at::nati...         0.00%       0.000us         0.00%       0.000us       0.000us      22.160ms         0.88%      22.160ms       1.304ms            17  
+                                             aten::sub_         0.00%     881.543us         0.01%       1.387ms     154.113us      21.800ms         0.87%      21.800ms       2.422ms             9  
+void at::native::elementwise_kernel<128, 2, at::nati...         0.00%       0.000us         0.00%       0.000us       0.000us      21.800ms         0.87%      21.800ms       1.282ms            17  
+                                             aten::neg_         0.00%     483.838us         0.00%     989.593us     109.955us      20.091ms         0.80%      20.091ms       2.232ms             9  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us      20.091ms         0.80%      20.091ms       1.182ms            17  
+                                              aten::exp         0.00%     677.836us         0.00%       1.177ms     130.805us      19.903ms         0.79%      19.903ms       2.211ms             9  
+void at::native::vectorized_elementwise_kernel<4, at...         0.00%       0.000us         0.00%       0.000us       0.000us      19.903ms         0.79%      19.903ms       1.171ms            17  
+(anonymous namespace)::linear_logp_probs_bf16_forwar...         0.00%       0.000us         0.00%       0.000us       0.000us      18.347ms         0.73%      18.347ms       2.039ms             9  
+                                          _RoPEFunction         1.38%     381.735ms         4.12%        1.141s       1.761ms      17.468ms         0.69%      30.983ms      47.814us           648  
+void (anonymous namespace)::rope_apply_sm90_kernel<c...         0.00%       0.000us         0.00%       0.000us       0.000us      17.468ms         0.69%      17.468ms      26.956us           648  
+void at::native::vectorized_elementwise_kernel<8, at...         0.00%       0.000us         0.00%       0.000us       0.000us      14.555ms         0.58%      14.555ms     856.169us            17  
+void at::native::_scatter_gather_elementwise_kernel<...         0.00%       0.000us         0.00%       0.000us       0.000us      13.979ms         0.56%      13.979ms       4.131us          3384  
+void at::native::(anonymous namespace)::CatArrayBatc...         0.00%       0.000us         0.00%       0.000us       0.000us       9.433ms         0.37%       9.433ms      29.115us           324  
+                              aten::_local_scalar_dense         0.26%      73.290ms         1.20%     332.481ms      52.154us       7.973ms         0.32%       7.973ms       1.251us          6375  
+                         Memcpy DtoH (Device -> Pinned)         0.00%       0.000us         0.00%       0.000us       0.000us       7.973ms         0.32%       7.973ms       2.381us          3349  
+void at::native::radixSortKVInPlace<-2, -1, 64, 32, ...         0.00%       0.000us         0.00%       0.000us       0.000us       7.423ms         0.29%       7.423ms      25.774us           288  
+                                              aten::min         0.01%       1.561ms         0.01%       2.365ms     262.739us       6.383ms         0.25%       6.383ms     709.267us             9  
+void at::native::reduce_kernel<512, 1, at::native::R...         0.00%       0.000us         0.00%       0.000us       0.000us       6.383ms         0.25%       6.383ms     709.267us             9  
+                                              aten::max         0.01%       2.288ms         0.01%       3.429ms      95.242us       6.350ms         0.25%       6.350ms     176.391us            36  
+void at::native::reduce_kernel<512, 1, at::native::R...         0.00%       0.000us         0.00%       0.000us       0.000us       6.327ms         0.25%       6.327ms     703.006us             9  
+                       Memcpy HtoD (Pageable -> Device)         0.00%       0.000us         0.00%       0.000us       0.000us       5.488ms         0.22%       5.488ms       6.222us           882  
+                                     record_param_comms         0.04%      10.777ms         0.07%      18.696ms     812.863us       5.447ms         0.22%       5.492ms     238.766us            23  
+ncclDevKernel_AllReduce_Sum_bf16_RING_LL(ncclDevKern...         0.00%       0.000us         0.00%       0.000us       0.000us       5.361ms         0.21%       5.361ms     595.656us             9  
+                                        nccl:all_reduce         0.00%       0.000us         0.00%       0.000us       0.000us       5.361ms         0.21%       5.361ms     595.656us             9  
+                               aten::linalg_vector_norm         0.00%     919.032us         0.00%       1.244ms     138.235us       4.987ms         0.20%       4.987ms     554.060us             9  
+-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  
+Self CPU time total: 27.724s
+Self CUDA time total: 2.518s

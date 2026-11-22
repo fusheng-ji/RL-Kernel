@@ -3,7 +3,8 @@
 Train/rollout consistency and performance of the AReaL integration
 ([docs](../../../docs/integrations/orchestrators/areal/README.md)) on Qwen3-8B /
 GSM8K, followed by a first optimization round of the RL-Kernel arm's
-training-side cost. Machine-readable numbers are in [`results.json`](results.json).
+training-side cost. Machine-readable numbers are in [`results.json`](results.json);
+the run artefacts behind every table are listed under [Raw data](#raw-data).
 
 ## Summary
 
@@ -134,7 +135,8 @@ compare the new and old paths bit for bit on SM90.
      `deterministic=True`, `num_splits=1` and `pack_gqa`.
    - Output, LSE and dq/dk/dv are bitwise equal to the per-length batched
      launches, also for strided Q/K/V views of a fused QKV buffer and lengths
-     up to 2,900. One layer takes 0.72 ms instead of 13.6 ms.
+     up to 2,900. Forward plus backward of one layer with 25 packed sequences
+     takes 0.72 ms instead of 13.6 ms.
    - `cu_seqlens` is cached per packing. Training precompile also builds the
      varlen kernels.
    - Other configurations keep the grouped path.
@@ -229,6 +231,43 @@ run:
   - the vime launcher;
   - a GRPO single-rank dispatch test;
   - a tp2/cp2 gloo logprob report.
+
+## Raw data
+
+All artefacts are redacted: host names, IP addresses, absolute paths, user
+names and GPU UUIDs are replaced with placeholders such as `$STORE`, `<ip-N>`
+and `node-N`.
+
+The [`runs/`](runs) directory holds the text artefacts in the repository:
+
+| path | content |
+| --- | --- |
+| `runs/baseline/` | the CUDA graph validation run before round 1: S2 smoke, S3 sync graph, S4 async graph, S5 sync eager |
+| `runs/round1/S3-sync-graph/` | the round 1 timing and consistency run (RL-Kernel arm, 10 steps) |
+| `runs/round1/S3-profile/` | profiled run, native and round 1 RL-Kernel (4 steps, actor version 3 profiled) |
+| `runs/round1/S3-profile-base/` | profiled run of the RL-Kernel arm before round 1 |
+| `runs/round1/COMPARE.md`, `ATTRIBUTION.md` | the before/after and attribution tables above, generated from these runs |
+| `runs/round1/probes/` | single-GPU vLLM probe results, the FA4 varlen vs grouped bitwise check, and the vLLM init cProfile |
+
+Each stage directory holds the verifier's `REPORT.md`, `perf.json`,
+`summary.json` (per-step consistency) and `spec.json`. Each arm directory holds
+`run.json`, the AReaL `config.yaml`, the per-step `stats.jsonl` (all
+`timeperf/*` and consistency metrics) and the vLLM `rollout.log`, which records
+the graph mode and the capture time. Profiled arms also have `profile/`, with
+the JSON summary and `key_averages` table for each profiled `forward_batch` and
+`train_batch` call.
+
+The complete run directories are attached to the
+[`areal-perf-round1-logs` release](https://github.com/fusheng-ji/RL-Kernel/releases/tag/areal-perf-round1-logs).
+They include `trainer.log`, every AReaL service log (`main.log`, `merged.log`,
+`actor.log`, data and proxy logs) and the readback records.
+
+| asset | content |
+| --- | --- |
+| `areal-baseline-run.tar.gz` | full baseline run, S2-S6 |
+| `areal-round1-run.tar.gz` | full round 1 runs: S3-sync-graph, S3-profile, S3-profile-base, and the probes |
+| `areal-preflight-S0-S1.tar.gz` | S0 inventory and S1 preflight |
+| `setup_env.log` | environment installation log |
 
 ## Caveats and next steps
 
