@@ -1,0 +1,998 @@
+{
+ "schema": "rlkernel.h3.audio_vae_bench.v2",
+ "checkpoint": {
+  "repo": "MiniMaxAI/MiniMax-H3",
+  "component": "FL2VA/audio_vae",
+  "model_safetensors_sha256": "37dddc2f3e6d5d5139d823d5ea283bbf304dadcb885b1ccda818aa13dade5ea2",
+  "remote_model_safetensors_sha256": "37dddc2f3e6d5d5139d823d5ea283bbf304dadcb885b1ccda818aa13dade5ea2"
+ },
+ "provenance": {
+  "contract": "h3-audio-vae-v1",
+  "sample_rate": 32000,
+  "hop_length": 800,
+  "latents_per_second": 40,
+  "latent_channels": 32,
+  "stereo_order": [
+   "left",
+   "right"
+  ],
+  "row_layout": "channel-major [left T rows | right T rows] x 32",
+  "encode_policy": {
+   "name": "h3-audio-encode-strict-v1",
+   "micro_batch": 1,
+   "cudnn_enabled": false,
+   "cudnn_deterministic": true,
+   "cudnn_benchmark": false,
+   "allow_tf32": false,
+   "sdpa_backend": "math"
+  },
+  "decode_policy": {
+   "name": "h3-audio-decode-strict-v1",
+   "micro_batch": 1,
+   "cudnn_enabled": true,
+   "cudnn_deterministic": true,
+   "cudnn_benchmark": false,
+   "allow_tf32": false,
+   "sdpa_backend": null
+  },
+  "latents_mean_sha256": "a77dc0fd9c612e98b8a995dffebe793db9aa47a27af9ebd93389a479ad62a096",
+  "latents_std_sha256": "9c2f6c097fff4a3eab12248dead0d49175538a5124ca81c76f455920c33ec5fc",
+  "device": "cuda:0",
+  "torch": "2.13.0+cu130",
+  "gpu": "NVIDIA H100",
+  "capability": [
+   9,
+   0
+  ],
+  "cuda": "13.0",
+  "cudnn": 92000,
+  "source": {
+   "commit": "25d95ccd84ee4490aab788c205c1d8f67432a769",
+   "clean": true
+  }
+ },
+ "paths": {
+  "diffusers": "diffusers f53d5520",
+  "vllm-omni": "vllm-omni aae3f386 recipe on checkpoint remote code",
+  "ours": "rl_engine h3-audio-vae-v1"
+ },
+ "cold_start_mode": "fresh process per path and direction, first call vs third",
+ "cold_start": {
+  "diffusers": {
+   "encode_first_vs_third_max_abs": 0.0,
+   "encode_first_vs_third_bitwise": true,
+   "decode_first_vs_third_max_abs": 0.0,
+   "decode_first_vs_third_bitwise": true
+  },
+  "vllm-omni": {
+   "encode_first_vs_third_max_abs": 0.0,
+   "encode_first_vs_third_bitwise": true,
+   "decode_first_vs_third_max_abs": 0.0,
+   "decode_first_vs_third_bitwise": true
+  },
+  "ours": {
+   "encode_first_vs_third_max_abs": 0.0,
+   "encode_first_vs_third_bitwise": true,
+   "decode_first_vs_third_max_abs": 0.0,
+   "decode_first_vs_third_bitwise": true
+  }
+ },
+ "cases": [
+  {
+   "video_frames": 22,
+   "samples": 29210,
+   "latents_per_channel": 37,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002088576555252075,
+       "batch8_first": 0.0033310651779174805,
+       "batch8_last": 0.0033310651779174805
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.007495454578171135,
+      "sha256": "832e21353ec20c0309f215171642cf58b9d8e65b4f9cd98932979a61ceafb916",
+      "latency": {
+       "median_ms": 7.067338563501835,
+       "min_ms": 7.039230316877365,
+       "samples_ms": [
+        7.128030061721802,
+        7.197277620434761,
+        7.086317986249924,
+        7.039230316877365,
+        7.06188939511776,
+        7.074238732457161,
+        7.065119221806526,
+        7.066598162055016,
+        7.045840844511986,
+        7.068078964948654
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0006420761346817017,
+       "batch8_first": 0.0005600601434707642,
+       "batch8_last": 0.0005600601434707642
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.005678114544126762,
+      "sha256": "77471e59111de0755fe089d7a105db067c0e59b9a452eeda53a306b4d4e5b83c",
+      "latency": {
+       "median_ms": 45.46242393553257,
+       "min_ms": 45.2150609344244,
+       "samples_ms": [
+        45.3836303204298,
+        45.45042850077152,
+        45.34208029508591,
+        45.599089935421944,
+        45.31541094183922,
+        45.2150609344244,
+        45.47441937029362,
+        45.49219831824303,
+        45.50146870315075,
+        45.51148973405361
+       ]
+      }
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 6.570986020859593e-06,
+      "sha256": "cc7448c6033086e554a49e9b29b792791fe21a75ac2c625d267827453bd55914",
+      "latency": {
+       "median_ms": 57.88746289908886,
+       "min_ms": 57.809557765722275,
+       "samples_ms": [
+        57.959506288170815,
+        57.990537956357,
+        57.855747640132904,
+        57.830097153782845,
+        57.91245773434639,
+        57.96343833208084,
+        57.94074758887291,
+        57.809557765722275,
+        57.83264897763729,
+        57.86246806383133
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0006420761346817017,
+       "batch8_first": 0.0005600601434707642,
+       "batch8_last": 0.0005600601434707642
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.005678114544126762,
+      "sha256": "77471e59111de0755fe089d7a105db067c0e59b9a452eeda53a306b4d4e5b83c",
+      "latency": {
+       "median_ms": 48.3334269374609,
+       "min_ms": 48.248203471302986,
+       "samples_ms": [
+        48.30136336386204,
+        48.432303592562675,
+        48.31589199602604,
+        48.30967262387276,
+        48.35096187889576,
+        48.248203471302986,
+        48.369282856583595,
+        48.40926267206669,
+        48.30656200647354,
+        48.35443198680878
+       ]
+      }
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 6.570986020859593e-06,
+      "sha256": "cc7448c6033086e554a49e9b29b792791fe21a75ac2c625d267827453bd55914",
+      "latency": {
+       "median_ms": 63.814775086939335,
+       "min_ms": 63.59020434319973,
+       "samples_ms": [
+        63.92137333750725,
+        63.82899358868599,
+        63.85398283600807,
+        63.79248388111591,
+        63.59020434319973,
+        68.74626688659191,
+        63.8230349868536,
+        63.71399573981762,
+        63.80651518702507,
+        63.78377601504326
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 3.0951977249609776e-05,
+      "sha256": "9d94d0de018dd86a57ba585642fa06a52f0b25df39e6b0b54ca8218fac1fdddb",
+      "latency": {
+       "median_ms": 84.51126422733068,
+       "min_ms": 84.1844379901886,
+       "samples_ms": [
+        84.50069464743137,
+        84.53438431024551,
+        84.60812456905842,
+        84.6103448420763,
+        84.65030416846275,
+        84.1844379901886,
+        84.52183380723,
+        84.43578518927097,
+        84.47475545108318,
+        84.35997553169727
+       ]
+      }
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": true,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "e1546b6b2ab99b25b105936b85dd32007d6293dc016bb50400c4be2dd9a1c8ed",
+   "latents_sha256": "cc7448c6033086e554a49e9b29b792791fe21a75ac2c625d267827453bd55914"
+  },
+  {
+   "video_frames": 121,
+   "samples": 161210,
+   "latents_per_channel": 202,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002760276198387146,
+       "batch8_first": 0.004045046865940094,
+       "batch8_last": 0.004045046865940094
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.016681243572270965,
+      "sha256": "810b32c762475d0a19e9aa5c4c7d1e000701de3676320734ae4f7d2376b12e9e",
+      "latency": {
+       "median_ms": 19.269569776952267,
+       "min_ms": 19.251439720392227,
+       "samples_ms": [
+        19.440749660134315,
+        19.30849999189377,
+        19.292689859867096,
+        19.265269860625267,
+        19.27199959754944,
+        19.279399886727333,
+        19.251439720392227,
+        19.256779924035072,
+        19.253989681601524,
+        19.267139956355095
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002050533890724182,
+       "batch8_first": 0.040998660027980804,
+       "batch8_last": 0.040814392268657684
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.010268337854699994,
+      "sha256": "183852fd98790f85191f13f7117c46a97d3528ca37ee80f2c20157e80da73e28",
+      "latency": {
+       "median_ms": 48.47636632621288,
+       "min_ms": 48.3683031052351,
+       "samples_ms": [
+        48.493241891264915,
+        48.3683031052351,
+        48.53441193699837,
+        48.41824248433113,
+        48.444682732224464,
+        48.49112033843994,
+        48.58021251857281,
+        48.42708259820938,
+        48.461612313985825,
+        48.52741025388241
+       ]
+      }
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 1.0728836059570312e-06,
+       "batch8_last": 1.0728836059570312e-06
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 1.5844497716521744e-05,
+      "sha256": "95a91fab110c49253fb8a15790c8aeafd89b2bfece9046ab843975da5aadc238",
+      "latency": {
+       "median_ms": 65.44167082756758,
+       "min_ms": 65.41133671998978,
+       "samples_ms": [
+        65.41133671998978,
+        65.4375459998846,
+        65.43412432074547,
+        65.51632471382618,
+        65.56960195302963,
+        65.42648375034332,
+        65.60005433857441,
+        65.44579565525055,
+        65.4204934835434,
+        65.48580527305603
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.002050533890724182,
+       "batch8_first": 0.040998660027980804,
+       "batch8_last": 0.040814392268657684
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.010268337854699994,
+      "sha256": "183852fd98790f85191f13f7117c46a97d3528ca37ee80f2c20157e80da73e28",
+      "latency": {
+       "median_ms": 50.73779821395874,
+       "min_ms": 50.54720118641853,
+       "samples_ms": [
+        50.70648901164532,
+        54.36032824218273,
+        53.89770120382309,
+        50.845928490161896,
+        50.54720118641853,
+        50.67823827266693,
+        50.6009217351675,
+        50.7708303630352,
+        50.59183016419411,
+        50.76910741627216
+       ]
+      }
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 1.5844497716521744e-05,
+      "sha256": "95a91fab110c49253fb8a15790c8aeafd89b2bfece9046ab843975da5aadc238",
+      "latency": {
+       "median_ms": 63.5584956035018,
+       "min_ms": 63.45812603831291,
+       "samples_ms": [
+        63.66167403757572,
+        63.597654923796654,
+        63.51933628320694,
+        63.732774928212166,
+        63.667645677924156,
+        63.48171643912792,
+        63.478706404566765,
+        63.518065959215164,
+        63.45812603831291,
+        63.65141458809376
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 2.0091801880450788e-05,
+      "sha256": "c1329dce90b9071a812c90ede2e1fa5437d36f48e476c33c148adefa58338189",
+      "latency": {
+       "median_ms": 84.80266761034727,
+       "min_ms": 84.58279632031918,
+       "samples_ms": [
+        84.81113240122795,
+        84.86919291317463,
+        84.79420281946659,
+        84.65963415801525,
+        84.78587307035923,
+        84.83694307506084,
+        84.69664491713047,
+        84.58279632031918,
+        85.08330211043358,
+        85.11455170810223
+       ]
+      }
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": true,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "d35fafa25d2f8f1c4f24fc0ecd491b94136e1ae9b48dc8ea494195e1d8105db8",
+   "latents_sha256": "95a91fab110c49253fb8a15790c8aeafd89b2bfece9046ab843975da5aadc238"
+  },
+  {
+   "video_frames": 241,
+   "samples": 321210,
+   "latents_per_channel": 402,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0057334303855896,
+       "batch8_first": 0.026672661304473877,
+       "batch8_last": 0.026672661304473877
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.030114604127106648,
+      "sha256": "1353950ca0817ec776d444b5d877f4e8b5533b7b4e40bd18c61c789e59222469",
+      "latency": {
+       "median_ms": 35.82931496202946,
+       "min_ms": 35.79156473278999,
+       "samples_ms": [
+        36.05726547539234,
+        35.884495824575424,
+        35.84674373269081,
+        35.8167439699173,
+        35.810984671115875,
+        35.80057621002197,
+        35.86203418672085,
+        35.81526502966881,
+        35.84188595414162,
+        35.79156473278999
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.02542838454246521,
+       "batch8_first": 0.006347596645355225,
+       "batch8_last": 0.006187081336975098
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.02971806617070924,
+      "sha256": "b19564900972b3358cf7920b3ba318004ae48d0e73ec07270a172e2c2a9dc6ed",
+      "latency": {
+       "median_ms": 93.47845893353224,
+       "min_ms": 93.41277554631233,
+       "samples_ms": [
+        93.50564330816269,
+        93.50514225661755,
+        93.49138475954533,
+        93.46471354365349,
+        93.4844333678484,
+        93.41277554631233,
+        93.52892264723778,
+        93.45284476876259,
+        93.46085414290428,
+        93.47248449921608
+       ]
+      }
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 1.430511474609375e-06,
+       "batch8_last": 1.430511474609375e-06
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00010470390609307323,
+      "sha256": "c18936274ac6bf644a616329240a0caa8870aabf8397a0784ffaab79b172149a",
+      "latency": {
+       "median_ms": 90.58337472379208,
+       "min_ms": 90.45467153191566,
+       "samples_ms": [
+        90.67499078810215,
+        90.54935164749622,
+        90.46363085508347,
+        90.45467153191566,
+        90.53962118923664,
+        90.5933789908886,
+        90.57337045669556,
+        90.64509905874729,
+        90.62662906944752,
+        91.55596420168877
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.02542838454246521,
+       "batch8_first": 0.006347596645355225,
+       "batch8_last": 0.006187081336975098
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.02971806617070924,
+      "sha256": "b19564900972b3358cf7920b3ba318004ae48d0e73ec07270a172e2c2a9dc6ed",
+      "latency": {
+       "median_ms": 92.54384879022837,
+       "min_ms": 92.38540939986706,
+       "samples_ms": [
+        92.61004813015461,
+        92.53549948334694,
+        92.63973869383335,
+        92.47696958482265,
+        92.5521980971098,
+        92.45537035167217,
+        92.55274012684822,
+        92.38540939986706,
+        92.44097955524921,
+        92.55918860435486
+       ]
+      }
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00010470390609307323,
+      "sha256": "c18936274ac6bf644a616329240a0caa8870aabf8397a0784ffaab79b172149a",
+      "latency": {
+       "median_ms": 86.643997579813,
+       "min_ms": 86.60474419593811,
+       "samples_ms": [
+        86.66430413722992,
+        86.60474419593811,
+        86.63926273584366,
+        86.61225251853466,
+        86.65034174919128,
+        86.71249262988567,
+        86.6082925349474,
+        86.64873242378235,
+        86.68205328285694,
+        86.62725426256657
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 8.809113988147987e-05,
+      "sha256": "50d14cfd1ecba1202f991fb590dff7d55bb9b58d59ff30a9efb5904b7019d1f9",
+      "latency": {
+       "median_ms": 120.7682378590107,
+       "min_ms": 120.6520888954401,
+       "samples_ms": [
+        120.77422812581062,
+        120.79040706157684,
+        120.73984742164612,
+        120.6520888954401,
+        120.78609690070152,
+        120.76224759221077,
+        120.77984772622585,
+        120.78179605305195,
+        120.74949778616428,
+        120.71445770561695
+       ]
+      }
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": true,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "982d38f5ce9047f2dc532eeeb0a6312443bbf8eb264e7466dd1f035afc4f788e",
+   "latents_sha256": "c18936274ac6bf644a616329240a0caa8870aabf8397a0784ffaab79b172149a"
+  },
+  {
+   "video_frames": 481,
+   "samples": 641210,
+   "latents_per_channel": 802,
+   "paths": {
+    "diffusers": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.026673316955566406,
+       "batch8_first": 3.5762786865234375e-06,
+       "batch8_last": 8.463859558105469e-06
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.024325277085183394,
+      "sha256": "444756231a9bb57f00c8c67cabff8e455e9c09827b85f8c644df3430adbd4433",
+      "latency": {
+       "median_ms": 68.24482884258032,
+       "min_ms": 68.13167780637741,
+       "samples_ms": [
+        68.40101815760136,
+        68.13167780637741,
+        68.2709775865078,
+        68.26169788837433,
+        68.26595775783062,
+        68.26054863631725,
+        68.22910904884338,
+        68.2003702968359,
+        68.22403892874718,
+        68.16988810896873
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0069791898131370544,
+       "batch8_first": 0.0,
+       "batch8_last": 0.00046050548553466797
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": true,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.032999081279165454,
+      "sha256": "b02a284d2c0bd47d2fec3b124a946c747a1cfab6306baa917bdf20f6e603e90e",
+      "latency": {
+       "median_ms": 182.0250665768981,
+       "min_ms": 181.95105716586113,
+       "samples_ms": [
+        182.75154195725918,
+        182.76226334273815,
+        182.45821446180344,
+        182.01147764921188,
+        182.03811720013618,
+        181.95105716586113,
+        182.0548065006733,
+        182.01201595366,
+        182.01126717031002,
+        182.0012368261814
+       ]
+      }
+     }
+    },
+    "vllm-omni": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 1.1920928955078125e-06,
+       "batch8_first": 4.0531158447265625e-06,
+       "batch8_last": 4.0531158447265625e-06
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": false,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00010194671701468927,
+      "sha256": "1f76f7098a97d5e11428e5504be997efec4b5b98e4b653036edfcb3ea738f5d7",
+      "latency": {
+       "median_ms": 146.59475069493055,
+       "min_ms": 146.52321860194206,
+       "samples_ms": [
+        146.57928980886936,
+        146.62197791039944,
+        146.5609986335039,
+        146.58279158174992,
+        146.56849019229412,
+        146.65679819881916,
+        146.6067098081112,
+        146.52321860194206,
+        146.6450896114111,
+        146.66133932769299
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0069791898131370544,
+       "batch8_first": 0.0,
+       "batch8_last": 0.00046050548553466797
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": false,
+       "batch8_first": true,
+       "batch8_last": false
+      },
+      "batch_invariant": false,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.032999081279165454,
+      "sha256": "b02a284d2c0bd47d2fec3b124a946c747a1cfab6306baa917bdf20f6e603e90e",
+      "latency": {
+       "median_ms": 180.37340976297855,
+       "min_ms": 180.36127649247646,
+       "samples_ms": [
+        180.4470159113407,
+        180.42250536382198,
+        180.36127649247646,
+        180.43856509029865,
+        180.40623515844345,
+        180.36738596856594,
+        180.37568405270576,
+        180.36835454404354,
+        180.37113547325134,
+        180.36250583827496
+       ]
+      }
+     }
+    },
+    "ours": {
+     "encode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 0.00010135067056693536,
+      "sha256": "bd28a48dc6cee20869b6234d264073766ab50f3a123d869f811379141f3cd355",
+      "latency": {
+       "median_ms": 143.04563030600548,
+       "min_ms": 142.96451024711132,
+       "samples_ms": [
+        143.01593974232674,
+        143.07689853012562,
+        143.02841946482658,
+        142.96451024711132,
+        143.04300025105476,
+        143.04696023464203,
+        143.04430037736893,
+        143.09651032090187,
+        143.09761859476566,
+        143.0737003684044
+       ]
+      }
+     },
+     "decode": {
+      "max_abs": {
+       "repeat": 0.0,
+       "mono_alone": 0.0,
+       "batch8_first": 0.0,
+       "batch8_last": 0.0
+      },
+      "bitwise_equal": {
+       "repeat": true,
+       "mono_alone": true,
+       "batch8_first": true,
+       "batch8_last": true
+      },
+      "batch_invariant": true,
+      "repeat_equal": true,
+      "vs_fp64_max_abs": 5.60380672580546e-05,
+      "sha256": "d6a67a15a2e19109e77109a5337cb2b822f9aeea7f507d9513df4e253e5f1c74",
+      "latency": {
+       "median_ms": 248.43675922602415,
+       "min_ms": 248.2994869351387,
+       "samples_ms": [
+        248.42521362006664,
+        248.32292459905148,
+        248.62883426249027,
+        248.44830483198166,
+        248.69894236326218,
+        248.54877404868603,
+        248.2994869351387,
+        248.45610558986664,
+        248.35344590246677,
+        248.38367477059364
+       ]
+      }
+     }
+    }
+   },
+   "encode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "decode_bitwise_equal_to_ours": {
+    "diffusers": false,
+    "vllm-omni": false,
+    "ours": true
+   },
+   "rows_sha256": "6d0f0af5d032c6b5fef91f9abbe24317668026ded22f204418fb4b1375f6b232",
+   "latents_sha256": "bd28a48dc6cee20869b6234d264073766ab50f3a123d869f811379141f3cd355"
+  }
+ ]
+}
