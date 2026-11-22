@@ -69,7 +69,7 @@ Launch: every run is an `srun` step with one task per GPU, running `h3_parallel_
 `MASTER_ADDR` = `node-a`, a new `MASTER_PORT` per run (`*/command.txt`, `run_s1.sh.txt`). Flags are exactly the README tables, with no
 `--provider-boundaries`. The runs are independent; only the order differs (all 1-node runs first, then all 8-rank runs).
 
-Verdict: **every run meets the S1 expectation.** All 16 non-inject runs are bitwise with strict boundaries: `all_bitwise: true`,
+Verdict: **every run meets the S1 expectation.** All 19 non-inject runs (7 of #732, 12 of #733) are bitwise with strict boundaries: `all_bitwise: true`,
 every check true on every rank (for #733 including every LoRA gradient), `shards_missing` empty, `strict_boundaries: true`.
 All four negative controls are caught where expected.
 
