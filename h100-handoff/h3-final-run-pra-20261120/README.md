@@ -1,4 +1,6 @@
-# H100 handoff: final_distributed_h3_run PR A on Hopper (2026-11-20)
+# H100 handoff: final_distributed_h3_run PR A on Hopper (2026-11-20, updated 2026-11-22)
+
+**Updated 2026-11-22:** PR A is public as #731 and both PRs took a bot-review round. Run the current heads, #731 `b446400f` on #730 `02b123e0`, fetched from the PRs (the bundle is gone). The changes since `164a5ebd` / `23ea31cc`: #730's two launches now run on the input's device; the exact clip takes a single Tensor and multiplies FP16 / BF16 gradients with the FP32 coefficient. Neither changes the B200 reference numbers below (all FP32), except the test counts of step D, which are re-measured at the new heads. Step A2 is new: #730's own Hopper row.
 
 Hardware: 2 nodes x 4 H100 (sm90); TP8 and TP4 x CP2 span both nodes. Paths are placeholders (`<REPO>`, `<SRC>`, `<BASE>`, `<OUT>`, `<THIS_DIR>`, `<E1>`, `<E2>`, `<VERL_OMNI>`, `<WEIGHTS>`, `<PROVIDER>`, `<OVERLAY>`).
 
@@ -21,19 +23,16 @@ Everything below has run on one 8 x B200 node (reference numbers in each step). 
 
 ## Code
 
-`h3-final-run-pra-20261120.bundle` in this directory holds one ref, `feat/h3-final-run-transition-norm` at `164a5ebd`. PR A is stacked on PR #730 (`perf/h3-fixed-order-row-mean` at `23ea31cc`, the fixed-order row mean of the CPS log-prob), which is its prerequisite; #730 sits on upstream `test-h3` `12e81c36`. The PR A branch is local only, not pushed.
+PR A is #731 (`feat/h3-final-run-transition-norm`, head `b446400f`), stacked on #730 (`perf/h3-fixed-order-row-mean`, head `02b123e0`, the fixed-order row mean of the CPS log-prob), which is its prerequisite; #730 sits on upstream `test-h3` `12e81c36`.
 
 ```bash
 cd <REPO>
-git fetch https://github.com/RL-Align/RL-Kernel.git pull/730/head        # provides 23ea31cc (PR #730)
-git bundle verify <THIS_DIR>/h3-final-run-pra-20261120.bundle
-git fetch <THIS_DIR>/h3-final-run-pra-20261120.bundle \
-  'refs/heads/feat/h3-final-run-transition-norm:refs/heads/feat/h3-final-run-transition-norm'
-git worktree add --detach <SRC> feat/h3-final-run-transition-norm      # 164a5ebd
-git worktree add --detach <BASE> 23ea31cc                              # PR #730, the base for the before / after rows
+git fetch https://github.com/RL-Align/RL-Kernel.git pull/730/head pull/731/head
+git worktree add --detach <SRC> b446400f    # #731 head
+git worktree add --detach <BASE> 02b123e0   # #730 head, the base for the before / after rows
 ```
 
-The probe scripts are in this directory: `compare_sample_h3_transition.py`, `logprob_batch_probe.py`, `norm_partition_probe.py`, `multirank_norm_probe.py`, `hook_before_after.py`, `timing_probe.py`. Run them from `<SRC>` with `PYTHONPATH=<SRC>` so that `rl_engine` is the checkout's.
+The probe scripts are in this directory: `compare_sample_h3_transition.py`, `logprob_batch_probe.py`, `norm_partition_probe.py`, `multirank_norm_probe.py`, `hook_before_after.py`, `timing_probe.py`, `row_mean_bytes_probe.py` (with its B200 reference `row_mean_bytes_b200.json`). Run them from `<SRC>` with `PYTHONPATH=<SRC>` so that `rl_engine` is the checkout's.
 
 ## Environments
 
@@ -67,6 +66,19 @@ CUDA_VISIBLE_DEVICES=0 MASTER_PORT=29811 <E1>/bin/python <THIS_DIR>/hook_before_
   | transition, video, scoring | 0.34 | 0.23 |
   | transition, audio, sampling | 0.31 | 0.23 |
   | transition, audio, scoring | 0.28 | 0.20 |
+
+## A2. #730 on Hopper: the row-mean bytes (`<E1>`, one GPU, about 10 min)
+
+#730's PR lists "not measured on H100" as its open item: the row sums use only FP32 loads and adds in a fixed pairwise order, so their bytes should be the same on every GPU, but that has not been checked.
+
+```bash
+cd <BASE>; export PYTHONPATH=<BASE>   # #730 head
+CUDA_VISIBLE_DEVICES=0 <E1>/bin/python <THIS_DIR>/row_mean_bytes_probe.py --out <OUT>/A2/row-mean-bytes.json \
+  --compare <THIS_DIR>/row_mean_bytes_b200.json > <OUT>/A2/row-mean-bytes.log 2>&1
+CUDA_VISIBLE_DEVICES=0,1 <E1>/bin/python -m pytest -q -p no:cacheprovider -rs tests/backends/shared/triton/reduction/test_row_mean.py > <OUT>/A2/test-row-mean.txt 2>&1
+```
+
+**Expected:** `all_bytes_equal: true` (16 cases: `row_sums` and `fixed_order_mean` on 8 shapes, up to the H3 video latent). Any case that differs is the main finding: send it as is. `test-row-mean.txt`: 22 passed (the cross-device test needs the 2 GPUs; on B200: 22 passed).
 
 ## B. verl-omni comparisons (`<E2>`, one GPU, about 15 min)
 
@@ -111,7 +123,7 @@ done
 wait
 ```
 
-**Expected:** nothing fails only at head. B200: head 1589 passed / 2 failed / 148 skipped, #730 `23ea31cc` 1566 / 2 / 148; the 2 failures on both are `test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-257]` (a B200 bound; it passed on H100 in earlier rounds) and `test_rms_norm.py::test_registry_dispatches_rms_norm`. List every failure on each side.
+**Expected:** nothing fails only at head. B200 at the current heads (2 GPUs each, repo environment): head `b446400f` 1595 passed / 2 failed / 148 skipped; #730 `02b123e0` 1559 / 10 / 148. The 2 failures on both are `test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-257]` (a B200 bound; it passed on H100 in earlier rounds) and `test_rms_norm.py::test_registry_dispatches_rms_norm`. The other 8 on #730 are the `test_reproducible_norm.py` accelerator tests failing with `libnvrtc.so.12: cannot open shared object file`: that machine has only the CUDA 13 NVRTC, and finding it is what #731 adds (at `164a5ebd` / `23ea31cc`, on a node whose loader path also held a CUDA 12 NVRTC, #730 had only the 2). List every failure on each side, and say which NVRTC files the environment has.
 
 ## What to send back
 
