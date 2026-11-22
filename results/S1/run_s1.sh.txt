@@ -1,0 +1,53 @@
+#!/bin/bash
+# S1 (#732 6c7e424c, #733 4e67d5d7), strict boundaries (no --provider-boundaries), <E1>. Run from the login node: every run is an srun step,
+# one task per GPU (the tool reads the SLURM rank variables), as the README allows. Usage: run_s1.sh <jobid> <node-a> <node-b> <single|multi>
+# single: build, the 2- and 4-rank runs and the suites on node-a; multi: the 8-rank runs on node-a + node-b. Runs are independent; only the order differs from the README tables.
+source <HOME>/datastorage/h3strict_20261122/env.sh; J=$1; NA=$2; NB=$3; PH=$4; S=$OUT/S1; mkdir -p $S
+export MASTER_ADDR=$NA; PORT=29720; [ "$4" = multi ] && PORT=29780
+build() { W=$1; tag=$2; log "S1 build $tag"
+  srun --jobid=$J -w $NA --overlap -N1 -n1 -c 64 --mem=0 bash -c "cd $W && RL_KERNEL_H3_STRICT=1 RL_KERNEL_REQUIRE_EXT=1 $E1/bin/python setup.py build_ext --inplace" > $S/build-$tag.log 2>&1; echo "build-$tag rc=$?" >> $S/rc.txt
+  (cd $W && PYTHONPATH=$W $E1/bin/python -c "import rl_engine._C as c; print(c.__file__)") > $S/c-file-$tag.txt 2>&1
+  git -C $W status --porcelain --untracked-files=no > $S/status-after-build-$tag.txt; }
+run() { W=$1; name=$2; ranks=$3; shift 3; if [ $PH = single ] && [ $ranks = 8 ]; then return; fi; if [ $PH = multi ] && [ $ranks != 8 ]; then return; fi; O=$S/$name; mkdir -p $O; PORT=$((PORT+2))
+  rec $O $W $E1; srun --jobid=$J -w $NA --overlap -N1 -n1 --mem=0 nvidia-smi > $O/nvidia-smi-node-a.txt 2>&1
+  if [ $ranks = 8 ]; then srun --jobid=$J -w $NB --overlap -N1 -n1 --mem=0 nvidia-smi > $O/nvidia-smi-node-b.txt 2>&1; L="-N2 -w $NA,$NB --ntasks-per-node=4 -n8 --gres=gpu:4"; else L="-N1 -w $NA -n$ranks --gres=gpu:$ranks"; fi
+  echo "flags: --checkpoint <CKPT> --attention h3_full --out <OUT>/S1/$name $*" > $O/command.txt; echo "launch: srun $L (one task per GPU), MASTER_PORT=$PORT" >> $O/command.txt
+  log "S1 $name start"
+  ( cd $W && MASTER_PORT=$PORT PYTHONPATH=$W:$PROVIDER/src srun --jobid=$J --overlap $L -c 16 --mem=0 --kill-on-bad-exit=1 \
+      $E1/bin/python tools/validation/models/h3_parallel_full_model.py --checkpoint $CKPT --attention h3_full --out $O "$@" > $O/run.log 2>&1 ); rc=$?
+  echo "$name rc=$rc" >> $S/rc.txt; git -C $W status --porcelain --untracked-files=no > $O/status-after.txt; log "S1 $name end rc=$rc"; }
+A=$WS/s732; B=$WS/s733
+[ $PH = single ] && { build $A 732; build $B 733; }
+for t in 732 733; do case "$(realpath $(cat $S/c-file-$t.txt) 2>/dev/null)" in $(realpath $WS/s$t)/*) ;; *) log "S1: _C of $t not inside the checkout, stop"; exit 1;; esac; done
+# S1.a
+run $A harness_tp4_sp 4 --tp 4 --sp --size 928
+run $A sharded_tp2_40 2 --tp 2 --sharded --size 40
+run $A sharded_tp4_sp_928 4 --tp 4 --sp --sharded --size 928
+run $A sharded_tp4_cp2_ring_925 8 --tp 4 --cp 2 --cp-mode ring --sharded --size 925
+run $A sharded_tp4_cp2_sp_ring_928 8 --tp 4 --cp 2 --sp --cp-mode ring --sharded --size 928
+run $A sharded_tp4_cp2_sp_ulysses_928 8 --tp 4 --cp 2 --sp --cp-mode ulysses --sharded --size 928
+run $A sharded_tp8_sp_928 8 --tp 8 --sp --sharded --size 928 --local-size 4
+run $A inject_sharded_tp4_sp_928 4 --tp 4 --sp --sharded --size 928 --inject 17:700:2
+run $A inject_sharded_tp4_cp2_ring_925 8 --tp 4 --cp 2 --cp-mode ring --sharded --size 925 --inject 17:5:3
+# S1.b
+LO="--sharded --lora-rank 64 --lora-alpha 128 --lora-seed 7"
+for b in random zero; do x=""; [ $b = zero ] && x="--lora-b-zero"
+  run $B lora_${b}_tp2_40 2 $LO $x --tp 2 --size 40
+  run $B lora_${b}_tp4_sp_928 4 $LO $x --tp 4 --sp --size 928
+  run $B lora_${b}_tp4_cp2_ring_925 8 $LO $x --tp 4 --cp 2 --cp-mode ring --size 925
+  run $B lora_${b}_tp4_cp2_sp_ring_928 8 $LO $x --tp 4 --cp 2 --sp --cp-mode ring --size 928
+  run $B lora_${b}_tp4_cp2_sp_ulysses_928 8 $LO $x --tp 4 --cp 2 --sp --cp-mode ulysses --size 928
+  run $B lora_${b}_tp8_sp_928 8 $LO $x --tp 8 --sp --size 928 --local-size 4
+done
+run $B inject_lora_tp4_sp_928 4 $LO --tp 4 --sp --size 928 --inject 17:700:2
+run $B inject_lora_tp4_cp2_ring_925 8 $LO --tp 4 --cp 2 --cp-mode ring --size 925 --inject 17:5:3
+# S1.c
+if [ $PH = single ]; then
+log "S1 suites start"; srun --jobid=$J -w $NA --overlap -N1 -n1 --mem=0 nvidia-smi > $S/nvidia-smi-suites.txt 2>&1
+srun --jobid=$J -w $NA --overlap -N1 -n1 -c 64 --gres=gpu:4 --mem=0 bash -c "
+(cd $B && CUDA_VISIBLE_DEVICES=0,1 PYTHONPATH=$B:$PROVIDER/src $E1/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 > $S/suite-733.txt 2>&1; echo \"suite-733 rc=\$?\" >> $S/rc.txt) &
+(cd $A && CUDA_VISIBLE_DEVICES=2,3 PYTHONPATH=$A:$PROVIDER/src $E1/bin/python -m pytest -q -p no:cacheprovider --tb=line -rfs tests/models/minimax_h3 > $S/suite-732.txt 2>&1; echo \"suite-732 rc=\$?\" >> $S/rc.txt) &
+wait"
+for t in 732 733; do git -C $WS/s$t status --porcelain --untracked-files=no > $S/status-after-suites-$t.txt; done
+fi
+log "S1 $PH end"

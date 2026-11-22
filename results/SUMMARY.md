@@ -1,7 +1,7 @@
 # H3 on Hopper with strict boundaries (H100, 2026-11-22)
 
 Handoff: `handoff/h100-h3-hopper-strict-20261122` (`fe04e2e1`), README sections S1 and S2.
-Hardware: NVIDIA H100 80GB HBM3, 4 per node; S2 on one exclusive node (`node-a`).
+Hardware: NVIDIA H100 80GB HBM3, 4 per node. S2 on one exclusive node (`node-a`); S1's 2- and 4-rank runs and suites on `node-a`, its 8-rank runs on `node-a` + `node-b` (global rank 0 on `node-a`).
 
 ## S2: omni rollout with strict boundaries (bundle `5f1a750b` = #735 `4a4fe0c0` + #734 `dcc8535a`)
 
@@ -57,3 +57,55 @@ Tests:
    local version suffix).
 4. `env.txt` was rewritten after the run with the same interpreter, because my recording helper had passed the venv
    directory instead of its python.
+
+## S1: full model, strict boundaries (#732 `6c7e424c`, #733 `4e67d5d7`)
+
+Environment `<E1>`: torch 2.13.0+cu130, triton 3.7.1, accelerate 1.15.0 (`pip-list-filtered-E1.txt`), with the H3 provider
+(Diffusers with MiniMax-H3) at `<PROVIDER>/src` on `PYTHONPATH`; no `<OVERLAY>` needed. `<CKPT>` as in S2.
+`_C` built in each checkout with `RL_KERNEL_H3_STRICT=1 RL_KERNEL_REQUIRE_EXT=1` (`build-732.log`, `build-733.log`, rc 0;
+`c-file-*.txt` inside each checkout); every tree stayed clean (`status-*.txt`).
+
+Launch: every run is an `srun` step with one task per GPU, running `h3_parallel_full_model.py` directly (the first form the README allows),
+`MASTER_ADDR` = `node-a`, a new `MASTER_PORT` per run (`*/command.txt`, `run_s1.sh.txt`). Flags are exactly the README tables, with no
+`--provider-boundaries`. The runs are independent; only the order differs (all 1-node runs first, then all 8-rank runs).
+
+Verdict: **every run meets the S1 expectation.** All 16 non-inject runs are bitwise with strict boundaries: `all_bitwise: true`,
+every check true on every rank (for #733 including every LoRA gradient), `shards_missing` empty, `strict_boundaries: true`.
+All four negative controls are caught where expected.
+
+| Run | Ranks | `strict_boundaries` | Result | Peak / resident GiB per rank (`parallel_peak_bytes` / `resident_param_bytes`, max over ranks) |
+|---|---|---|---|---|
+| `harness_tp4_sp` | 4 (1 node) | true | **bitwise** | not recorded (full weights) |
+| `sharded_tp2_40` | 2 (1 node) | true | **bitwise** | 45.5 / 43.8 |
+| `sharded_tp4_sp_928` | 4 (1 node) | true | **bitwise** | 37.8 / 34.8 |
+| `sharded_tp4_cp2_ring_925` | 8 (2 nodes) | true | **bitwise** | 36.7 / 34.8 |
+| `sharded_tp4_cp2_sp_ring_928` | 8 (2 nodes) | true | **bitwise** | 37.3 / 34.8 |
+| `sharded_tp4_cp2_sp_ulysses_928` | 8 (2 nodes) | true | **bitwise** | 37.3 / 34.8 |
+| `sharded_tp8_sp_928` | 8 (2 nodes) | true | **bitwise** | 33.1 / 30.3 |
+| `inject_sharded_tp4_sp_928` | 4 (1 node) | true | not bitwise (expected); `first_drift_forward` on all 4 ranks: block.17, row 700 (video), 1 row, owners [2] | 37.8 / 34.8 |
+| `inject_sharded_tp4_cp2_ring_925` | 8 (2 nodes) | true | not bitwise (expected); `first_drift_forward` on all 8 ranks: block.17, row 5 (text), 1 row, owners [0, 1, 2, 3] | 36.7 / 34.8 |
+| `lora_random_tp2_40` | 2 (1 node) | true | **bitwise** | 45.9 / 43.8 |
+| `lora_random_tp4_sp_928` | 4 (1 node) | true | **bitwise** | 37.1 / 34.8 |
+| `lora_random_tp4_cp2_ring_925` | 8 (2 nodes) | true | **bitwise** | 37.0 / 34.8 |
+| `lora_random_tp4_cp2_sp_ring_928` | 8 (2 nodes) | true | **bitwise** | 37.1 / 34.8 |
+| `lora_random_tp4_cp2_sp_ulysses_928` | 8 (2 nodes) | true | **bitwise** | 37.1 / 34.8 |
+| `lora_random_tp8_sp_928` | 8 (2 nodes) | true | **bitwise** | 32.3 / 30.3 |
+| `lora_zero_tp2_40` | 2 (1 node) | true | **bitwise** | 45.9 / 43.8 |
+| `lora_zero_tp4_sp_928` | 4 (1 node) | true | **bitwise** | 37.1 / 34.8 |
+| `lora_zero_tp4_cp2_ring_925` | 8 (2 nodes) | true | **bitwise** | 37.0 / 34.8 |
+| `lora_zero_tp4_cp2_sp_ring_928` | 8 (2 nodes) | true | **bitwise** | 37.1 / 34.8 |
+| `lora_zero_tp4_cp2_sp_ulysses_928` | 8 (2 nodes) | true | **bitwise** | 37.1 / 34.8 |
+| `lora_zero_tp8_sp_928` | 8 (2 nodes) | true | **bitwise** | 32.3 / 30.3 |
+| `inject_lora_tp4_sp_928` | 4 (1 node) | true | not bitwise (expected); `first_drift_forward` on all 4 ranks: block.17, row 700 (video), 1 row, owners [2]; `lora_gradients_bitwise` false on every rank | 37.1 / 34.8 |
+| `inject_lora_tp4_cp2_ring_925` | 8 (2 nodes) | true | not bitwise (expected); `first_drift_forward` on all 8 ranks: block.17, row 5 (text), 1 row, owners [0, 1, 2, 3]; `lora_gradients_bitwise` false on every rank | 37.0 / 34.8 |
+
+On the inject runs `first_drift_backward` is `block.49.grad` (audio rows) on every rank, as the injected forward change propagates through the backward pass.
+
+### S1.c suites (`<E1>`, 2 + 2 GPUs, the README command)
+
+- #733 (`suite-733.txt`): 1440 passed, 2 failed, 156 skipped.
+- #732 (`suite-732.txt`): 1416 passed, 2 failed, 144 skipped.
+- The same 2 failures on both sides: `tests/models/minimax_h3/test_h3_ring_attention.py::test_block_with_h3_attention_equals_single_gpu_bitwise[cp2_ring_len261]` and `[cp2_ulysses_h3]`.
+  Their spawned rank raises `FileNotFoundError: set RL_KERNEL_H3_WEIGHTS to the prepare_h3_weights.py output dir`: the README's suite command
+  does not set `RL_KERNEL_H3_WEIGHTS`, and these two multi-process tests fail instead of skipping when it is unset. Not rerun.
+- **Nothing fails only at #733.** The B200 `test_h3_benchmark_timing.py::...[gather]` CPU failure does not occur here.
