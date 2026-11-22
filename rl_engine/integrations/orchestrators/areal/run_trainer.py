@@ -31,6 +31,9 @@ from typing import Any
 
 STATS_ENV = "RL_KERNEL_AREAL_STATS_JSONL"
 VLLM_SERVER_ARGS_ENV = "RL_KERNEL_AREAL_VLLM_SERVER_ARGS"
+# Not RL_KERNEL_-prefixed on purpose: it is a launch-environment setting, not a numeric
+# switch, so the verifier does not scrub it and both arms get the same value.
+WORKERS_READY_TIMEOUT_ENV = "RLK_AREAL_WORKERS_READY_TIMEOUT"
 
 
 def _plain(value: Any) -> Any:
@@ -115,6 +118,23 @@ def install_vllm_server_overrides(raw: str) -> dict[str, Any]:
     return overrides
 
 
+def install_workers_ready_timeout(raw: str) -> float:
+    """Raise AReaL's fixed 30 s data-service worker start-up wait.
+
+    On a multi-node scheduler the first worker process imports AReaL from a shared
+    file system on a remote node, which can take longer than that.
+    """
+
+    seconds = float(raw)
+    if seconds <= 0:
+        raise SystemExit(f"{WORKERS_READY_TIMEOUT_ENV} must be positive")
+    from areal.infra.data_service.controller.controller import DataController
+
+    DataController._WORKERS_READY_TIMEOUT = seconds
+    print(f"[RL-Kernel][areal] data-service worker start-up timeout: {seconds}s", flush=True)
+    return seconds
+
+
 def main(argv: list[str] | None = None) -> None:
     args = list(sys.argv[1:] if argv is None else argv)
     if not args or not args[0].endswith(".py"):
@@ -126,6 +146,9 @@ def main(argv: list[str] | None = None) -> None:
     overrides = os.getenv(VLLM_SERVER_ARGS_ENV, "").strip()
     if overrides:
         install_vllm_server_overrides(overrides)
+    timeout = os.getenv(WORKERS_READY_TIMEOUT_ENV, "").strip()
+    if timeout:
+        install_workers_ready_timeout(timeout)
     script = args[0]
     sys.argv = [script, *args[1:]]
     sys.path.insert(0, str(Path(script).resolve().parent))

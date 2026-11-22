@@ -28,6 +28,10 @@ ARMS = (ARM_NATIVE, ARM_RLKERNEL)
 MODE_SYNC = "sync"
 MODE_ASYNC = "async"
 
+SCHEDULER_LOCAL = "local"
+SCHEDULER_RAY = "ray"
+SCHEDULERS = (SCHEDULER_LOCAL, SCHEDULER_RAY)
+
 # vLLM execution for the rollout server. "graph" mirrors the VIME CUDA setup of
 # RL-Kernel PR 377: no torch.compile (-O0) and full CUDA graphs for decode,
 # captured at every exact batch size 1..max_num_seqs. Both arms get the same
@@ -56,6 +60,8 @@ class ExperimentSpec:
     rollout_tp: int = 4
     rollout_dp: int = 1
     n_gpus_per_node: int = 8
+    n_nodes: int = 1
+    scheduler: str = SCHEDULER_LOCAL
     batch_size: int = 32
     n_samples: int = 4
     max_new_tokens: int = 1024
@@ -80,11 +86,30 @@ class ExperimentSpec:
             raise ValueError("steps, batch_size and n_samples must be positive")
         if self.mode == MODE_ASYNC and self.max_offpolicyness <= 0:
             raise ValueError("async mode needs max_offpolicyness >= 1")
+        if self.scheduler not in SCHEDULERS:
+            raise ValueError(f"scheduler must be one of {SCHEDULERS}")
+        if self.n_nodes <= 0 or self.n_gpus_per_node <= 0:
+            raise ValueError("n_nodes and n_gpus_per_node must be positive")
+        if self.n_nodes > 1 and self.scheduler != SCHEDULER_RAY:
+            raise ValueError(
+                f"n_nodes={self.n_nodes} needs scheduler={SCHEDULER_RAY!r}; "
+                f"the {SCHEDULER_LOCAL!r} scheduler only runs on one node"
+            )
+        # Tensor/context parallel groups never span nodes: each group must fit in one.
+        for name, width in (
+            ("train TP*CP", self.train_tp * self.train_cp),
+            ("rollout TP", self.rollout_tp),
+        ):
+            if width > self.n_gpus_per_node:
+                raise ValueError(
+                    f"{name} ({width}) exceeds the {self.n_gpus_per_node} GPUs of one node"
+                )
         used = self.train_tp * self.train_cp + self.rollout_tp * self.rollout_dp
-        if used > self.n_gpus_per_node:
+        total = self.n_nodes * self.n_gpus_per_node
+        if used > total:
             raise ValueError(
                 f"train TP*CP ({self.train_tp}*{self.train_cp}) + rollout TP*DP "
-                f"({self.rollout_tp}*{self.rollout_dp}) exceeds {self.n_gpus_per_node} GPUs"
+                f"({self.rollout_tp}*{self.rollout_dp}) exceeds {total} GPUs"
             )
 
     @property
@@ -235,12 +260,12 @@ def build_config(
         "seed": spec.seed,
         "total_train_steps": spec.steps,
         "enable_offload": False,
-        "cluster.n_nodes": 1,
+        "cluster.n_nodes": spec.n_nodes,
         "cluster.n_gpus_per_node": spec.n_gpus_per_node,
         "cluster.fileroot": str(arm_dir / "fileroot"),
         "cluster.name_resolve.type": "nfs",
         "cluster.name_resolve.nfs_record_root": str(arm_dir / "name_resolve"),
-        "scheduler.type": "local",
+        "scheduler.type": spec.scheduler,
         "actor.path": spec.model,
         "actor.backend": spec.actor_backend(),
         "actor.dtype": "bfloat16",
@@ -313,6 +338,9 @@ __all__ = [
     "ExperimentSpec",
     "MODE_ASYNC",
     "MODE_SYNC",
+    "SCHEDULERS",
+    "SCHEDULER_LOCAL",
+    "SCHEDULER_RAY",
     "VLLM_EAGER",
     "VLLM_EXECUTIONS",
     "VLLM_GRAPH",

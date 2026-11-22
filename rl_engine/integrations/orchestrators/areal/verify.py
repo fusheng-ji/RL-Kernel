@@ -70,6 +70,21 @@ def _git_revision(path: Path) -> dict[str, Any]:
 # --------------------------------------------------------------------------- inventory
 
 
+def _ray_status() -> str | None:
+    """``ray status`` of the cluster named by ``RAY_ADDRESS``, or None without one."""
+
+    address = os.environ.get("RAY_ADDRESS", "").strip()
+    if not address:
+        return None
+    try:
+        return subprocess.check_output(
+            ["ray", "status", "--address", address],
+            text=True, stderr=subprocess.STDOUT, timeout=60,
+        )
+    except (OSError, subprocess.SubprocessError) as error:
+        return f"unavailable: {error}"
+
+
 def cmd_inventory(args: argparse.Namespace) -> int:
     out = Path(args.out)
     packages: dict[str, str | None] = {}
@@ -99,6 +114,7 @@ def cmd_inventory(args: argparse.Namespace) -> int:
         )
     except (OSError, subprocess.CalledProcessError) as error:
         payload["nvidia_smi"] = f"unavailable: {error}"
+    payload["ray_status"] = _ray_status()
     _write_json(out / "inventory.json", payload)
     print(json.dumps(payload["packages"], indent=2))
     return 0
@@ -302,6 +318,8 @@ def _spec_from_args(args: argparse.Namespace) -> launch.ExperimentSpec:
         rollout_tp=args.rollout_tp,
         rollout_dp=args.rollout_dp,
         n_gpus_per_node=args.gpus,
+        n_nodes=args.nodes,
+        scheduler=args.scheduler,
         batch_size=args.batch_size,
         n_samples=args.n_samples,
         max_new_tokens=args.max_new_tokens,
@@ -576,7 +594,11 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--arms", default="native,rlkernel")
     run.add_argument("--steps", type=int, default=5)
     run.add_argument("--seed", type=int, default=1)
-    run.add_argument("--gpus", type=int, default=8)
+    run.add_argument("--gpus", type=int, default=8, help="GPUs per node")
+    run.add_argument("--nodes", type=int, default=1,
+                     help="number of nodes; more than one requires --scheduler ray")
+    run.add_argument("--scheduler", choices=launch.SCHEDULERS, default=launch.SCHEDULER_LOCAL,
+                     help="AReaL scheduler.type")
     run.add_argument("--train-tp", type=int, default=4)
     run.add_argument("--train-cp", type=int, default=1)
     run.add_argument("--rollout-tp", type=int, default=4)

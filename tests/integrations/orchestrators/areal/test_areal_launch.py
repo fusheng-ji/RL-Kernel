@@ -86,6 +86,47 @@ def test_spec_validation_and_cp_backend():
         _spec(mode="async", max_offpolicyness=0).validate()
 
 
+def test_default_config_stays_single_node_local(tmp_path):
+    spec = _spec()
+    env = launch.arm_environment(spec, "native", readback_dir=tmp_path, stats_path=tmp_path / "s")
+    config = launch.build_config(BASE, spec, "native", arm_dir=tmp_path, env_vars=env,
+                                 trial_name="t")
+    assert config["cluster"]["n_nodes"] == 1
+    assert config["cluster"]["n_gpus_per_node"] == 8
+    assert config["scheduler"]["type"] == "local"
+
+
+def test_two_nodes_of_four_gpus_use_ray(tmp_path):
+    spec = _spec(n_nodes=2, n_gpus_per_node=4, scheduler="ray")
+    spec.validate()
+    env = launch.arm_environment(spec, "rlkernel", readback_dir=tmp_path / "rb",
+                                 stats_path=tmp_path / "s.jsonl")
+    config = launch.build_config(BASE, spec, "rlkernel", arm_dir=tmp_path, env_vars=env,
+                                 trial_name="t")
+    assert config["cluster"]["n_nodes"] == 2
+    assert config["cluster"]["n_gpus_per_node"] == 4
+    assert config["scheduler"]["type"] == "ray"
+    assert config["actor"]["backend"] == "megatron:d1p1t4"
+    assert config["rollout"]["backend"] == "vllm:d1p1t4"
+    assert config["actor"]["scheduling_spec"][0]["cmd"] == launch.WORKER_CMD
+
+
+def test_multi_node_validation():
+    with pytest.raises(ValueError, match="ray"):
+        _spec(n_nodes=2, n_gpus_per_node=4, scheduler="local").validate()
+    with pytest.raises(ValueError, match="scheduler"):
+        _spec(scheduler="slurm").validate()
+    with pytest.raises(ValueError, match="one node"):
+        _spec(n_nodes=2, n_gpus_per_node=4, scheduler="ray", train_tp=8, rollout_tp=4).validate()
+    with pytest.raises(ValueError, match="one node"):
+        _spec(n_nodes=2, n_gpus_per_node=2, scheduler="ray", train_tp=2, rollout_tp=4).validate()
+    with pytest.raises(ValueError, match="exceeds 8 GPUs"):
+        _spec(n_nodes=2, n_gpus_per_node=4, scheduler="ray", train_tp=4, rollout_tp=4,
+              rollout_dp=2).validate()
+    with pytest.raises(ValueError, match="positive"):
+        _spec(n_nodes=0).validate()
+
+
 def test_scrubbed_environment_removes_numeric_switches():
     env = {"RL_KERNEL_LOGP_CASE": "R/R", "VIME_RL_KERNEL_STRICT": "1", "VLLM_PLUGINS": "x",
            "PATH": "/bin", "HF_HOME": "/h"}
