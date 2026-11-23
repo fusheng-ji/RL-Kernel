@@ -1,5 +1,6 @@
 {
   "description": "AReaL x RL-Kernel on Qwen3-8B / GSM8K, 2 nodes x 4 H100 (Megatron TP4 actor on one node, vLLM TP4 rollout on the other). Times are steady-state means with the first step skipped.",
+  "placement_caveat": "In baseline_run and round1_run the actor shared a node with the driver, AReaL controller and Ray head, inflating its time about 4.7x vs an actor alone on a node; native also ran without RoPE fusion. Native-vs-RL-Kernel speedups here are superseded by placement_rerun_preliminary and are being re-measured.",
   "baseline_run": {
     "S2-smoke-graph/rlkernel": {
       "mode": "sync",
@@ -318,6 +319,38 @@
       "native-graph": 6,
       "rlkernel-before-graph": 22,
       "rlkernel-round1-graph": 17
+    }
+  },
+  "placement_rerun_preliminary": {
+    "note": "sync, steady-state means (first step skipped), s/step. Native: 10 steps, actor alone on a node, vLLM on the driver node. RL-Kernel round 1: 5 steps, driver and GPU-less Ray head on a CPU node. Rollout not comparable across these layouts.",
+    "native": {
+      "train_step": 8.16,
+      "recompute_logp": 4.12,
+      "step_seconds": 28.53
+    },
+    "native_fused_rope": {
+      "train_step": 5.34,
+      "recompute_logp": 2.26,
+      "step_seconds": 22.33
+    },
+    "rlkernel_round1": {
+      "train_step": 7.01,
+      "recompute_logp": 2.88,
+      "step_seconds": 26.35
+    },
+    "native_async_unfused_vs_fused": {
+      "train_step": [
+        8.16,
+        5.37
+      ],
+      "recompute_logp": [
+        4.33,
+        2.36
+      ],
+      "step_seconds": [
+        17.75,
+        16.38
+      ]
     }
   }
 }

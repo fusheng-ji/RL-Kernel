@@ -8,6 +8,13 @@ the run artefacts behind every table are listed under [Raw data](#raw-data).
 
 ## Summary
 
+> **Speedups vs native are under re-measurement.** In every run below, the native
+> actor shared a node with the driver, the AReaL controller and the Ray head, which
+> inflated its train time about 4.7x, and the native arm ran without RoPE fusion.
+> With both fixed, native trains faster than RL-Kernel round 1. See
+> [Placement and native fused RoPE](#placement-and-native-fused-rope-re-measurement-pending).
+> The consistency results are not affected.
+
 - The RL-Kernel arm stays bitwise consistent in every run: PASS in every
   configuration, with 0 mismatching tokens and max abs diff 0 in sync mode.
 - Round 1 cuts the RL-Kernel arm's actor train time from 48.48 to 13.24 s/step
@@ -362,6 +369,45 @@ They include `trainer.log`, every AReaL service log (`main.log`, `merged.log`,
 | `areal-round1-extra-run.tar.gz` | full round 1 extra runs: S4-async-graph and S3-sync-observe |
 | `areal-preflight-S0-S1.tar.gz` | S0 inventory and S1 preflight |
 | `setup_env.log` | environment installation log |
+
+## Placement and native fused RoPE (re-measurement pending)
+
+`verify run --native-rope-fusion` builds the native arm with Megatron
+`apply_rope_fusion=True`. All 8 ranks log the TE fused THD RoPE path on the first
+call. Follow-up runs then exposed a placement effect that biases every native
+number above.
+
+- In every earlier run, the native actor shared a node with the driver, the AReaL
+  controller and the Ray head. Any GPU role placed there ran slower, but the nodes
+  themselves are not to blame: GEMM throughput, kernel launch latency, H2D
+  bandwidth, TP4 all-reduce and a CPU loop measure the same on all four nodes. The
+  exact mechanism is still open.
+- When the actor ran alone on a node, native train time dropped from 38.47 to
+  8.16 s/step.
+- When RL-Kernel's vLLM shared the driver node, CUDA graph capture took 117 s
+  and the server missed the 300 s health check. With the driver and a GPU-less Ray
+  head on a separate CPU node, capture took 19 s and the run completed.
+
+Preliminary sync numbers (s/step). The native runs have 10 steps, with the actor
+alone on a node and vLLM still sharing the driver node. The RL-Kernel run has 5
+steps, with the driver on a CPU node.
+
+| Metric | native | native, fused RoPE | RL-Kernel round 1 |
+| --- | ---: | ---: | ---: |
+| Actor train | 8.16 | 5.34 | 7.01 |
+| Recompute logp | 4.12 | 2.26 | 2.88 |
+| End-to-end step | 28.53 | 22.33 | 26.35 |
+
+Fused RoPE makes native train 0.65x and recompute 0.55x of unfused native (paired
+95% CI [0.65x, 0.66x] and [0.54x, 0.55x]). Async runs give the same ratios: train
+8.16 to 5.37 s and recompute 4.33 to 2.36 s. The rollout columns are not
+comparable, because the layouts differ. Measured this way, RL-Kernel round 1
+trains about 1.3x slower than fused-RoPE native. The round 1 speedups vs native
+in the Summary do not hold.
+
+Next, all arms (native, native fused RoPE, RL-Kernel before and after round 1;
+sync, async and profiles) will be re-run in one layout, with the driver and Ray
+head on a CPU node. The tables and figures above will then be replaced.
 
 ## Caveats and next steps
 
