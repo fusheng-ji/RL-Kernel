@@ -202,6 +202,82 @@
         "same_version_mismatching_tokens": 0,
         "verdict": "PASS"
       }
+    },
+    "S4-async-graph/native": {
+      "mode": "async",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 0.004,
+        "recompute_logp": 18.271,
+        "train_step": 39.019,
+        "update_weights": 2.645,
+        "step_seconds": 63.084
+      },
+      "rollout_tokens_per_gpu_s": null,
+      "startup_s": 755.0,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 7.0,
+      "consistency": {
+        "compared_tokens": 1278644,
+        "mismatching_tokens": 800880,
+        "max_abs_diff": 1.760634422302246,
+        "same_version_tokens": 129391,
+        "same_version_mismatching_tokens": 83318,
+        "verdict": "REPORT_ONLY"
+      }
+    },
+    "S4-async-graph/rlkernel": {
+      "mode": "async",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 0.013,
+        "recompute_logp": 7.164,
+        "train_step": 13.279,
+        "update_weights": 2.757,
+        "step_seconds": 26.684
+      },
+      "rollout_tokens_per_gpu_s": null,
+      "startup_s": 809.5,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 20.0,
+      "consistency": {
+        "compared_tokens": 1269976,
+        "mismatching_tokens": 499596,
+        "max_abs_diff": 1.7444572448730469,
+        "same_version_tokens": 129234,
+        "same_version_mismatching_tokens": 0,
+        "verdict": "PASS"
+      }
+    },
+    "S3-sync-observe/native": {
+      "mode": "sync",
+      "vllm_execution": "graph",
+      "steps": 10,
+      "skipped_steps": 1,
+      "steady_state_means_s": {
+        "rollout": 10.184,
+        "recompute_logp": 18.074,
+        "train_step": 38.56,
+        "update_weights": 2.634,
+        "step_seconds": 72.545
+      },
+      "rollout_tokens_per_gpu_s": 3104.4,
+      "startup_s": 747.7,
+      "vllm_cudagraph_mode": "FULL_DECODE_ONLY",
+      "vllm_capture_s": 7.0,
+      "consistency": {
+        "compared_tokens": 1264941,
+        "mismatching_tokens": 791080,
+        "max_abs_diff": 1.274998426437378,
+        "same_version_tokens": 1264941,
+        "same_version_mismatching_tokens": 791080,
+        "verdict": "REPORT_ONLY"
+      },
+      "note": "--native-observe: same-version consistency metrics on the native sync arm, numerics unchanged"
     }
   },
   "vllm_single_gpu_probe": {

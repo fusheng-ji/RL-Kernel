@@ -1,0 +1,173 @@
+experiment_name: rlk-verify-async
+trial_name: native-20261123-125318
+seed: 1
+enable_offload: false
+total_train_epochs: 10
+tokenizer_path: ${actor.path}
+cluster:
+  n_nodes: 2
+  n_gpus_per_node: 4
+  fileroot: $STORE/rlkg-r2-1123/S4-async-graph/native/fileroot
+  name_resolve:
+    type: nfs
+    nfs_record_root: $STORE/rlkg-r2-1123/S4-async-graph/native/name_resolve
+scheduler:
+  type: ray
+rollout:
+  backend: vllm:d1p1t4
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  max_concurrent_rollouts: 256
+  queue_size: null
+  consumer_batch_size: ${train_dataset.batch_size}
+  max_head_offpolicyness: 1
+  enable_rollout_tracing: false
+  scheduling_spec:
+  - task_type: worker
+    port_count: 2
+    gpu: 1
+    mem: 32
+    cmd: python3 -m areal.infra.rpc.rpc_server
+    env_vars:
+      RL_KERNEL_AREAL_STATS_JSONL: $STORE/rlkg-r2-1123/S4-async-graph/native/stats.jsonl
+      RL_KERNEL_AREAL_VLLM_SERVER_ARGS: '{"optimization_level":0,"compilation_config":"{\"cudagraph_mode\":\"FULL_DECODE_ONLY\",\"cudagraph_capture_sizes\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128],\"max_cudagraph_capture_size\":128}"}'
+      RL_KERNEL_AREAL_MODE: observe
+      VLLM_PLUGINS: ''
+  fileroot: ${cluster.fileroot}
+  tokenizer_path: ${tokenizer_path}
+  dump_to_file: true
+  agent:
+    mode: inline
+    export_style: individual
+    turn_discount: 1.0
+gconfig:
+  n_samples: 4
+  min_new_tokens: 0
+  max_new_tokens: 1024
+  max_tokens: 2048
+  greedy: false
+  temperature: 1.0
+  top_p: 1.0
+actor:
+  backend: megatron:d1p1t4
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  path: $STORE/models/Qwen3-8B
+  init_from_scratch: false
+  disable_dropout: true
+  gradient_checkpointing: false
+  dtype: bfloat16
+  mb_spec:
+    max_tokens_per_mb: 16384
+  optimizer:
+    type: adam
+    lr: 3e-6
+    weight_decay: 0.003
+    beta1: 0.9
+    beta2: 0.999
+    eps: 1e-8
+    lr_scheduler_type: constant
+    gradient_clipping: 1.0
+    warmup_steps_proportion: 0.001
+  eps_clip: 0.4
+  temperature: ${gconfig.temperature}
+  reward_scaling: 10.0
+  reward_bias: -0.5
+  kl_ctl: 0.0
+  ppo_n_minibatches: 1
+  recompute_logprob: true
+  use_decoupled_loss: true
+  rejection_sampling:
+    metric: ratio
+    upper: 5.0
+  reward_norm:
+    mean_level: group
+    std_level: group
+    group_size: ${gconfig.n_samples}
+  adv_norm:
+    mean_level: batch
+    std_level: batch
+  max_new_tokens: ${gconfig.max_new_tokens}
+  scheduling_spec:
+  - task_type: worker
+    port_count: 2
+    gpu: 1
+    mem: 32
+    cmd: python3 -m rl_engine.integrations.orchestrators.areal.worker
+    env_vars:
+      RL_KERNEL_AREAL_STATS_JSONL: $STORE/rlkg-r2-1123/S4-async-graph/native/stats.jsonl
+      RL_KERNEL_AREAL_VLLM_SERVER_ARGS: '{"optimization_level":0,"compilation_config":"{\"cudagraph_mode\":\"FULL_DECODE_ONLY\",\"cudagraph_capture_sizes\":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128],\"max_cudagraph_capture_size\":128}"}'
+      RL_KERNEL_AREAL_MODE: observe
+      VLLM_PLUGINS: ''
+  prox_logp_method: recompute
+  megatron:
+    enable_chunked_logits: true
+    lm_head_loss_chunk_size: 4096
+    entropy_requires_grad: false
+sglang:
+  model_path: ${actor.path}
+  random_seed: ${seed}
+  skip_tokenizer_init: true
+  dtype: ${actor.dtype}
+  max_running_requests: null
+  context_length: 32768
+  mem_fraction_static: 0.8
+vllm:
+  model: ${actor.path}
+  seed: 1
+  skip_tokenizer_init: false
+  dtype: ${actor.dtype}
+  max_model_len: 32768
+  gpu_memory_utilization: 0.9
+  max_num_seqs: 128
+  enforce_eager: false
+train_dataset:
+  batch_size: 32
+  shuffle: true
+  pin_memory: true
+  num_workers: 4
+  path: $STORE/datasets/gsm8k
+  type: rl
+  max_length: 1024
+valid_dataset:
+  batch_size: 32
+  pin_memory: true
+  num_workers: 4
+  path: $STORE/datasets/gsm8k
+  type: rl
+saver:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: null
+  freq_secs: null
+recover:
+  mode: disabled
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: 1
+  freq_steps: null
+  freq_secs: 3600
+evaluator:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  freq_epochs: null
+  freq_steps: null
+  freq_secs: null
+stats_logger:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: $STORE/rlkg-r2-1123/S4-async-graph/native/fileroot
+  wandb:
+    mode: disabled
+perf_tracer:
+  experiment_name: ${experiment_name}
+  trial_name: ${trial_name}
+  fileroot: ${cluster.fileroot}
+  enabled: false
+  session_tracer:
+    enabled: false
+total_train_steps: 10
