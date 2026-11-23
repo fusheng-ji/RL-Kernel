@@ -73,7 +73,7 @@ All three fail with `TypeError: MiniMaxH3Scheduler.__init__() got an unexpected 
 **T6 (full chain on the released weights).**
 - Everything the README expects holds: the exit code, the gates, the 26 tests, `first_drift` null at every stage, and the digests of the two arms agree stage by stage on the same GPU.
 - Peak memory is within 0.2 GiB of B200's on every fixture. `edit_example` peaks at 67.3 GiB, 0.1 GiB above the README's "at most 67.2 GiB" (B200 measured 67.2); it fits on the 80 GB card.
-- Time: the whole runner took about 10 minutes (B200: 8 minutes). Per fixture, the RL-Kernel chain takes 1.5x B200's (4.6–23.0 s vs 3.0–14.6 s), and Diffusers takes 1.5–1.6x B200's.
+- Time: the whole runner took about 10 minutes (B200: 8 minutes). Per fixture, the RL-Kernel chain takes 1.5–1.7x B200's time (4.6–23.0 s vs 3.0–14.6 s), and the Diffusers arm takes 1.5–1.7x B200's (6.4–29.8 s vs 4.2–18.5 s).
 - `final_latent_sha256` and `output_sha256` differ from B200's for all four fixtures, as the README expects for BF16 matmuls (the comparison is made elsewhere).
 - Setup: `accelerate==1.16.0` installed into `<V>` only (`<E1>` still sees 1.15.0); `transformer_diffusers/`, `examples/` and `assets/showcase/photo.jpg` were added to `<IMG>` (28 files, `T6/setup/files-added.txt`).
 - Hosts: T6 ran on node-c, GPU 0, which showed 0 MiB and no other job at the start.
