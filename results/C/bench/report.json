@@ -1,0 +1,1095 @@
+{
+  "schema_version": 1,
+  "scope": "qwen3_next_e2e_speed",
+  "rl_kernel_commit": "3e06906f16775bb37414ad8c30a4a3bb9ec8c18e",
+  "source_tree": "2c6d36463883efae7d3cc95e1867c7e277153e19",
+  "tracked_tree_dirty": false,
+  "l2_run_id": "20261123T004335Z-l2-3e06906f-37bb1f6c",
+  "identity_sha256": "922e6f6bfa8391565d7a0c6274fb737d80f655fa4df6280f94ca23a857edaa6e",
+  "topology": {
+    "tp": 4,
+    "pp": 1,
+    "cp": 1,
+    "ep": 1
+  },
+  "versions": {
+    "torch": "2.13.0+cu130",
+    "vllm": "0.30.0",
+    "flashinfer-python": "0.6.18.post1",
+    "triton": "3.7.1",
+    "transformer-engine": "2.18.0",
+    "megatron-core": "0.16.0rc0",
+    "vime": "0.3.0",
+    "gpus": [
+      "NVIDIA H100, 580.173.02"
+    ]
+  },
+  "settings": {
+    "repeats": 3,
+    "rounds": 2,
+    "train_rounds": 1,
+    "workloads": {
+      "certified": {
+        "max_model_len": 1040,
+        "kv_cache_bytes": 4294967296,
+        "rollout": [
+          [
+            64,
+            1,
+            16
+          ],
+          [
+            64,
+            4,
+            16
+          ],
+          [
+            256,
+            1,
+            16
+          ],
+          [
+            256,
+            4,
+            16
+          ],
+          [
+            1024,
+            1,
+            16
+          ],
+          [
+            1024,
+            4,
+            16
+          ]
+        ],
+        "replay": [
+          [
+            64,
+            1,
+            16
+          ],
+          [
+            64,
+            4,
+            16
+          ],
+          [
+            256,
+            1,
+            16
+          ],
+          [
+            256,
+            4,
+            16
+          ],
+          [
+            1024,
+            1,
+            16
+          ],
+          [
+            1024,
+            4,
+            16
+          ]
+        ],
+        "train": [
+          64,
+          4,
+          16
+        ]
+      },
+      "long": {
+        "max_model_len": 2048,
+        "kv_cache_bytes": 8589934592,
+        "rollout": [
+          [
+            512,
+            1,
+            512
+          ],
+          [
+            512,
+            16,
+            512
+          ],
+          [
+            512,
+            64,
+            512
+          ]
+        ],
+        "replay": [
+          [
+            512,
+            1,
+            512
+          ],
+          [
+            512,
+            4,
+            512
+          ],
+          [
+            512,
+            16,
+            512
+          ]
+        ],
+        "train": [
+          512,
+          4,
+          512
+        ]
+      }
+    },
+    "statistic": "median over rounds x repeats; actor phases take the slowest rank",
+    "strict_over_native": "strict seconds / native seconds; above 1 means strict is slower",
+    "stock_vime_layout": {
+      "tp": 2,
+      "sp": true,
+      "ep": 4,
+      "etp": 1,
+      "dp": 2
+    },
+    "stock_vime_layout_reason": "stock VIME cannot run Qwen3-Next at TP4 (2 KV heads; Megatron's attention output gate is not narrowed below one KV group per rank), so it runs its recipe's TP2 with sequence parallel and expert tensor parallel 1 on the same four GPUs"
+  },
+  "phases": {
+    "rollout": {
+      "results": {
+        "strict": {
+          "certified": {
+            "p64-b1-r16": {
+              "prefill_s": 0.28609606716781855,
+              "total_s": 4.537978235632181,
+              "prefill_tok_per_s": 223.70108276412904,
+              "decode_tok_per_s": 3.52784941013958,
+              "output_tok_per_s": 3.52579919277005,
+              "prefill_values_s": [
+                0.2862710375338793,
+                0.2859210968017578,
+                0.296104671433568,
+                0.28668850660324097,
+                0.28555102087557316,
+                0.2844141311943531
+              ],
+              "total_values_s": [
+                4.557617643848062,
+                4.535665674135089,
+                4.528333457186818,
+                4.540290797129273,
+                4.515907321125269,
+                4.541027136147022
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p64-b4-r16": {
+              "prefill_s": 0.5870108986273408,
+              "total_s": 5.166567989625037,
+              "prefill_tok_per_s": 436.10774620816636,
+              "decode_tok_per_s": 13.101703681769907,
+              "output_tok_per_s": 12.387333357176008,
+              "prefill_values_s": [
+                0.5853000208735466,
+                0.5885687060654163,
+                0.5854530911892653,
+                0.5946170054376125,
+                0.5847538840025663,
+                0.589390816166997
+              ],
+              "total_values_s": [
+                5.1762719843536615,
+                5.153037516400218,
+                5.1686226688325405,
+                5.164513310417533,
+                5.1773877162486315,
+                5.157755251973867
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p256-b1-r16": {
+              "prefill_s": 0.3115524919703603,
+              "total_s": 4.55078031681478,
+              "prefill_tok_per_s": 821.6913894059134,
+              "decode_tok_per_s": 3.538380247480684,
+              "output_tok_per_s": 3.5158805492942036,
+              "prefill_values_s": [
+                0.31924449652433395,
+                0.3124505393207073,
+                0.3127031084150076,
+                0.3104358855634928,
+                0.31065444462001324,
+                0.31036505475640297
+              ],
+              "total_values_s": [
+                4.555988445878029,
+                4.588325386866927,
+                4.575463300570846,
+                4.5452381279319525,
+                4.541444746777415,
+                4.545572187751532
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p256-b4-r16": {
+              "prefill_s": 0.6415533004328609,
+              "total_s": 5.2276506796479225,
+              "prefill_tok_per_s": 1596.126150873356,
+              "decode_tok_per_s": 13.08301918575252,
+              "output_tok_per_s": 12.242593073244585,
+              "prefill_values_s": [
+                1.1377001330256462,
+                0.6409614011645317,
+                0.64214519970119,
+                0.6518607325851917,
+                0.6379445195198059,
+                0.6378373093903065
+              ],
+              "total_values_s": [
+                5.2494344599545,
+                5.239134099334478,
+                5.229959467425942,
+                5.215030390769243,
+                5.224807191640139,
+                5.225341891869903
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p1024-b1-r16": {
+              "prefill_s": 0.4611723469570279,
+              "total_s": 4.6952853705734015,
+              "prefill_tok_per_s": 2220.4280173273623,
+              "decode_tok_per_s": 3.542654604715402,
+              "output_tok_per_s": 3.4076735996231973,
+              "prefill_values_s": [
+                0.46283476427197456,
+                0.4625634867697954,
+                0.4627919252961874,
+                0.4597812071442604,
+                0.4597698971629143,
+                0.4596544783562422
+              ],
+              "total_values_s": [
+                4.705119203776121,
+                4.710965825244784,
+                4.70841820910573,
+                4.685451537370682,
+                4.680451167747378,
+                4.681873984634876
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p1024-b4-r16": {
+              "prefill_s": 1.0172815825790167,
+              "total_s": 5.612739451229572,
+              "prefill_tok_per_s": 4026.4171397026603,
+              "decode_tok_per_s": 13.056370380263946,
+              "output_tok_per_s": 11.40263155917199,
+              "prefill_values_s": [
+                1.0219473950564861,
+                1.0235508531332016,
+                1.0205949284136295,
+                1.0113245714455843,
+                1.0139682367444038,
+                1.0122560989111662
+              ],
+              "total_values_s": [
+                5.620045902207494,
+                5.62063055858016,
+                5.621988544240594,
+                5.603281635791063,
+                5.605433000251651,
+                5.6005020793527365
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            }
+          },
+          "long": {
+            "p512-b1-r512": {
+              "prefill_s": 0.38403010182082653,
+              "total_s": 162.96676218137145,
+              "prefill_tok_per_s": 1333.2288213148438,
+              "decode_tok_per_s": 3.1430152111724334,
+              "output_tok_per_s": 3.1417449371067283,
+              "prefill_values_s": [
+                0.38338849507272243,
+                0.3817598298192024,
+                0.3817516006529331,
+                0.3863374572247267,
+                0.38513042964041233,
+                0.3846717085689306
+              ],
+              "total_values_s": [
+                162.51070764660835,
+                162.4838007465005,
+                162.61889678239822,
+                163.40949784778059,
+                163.41696112416685,
+                163.31462758034468
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p512-b16-r512": {
+              "prefill_s": 1.145598136819899,
+              "total_s": 216.9755002623424,
+              "prefill_tok_per_s": 7150.849618820456,
+              "decode_tok_per_s": 37.88168330468406,
+              "output_tok_per_s": 37.75541473620365,
+              "prefill_values_s": [
+                1.1445497050881386,
+                1.1429545804858208,
+                1.141297036781907,
+                1.150555120781064,
+                1.1466465685516596,
+                1.1468052510172129
+              ],
+              "total_values_s": [
+                216.35596831329167,
+                216.58368162624538,
+                216.21919901669025,
+                217.3673188984394,
+                217.44539879634976,
+                217.4158022571355
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p512-b64-r512": {
+              "prefill_s": 3.0023023756220937,
+              "total_s": 373.4149042060599,
+              "prefill_tok_per_s": 10914.290401282546,
+              "decode_tok_per_s": 88.29073265431389,
+              "output_tok_per_s": 87.75225528201676,
+              "prefill_values_s": [
+                3.221281796693802,
+                2.994313318282366,
+                2.991753935813904,
+                3.001735797151923,
+                3.0109325293451548,
+                3.002868954092264
+              ],
+              "total_values_s": [
+                369.4109818711877,
+                373.1873612534255,
+                375.51782711967826,
+                373.15604091621935,
+                373.64244715869427,
+                374.1463299598545
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            }
+          }
+        },
+        "native_graph": {
+          "certified": {
+            "p64-b1-r16": {
+              "prefill_s": 0.0364278769120574,
+              "total_s": 0.09961315151304007,
+              "prefill_tok_per_s": 1756.8962406045794,
+              "decode_tok_per_s": 237.3970849177368,
+              "output_tok_per_s": 160.6213613059465,
+              "prefill_values_s": [
+                0.03676842153072357,
+                0.03629881143569946,
+                0.03624205105006695,
+                0.03655694238841534,
+                0.03658456355333328,
+                0.036137694492936134
+              ],
+              "total_values_s": [
+                0.10002838261425495,
+                0.10490632243454456,
+                0.0994004737585783,
+                0.09971114061772823,
+                0.0995151624083519,
+                0.0994902104139328
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p64-b4-r16": {
+              "prefill_s": 0.15292629040777683,
+              "total_s": 0.23637951351702213,
+              "prefill_tok_per_s": 1674.0090884136264,
+              "decode_tok_per_s": 718.9656404457427,
+              "output_tok_per_s": 270.75104372524754,
+              "prefill_values_s": [
+                0.07320980355143547,
+                0.8614973481744528,
+                0.07244109362363815,
+                0.17401637695729733,
+                0.15328474529087543,
+                0.15256783552467823
+              ],
+              "total_values_s": [
+                0.24690783768892288,
+                0.23723371513187885,
+                0.23631778731942177,
+                0.23586026579141617,
+                0.23639624379575253,
+                0.23636278323829174
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p256-b1-r16": {
+              "prefill_s": 0.11732970923185349,
+              "total_s": 0.1821959586814046,
+              "prefill_tok_per_s": 2181.88557421652,
+              "decode_tok_per_s": 231.24506391673003,
+              "output_tok_per_s": 87.81753511875785,
+              "prefill_values_s": [
+                0.11759239993989468,
+                0.11746320873498917,
+                0.11740658991038799,
+                0.11718374863266945,
+                0.11724407970905304,
+                0.11725282855331898
+              ],
+              "total_values_s": [
+                0.18208255991339684,
+                0.18250443786382675,
+                0.18230935744941235,
+                0.1814928725361824,
+                0.18949841894209385,
+                0.18131601251661777
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p256-b4-r16": {
+              "prefill_s": 0.22838043048977852,
+              "total_s": 0.3112671338021755,
+              "prefill_tok_per_s": 4483.7466931994,
+              "decode_tok_per_s": 723.8796767421447,
+              "output_tok_per_s": 205.61117140197308,
+              "prefill_values_s": [
+                0.23955684155225754,
+                0.23139784671366215,
+                0.22499548830091953,
+                0.24004535749554634,
+                0.22497809492051601,
+                0.2253630142658949
+              ],
+              "total_values_s": [
+                0.31316689401865005,
+                0.3130733538419008,
+                0.3109099678695202,
+                0.31162429973483086,
+                0.31066226959228516,
+                0.3107013516128063
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p1024-b1-r16": {
+              "prefill_s": 0.1093235295265913,
+              "total_s": 0.17390244454145432,
+              "prefill_tok_per_s": 9366.693560245212,
+              "decode_tok_per_s": 232.27395499827938,
+              "output_tok_per_s": 92.00560717929396,
+              "prefill_values_s": [
+                0.10931785590946674,
+                0.10907613672316074,
+                0.10929051414132118,
+                0.10932920314371586,
+                0.10943219251930714,
+                0.11114816926419735
+              ],
+              "total_values_s": [
+                0.17399870418012142,
+                0.17390438355505466,
+                0.17385156638920307,
+                0.17372905649244785,
+                0.17699136212468147,
+                0.17390050552785397
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p1024-b4-r16": {
+              "prefill_s": 0.22324536740779877,
+              "total_s": 0.3077894151210785,
+              "prefill_tok_per_s": 18347.52518074833,
+              "decode_tok_per_s": 709.6892285484402,
+              "output_tok_per_s": 207.93437608900103,
+              "prefill_values_s": [
+                0.22910787165164948,
+                0.22236546501517296,
+                0.22412526980042458,
+                0.22808364033699036,
+                0.22117239236831665,
+                0.11912053637206554
+              ],
+              "total_values_s": [
+                0.30881982296705246,
+                0.30846102349460125,
+                0.30973296985030174,
+                0.30711780674755573,
+                0.30631828866899014,
+                0.3068253379315138
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            }
+          },
+          "long": {
+            "p512-b1-r512": {
+              "prefill_s": 0.11991865932941437,
+              "total_s": 2.2655580611899495,
+              "prefill_tok_per_s": 4269.560741114903,
+              "decode_tok_per_s": 238.1574460074231,
+              "output_tok_per_s": 225.99288394801937,
+              "prefill_values_s": [
+                0.1164491530507803,
+                0.12030022405087948,
+                0.12640851363539696,
+                0.1210318822413683,
+                0.11953709460794926,
+                0.11473554372787476
+              ],
+              "total_values_s": [
+                2.2633589264005423,
+                2.265231352299452,
+                2.276278931647539,
+                2.265884770080447,
+                2.2646079529076815,
+                2.2697614915668964
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p512-b16-r512": {
+              "prefill_s": 0.24824787862598896,
+              "total_s": 3.4974538879469037,
+              "prefill_tok_per_s": 32999.274939795534,
+              "decode_tok_per_s": 2516.3070536450186,
+              "output_tok_per_s": 2342.27534156538,
+              "prefill_values_s": [
+                0.24993614107370377,
+                0.34795122034847736,
+                0.23331709206104279,
+                0.24655961617827415,
+                0.2500554993748665,
+                0.23370113968849182
+              ],
+              "total_values_s": [
+                3.4980704374611378,
+                3.6956244967877865,
+                3.4968373384326696,
+                3.4898988269269466,
+                3.4929860811680555,
+                3.686883380636573
+              ],
+              "checks": {
+                "same_tokens_across_repeats": false,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p512-b64-r512": {
+              "prefill_s": 0.5141371563076973,
+              "total_s": 5.92601512093097,
+              "prefill_tok_per_s": 63733.96592326665,
+              "decode_tok_per_s": 6043.003965311433,
+              "output_tok_per_s": 5529.516771609618,
+              "prefill_values_s": [
+                0.5162064153701067,
+                0.5114656146615744,
+                0.5090685375034809,
+                0.5120678972452879,
+                0.6147956624627113,
+                0.6005305089056492
+              ],
+              "total_values_s": [
+                5.929724425077438,
+                5.929731074720621,
+                5.929829945787787,
+                5.922305816784501,
+                5.921758096665144,
+                5.921239078044891
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            }
+          }
+        },
+        "native_eager": {
+          "certified": {
+            "p64-b1-r16": {
+              "prefill_s": 0.13671421259641647,
+              "total_s": 1.7743494296446443,
+              "prefill_tok_per_s": 468.1298219441857,
+              "decode_tok_per_s": 9.15954899103654,
+              "output_tok_per_s": 9.017389547223729,
+              "prefill_values_s": [
+                0.13673154637217522,
+                0.13608695939183235,
+                0.13569206930696964,
+                0.13769087754189968,
+                0.1445861253887415,
+                0.13669687882065773
+              ],
+              "total_values_s": [
+                1.7631352376192808,
+                1.7686591167002916,
+                1.769477967172861,
+                1.7845125142484903,
+                1.7827640268951654,
+                1.7792208921164274
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p64-b4-r16": {
+              "prefill_s": 0.273013049736619,
+              "total_s": 2.0286010820418596,
+              "prefill_tok_per_s": 937.6841152720289,
+              "decode_tok_per_s": 34.17658294310355,
+              "output_tok_per_s": 31.54883459668754,
+              "prefill_values_s": [
+                0.157839922234416,
+                0.279847864061594,
+                0.2712631579488516,
+                0.29329629614949226,
+                0.2727934196591377,
+                0.27323267981410027
+              ],
+              "total_values_s": [
+                2.0178495924919844,
+                2.03021601960063,
+                2.8477620389312506,
+                2.024576298892498,
+                2.087578011676669,
+                2.0269861444830894
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p256-b1-r16": {
+              "prefill_s": 0.1361605441197753,
+              "total_s": 1.765929072163999,
+              "prefill_tok_per_s": 1880.1334972252055,
+              "decode_tok_per_s": 9.203760989298583,
+              "output_tok_per_s": 9.060386542248455,
+              "prefill_values_s": [
+                0.13543561846017838,
+                0.1353873908519745,
+                0.13597625866532326,
+                0.13634482957422733,
+                0.13726061768829823,
+                0.13699307851493359
+              ],
+              "total_values_s": [
+                1.7553050015121698,
+                1.7624557670205832,
+                1.7508216369897127,
+                1.769402377307415,
+                1.769861487671733,
+                1.7731085903942585
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p256-b4-r16": {
+              "prefill_s": 0.2647308688610792,
+              "total_s": 2.0201683957129717,
+              "prefill_tok_per_s": 3868.0793229948436,
+              "decode_tok_per_s": 34.17951313117977,
+              "output_tok_per_s": 31.680527294563817,
+              "prefill_values_s": [
+                0.2726323250681162,
+                0.26260514184832573,
+                0.2626266311854124,
+                0.27511115558445454,
+                0.264696953818202,
+                0.2647647839039564
+              ],
+              "total_values_s": [
+                2.026812905445695,
+                2.0433455295860767,
+                2.016271213069558,
+                2.0206833258271217,
+                2.0175087191164494,
+                2.0196534655988216
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p1024-b1-r16": {
+              "prefill_s": 0.12819887697696686,
+              "total_s": 1.7611504700034857,
+              "prefill_tok_per_s": 7987.589471505115,
+              "decode_tok_per_s": 9.185820366051967,
+              "output_tok_per_s": 9.084970462500193,
+              "prefill_values_s": [
+                0.1277427114546299,
+                0.12798761203885078,
+                0.12802460230886936,
+                0.12869898229837418,
+                0.12865484319627285,
+                0.12837315164506435
+              ],
+              "total_values_s": [
+                1.7553130686283112,
+                1.759510062634945,
+                1.7513737548142672,
+                1.7627908773720264,
+                1.7705308478325605,
+                1.7713000159710646
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p1024-b4-r16": {
+              "prefill_s": 0.2650643661618233,
+              "total_s": 2.0049790954217315,
+              "prefill_tok_per_s": 15452.850412564958,
+              "decode_tok_per_s": 34.484448571523764,
+              "output_tok_per_s": 31.92053231185341,
+              "prefill_values_s": [
+                0.2640725504606962,
+                0.2572800014168024,
+                0.3840133249759674,
+                0.2705309223383665,
+                0.2660561818629503,
+                0.25992272049188614
+              ],
+              "total_values_s": [
+                1.9983869139105082,
+                2.000537108629942,
+                1.992555893957615,
+                2.0373449455946684,
+                2.0209447648376226,
+                2.009421082213521
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": false,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            }
+          },
+          "long": {
+            "p512-b1-r512": {
+              "prefill_s": 0.1343863159418106,
+              "total_s": 55.65668367873877,
+              "prefill_tok_per_s": 3809.9117191492655,
+              "decode_tok_per_s": 9.203509657768565,
+              "output_tok_per_s": 9.199254539766757,
+              "prefill_values_s": [
+                0.13429217040538788,
+                0.13448046147823334,
+                0.1339041031897068,
+                0.13411694392561913,
+                0.13527961634099483,
+                0.1345704086124897
+              ],
+              "total_values_s": [
+                55.62138881161809,
+                55.363223131746054,
+                55.887586487457156,
+                55.81317664682865,
+                55.64221579954028,
+                55.671151557937264
+              ],
+              "checks": {
+                "same_tokens_across_repeats": true,
+                "row0_equals_batch1": null,
+                "same_tokens_across_rounds": true
+              },
+              "rounds": 2
+            },
+            "p512-b16-r512": {
+              "prefill_s": 0.29310400784015656,
+              "total_s": 56.89954617060721,
+              "prefill_tok_per_s": 27949.12311286949,
+              "decode_tok_per_s": 144.4358572561512,
+              "output_tok_per_s": 143.97302880829952,
+              "prefill_values_s": [
+                0.29982439056038857,
+                0.2913461457937956,
+                0.29123843647539616,
+                0.3024651277810335,
+                0.2948618698865175,
+                0.29096550680696964
+              ],
+              "total_values_s": [
+                57.036770801991224,
+                57.16356449201703,
+                56.966085536405444,
+                56.833006804808974,
+                56.797712337225676,
+                56.81157326325774
+              ],
+              "checks": {
+                "same_tokens_across_repeats": false,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": false
+              },
+              "rounds": 2
+            },
+            "p512-b64-r512": {
+              "prefill_s": 0.7228948129341006,
+              "total_s": 57.80095689184964,
+              "prefill_tok_per_s": 45328.86308452063,
+              "decode_tok_per_s": 572.9696981439872,
+              "output_tok_per_s": 566.9110298867826,
+              "prefill_values_s": [
+                0.7322200164198875,
+                0.8308648504316807,
+                0.7222401164472103,
+                0.7235495094209909,
+                0.7209277246147394,
+                0.7159083429723978
+              ],
+              "total_values_s": [
+                57.897192284464836,
+                57.886959213763475,
+                58.16102718375623,
+                57.65816968306899,
+                57.70852273143828,
+                57.7149545699358
+              ],
+              "checks": {
+                "same_tokens_across_repeats": false,
+                "row0_equals_batch1": true,
+                "same_tokens_across_rounds": false
+              },
+              "rounds": 2
+            }
+          }
+        },
+        "native_bi": {
+          "certified": {},
+          "long": {}
+        }
+      },
+      "strict_over_native": {
+        "native_graph": {
+          "certified": {
+            "p64-b1-r16": 45.55601511149989,
+            "p64-b4-r16": 21.857088682319258,
+            "p256-b1-r16": 24.97739439310212,
+            "p256-b4-r16": 16.794740311292657,
+            "p1024-b1-r16": 26.99953633747888,
+            "p1024-b4-r16": 18.235648061586613
+          },
+          "long": {
+            "p512-b1-r512": 71.93228236921709,
+            "p512-b16-r512": 62.03813036966519,
+            "p512-b64-r512": 63.0128166374636
+          }
+        },
+        "native_eager": {
+          "certified": {
+            "p64-b1-r16": 2.5575448442199007,
+            "p64-b4-r16": 2.546862483394074,
+            "p256-b1-r16": 2.5769892961998626,
+            "p256-b4-r16": 2.587730156922361,
+            "p1024-b1-r16": 2.666033056541789,
+            "p1024-b4-r16": 2.7994004845466867
+          },
+          "long": {
+            "p512-b1-r512": 2.9280717320860754,
+            "p512-b16-r512": 3.8133080993610133,
+            "p512-b64-r512": 6.460358518021596
+          }
+        }
+      },
+      "engine_arguments": {
+        "strict": {
+          "skip_tokenizer_init": true,
+          "trust_remote_code": false,
+          "tensor_parallel_size": 4,
+          "pipeline_parallel_size": 1,
+          "enable_expert_parallel": false,
+          "expert_placement_strategy": "linear",
+          "distributed_executor_backend": "mp",
+          "dtype": "bfloat16",
+          "seed": 1234,
+          "enforce_eager": true,
+          "enable_prefix_caching": false,
+          "enable_chunked_prefill": true,
+          "max_model_len": 2048,
+          "max_num_seqs": 64,
+          "max_num_batched_tokens": 16384,
+          "async_scheduling": false,
+          "worker_cls": "rl_engine.integrations.engines.rollout.vllm.qwen3_next_vllm_worker.SharedQwenWorker",
+          "kv_cache_dtype": "bfloat16",
+          "mamba_cache_dtype": "bfloat16",
+          "mamba_ssm_cache_dtype": "float32",
+          "mamba_cache_mode": "none",
+          "generation_config": "vllm",
+          "gpu_memory_utilization": 0.85,
+          "kv_cache_memory_bytes": 8589934592,
+          "attention_config": {
+            "backend": "CUSTOM"
+          },
+          "kernel_config": {
+            "moe_backend": "triton",
+            "enable_flashinfer_autotune": false,
+            "enable_jit_warmup": false
+          },
+          "compilation_config": {
+            "mode": 0,
+            "cudagraph_mode": "NONE"
+          }
+        },
+        "native_graph": {
+          "skip_tokenizer_init": true,
+          "trust_remote_code": false,
+          "tensor_parallel_size": 4,
+          "pipeline_parallel_size": 1,
+          "enable_expert_parallel": false,
+          "distributed_executor_backend": "mp",
+          "dtype": "bfloat16",
+          "seed": 1234,
+          "enforce_eager": false,
+          "enable_prefix_caching": false,
+          "max_model_len": 2048,
+          "max_num_seqs": 64,
+          "max_num_batched_tokens": 16384,
+          "gpu_memory_utilization": 0.85,
+          "kv_cache_memory_bytes": 8589934592,
+          "generation_config": "vllm"
+        },
+        "native_eager": {
+          "skip_tokenizer_init": true,
+          "trust_remote_code": false,
+          "tensor_parallel_size": 4,
+          "pipeline_parallel_size": 1,
+          "enable_expert_parallel": false,
+          "distributed_executor_backend": "mp",
+          "dtype": "bfloat16",
+          "seed": 1234,
+          "enforce_eager": true,
+          "enable_prefix_caching": false,
+          "max_model_len": 2048,
+          "max_num_seqs": 64,
+          "max_num_batched_tokens": 16384,
+          "gpu_memory_utilization": 0.85,
+          "kv_cache_memory_bytes": 8589934592,
+          "generation_config": "vllm"
+        }
+      },
+      "unsupported": [
+        {
+          "arm": "native_bi",
+          "workload": "certified",
+          "reasons": [
+            "VLLM batch_invariant mode is not supported for GDN_ATTN."
+          ]
+        },
+        {
+          "arm": "native_bi",
+          "workload": "long",
+          "reasons": [
+            "VLLM batch_invariant mode is not supported for GDN_ATTN."
+          ]
+        }
+      ]
+    }
+  }
+}

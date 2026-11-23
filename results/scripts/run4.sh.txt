@@ -1,0 +1,26 @@
+#!/bin/bash
+# Rollout re-measure at 3e06906f on one exclusive node: A build, B TP4 chain until l2, C bench --phases rollout.
+# Commands as in the README of 9b7413e7; failures recorded, not retried.
+source <HOME>/datastorage/rdef_20261123/env.sh; source $D/hdr.sh
+WT=$S/src; PYX=$PYGD; mkdir -p $OUT/{A,B,C}; cd $WT
+log() { echo "[$(date -u +%FT%TZ)] $*" >> $OUT/steps.txt; }
+squeue -w $(hostname -s) -h -o "%i %u %T %b" > $OUT/squeue-node-start.txt 2>&1
+nvidia-smi --query-gpu=name,driver_version --format=csv > $OUT/nvidia-smi-name-driver.csv
+O=$OUT/A; hdr $O $WT $PYX; nvidia-smi > $O/nvidia-smi-start.txt; log "A start"
+$PYX setup.py build_ext --inplace > $O/build.log 2>&1; echo "build rc=$?" >> $O/rc.txt
+$PYX -c "import rl_engine._C as c; print(c.__file__)" > $O/c-file.txt 2>&1; cat $O/c-file.txt >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt; log "A end"
+case "$(realpath "$(tail -n 1 $O/c-file.txt)" 2>/dev/null)" in $(realpath $WT)/*) ;; *) log "c-file not inside worktree: stop"; exit 1;; esac
+O=$OUT/B; hdr $O $WT $PYX; nvidia-smi > $O/nvidia-smi-start.txt; log "B start"; R=tools/validation/models/qwen3_next/qwen3_next_run.py
+PYTHONUNBUFFERED=1 $PYX $R --stage all --until l2 --runs-root $O/runs --checkpoint $CK --cuda-home $CUDA_HOME --python $PYX > $O/chain.log 2>&1; echo "chain rc=$?" >> $O/rc.txt
+git status --porcelain --untracked-files=no > $O/status-after.txt; log "B end"
+L2=$(ls -d $O/runs/*-l2-* 2>/dev/null | head -n 1)
+if [ -n "$L2" ] && grep -q '^  "status": "passed"' $L2/result.json 2>/dev/null; then
+  O=$OUT/C; hdr $O $WT $PYX; nvidia-smi > $O/nvidia-smi-start.txt; log "C start"
+  $PYX -c "import rl_engine._C as c; print(c.__file__)" > $O/c-file.txt 2>&1
+  case "$(realpath "$(tail -n 1 $O/c-file.txt)" 2>/dev/null)" in $(realpath $WT)/*) ;; *) log "C: c-file not inside worktree: stop"; exit 1;; esac
+  $PYX benchmarks/models/qwen3_next/qwen3_next_e2e_bench.py --run $L2 --out $O/bench --phases rollout > $O/bench.log 2>&1; echo "rc=$?" >> $O/bench.log
+  git status --porcelain --untracked-files=no > $O/status-after.txt; log "C end"
+else echo "no passed l2 run: C not run" >> $O/rc.txt; log "B: no passed l2, C not run"; fi
+squeue -w $(hostname -s) -h -o "%i %u %T %b" > $OUT/squeue-node-end.txt 2>&1
+log "run4 end"

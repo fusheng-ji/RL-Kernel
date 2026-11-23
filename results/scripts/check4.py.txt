@@ -1,0 +1,83 @@
+import glob, json, os, sys
+
+OUT = os.path.expanduser('<HOME>/datastorage/rdef_20261123/out')
+OLD = os.path.expanduser('<HOME>/datastorage/stp2_20261122/out/C/bench/report.json')
+SHA = '3e06906f16775bb37414ad8c30a4a3bb9ec8c18e'
+ok = True
+
+
+def chk(name, cond, detail=''):
+    global ok
+    ok &= bool(cond)
+    print(f"{'OK ' if cond else 'BAD'} {name} {detail}")
+
+
+def find(o, k):
+    if isinstance(o, dict):
+        for kk, v in o.items():
+            if kk == k:
+                yield v
+            yield from find(v, k)
+    elif isinstance(o, list):
+        for v in o:
+            yield from find(v, k)
+
+
+print('== B runs')
+runs = sorted(glob.glob(f'{OUT}/B/runs/*/'))
+stages = []
+for d in runs:
+    st = os.path.basename(d.rstrip('/')).split('-')[1]
+    stages.append(st)
+    r = json.load(open(d + 'run.json'))
+    s = json.load(open(d + 'result.json'))
+    sc = set(find(r, 'source_commit')) | set(find(s, 'source_commit'))
+    chk(f'B {st} status', s.get('status') == 'passed', s.get('status'))
+    chk(f'B {st} source_commit', sc == {SHA}, sorted(sc))
+chk('B stages', stages == ['preflight', 'layers', 'l2'], stages)
+
+print('== C report')
+log = open(f'{OUT}/C/bench.log').read().splitlines()
+chk('C rc', log and log[-1] == 'rc=0', log[-1] if log else '')
+rp = f'{OUT}/C/bench/report.json'
+if not os.path.exists(rp):
+    print('no report.json'); sys.exit(1)
+r = json.load(open(rp)); o = json.load(open(OLD))
+chk('rl_kernel_commit', r['rl_kernel_commit'] == SHA, r['rl_kernel_commit'])
+chk('tracked_tree_dirty', r['tracked_tree_dirty'] is False, r['tracked_tree_dirty'])
+ro, oro = r['phases']['rollout'], o['phases']['rollout']
+un = sorted((u['workload'], u['arm']) for u in ro['unsupported'])
+chk('unsupported only native_bi for both', un == [('certified', 'native_bi'), ('long', 'native_bi')], un)
+for w, sh in ro['results']['strict'].items():
+    for k, x in sh.items():
+        bad = {c: v for c, v in x['checks'].items() if v is not True and v is not None}
+        chk(f'strict {w} {k} checks', not bad, x['checks'])
+print('== totals (s): new / old / new/old')
+arms = [a for a in ro['results']]
+print('| workload | shape | ' + ' | '.join(f'{a} new | {a} old | ratio' for a in arms) + ' |')
+for w in ro['results']['strict']:
+    for k in ro['results']['strict'][w]:
+        cells = []
+        for a in arms:
+            n = ro['results'].get(a, {}).get(w, {}).get(k, {}).get('total_s')
+            p = oro['results'].get(a, {}).get(w, {}).get(k, {}).get('total_s')
+            cells += [f'{n:.3f}' if n else '-', f'{p:.3f}' if p else '-', f'{n / p:.3f}' if n and p else '-']
+        print(f'| {w} | {k} | ' + ' | '.join(cells) + ' |')
+print('== strict_over_native: new / old')
+for a, ws in ro['strict_over_native'].items():
+    for w, sh in ws.items():
+        for k, v in sh.items():
+            p = oro['strict_over_native'].get(a, {}).get(w, {}).get(k)
+            print(f'{a} {w} {k} {v:.2f} / {p:.2f}' if p else f'{a} {w} {k} {v} / -')
+print('== engine_arguments diff vs old')
+for a in ro['engine_arguments']:
+    n, p = ro['engine_arguments'][a], oro['engine_arguments'].get(a, {})
+    d = {k: (p.get(k), n.get(k)) for k in set(n) | set(p) if n.get(k) != p.get(k)}
+    print(a, d)
+for key in ('settings', 'versions', 'topology'):
+    if r.get(key) != o.get(key):
+        print(f'{key} differs:')
+        for k in set(r.get(key) or {}) | set(o.get(key) or {}):
+            if (r.get(key) or {}).get(k) != (o.get(key) or {}).get(k):
+                print('  ', k, json.dumps((o.get(key) or {}).get(k))[:300], '->', json.dumps((r.get(key) or {}).get(k))[:300])
+print('ALL OK' if ok else 'SOME BAD')
