@@ -1,0 +1,23 @@
+#!/bin/bash
+# Node 006, GPU0: T3 then T4. Commands as in the README of 1a7c454c3. w3/w4 are not built; the image rows do not use _C.
+source <HOME>/datastorage/h3img_20261123/env.sh
+O=$OUT/T3; start $O; rec $O $W3 $V before; log "T3 start $(hostname -s)"
+cfile $O $W3 $V v
+cd $W3
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W3 RL_KERNEL_H3_IMAGE_VAE_DIR=$IMG/vae_diffusers $V/bin/python -m pytest -q -p no:cacheprovider -rs \
+  tests/models/minimax_h3_image > $O/pytest-image-vae.txt 2>&1; echo "pytest rc=$?" >> $O/rc.txt; log "T3 pytest done"
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W3 $V/bin/python tools/validation/models/h3_image_vae_evidence.py \
+  --vae-dir $IMG/vae_diffusers --out $O/evidence-h100-a8f05c22.json --verify-sha256 --timing-repeats 7 \
+  > $O/evidence.log 2>&1; echo "evidence rc=$?" >> $O/rc.txt; log "T3 evidence done"
+PYTHONPATH=$W3 $V/bin/python tools/validation/models/h3_image_vae_evidence.py --check-manifest >> $O/evidence.log 2>&1; echo "check-manifest rc=$?" >> $O/rc.txt
+rec $O $W3 $V after; log "T3 end"
+O=$OUT/T4; start $O; rec $O $W4 $V before; log "T4 start $(hostname -s)"
+cfile $O $W4 $V v
+cd $W4
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W4 $V/bin/python tools/validation/models/h3_image_text_presentation.py evidence \
+  --root $IMG --text-encoder-root $CKPT --verify-weights --out $O/evidence-h100-b1617e591.json \
+  > $O/evidence.log 2>&1; echo "evidence rc=$?" >> $O/rc.txt; log "T4 evidence done"
+nvidia-smi > $O/nvidia-smi-before-pytest.txt 2>&1
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W4 RL_KERNEL_H3_IMAGE_DIR=$IMG RL_KERNEL_H3_IMAGE_TEXT_ENCODER_ROOT=$CKPT \
+  $V/bin/python -m pytest -q -p no:cacheprovider -rs tests/models/minimax_h3_image > $O/pytest-h3-image.txt 2>&1; echo "pytest rc=$?" >> $O/rc.txt
+rec $O $W4 $V after; log "T4 end"

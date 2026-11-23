@@ -1,0 +1,28 @@
+#!/bin/bash
+# Node 001, GPU0: T1 (build, a-d) then T2. Commands as in the README of 1a7c454c3.
+source <HOME>/datastorage/h3img_20261123/env.sh
+O=$OUT/T1; start $O; rec $O $W $E1 w-before; rec $O $B $E1 b-before; log "T1 start $(hostname -s)"
+for R in $W $B; do (cd $R && RL_KERNEL_H3_STRICT=1 RL_KERNEL_REQUIRE_EXT=1 $E1/bin/python setup.py build_ext --inplace) > $O/build-$(basename $R).log 2>&1
+  echo "build $(basename $R) rc=$?" >> $O/rc.txt; done
+ok=1; cfile $O $W $E1 w-e1 || ok=0; cfile $O $W $V w-v || ok=0; cfile $O $B $E1 b-e1 || ok=0
+if [ $ok = 1 ]; then
+  cd $W
+  export RL_KERNEL_H3_IMAGE_DIR=$IMG RL_KERNEL_H3_IMAGE_VAE_DIR=$IMG/vae_diffusers RL_KERNEL_H3_IMAGE_TEXT_ENCODER_ROOT=$CKPT
+  CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W $V/bin/python -m pytest -q -p no:cacheprovider -rs \
+    tests/models/minimax_h3_image > $O/image-diffusers.txt 2>&1; echo "a rc=$?" >> $O/rc.txt; log "T1 a done"
+  CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W $E1/bin/python -m pytest -q -p no:cacheprovider -rs \
+    tests/models/minimax_h3_image > $O/image-nodiffusers.txt 2>&1; echo "b rc=$?" >> $O/rc.txt; log "T1 b done"
+  PYTHONPATH=$W $E1/bin/python tools/validation/models/h3_image_fingerprint.py check > $O/fingerprint.txt 2>&1; echo "c rc=$?" >> $O/rc.txt
+  export RL_KERNEL_H3_WEIGHTS=$WEIGHTS
+  for R in $W $B; do (cd $R && CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$R $E1/bin/python -m pytest -q -p no:cacheprovider --tb=no -rf \
+    tests/models > $O/models-$(basename $R).txt 2>&1); echo "d $(basename $R) rc=$?" >> $O/rc.txt; log "T1 d $(basename $R) done"; done
+  unset RL_KERNEL_H3_WEIGHTS RL_KERNEL_H3_IMAGE_DIR RL_KERNEL_H3_IMAGE_VAE_DIR RL_KERNEL_H3_IMAGE_TEXT_ENCODER_ROOT
+else echo "c-file not inside a checkout: T1 a-d not run" >> $O/rc.txt; fi
+rec $O $W $E1 w-after; rec $O $B $E1 b-after; log "T1 end"
+O=$OUT/T2; start $O; rec $O $W $V before; log "T2 start $(hostname -s)"
+cfile $O $W $V v
+cd $W
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W $V/bin/python $TD/h3_image_cross_env_probe.py \
+  --out $O/probe-h100.json --compare $TD/reference/probe-b200-89061319.json \
+  > $O/probe.log 2>&1; echo "exit=$?" >> $O/probe.log
+rec $O $W $V after; log "T2 end"

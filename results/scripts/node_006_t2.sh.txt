@@ -1,0 +1,10 @@
+#!/bin/bash
+# Node 006, GPU0: T2 as in the README (unchanged). Written to T2n and staged as T2.
+source <HOME>/datastorage/h3img_20261123/env.sh
+O=$OUT/T2n; start $O; rec $O $W $V before; log "T2n start $(hostname -s)"
+cfile $O $W $V v
+cd $W
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W $V/bin/python $TD/h3_image_cross_env_probe.py \
+  --out $O/probe-h100.json --compare $TD/reference/probe-b200-89061319.json \
+  > $O/probe.log 2>&1; echo "exit=$?" >> $O/probe.log
+rec $O $W $V after; log "T2n end"

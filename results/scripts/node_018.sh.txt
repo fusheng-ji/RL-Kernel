@@ -1,0 +1,18 @@
+#!/bin/bash
+# Node 018, GPU0: T5 as in the README of 44a2b97b5.
+source <HOME>/datastorage/h3img_20261123/env.sh
+TD2=$WS/handoff2/h100-handoff/h3-image-20261123 W5=$WS/w5
+O=$OUT/T5; start $O; rec $O $W5 $E1 before; log "T5 start $(hostname -s)"
+cd $W5
+RL_KERNEL_H3_STRICT=1 RL_KERNEL_REQUIRE_EXT=1 $E1/bin/python setup.py build_ext --inplace > $O/build.log 2>&1; echo "build rc=$?" >> $O/rc.txt
+PYTHONPATH=$W5 $E1/bin/python -c "import rl_engine._C as c; print(c.__file__, hasattr(c, 'conditioning_noise_mix_forward'))" > $O/ext.txt
+rec $O $W5 $E1 after-build
+read p has < <(tail -n 1 $O/ext.txt)
+case "$(realpath "$p" 2>/dev/null)" in $(realpath $W5)/*) [ "$has" = True ] || { log "T5 ext.txt second field not True: stop"; exit 1; };; *) log "T5 ext.txt path not inside w5: stop"; exit 1;; esac
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W5 $V/bin/python -m pytest -q -p no:cacheprovider -rs \
+  tests/models/minimax_h3_image/test_h3_image_reference_conditioning.py > $O/pytest-refcond.txt 2>&1; echo "a rc=$?" >> $O/rc.txt; log "T5 a done"
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W5 $V/bin/python tools/validation/models/h3_image_reference_conditioning.py \
+  --device cuda --out $O/refcond-evidence-h100-107726a79.json > $O/refcond-evidence.log 2>&1; echo "exit=$?" >> $O/refcond-evidence.log; log "T5 b done"
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W5 $V/bin/python $TD2/h3_image_refcond_real_vae_check.py \
+  --vae-dir $IMG/vae_diffusers --out $O/refcond-real-vae-h100-be983dcca.json > $O/refcond-real-vae.log 2>&1; echo "exit=$?" >> $O/refcond-real-vae.log
+rec $O $W5 $V after; log "T5 end"

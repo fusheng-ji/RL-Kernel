@@ -1,0 +1,22 @@
+There are modules in MiniMaxH3ImageTransformer2DModel that should be kept in float32: ['proj_in', 'time_embedder', 'pdd_proj_out', 'rope']. Casting directly with `to()` can lead to inconsistent results; set `torch_dtype` in `from_pretrained()` instead to keep these modules in float32.
+There are modules in MiniMaxH3ImageTransformer2DModel that should be kept in float32: ['proj_in', 'time_embedder', 'pdd_proj_out', 'rope']. Casting directly with `to()` can lead to inconsistent results; set `torch_dtype` in `from_pretrained()` instead to keep these modules in float32.
+wrote probe-h100.json
+{
+ "float64": {
+  "repeat_bitwise_equal": true,
+  "permutations": 20,
+  "bitwise_equal": 0,
+  "max_abs": 4.440892098500626e-16
+ },
+ "float32": {
+  "repeat_bitwise_equal": true,
+  "permutations": 20,
+  "bitwise_equal": 0,
+  "max_abs": 2.384185791015625e-07
+ }
+}
+compared against reference (NVIDIA B200)
+hardware-independent digests differing: 1
+  canvas.plans: 5a0acf52a2b428970e5389971ebaed4d17d6e4c2af206fed4e793c0c2ecd8e24 != 1c6c1ac7ef951ebc8f914b80ec9047691c45fa352090367f44ee044015db38be
+Pillow-dependent resize digests differing: 1 (pillow 13.0.0 vs 12.3.0)
+exit=1

@@ -1,0 +1,119 @@
+.......................................s................................ [ 22%]
+s............................sssFF...............................sssssss [ 45%]
+ssss.................ssssss............................................. [ 67%]
+..................ssss.............................F.................... [ 90%]
+........ssssssssssssssssssssssss                                         [100%]
+=================================== FAILURES ===================================
+_________ test_consistent_permutation_preserves_the_transformer_output _________
+
+    def test_consistent_permutation_preserves_the_transformer_output() -> None:  # I-C3
+>       model, layout, image_rows, text_rows, steps = _tiny_case()
+                                                      ^^^^^^^^^^^^
+
+tests/models/minimax_h3_image/test_h3_image_packed_layout.py:262: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _tiny_case():
+        transformers = pytest.importorskip("diffusers.models.transformers")
+        torch.manual_seed(0)
+>       model = transformers.MiniMaxH3ImageTransformer2DModel(**TINY).to(torch.float64).eval()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'diffusers.models.transformers' has no attribute 'MiniMaxH3ImageTransformer2DModel'. Did you mean: 'MiniMaxH3Transformer3DModel'?
+
+tests/models/minimax_h3_image/test_h3_image_packed_layout.py:251: AttributeError
+___________ test_partial_permutation_changes_the_transformer_output ____________
+
+    def test_partial_permutation_changes_the_transformer_output() -> None:
+>       model, layout, image_rows, text_rows, steps = _tiny_case()
+                                                      ^^^^^^^^^^^^
+
+tests/models/minimax_h3_image/test_h3_image_packed_layout.py:274: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+    def _tiny_case():
+        transformers = pytest.importorskip("diffusers.models.transformers")
+        torch.manual_seed(0)
+>       model = transformers.MiniMaxH3ImageTransformer2DModel(**TINY).to(torch.float64).eval()
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       AttributeError: module 'diffusers.models.transformers' has no attribute 'MiniMaxH3ImageTransformer2DModel'. Did you mean: 'MiniMaxH3Transformer3DModel'?
+
+tests/models/minimax_h3_image/test_h3_image_packed_layout.py:251: AttributeError
+_____________ test_loop_matches_pinned_scheduler_and_timestep_plan _____________
+
+    def test_loop_matches_pinned_scheduler_and_timestep_plan() -> None:
+        schedulers = pytest.importorskip("diffusers.schedulers")
+>       scheduler = schedulers.MiniMaxH3Scheduler(
+            shift_provided_sigmas=False, euler_update_form="velocity"
+        )
+
+tests/models/minimax_h3_image/test_h3_image_trajectory.py:351: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = MiniMaxH3Scheduler {
+  "_class_name": "MiniMaxH3Scheduler",
+  "_diffusers_version": "0.41.0",
+  "shift": 12.0
+}
+
+args = ()
+kwargs = {'shift_provided_sigmas': False, 'euler_update_form': 'velocity'}
+
+    @functools.wraps(init)
+    def inner_init(self, *args, **kwargs):
+        # Ignore private kwargs in the init.
+        init_kwargs = {k: v for k, v in kwargs.items() if not k.startswith("_")}
+        config_init_kwargs = {k: v for k, v in kwargs.items() if k.startswith("_")}
+        if not isinstance(self, ConfigMixin):
+            raise RuntimeError(
+                f"`@register_for_config` was applied to {self.__class__.__name__} init method, but this class does "
+                "not inherit from `ConfigMixin`."
+            )
+    
+        ignore = getattr(self, "ignore_for_config", [])
+        # Get positional arguments aligned with kwargs
+        new_kwargs = {}
+        signature = inspect.signature(init)
+        parameters = {
+            name: p.default for i, (name, p) in enumerate(signature.parameters.items()) if i > 0 and name not in ignore
+        }
+        for arg, name in zip(args, parameters.keys()):
+            new_kwargs[name] = arg
+    
+        # Then add all kwargs
+        new_kwargs.update(
+            {
+                k: init_kwargs.get(k, default)
+                for k, default in parameters.items()
+                if k not in ignore and k not in new_kwargs
+            }
+        )
+    
+        # Take note of the parameters that were not present in the loaded config
+        if len(set(new_kwargs.keys()) - set(init_kwargs)) > 0:
+            new_kwargs["_use_default_values"] = list(set(new_kwargs.keys()) - set(init_kwargs))
+    
+        new_kwargs = {**config_init_kwargs, **new_kwargs}
+        getattr(self, "register_to_config")(**new_kwargs)
+>       init(self, *args, **init_kwargs)
+E       TypeError: MiniMaxH3Scheduler.__init__() got an unexpected keyword argument 'shift_provided_sigmas'
+
+<HOME>/datastorage/venvs/<ENV>/lib/python3.12/site-packages/diffusers/configuration_utils.py:704: TypeError
+=========================== short test summary info ============================
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_arch_fingerprint.py:410: installed diffusers has no MiniMaxH3ImageTransformer2DModel
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_canvas.py:183: could not import 'diffusers.modular_pipelines.minimax_h3_image.before_denoise': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [3] tests/models/minimax_h3_image/test_h3_image_packed_layout.py:206: could not import 'diffusers.modular_pipelines.minimax_h3_image.before_denoise': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [5] tests/models/minimax_h3_image/test_h3_image_patch_pack.py:176: could not import 'diffusers.modular_pipelines.minimax_h3_image.before_denoise': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_patch_pack.py:184: could not import 'diffusers.modular_pipelines.minimax_h3_image.before_denoise': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [5] tests/models/minimax_h3_image/test_h3_image_patch_pack.py:192: could not import 'diffusers.modular_pipelines.minimax_h3_image.decoders': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [6] tests/models/minimax_h3_image/test_h3_image_position_grid.py:144: could not import 'diffusers.modular_pipelines.minimax_h3_image.before_denoise': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_text_presentation.py:575: needs diffusers with MiniMax-H3-Image (875373ac)
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_text_presentation.py:588: needs diffusers with MiniMax-H3-Image (875373ac)
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_text_presentation.py:599: needs diffusers with MiniMax-H3-Image (875373ac)
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_text_presentation.py:645: needs diffusers with MiniMax-H3-Image (875373ac)
+SKIPPED [18] tests/models/minimax_h3_image/test_h3_image_vae.py:323: needs diffusers with MiniMax-H3-Image (875373ac+)
+SKIPPED [2] tests/models/minimax_h3_image/test_h3_image_vae.py:566: could not import 'diffusers.modular_pipelines.minimax_h3_image': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_vae.py:578: could not import 'diffusers.modular_pipelines.minimax_h3_image': No module named 'diffusers.modular_pipelines.minimax_h3_image'
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_vae.py:600: needs diffusers with MiniMax-H3-Image (875373ac+)
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_vae.py:606: needs diffusers with MiniMax-H3-Image (875373ac+)
+SKIPPED [1] tests/models/minimax_h3_image/test_h3_image_vae.py:622: needs diffusers with MiniMax-H3-Image (875373ac+)
+3 failed, 267 passed, 50 skipped in 164.18s (0:02:44)

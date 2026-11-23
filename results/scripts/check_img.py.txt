@@ -1,0 +1,93 @@
+import json, os, re
+
+WS = os.path.expanduser('<HOME>/datastorage/h3img_20261123')
+OUT, REF = f'{WS}/out', f'{WS}/handoff2/h100-handoff/h3-image-20261123/reference'
+J = lambda p: json.load(open(p))
+
+
+def walk(o, p=''):
+    if isinstance(o, dict):
+        for k, v in o.items():
+            yield from walk(v, f'{p}.{k}' if p else k)
+    elif isinstance(o, list):
+        for i, v in enumerate(o):
+            yield from walk(v, f'{p}[{i}]')
+    else:
+        yield p, o
+
+
+def last(path):
+    ls = [l for l in open(path, errors='replace').read().splitlines() if re.search(r'\d+ (passed|failed)', l)]
+    return ls[-1].strip('= ') if ls else '(no summary line)'
+
+
+print('== T1')
+for f in ('image-diffusers.txt', 'image-nodiffusers.txt', 'models-w.txt', 'models-b.txt'):
+    print(f, '|', last(f'{OUT}/T1/{f}'))
+print('fingerprint |', open(f'{OUT}/T1/fingerprint.txt').read().strip().splitlines()[-1])
+fw = {l.split()[1] for l in open(f'{OUT}/T1/models-w.txt') if l.startswith('FAILED')}
+fb = {l.split()[1] for l in open(f'{OUT}/T1/models-b.txt') if l.startswith('FAILED')}
+print('d fails only at head:', sorted(fw - fb)); print('d fails only at base:', sorted(fb - fw))
+nd = open(f'{OUT}/T1/image-nodiffusers.txt').read()
+print('b failure headers:', re.findall(r'^_{3,} (\S+) _{3,}$', nd, re.M))
+print('b TypeError lines:', sorted(set(re.findall(r'^E\s+(TypeError.*)$', nd, re.M))))
+
+print('== T2')
+p, r = J(f'{OUT}/T2n/probe-h100.json'), J(f'{REF}/probe-b200-89061319.json')
+print(open(f'{OUT}/T2n/probe.log').read().split('compared against')[-1].strip())
+fp = dict(walk(p)); fr = dict(walk(r))
+for k, v in fp.items():
+    if k.split('.')[-1] in ('cuda_equals_cpu', 'cuda_round_trip') or 'cuda_equals_cpu' in k or 'cuda_round_trip' in k:
+        if v is not True: print('  NOT TRUE', k, v)
+print('  cuda_equals_cpu / cuda_round_trip entries:', sum(1 for k in fp if 'cuda_equals_cpu' in k or 'cuda_round_trip' in k),
+      'all True:', all(v is True for k, v in fp.items() if 'cuda_equals_cpu' in k or 'cuda_round_trip' in k))
+print('  permutation_drift H100:', json.dumps(p['permutation_drift']))
+print('  permutation_drift B200:', json.dumps(r['permutation_drift']))
+diff = [k for k in fp if k in fr and fp[k] != fr[k] and not k.startswith(('environment', 'permutation_drift'))]
+print('  all differing leaves (excluding environment, permutation_drift):', diff)
+
+print('== T3')
+n, r = J(f'{OUT}/T3/evidence-h100-a8f05c22.json'), J(f'{REF}/vae-evidence-b200-a8f05c22f.json')
+print('verdicts false:', [k for k, v in n['verdicts'].items() if not v], '| differ from B200:', [k for k in n['verdicts'] if n['verdicts'][k] != r['verdicts'].get(k)])
+for arm in n['timing']:
+    print(f"  {arm}: decode {n['timing'][arm]['decode']['median_ms']:.0f} ms (B200 {r['timing'][arm]['decode']['median_ms']:.0f}), "
+          f"encode {n['timing'][arm]['encode_reference']['median_ms']:.0f} ms (B200 {r['timing'][arm]['encode_reference']['median_ms']:.0f})")
+print(f"  peak {n['peak_memory_gib']:.2f} GiB (B200 {r['peak_memory_gib']:.2f})")
+on, orf = dict(walk(n['outputs'])), dict(walk(r['outputs']))
+sh = [k for k, v in on.items() if isinstance(v, str) and re.fullmatch(r'[0-9a-f]{64}', v)]
+eq = [k for k in sh if on[k] == orf.get(k)]
+print(f'  output digests equal to B200: {len(eq)} of {len(sh)}; equal: {eq}')
+print('  checkpoint digest equal:', n['checkpoint_check']['digest'] == r['checkpoint_check']['digest'], 'sha256_verified', n['checkpoint_check']['sha256_verified'])
+print('  pytest |', last(f'{OUT}/T3/pytest-image-vae.txt'), '| manifest:', open(f'{OUT}/T3/evidence.log').read().strip().splitlines()[-1])
+
+print('== T4')
+n, r = J(f'{OUT}/T4/evidence-h100-b1617e591.json'), J(f'{REF}/text-evidence-b200-b1617e591.json')
+print('  all_equal_diffusers', n['all_equal_diffusers'], 'all_cpu_digests_match_sealed', n['all_cpu_digests_match_sealed'],
+      'stack_peak_gib', n['stack_peak_gib'], '(B200', r['stack_peak_gib'], ')')
+print('  text_encoder_files', json.dumps(n['text_encoder_files'])[:400])
+print('  inherited_text_encoder_sha256 equal B200:', n['inherited_text_encoder_sha256'] == r['inherited_text_encoder_sha256'])
+fn, fr4 = dict(walk(n)), dict(walk(r))
+print('  boolean leaves differing from B200:', [k for k, v in fn.items() if isinstance(v, bool) and fr4.get(k) != v])
+print('  pytest |', last(f'{OUT}/T4/pytest-h3-image.txt'), '| skips:', open(f'{OUT}/T4/pytest-h3-image.txt').read().count('SKIPPED'))
+
+print('== T5')
+print('  ext.txt |', open(f'{OUT}/T5/ext.txt').read().strip())
+print('  a |', last(f'{OUT}/T5/pytest-refcond.txt'), '| skips:', open(f'{OUT}/T5/pytest-refcond.txt').read().count('SKIPPED'))
+lg = open(f'{OUT}/T5/refcond-evidence.log').read().strip().splitlines()
+print('  b |', lg[-2], '|', lg[-1])
+n, r = J(f'{OUT}/T5/refcond-evidence-h100-107726a79.json'), J(f'{REF}/refcond-evidence-b200-107726a79.json')
+print('  probes equal B200:', n['probes'] == r['probes'])
+for fx in n['fixtures']:
+    a, b = n['fixtures'][fx], r['fixtures'][fx]
+    cpu = {arm: a[arm]['rows_sha256'] == b[arm]['rows_sha256'] for arm in ('cpu', 'cuda-cpu_generator', 'cuda_kernel-cpu_generator')}
+    cg = a['cuda-cuda_generator']['rows_sha256'] == a['cuda_kernel-cuda_generator']['rows_sha256']
+    cgb = {arm: a[arm]['rows_sha256'] == b[arm]['rows_sha256'] for arm in ('cuda-cuda_generator', 'cuda_kernel-cuda_generator')}
+    print(f'  {fx}: cpu-generator arms equal B200 {cpu}; cuda-generator arms equal each other {cg}; equal B200 (reported) {cgb}')
+lg = open(f'{OUT}/T5/refcond-real-vae.log').read().strip().splitlines()
+print('  c |', lg[-2], '|', lg[-1])
+n, r = J(f'{OUT}/T5/refcond-real-vae-h100-be983dcca.json'), J(f'{REF}/refcond-real-vae-b200-be983dcca.json')
+fn, fr5 = dict(walk(n)), dict(walk(r))
+print('  c rows_sha256 equal B200 (reported):', {k: fn[k] == fr5.get(k) for k in fn if k.endswith('rows_sha256')})
+for t in ('T1', 'T2n', 'T3', 'T4', 'T5'):
+    st = [f for f in os.listdir(f'{OUT}/{t}') if f.startswith('status-') and os.path.getsize(f'{OUT}/{t}/{f}')]
+    print(t, 'non-empty status files:', st or 'none')
