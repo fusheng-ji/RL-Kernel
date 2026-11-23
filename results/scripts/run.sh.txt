@@ -1,0 +1,86 @@
+#!/bin/bash
+# Steps A-E of h100-handoff/main-fixes-20261123/README.md (07043486) on GPU0 of one node. F is not run (no 8-GPU node).
+source <HOME>/datastorage/mfix_20261123/env.sh
+mkdir -p $OUT/{A,B,C,D,E,checks}
+# check <tag>: every tree's _C inside the tree and an empty tracked status
+check() { local f=$OUT/checks/$1.txt ok=0; : > $f
+  for t in $TREES; do p=$(cd $WT/$t && PYTHONPATH=$PWD python -c "import rl_engine._C as c; print(c.__file__)" 2>&1 | tail -n 1)
+    s=$(git -C $WT/$t status --porcelain --untracked-files=no)
+    case "$(realpath "$p" 2>/dev/null)" in $(realpath $WT/$t)/*) echo "$t inside $p" >> $f;; *) echo "$t NOT-INSIDE $p" >> $f; ok=1;; esac
+    [ -n "$s" ] && { echo "$t STATUS: $s" >> $f; ok=1; }; done; return $ok; }
+step() { nvidia-smi > $OUT/$1/nvidia-smi-start.txt 2>&1; ps -eo user,pid,etime,args | grep -E "[p]ython|[v]llm|[t]orchrun" | cut -c1-160 > $OUT/$1/other-processes-start.txt; log "$1 start"; }
+
+{ echo "host: $(hostname -s)"; echo "date: $(date -u +%FT%TZ)"
+  nvidia-smi --query-gpu=index,name,driver_version,memory.total,memory.used --format=csv
+  python -c "import torch,triton,sys;print('python',sys.version.split()[0],'torch',torch.__version__,'cuda',torch.version.cuda,'triton',triton.__version__,'gpus',torch.cuda.device_count())"
+  echo "python: $(which python)"
+  for t in $TREES; do echo "$t $(git -C $WT/$t rev-parse HEAD) status-lines=$(git -C $WT/$t status --porcelain --untracked-files=no | wc -l)"; done
+  echo "handoff $(git -C $WS/handoff rev-parse HEAD)"
+  echo "env: TORCH_CUDA_ARCH_LIST=$TORCH_CUDA_ARCH_LIST MAX_JOBS=$MAX_JOBS PYTHONNOUSERSITE=$PYTHONNOUSERSITE CUDA_HOME=${CUDA_HOME:-unset} LD_LIBRARY_PATH=${LD_LIBRARY_PATH:-empty}"
+  echo "build flags (A only): CUDA_HOME=cuda13_home TORCH_CUDA_ARCH_LIST=9.0 KERNEL_ALIGN_FORCE_SM90=1 KERNEL_ALIGN_DET_GEMM_SM90=1 MAX_JOBS=32"
+  echo "squeue on node:"; squeue -w $(hostname -s) -h -o "%i %u %T %b"
+  echo "python/vllm processes on node before start:"; ps -eo user,pid,args | grep -E "[p]ython|[v]llm|[t]orchrun" | cut -c1-160
+  echo "commands: $WS/run.sh (README A-E verbatim, CUDA_VISIBLE_DEVICES=0)"; } > $OUT/header.txt 2>&1
+{ python -m pip list 2>/dev/null | grep -iE "^(torch|triton|vllm|flashinfer)"
+  echo "LD_LIBRARY_PATH for B-E: ${LD_LIBRARY_PATH:-empty} (no CUDA toolkit lib64; NVRTC only from the torch CUDA 13 wheels: nvidia/cu13/lib/libnvrtc.so.13)"
+  echo "CUDA_HOME for B-E: unset; the toolkit is used only for the A build"; } > $OUT/env.txt
+nvidia-smi --query-gpu=name,driver_version --format=csv > $OUT/nvidia-smi-name-driver.csv
+
+# A
+step A; cd $WT/main
+for t in pr746 pr747 pr748 pr749 pr750 sort; do git -C $WT/$t diff --quiet e9d52e95 HEAD -- csrc setup.py || echo "CSRC DIFFERS: $t"; done > $OUT/A/csrc-diff.txt
+(export CUDA_HOME=$CUDA13 PATH=$CUDA13/bin:$PATH LD_LIBRARY_PATH=$CUDA13/lib64${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+ TORCH_CUDA_ARCH_LIST=9.0 KERNEL_ALIGN_FORCE_SM90=1 KERNEL_ALIGN_DET_GEMM_SM90=1 MAX_JOBS=32 \
+  python setup.py build_ext --inplace > $OUT/A/build.log 2>&1); echo "build rc=$?" > $OUT/A/rc.txt
+for t in pr746 pr747 pr748 pr749 pr750 sort; do cp rl_engine/_C.cpython-*.so $WT/$t/rl_engine/; done
+for t in main pr746 pr747 pr748 pr749 pr750 sort; do
+  (cd $WT/$t && PYTHONPATH=$PWD python -c "import rl_engine._C as c; print('$t', c.__file__)"; git status --porcelain --untracked-files=no)
+done > $OUT/A/c-file.txt 2>&1
+log "A end"
+if ! check A; then log "A check failed: stop"; exit 1; fi
+
+# B
+step B
+for t in main pr747 pr748 pr749 pr750 sort; do
+  cd $WT/$t
+  CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$PWD python -m pytest tests/ --ignore=tests/distributed \
+    --ignore=tests/backends/rocm/test_rocm_aiter_api_contract.py -q --tb=no -rf -p no:cacheprovider > $OUT/B/$t.log 2>&1
+  echo "$t rc=$?" >> $OUT/B/rc.txt; log "B $t done"
+done
+cd $WT/pr746
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$PWD python -m pytest tests/ --ignore=tests/distributed -q --tb=no -rf -p no:cacheprovider > $OUT/B/pr746.log 2>&1
+echo "pr746 rc=$?" >> $OUT/B/rc.txt; log "B pr746 done"
+cd $WT/main
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$PWD python -m pytest tests/ --ignore=tests/distributed -q --tb=no -p no:cacheprovider > $OUT/B/main-with-aiter-file.log 2>&1
+echo "main-with-aiter-file rc=$?" >> $OUT/B/rc.txt
+for t in main pr746 pr747 pr748 pr749 pr750 sort; do grep '^FAILED' $OUT/B/$t.log | sed 's/ - .*//; s/^FAILED //' | sort > $OUT/B/$t.fails; done
+for t in pr746 pr747 pr748 pr749 pr750 sort; do echo "== $t fixed:"; comm -23 $OUT/B/main.fails $OUT/B/$t.fails; echo "== $t new:"; comm -13 $OUT/B/main.fails $OUT/B/$t.fails; done > $OUT/B/diff.txt
+log "B end"; check B || log "B check failed"
+
+# C
+step C
+crun() { local t=$1 file=$2; shift 2
+  cd $WT/$t
+  CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$PWD python -m pytest "$@" -q -p no:cacheprovider --tb=no > $OUT/C/$t-fixed.log 2>&1; echo "$t fixed rc=$?" >> $OUT/C/rc.txt
+  cp -a $WT/$t $SCR/$t-reverted && cd $SCR/$t-reverted && git -C $WT/$t show e9d52e95:$file > $file
+  (PYTHONPATH=$PWD python -c "import rl_engine._C as c, rl_engine; print('$t-reverted', c.__file__, rl_engine.__file__)") >> $OUT/C/c-file-reverted.txt 2>&1
+  cmp -s $file $WT/$t/$file && echo "$t: reverted file equals the fixed one" >> $OUT/C/rc.txt
+  CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$PWD python -m pytest "$@" -q -p no:cacheprovider --tb=no > $OUT/C/$t-reverted.log 2>&1; echo "$t reverted rc=$?" >> $OUT/C/rc.txt
+  log "C $t done"; }
+crun pr747 rl_engine/runtime/registry.py tests/runtime/test_kernel_registry.py tests/ops/norm/test_rms_norm.py
+crun pr748 rl_engine/runtime/registry.py tests/runtime/test_attention_dispatch.py tests/contracts/operators/test_logprob_contract.py
+crun pr749 rl_engine/ops/norm/reproducible.py tests/ops/norm/test_reproducible_norm.py
+crun sort rl_engine/integrations/engines/rollout/vllm/sampling_support.py tests/backends/cuda/test_decode_optimizations.py -k captured_full_support
+log "C end"; check C || log "C check failed"
+
+# D
+step D; cd $WT/pr747
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$PWD python $TD/scripts/rmsnorm_dispatch_bench.py $OUT/D/rmsnorm-dispatch-h100.json $WT/main > $OUT/D/bench.log 2>&1
+echo "rc=$?" > $OUT/D/rc.txt; log "D end"; check D || log "D check failed"
+
+# E
+step E; cd $WT/sort
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$PWD python $TD/scripts/topp_contract_bench.py $OUT/E/topp-contract-h100.json > $OUT/E/bench.log 2>&1
+echo "rc=$?" > $OUT/E/rc.txt; log "E end"; check E || log "E check failed"
+squeue -w $(hostname -s) -h -o "%i %u %T %b" > $OUT/squeue-end.txt 2>&1
+log "run end"

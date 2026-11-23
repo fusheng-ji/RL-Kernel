@@ -1,0 +1,90 @@
+import glob, json, os, re
+
+WS = os.path.expanduser('<HOME>/datastorage/mfix_20261123')
+OUT, REF = f'{WS}/out', f'{WS}/handoff/h100-handoff/main-fixes-20261123/reference/b200'
+TREES = ['main', 'pr746', 'pr747', 'pr748', 'pr749', 'pr750', 'sort']
+
+
+def tail_counts(path):
+    lines = [l for l in open(path, errors='replace').read().splitlines() if l.startswith('=') or ' in ' in l]
+    last = lines[-1] if lines else ''
+    c = {k: int(v) for v, k in re.findall(r'(\d+) (failed|passed|skipped|errors?|deselected)', last)}
+    return c, last.strip('= ')
+
+
+def fails(t):
+    return set(open(f'{OUT}/B/{t}.fails').read().split())
+
+
+print('== B counts (H100) and B200')
+b200 = {l.split(':')[0].split('-')[0]: l.split(': ', 1)[1] for l in open(f'{REF}/suite-summary.txt') if ':' in l}
+for t in TREES + ['main-with-aiter-file']:
+    c, last = tail_counts(f'{OUT}/B/{t}.log')
+    print(f'{t:22s} {last}   | B200: {b200.get(t, "-")}')
+print(open(f'{OUT}/B/rc.txt').read())
+
+main = fails('main')
+exp = {
+    'pr746': set(), 'pr747': {'tests/ops/norm/test_rms_norm.py::test_registry_dispatches_rms_norm'},
+    'pr748': 'tests/runtime/test_attention_dispatch.py', 'pr749': 'tests/ops/norm/test_reproducible_norm.py',
+    'pr750': 'tests/layers/test_canonical_tp_ffn.py::test_rocm_canonical_ffn_resolves_aot_slot_before_ipc_reduction',
+    'sort': 'test_captured_full_support_matches_independent_policy',
+}
+print('== B diff vs H100 main')
+for t in TREES[1:]:
+    f = fails(t); fixed, new = sorted(main - f), sorted(f - main)
+    print(f'-- {t}: fixed {len(fixed)}, new {len(new)}')
+    for x in fixed: print('   fixed', x)
+    for x in new: print('   NEW  ', x)
+print('== H100 main vs B200 main failure list')
+bm = set(open(f'{REF}/failures-main-e9d52e95.txt').read().split())
+print(f'H100 main {len(main)} failures, B200 {len(bm)}; only H100 {len(main - bm)}, only B200 {len(bm - main)}')
+for x in sorted(main - bm): print('   only-H100', x)
+for x in sorted(bm - main): print('   only-B200', x)
+for t, ref in [('pr746', 'pr746-921f6853'), ('pr747', 'pr747-1f93314b'), ('pr748', 'pr748-219ad592'), ('pr749', 'pr749-acae3a40'), ('sort', 'sort-topk-topp-501b3545')]:
+    r = set(open(f'{REF}/failures-{ref}.txt').read().split()); f = fails(t)
+    print(f'{t}: B200 fixed-vs-main {sorted(bm - r)[:12]}')
+print('== H100 failure reasons (main), grouped')
+reasons = {}
+for l in open(f'{OUT}/B/main.log', errors='replace'):
+    if l.startswith('FAILED '):
+        r = l.split(' - ', 1)[1].strip()[:110] if ' - ' in l else '(no message)'
+        reasons[r] = reasons.get(r, 0) + 1
+for r, n in sorted(reasons.items(), key=lambda x: -x[1]): print(f'{n:4d} {r}')
+
+print('== C')
+print(open(f'{OUT}/C/rc.txt').read())
+for t in ['pr747', 'pr748', 'pr749', 'sort']:
+    for k in ['fixed', 'reverted']:
+        p = f'{OUT}/C/{t}-{k}.log'
+        if os.path.exists(p): print(f'{t:6s} {k:8s} {tail_counts(p)[1]}')
+print(open(f'{OUT}/C/c-file-reverted.txt').read())
+
+print('== D')
+p = f'{OUT}/D/rmsnorm-dispatch-h100.json'
+if os.path.exists(p):
+    d, r = json.load(open(p)), json.load(open(f'{REF}/rmsnorm-dispatch-b200.json'))
+    print('device', d.get('device'), 'registry_choice', d.get('registry_choice'))
+    for row, rr in zip(d['rows'], r['rows']):
+        flags = {k: v for k, v in row.items() if k.endswith(('_bitwise', '_invariant'))}
+        sp = lambda x: (x['native_fwd_ms'] / x['cuda_fwd_ms'], x['native_fwd_bwd_ms'] / x['cuda_fwd_bwd_ms'])
+        print(row['tokens'], row['hidden'], 'flags all true' if all(flags.values()) else flags,
+              'native/cuda fwd %.2f fwdbwd %.2f' % sp(row), '| B200 %.2f %.2f' % sp(rr),
+              {k: v for k, v in row.items() if 'equal' in k or 'diff' in k or 'err' in k})
+print(open(f'{OUT}/D/rc.txt').read() if os.path.exists(f'{OUT}/D/rc.txt') else 'no D rc')
+
+print('== E')
+p = f'{OUT}/E/topp-contract-h100.json'
+if os.path.exists(p):
+    e, r = json.load(open(p)), json.load(open(f'{REF}/topp-contract-b200.json'))
+    print('device', e.get('device'), 'vllm', e.get('vllm'))
+    for s, rs in zip(e['support'], r['support']):
+        print({k: s[k] for k in ['rows', 'top_p', 'sort_equals_policy', 'triton_superset_of_policy', 'rows_differing_triton', 'extra_tokens_per_row_max']},
+              '| B200', {k: rs[k] for k in ['triton_superset_of_policy', 'rows_differing_triton', 'extra_tokens_per_row_max']})
+    print('batch_dependence', e['batch_dependence'], '| B200', r['batch_dependence'])
+    for s, rs in zip(e['timing'], r['timing']):
+        print('rows %d triton %.3f sort %.3f | B200 %.3f %.3f' % (s['rows'], s['triton_ms'], s['sort_ms'], rs['triton_ms'], rs['sort_ms']))
+print(open(f'{OUT}/E/rc.txt').read() if os.path.exists(f'{OUT}/E/rc.txt') else 'no E rc')
+for f in sorted(glob.glob(f'{OUT}/checks/*.txt')):
+    bad = [l for l in open(f) if 'NOT-INSIDE' in l or 'STATUS' in l]
+    print(os.path.basename(f), 'ok' if not bad else bad)
