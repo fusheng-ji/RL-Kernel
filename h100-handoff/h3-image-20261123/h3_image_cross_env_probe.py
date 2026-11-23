@@ -13,7 +13,10 @@ Recorded, each as a digest of the exact bytes produced:
 * ``fingerprint``: the architecture fingerprint digest (CPU, stdlib only).
 * ``position_grid``: float64 and float32 grids of 1,419 T2I canvases and 6 edit layouts.
 * ``canvas``: 46,117 (height, width, area) plans, and the PIL LANCZOS resize bytes of five
-  requests (the only Pillow-dependent row).
+  requests. A plan that resizes records the Pillow version in its artifact, so ``plans``
+  (the artifact digests) is Pillow-dependent; ``plans_geometry`` hashes the same artifacts
+  without the ``pillow`` field and must match everywhere (H100 round 1, 2026-11-23: Pillow
+  13.0.0 vs 12.3.0 moved ``plans`` and nothing else).
 * ``packed_layout``: three layouts' artifacts and a permutation's row-identity digest.
 * ``patch_pack``: rows of 5 shapes x 3 dtypes on CPU and on CUDA, and their round trip.
 * ``trajectory``: the sealed artifact of the test loop (T2I and edit) on CPU.
@@ -48,7 +51,7 @@ from rl_engine.models.minimax_h3_image import patch_pack as pp
 from rl_engine.models.minimax_h3_image import position_grid as pg
 
 SCHEMA = "rlkernel.h3_image.cross_env_probe.v1"
-PILLOW_DEPENDENT = ("canvas.resize",)
+PILLOW_DEPENDENT = ("canvas.resize", "canvas.plans")
 REPORT_ONLY = ("permutation_drift", "environment")
 
 
@@ -97,23 +100,35 @@ def position_grid() -> dict[str, str]:
 
 def canvas() -> dict[str, Any]:
     plans = []
+    geometry = []
+
+    def record(plan: cv.CanvasPlan) -> None:
+        art = plan.artifact()
+        plans.append(art["sha256"])
+        body = {k: v for k, v in art.items() if k not in ("pillow", "sha256")}
+        geometry.append(json.dumps(body, sort_keys=True))
     areas = [1024, 512 * 512, 1024 * 1024, 1536 * 1536, 2048 * 2048, 4096 * 4096, 1000003]
     sides = list(range(1, 300)) + list(range(300, 4200, 7)) + [4095, 4096, 4097, 8191]
     for a in areas:
         for h in sides[::3]:
             for w in (1, 17, 32, 48, 80, 100, 512, 777, 1024, 2047, 2048, 3000, 4096):
-                plans.append(cv.resolve_canvas(h, w, a).artifact()["sha256"])
+                record(cv.resolve_canvas(h, w, a))
     rng = random.Random(0)
     for _ in range(20000):
         h, w = rng.randint(1, 6000), rng.randint(1, 6000)
-        plans.append(cv.resolve_canvas(h, w, rng.randint(1024, 4096 * 4096)).artifact()["sha256"])
+        record(cv.resolve_canvas(h, w, rng.randint(1024, 4096 * 4096)))
     resize = {}
     generator = torch.Generator().manual_seed(0)
     for h, w, a in ((80, 80, 1024), (1000, 700, 4194304), (48, 1000, 1024), (333, 517, 1048576)):
         plan = cv.resolve_canvas(h, w, a)
         images = (torch.rand(2, 3, *plan.canvas, generator=generator) * 255).to(torch.uint8)
         resize[f"{h}x{w}@{a}"] = tensor_digest(cv.resize_output(images, plan))
-    return {"plans": _sha(plans), "cases": len(plans), "resize": resize}
+    return {
+        "plans": _sha(plans),
+        "plans_geometry": _sha(geometry),
+        "cases": len(plans),
+        "resize": resize,
+    }
 
 
 def packed_layout() -> dict[str, str]:
@@ -252,7 +267,10 @@ def compare(ours: dict[str, Any], ref: dict[str, Any]) -> int:
         if key.split(".")[-1].startswith("cuda") and (key not in a or key not in b):
             continue  # one side had no CUDA
         if a.get(key) != b.get(key):
-            (pillow if key.startswith(PILLOW_DEPENDENT) else hard).append(key)
+            pillow_key = key in PILLOW_DEPENDENT or key.startswith(
+                tuple(f"{prefix}." for prefix in PILLOW_DEPENDENT)
+            )
+            (pillow if pillow_key else hard).append(key)
     print(f"compared against reference ({ref['environment'].get('device_name', 'cpu')})")
     print(f"hardware-independent digests differing: {len(hard)}")
     for key in hard:

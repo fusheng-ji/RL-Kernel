@@ -145,7 +145,7 @@ for R in <W> <B>; do (cd $R && CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$R <E1>/bin/pyt
 ```bash
 cd <W>
 CUDA_VISIBLE_DEVICES=0 PYTHONPATH=<W> <V>/bin/python <THIS_DIR>/h3_image_cross_env_probe.py \
-  --out <OUT>/T2/probe-h100.json --compare <THIS_DIR>/reference/probe-b200-89061319.json \
+  --out <OUT>/T2/probe-h100.json --compare <THIS_DIR>/reference/probe-b200-89061319-v2.json \
   > <OUT>/T2/probe.log 2>&1; echo "exit=$?" >> <OUT>/T2/probe.log
 ```
 
@@ -166,6 +166,8 @@ It also measures the permutation drift of a tiny Diffusers transformer on CUDA i
 - `permutation_drift` is reported, not compared: `repeat_bitwise_equal` true, and `max_abs` small (B200 values are in the reference JSON).
 
 A hardware-independent digest that differs is the main finding of T2. Send it as is.
+
+*Round 1 (H100, Pillow 13.0.0) found `canvas.plans` differing. That digest hashes the plan artifacts, and a plan that resizes records the Pillow version, so it is Pillow-dependent. Recomputing it here with the version string set to 13.0.0 reproduces the H100 value exactly. The probe now lists `canvas.plans` as Pillow-dependent and adds `canvas.plans_geometry` (the same artifacts without the `pillow` field), which must match everywhere. The reference is `probe-b200-89061319-v2.json`, from the same commit; the old reference is kept.*
 
 ## T3. `image_vae_contract` evidence (`<V>`)
 
