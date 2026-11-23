@@ -367,6 +367,7 @@ They include `trainer.log`, every AReaL service log (`main.log`, `merged.log`,
 | `areal-baseline-run.tar.gz` | full baseline run, S2-S6 |
 | `areal-round1-run.tar.gz` | full round 1 runs: S3-sync-graph, S3-profile, S3-profile-base, and the probes |
 | `areal-round1-extra-run.tar.gz` | full round 1 extra runs: S4-async-graph and S3-sync-observe |
+| `areal-ropefusion-placement-run.tar.gz` | native fused-RoPE runs, pinned-actor and driver-off-node runs, launch scripts and node diagnostics; `NOTES.md` maps each directory to its layout |
 | `areal-preflight-S0-S1.tar.gz` | S0 inventory and S1 preflight |
 | `setup_env.log` | environment installation log |
 
@@ -408,6 +409,9 @@ in the Summary do not hold.
 Next, all arms (native, native fused RoPE, RL-Kernel before and after round 1;
 sync, async and profiles) will be re-run in one layout, with the driver and Ray
 head on a CPU node. The tables and figures above will then be replaced.
+
+Raw runs and a layout map: `areal-ropefusion-placement-run.tar.gz` in the
+[release](https://github.com/fusheng-ji/RL-Kernel/releases/tag/areal-perf-round1-logs).
 
 ## Caveats and next steps
 
