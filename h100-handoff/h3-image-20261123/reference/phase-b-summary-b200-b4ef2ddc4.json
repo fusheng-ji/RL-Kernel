@@ -1,0 +1,271 @@
+{
+ "all_gates_pass": true,
+ "environment": {
+  "accelerate": "1.16.0",
+  "compute_capability": [
+   10,
+   0
+  ],
+  "cuda": "13.0",
+  "diffusers": "0.42.0.dev0",
+  "gpu": "NVIDIA B200",
+  "python": "3.12.14",
+  "torch": "2.13.0+cu130",
+  "transformers": "5.17.0"
+ },
+ "fixtures": {
+  "edit_example": {
+   "artifact_sha256": {
+    "diffusers": "228ed14c726a912cee8716784f69faba21fc2c9bbe54e2fb4fcd3b461b86b5e7",
+    "rl-kernel": "fffcb467ef77ad88d040e6eb157e0207983a46f3d2d1c033800810927fdc560e"
+   },
+   "canvas": [
+    4096,
+    4096
+   ],
+   "chain_seconds": {
+    "contract": 13.8,
+    "diffusers": 18.5
+   },
+   "final_latent_sha256": "8b93a531a18df831e02b0dcc24fcf481bfa2da21cc3e9b0a3dca3b218df80e14",
+   "first_drift": null,
+   "gate": true,
+   "num_reference_rows": 1024,
+   "output_sha256": "57099d87451ae5f13c60d33a62e73c2671e2a7bf8cc9b8786c21fd972c0f3319",
+   "peak_memory_gib": 67.2,
+   "run_to_run_equal": true,
+   "secondary_equal": true,
+   "sequence_length": 18867,
+   "size": [
+    4096,
+    4096
+   ],
+   "source": "examples/edit.py defaults: reference1.png, prompt.edit.txt, 4096x4096, seed 1234",
+   "stages_equal": {
+    "decode": true,
+    "denoise": true,
+    "media_preprocess": true,
+    "packed_layout": true,
+    "reference_conditioning": true,
+    "reference_encode": true,
+    "request": true,
+    "resize": true,
+    "schedule": true,
+    "text_conditions": true,
+    "unpack": true
+   },
+   "task": "edit",
+   "text_rows": 1459,
+   "text_seconds": {
+    "contract": 1.05,
+    "diffusers": 0.15
+   },
+   "trajectory_first_drift": null
+  },
+  "edit_two_refs": {
+   "artifact_sha256": {
+    "diffusers": "3555a30e315f23163d0f6ba518a869a3dc7aa9c4f6dfa06e45ae2c0044c2169e",
+    "rl-kernel": "08544efac9faf174b7b374a9957bc080104ed57864751fb869375f605a179c43"
+   },
+   "canvas": [
+    2048,
+    2048
+   ],
+   "chain_seconds": {
+    "contract": 10.1,
+    "diffusers": 11.4
+   },
+   "final_latent_sha256": "7b993f9d27adc11cb5931e72d9e8c91363f31c85edbf7cd980f4f79e221193d0",
+   "first_drift": null,
+   "gate": true,
+   "num_reference_rows": 6528,
+   "output_sha256": "03e23f4f517eef8f4d0f0eb857e232ea9abe08f47f3e796d9c6fa04841297268",
+   "peak_memory_gib": 66.9,
+   "run_to_run_equal": true,
+   "secondary_equal": true,
+   "sequence_length": 17203,
+   "size": [
+    2048,
+    2048
+   ],
+   "source": "reference1.png + assets/showcase/photo.jpg, 2048x2048, seed 7",
+   "stages_equal": {
+    "decode": true,
+    "denoise": true,
+    "media_preprocess": true,
+    "packed_layout": true,
+    "reference_conditioning": true,
+    "reference_encode": true,
+    "request": true,
+    "resize": true,
+    "schedule": true,
+    "text_conditions": true,
+    "unpack": true
+   },
+   "task": "edit",
+   "text_rows": 6579,
+   "text_seconds": {
+    "contract": 0.9,
+    "diffusers": 0.7
+   },
+   "trajectory_first_drift": null
+  },
+  "t2i_example": {
+   "artifact_sha256": {
+    "diffusers": "74565750c3e70889f2592a207cb7c93f2c7637db30a1bdd6587da0c55b35d752",
+    "rl-kernel": "3b6bd1dc0a9f88da2eb6e515fe60cb268a82849d448ceac8999ef2cf3518d870"
+   },
+   "canvas": [
+    3552,
+    4736
+   ],
+   "chain_seconds": {
+    "contract": 14.6,
+    "diffusers": 18.0
+   },
+   "final_latent_sha256": "0c653457cfc44034b67f587b15e82f0544dce9795f694bcea1490abc98292185",
+   "first_drift": null,
+   "gate": true,
+   "num_reference_rows": 0,
+   "output_sha256": "cb1e3d394ca2c4201f4cd44a89ff7a6331c671e8cf3740a008e5c5d7b98420b0",
+   "peak_memory_gib": 66.8,
+   "run_to_run_equal": true,
+   "secondary_equal": true,
+   "sequence_length": 16741,
+   "size": [
+    3552,
+    4736
+   ],
+   "source": "examples/request.t2i.json",
+   "stages_equal": {
+    "decode": true,
+    "denoise": true,
+    "media_preprocess": true,
+    "packed_layout": true,
+    "reference_conditioning": true,
+    "reference_encode": true,
+    "request": true,
+    "resize": true,
+    "schedule": true,
+    "text_conditions": true,
+    "unpack": true
+   },
+   "task": "t2i",
+   "text_rows": 313,
+   "text_seconds": {
+    "contract": 1.76,
+    "diffusers": 0.05
+   },
+   "trajectory_first_drift": null
+  },
+  "t2i_upscaled": {
+   "artifact_sha256": {
+    "diffusers": "c660f427c1969d2762afd2db475f7dcc12583b5e46a8d1252cb1c2596f0a6763",
+    "rl-kernel": "cc1f28eb6bb4a0b7cac64f42e4aaf1445284b5d62a2b8fd0ee6f04fd712a271a"
+   },
+   "canvas": [
+    1760,
+    2368
+   ],
+   "chain_seconds": {
+    "contract": 3.0,
+    "diffusers": 4.2
+   },
+   "final_latent_sha256": "98b7116e1bc5c08035a317e2ad24bf0770aea79ebc0c13586553cde5103b5eff",
+   "first_drift": null,
+   "gate": true,
+   "num_reference_rows": 0,
+   "output_sha256": "c984e2c48f8c248db7475eb2370319179e452fd8cb79e22e6e0cd09afd4682f0",
+   "peak_memory_gib": 64.7,
+   "run_to_run_equal": true,
+   "secondary_equal": true,
+   "sequence_length": 4383,
+   "size": [
+    768,
+    1024
+   ],
+   "source": "examples/request.t2i.json at 1024x768",
+   "stages_equal": {
+    "decode": true,
+    "denoise": true,
+    "media_preprocess": true,
+    "packed_layout": true,
+    "reference_conditioning": true,
+    "reference_encode": true,
+    "request": true,
+    "resize": true,
+    "schedule": true,
+    "text_conditions": true,
+    "unpack": true
+   },
+   "task": "t2i",
+   "text_rows": 313,
+   "text_seconds": {
+    "contract": 0.04,
+    "diffusers": 0.04
+   },
+   "trajectory_first_drift": null
+  }
+ },
+ "manifest": {
+  "contract_id": "h3-image-phase-b-full-chain-v1",
+  "gated_stages": [
+   "request",
+   "media_preprocess",
+   "text_conditions",
+   "reference_encode",
+   "reference_conditioning",
+   "packed_layout",
+   "schedule",
+   "denoise",
+   "unpack"
+  ],
+  "reference_short_edge": [
+   1024,
+   2048
+  ],
+  "schema": "rlkernel.h3_image.full_chain.v1",
+  "secondary_stages": [
+   "decode",
+   "resize"
+  ],
+  "sigmas_f32_hex": [
+   "0x1.0000000000000p+0",
+   "0x1.ef5f440000000p-1",
+   "0x1.c66cc20000000p-1",
+   "0x1.8000000000000p-1",
+   "0x1.10c7be0000000p-1",
+   "0x1.db27780000000p-3",
+   "0x0.0p+0"
+  ],
+  "stages": [
+   "request",
+   "media_preprocess",
+   "text_conditions",
+   "reference_encode",
+   "reference_conditioning",
+   "packed_layout",
+   "schedule",
+   "denoise",
+   "unpack",
+   "decode",
+   "resize"
+  ],
+  "vision_short_edge": [
+   1024,
+   1024
+  ]
+ },
+ "schema": "rlkernel.h3_image.full_chain_evidence.v1",
+ "text_encoder_load": {
+  "checkpoint_layers": 64,
+  "device": "cuda",
+  "dtype": "bfloat16",
+  "num_layers": 64,
+  "skipped_keys": 0
+ },
+ "transformer_parameter_dtypes": {
+  "torch.bfloat16": 33105770752,
+  "torch.float32": 19453632
+ }
+}

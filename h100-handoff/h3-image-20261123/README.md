@@ -11,6 +11,8 @@ None of the rows is a PR yet, so the code comes in the bundle. All tasks are **s
 
 **Added later the same day: T5** for a tenth row, `image_reference_conditioning`. It ships in a second, small bundle, `h3-image-t5-20261123.bundle`. T1–T4, the first bundle and their refs are unchanged; if they are already running or done, only add T5.
 
+**Added after that: T6**, for `phase_b_image_full_chain`: the whole T2I and edit chain on the released weights. It ships in a third bundle, `h3-image-t6-20261123.bundle`. It needs about 66 GB more weights (`transformer_diffusers/`) and `accelerate` in `<V>`. T1–T5 are unchanged.
+
 | Task | Code | Hardware | Environment | Time (est.) |
 |---|---|---|---|---|
 | **T1** suite at the integrated head, plus no new failures in `tests/models` | `refs/h100/h3-image-integrated` and `test-h3` `3f93cae8` | 1 H100 | `<E1>` and `<V>` | about 40 min |
@@ -18,6 +20,7 @@ None of the rows is a PR yet, so the code comes in the bundle. All tasks are **s
 | **T3** `image_vae_contract` evidence (parity, tiling, determinism, latency) | `refs/h100/h3-image-vae-contract` | 1 H100 | `<V>` | about 30 min |
 | **T4** `image_text_presentation_contract` evidence (sealed layer-50 fixtures) | `refs/h100/h3-image-text-presentation` | 1 H100 80 GB | `<V>` | about 30 min |
 | **T5** `image_reference_conditioning` tests, evidence and the real-VAE check | `refs/h100/h3-image-integrated-refcond` | 1 H100 | `<E1>` (build) and `<V>` | about 20 min |
+| **T6** `phase_b_image_full_chain` on the released weights, 4 fixtures, plus its tests | `refs/h100/h3-image-phase-b-full-chain` | 1 idle H100 80 GB | `<V>` + `accelerate` | about 30 min, plus the download |
 
 Paths are placeholders, as in the earlier rounds:
 - `<REPO>`: a clone of the fork;
@@ -52,9 +55,12 @@ git fetch <THIS_DIR>/h3-image-20261123.bundle 'refs/h100/*:refs/h100/*'
 # T5 only, after the first bundle:
 git bundle verify <THIS_DIR>/h3-image-t5-20261123.bundle
 git fetch <THIS_DIR>/h3-image-t5-20261123.bundle 'refs/h100/*:refs/h100/*'
+# T6 only, after the T5 bundle:
+git bundle verify <THIS_DIR>/h3-image-t6-20261123.bundle
+git fetch <THIS_DIR>/h3-image-t6-20261123.bundle 'refs/h100/*:refs/h100/*'
 ```
 
-`refs.txt` lists every ref with its commit. The first bundle's only prerequisite is `test-h3` `3f93cae8b`. The T5 bundle needs `e22c9d26` and `89061319`, both from the first bundle.
+`refs.txt` lists every ref with its commit. The first bundle's only prerequisite is `test-h3` `3f93cae8b`. The T5 bundle needs `e22c9d26` and `89061319`, both from the first bundle. The T6 bundle needs `be983dcc` from the T5 bundle.
 
 | Ref | Commit | Row |
 |---|---|---|
@@ -69,6 +75,7 @@ git fetch <THIS_DIR>/h3-image-t5-20261123.bundle 'refs/h100/*:refs/h100/*'
 | `refs/h100/h3-image-integrated` | `89061319` | all of the above merged (merge commits only, no new code) |
 | `refs/h100/h3-image-reference-conditioning` | `107726a7` | `image_reference_conditioning` (on the patch pack; T5 bundle) |
 | `refs/h100/h3-image-integrated-refcond` | `be983dcc` | `h3-image-integrated` plus the merge of the row above (T5 bundle) |
+| `refs/h100/h3-image-phase-b-full-chain` | `b4ef2ddc` | `phase_b_image_full_chain` on `h3-image-integrated-refcond` (T6 bundle) |
 
 ## Environment
 
@@ -230,6 +237,46 @@ CUDA_VISIBLE_DEVICES=0 PYTHONPATH=<W5> <V>/bin/python <THIS_DIR>/h3_image_refcon
   - **Rows from a CUDA generator** (`*-cuda_generator`) may differ from B200, because the CUDA generator's output can depend on the device. Those are reported, not compared. Within the H100 file, `cuda-cuda_generator` and `cuda_kernel-cuda_generator` should give the same digest.
 - **c.** `exit=0` and `all_green True`. In all 4 arms, the reference rows, target rows and final generator state equal Diffusers bitwise, and the rows stay fixed over the six steps. The four arms are default and pinned flags, each with a CPU and a CUDA generator. `rows_sha256` there depends on the GPU's VAE convolutions and is only reported.
 
+## T6. `phase_b_image_full_chain` on the released weights (`<V>`)
+
+The chain runs one T2I or edit request on the RL-Kernel contracts, from the prompt and reference images to the output bytes, and seals one artifact per stage. The pinned Diffusers modular pipeline runs block by block on the same loaded weights, and the two artifacts are compared stage by stage. The runner works in two phases:
+1. It loads the 64-layer Qwen3-VL once and computes the text for both arms, then frees it.
+2. It loads the transformer and the VAE.
+
+The four fixtures are the release's own examples:
+- `t2i_example`: `examples/request.t2i.json`, 4736x3552;
+- `t2i_upscaled`: the same prompt at 1024x768, so the canvas is upscaled and resized back;
+- `edit_example`: the `examples/edit.py` defaults: `reference1.png`, 4096x4096;
+- `edit_two_refs`: `reference1.png` plus `assets/showcase/photo.jpg`, 2048x2048.
+
+Extra setup, once. `from_pretrained` keeps the checkpoint's FP32 modules only when `accelerate` is installed:
+
+```bash
+<V>/bin/pip install --no-deps accelerate==1.16.0
+<V>/bin/python -c "from huggingface_hub import snapshot_download; snapshot_download('MiniMaxAI/MiniMax-H3-Image', revision='8ced60068623def5b74b4d10558117cb61d6482d', local_dir='<IMG>', allow_patterns=['transformer_diffusers/*', 'examples/*', 'assets/showcase/photo.jpg'])"
+```
+
+`transformer_diffusers/` is about 66 GB.
+
+```bash
+git worktree add --detach <W6> refs/h100/h3-image-phase-b-full-chain
+cd <W6>
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=<W6> <V>/bin/python tools/validation/models/h3_image_full_chain.py \
+  --root <IMG> --text-encoder-root <CKPT> --out <OUT>/T6/run --repeat > <OUT>/T6/evidence.log 2>&1; echo "exit=$?" >> <OUT>/T6/evidence.log
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=<W6> <V>/bin/python -m pytest -q -p no:cacheprovider -rs \
+  tests/models/minimax_h3_image/test_h3_image_full_chain.py > <OUT>/T6/pytest-full-chain.txt 2>&1
+```
+
+**Expected** (B200 values are in `reference/phase-b-summary-b200-b4ef2ddc4.json`):
+- **evidence.log.** `exit=0` and `all_gates_pass True`.
+- **Per fixture.** `gate` and `secondary_equal` are true and `first_drift` is null: RL-Kernel equals Diffusers at every stage on the same GPU, output bytes included. `run_to_run_equal` is true.
+- **Memory.** Peak memory on B200 was 64.7–67.2 GiB per fixture, so use an idle 80 GB card. Out of memory is a finding; send it as it is.
+- **Time.** On B200 the whole job took 8 minutes. Per fixture, the RL-Kernel chain took 3–15 s and Diffusers took 4–19 s.
+- **Digests.** H100 `final_latent_sha256` and `output_sha256` are expected to differ from B200, because BF16 matmuls are hardware-specific. The comparison is made here.
+- **Pytest.** `26 passed`.
+
+Send back `summary.json`, the eight `*.json` artifacts and both logs. Do **not** commit the `*.png` files: they are about 110 MB, and their bytes are hashed in the artifacts.
+
 ## Sending results back
 
 ```
@@ -237,7 +284,7 @@ results/
   SUMMARY.md       one line per task: command, exit code, headline numbers
   env.txt          torch / CUDA / driver / GPU name; nvidia-smi at the start of each task
   pip-list.txt     <V>, redacted
-  T1/ T2/ T3/ T4/ T5/  every file named above
+  T1/ T2/ T3/ T4/ T5/ T6/  every file named above (T6: no PNGs)
   not-green-attempts/
 ```
 
