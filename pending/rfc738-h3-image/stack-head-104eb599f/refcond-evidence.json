@@ -1,0 +1,404 @@
+{
+ "contract": {
+  "contract_id": "h3-image-reference-conditioning-v1",
+  "draw_order": [
+   "posterior[0..N-1]",
+   "target_noise",
+   "reference_noise[0..N-1]"
+  ],
+  "fixed_rows": "reference prefix of the image rows is byte-identical after every step",
+  "level": 0.999,
+  "level_f32_hex": "0x1.ff7cee0000000p-1",
+  "mix": "t * z + (1 - t) * noise, t an fp32 tensor (conditioning_noise_mix)",
+  "one_minus_level_f32_hex": "0x1.0624000000000p-10",
+  "rows": "patchify each noised reference at its own grid, concatenate in reference order",
+  "schema": "rlkernel.h3_image.reference_conditioning.v1"
+ },
+ "environment": {
+  "compute_capability": [
+   10,
+   0
+  ],
+  "cuda": "13.0",
+  "cuda_available": true,
+  "cuda_kernel": "available",
+  "device_name": "NVIDIA B200",
+  "python": "3.12.14",
+  "torch": "2.13.0+cu130"
+ },
+ "fixtures": {
+  "edit1": {
+   "cpu": {
+    "artifact_sha256": "13c56bd50f4082f74f5640073df0c7c65f28d922d5faa48caf213f3c95f64818",
+    "draw_order_sha256": "ea8d8a8738081a054f240aee11961ae6c424b374b149de05a8c657c9320dcfd6",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "eb3c5eaf53d6fa51dd195d8cd4e0111c46e2e3741a34376a437f5833e9b74539",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 1024,
+    "rows_sha256": "eb3c5eaf53d6fa51dd195d8cd4e0111c46e2e3741a34376a437f5833e9b74539"
+   },
+   "cuda-cpu_generator": {
+    "artifact_sha256": "0a80a23d48a892b94b46d57ad1efdfea2714b2db919de4aaad6f89d8279477f4",
+    "draw_order_sha256": "ea8d8a8738081a054f240aee11961ae6c424b374b149de05a8c657c9320dcfd6",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "eb3c5eaf53d6fa51dd195d8cd4e0111c46e2e3741a34376a437f5833e9b74539",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 1024,
+    "rows_sha256": "eb3c5eaf53d6fa51dd195d8cd4e0111c46e2e3741a34376a437f5833e9b74539"
+   },
+   "cuda-cuda_generator": {
+    "artifact_sha256": "8cd928155b07c101f3b411d137ca6dfba34aa421c9e4f37a6a6041c885bbf03b",
+    "draw_order_sha256": "ea8d8a8738081a054f240aee11961ae6c424b374b149de05a8c657c9320dcfd6",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "9c58c9ab3dc76a99a5107c8be9fbbf438948c617b073cdb7a9cd346e288b432b",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 1024,
+    "rows_sha256": "9c58c9ab3dc76a99a5107c8be9fbbf438948c617b073cdb7a9cd346e288b432b"
+   },
+   "cuda_kernel-cpu_generator": {
+    "artifact_sha256": "ea875062caaf88e25684abb14bec70fa57074da8e6593d06d54d246824e2da07",
+    "draw_order_sha256": "ea8d8a8738081a054f240aee11961ae6c424b374b149de05a8c657c9320dcfd6",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "eb3c5eaf53d6fa51dd195d8cd4e0111c46e2e3741a34376a437f5833e9b74539",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 1024,
+    "rows_sha256": "eb3c5eaf53d6fa51dd195d8cd4e0111c46e2e3741a34376a437f5833e9b74539"
+   },
+   "cuda_kernel-cuda_generator": {
+    "artifact_sha256": "deb653e86d5fb2104ff4b974b72f0b4d3b0e73cc4f449a2ac68e037c10707edc",
+    "draw_order_sha256": "ea8d8a8738081a054f240aee11961ae6c424b374b149de05a8c657c9320dcfd6",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "9c58c9ab3dc76a99a5107c8be9fbbf438948c617b073cdb7a9cd346e288b432b",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 1024,
+    "rows_sha256": "9c58c9ab3dc76a99a5107c8be9fbbf438948c617b073cdb7a9cd346e288b432b"
+   },
+   "refs": [
+    [
+     64,
+     64
+    ]
+   ],
+   "target": [
+    64,
+    64
+   ]
+  },
+  "edit2": {
+   "cpu": {
+    "artifact_sha256": "eb3dfa560dc3fdedb333e673b5bd7d8b3d494922556786cac8f8f4b3da353048",
+    "draw_order_sha256": "dd7d97b2adb9d012c5f317386d10234d2404f595ff1d30301df31e58944d7465",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "3b1c0fdd57b606eb11936f6fc5eb5351f7f50f423bd4d703d276b318349b89e4",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 12,
+    "rows_sha256": "3b1c0fdd57b606eb11936f6fc5eb5351f7f50f423bd4d703d276b318349b89e4"
+   },
+   "cuda-cpu_generator": {
+    "artifact_sha256": "0ec0510f9ba138f0935d5e2f7a0eda6fadab33d7addd09f9ef3a6f3223a3d7a6",
+    "draw_order_sha256": "dd7d97b2adb9d012c5f317386d10234d2404f595ff1d30301df31e58944d7465",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "3b1c0fdd57b606eb11936f6fc5eb5351f7f50f423bd4d703d276b318349b89e4",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 12,
+    "rows_sha256": "3b1c0fdd57b606eb11936f6fc5eb5351f7f50f423bd4d703d276b318349b89e4"
+   },
+   "cuda-cuda_generator": {
+    "artifact_sha256": "12a6e52fa677d45bd01ce3ee02d4030c3dd99293e0db06305fca8d6bfd20207a",
+    "draw_order_sha256": "dd7d97b2adb9d012c5f317386d10234d2404f595ff1d30301df31e58944d7465",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "a02a21121f57717c2fce9a63a5155218ed6d2373fe351c657dc93bfa17949812",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 12,
+    "rows_sha256": "a02a21121f57717c2fce9a63a5155218ed6d2373fe351c657dc93bfa17949812"
+   },
+   "cuda_kernel-cpu_generator": {
+    "artifact_sha256": "874b9603e07354272c4235ecb657616dba4200d6bfde001d0efa9de107fb8cc0",
+    "draw_order_sha256": "dd7d97b2adb9d012c5f317386d10234d2404f595ff1d30301df31e58944d7465",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "3b1c0fdd57b606eb11936f6fc5eb5351f7f50f423bd4d703d276b318349b89e4",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 12,
+    "rows_sha256": "3b1c0fdd57b606eb11936f6fc5eb5351f7f50f423bd4d703d276b318349b89e4"
+   },
+   "cuda_kernel-cuda_generator": {
+    "artifact_sha256": "010b931446fcba717299d1733543b5cac8c7aafa447a4d7b46595eb6ff3260ae",
+    "draw_order_sha256": "dd7d97b2adb9d012c5f317386d10234d2404f595ff1d30301df31e58944d7465",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "a02a21121f57717c2fce9a63a5155218ed6d2373fe351c657dc93bfa17949812",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 12,
+    "rows_sha256": "a02a21121f57717c2fce9a63a5155218ed6d2373fe351c657dc93bfa17949812"
+   },
+   "refs": [
+    [
+     4,
+     6
+    ],
+    [
+     2,
+     12
+    ]
+   ],
+   "target": [
+    6,
+    8
+   ]
+  },
+  "edit3": {
+   "cpu": {
+    "artifact_sha256": "3f8e2c4d0d011e0c1268ac56a7e0a8c8af4dbadb494fff2748b222bf9128aca5",
+    "draw_order_sha256": "8c88ccd8992d61980f679e259105aa062870f50574943b67d94a36d4c0628bfd",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "8ac6ccd9c7145e617763b247be3e29454985ee0e656d83445408dc2f0d8f4591",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 747,
+    "rows_sha256": "8ac6ccd9c7145e617763b247be3e29454985ee0e656d83445408dc2f0d8f4591"
+   },
+   "cuda-cpu_generator": {
+    "artifact_sha256": "6fc96d8c3a82b4f666281633b6b23895735850da0015f8fe833c8fece86eaffd",
+    "draw_order_sha256": "8c88ccd8992d61980f679e259105aa062870f50574943b67d94a36d4c0628bfd",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "8ac6ccd9c7145e617763b247be3e29454985ee0e656d83445408dc2f0d8f4591",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 747,
+    "rows_sha256": "8ac6ccd9c7145e617763b247be3e29454985ee0e656d83445408dc2f0d8f4591"
+   },
+   "cuda-cuda_generator": {
+    "artifact_sha256": "93fc2252b2c6f923af0c5f6405286da93c6e205a65b401687dfe87cf0ef783c2",
+    "draw_order_sha256": "8c88ccd8992d61980f679e259105aa062870f50574943b67d94a36d4c0628bfd",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "95e25d1c1c5bb87514aa21b7c3de03cb7989309ebca0c166f83adf4af60c55b9",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 747,
+    "rows_sha256": "95e25d1c1c5bb87514aa21b7c3de03cb7989309ebca0c166f83adf4af60c55b9"
+   },
+   "cuda_kernel-cpu_generator": {
+    "artifact_sha256": "4b399894cd1103465c4713f7c354cc987d49507a26d35ee0f9e31cb59854bcdd",
+    "draw_order_sha256": "8c88ccd8992d61980f679e259105aa062870f50574943b67d94a36d4c0628bfd",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "8ac6ccd9c7145e617763b247be3e29454985ee0e656d83445408dc2f0d8f4591",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 747,
+    "rows_sha256": "8ac6ccd9c7145e617763b247be3e29454985ee0e656d83445408dc2f0d8f4591"
+   },
+   "cuda_kernel-cuda_generator": {
+    "artifact_sha256": "0de217fd5b68baac8f7f8d0fe5b90b9ff60607d887566fa896ad94f82c2e0c10",
+    "draw_order_sha256": "8c88ccd8992d61980f679e259105aa062870f50574943b67d94a36d4c0628bfd",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "95e25d1c1c5bb87514aa21b7c3de03cb7989309ebca0c166f83adf4af60c55b9",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 747,
+    "rows_sha256": "95e25d1c1c5bb87514aa21b7c3de03cb7989309ebca0c166f83adf4af60c55b9"
+   },
+   "refs": [
+    [
+     4,
+     6
+    ],
+    [
+     2,
+     12
+    ],
+    [
+     30,
+     98
+    ]
+   ],
+   "target": [
+    62,
+    98
+   ]
+  },
+  "hires2": {
+   "cpu": {
+    "artifact_sha256": "f733bfcb7cf0a5aa83932369cef62a031f360f7dfaf240d294049ce9264e999b",
+    "draw_order_sha256": "fbbca28dc5e409c4f7b6c641385fd733108e865cc9435e00da882e3508bdf607",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "eaa3cb910b90a15c9dd62b224ce9eb4ea77556b83609b3ff5a3a37306d280e0c",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 4096,
+    "rows_sha256": "eaa3cb910b90a15c9dd62b224ce9eb4ea77556b83609b3ff5a3a37306d280e0c"
+   },
+   "cuda-cpu_generator": {
+    "artifact_sha256": "bf4b7390958d7ba96d3018cc784c610f8c13bc1e88df6895eb9a1871b2d623e6",
+    "draw_order_sha256": "fbbca28dc5e409c4f7b6c641385fd733108e865cc9435e00da882e3508bdf607",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "eaa3cb910b90a15c9dd62b224ce9eb4ea77556b83609b3ff5a3a37306d280e0c",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 4096,
+    "rows_sha256": "eaa3cb910b90a15c9dd62b224ce9eb4ea77556b83609b3ff5a3a37306d280e0c"
+   },
+   "cuda-cuda_generator": {
+    "artifact_sha256": "9cedb0b2d3eacbbb9febd84c44e6b430b75a5953097fd096cf526fe258f4d9f7",
+    "draw_order_sha256": "fbbca28dc5e409c4f7b6c641385fd733108e865cc9435e00da882e3508bdf607",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "6a5131537d3b45286d54e9ceeaf427fdc5a195b5e22c0368d5d54a3a6a010be7",
+     "steps": 6
+    },
+    "mix_backend": "NativeConditioningNoiseMixOp",
+    "num_reference_rows": 4096,
+    "rows_sha256": "6a5131537d3b45286d54e9ceeaf427fdc5a195b5e22c0368d5d54a3a6a010be7"
+   },
+   "cuda_kernel-cpu_generator": {
+    "artifact_sha256": "da19d6542c01c5b2d8c2290b4310d47304162b0f050af2586241434a85f7560e",
+    "draw_order_sha256": "fbbca28dc5e409c4f7b6c641385fd733108e865cc9435e00da882e3508bdf607",
+    "equals_cpu_cpu_generator": true,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "eaa3cb910b90a15c9dd62b224ce9eb4ea77556b83609b3ff5a3a37306d280e0c",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 4096,
+    "rows_sha256": "eaa3cb910b90a15c9dd62b224ce9eb4ea77556b83609b3ff5a3a37306d280e0c"
+   },
+   "cuda_kernel-cuda_generator": {
+    "artifact_sha256": "93bbcf788c9ff9664adc7a9648b55b115db1f19bb617fb967d86ea44fefb9849",
+    "draw_order_sha256": "fbbca28dc5e409c4f7b6c641385fd733108e865cc9435e00da882e3508bdf607",
+    "equals_cpu_cpu_generator": false,
+    "loop": {
+     "guard": "passed",
+     "reference_rows_sha256": "6a5131537d3b45286d54e9ceeaf427fdc5a195b5e22c0368d5d54a3a6a010be7",
+     "steps": 6
+    },
+    "mix_backend": "ConditioningNoiseMixCudaOp",
+    "num_reference_rows": 4096,
+    "rows_sha256": "6a5131537d3b45286d54e9ceeaf427fdc5a195b5e22c0368d5d54a3a6a010be7"
+   },
+   "refs": [
+    [
+     64,
+     64
+    ],
+    [
+     128,
+     96
+    ]
+   ],
+   "target": [
+    128,
+    128
+   ]
+  }
+ },
+ "probes": {
+  "I12": {
+   "elements": 71712,
+   "elements_changed": 71712,
+   "ledger": "tripped",
+   "max_abs": 0.005722522735595703,
+   "rows": 747,
+   "rows_changed": 747
+  },
+  "I13_clean": {
+   "elements": 71712,
+   "elements_changed": 71712,
+   "level": 1.0,
+   "max_abs": 0.0065860748291015625,
+   "rows": 747,
+   "rows_changed": 747
+  },
+  "I13_resample": {
+   "guard": "tripped",
+   "message": "step 3: 747 of 747 reference rows changed; first is row 0 (reference 0), max |diff| 6.340808868408203",
+   "step": 3
+  },
+  "I13_schedule_t": {
+   "elements": 71712,
+   "elements_changed": 71712,
+   "level": 0.03247630596160889,
+   "max_abs": 6.365579128265381,
+   "rows": 747,
+   "rows_changed": 747
+  },
+  "I14": {
+   "guard": "tripped",
+   "message": "step 0: 747 of 747 reference rows changed; first is row 0 (reference 0), max |diff| 0.14503633975982666",
+   "step": 0
+  },
+  "python_float_level": {
+   "elements": 71712,
+   "elements_changed": 20289,
+   "max_abs": 2.384185791015625e-07,
+   "rows": 747,
+   "rows_changed": 747
+  },
+  "released_loop": {
+   "guard": "passed",
+   "reference_rows_sha256": "8ac6ccd9c7145e617763b247be3e29454985ee0e656d83445408dc2f0d8f4591",
+   "steps": 6
+  }
+ },
+ "schema": "rlkernel.h3_image.reference_conditioning_evidence.v1"
+}

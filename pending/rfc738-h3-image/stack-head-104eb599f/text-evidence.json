@@ -1,0 +1,315 @@
+{
+  "manifest": {
+    "contract_id": "h3-image-text-presentation-v1",
+    "model_id": "MiniMaxAI/MiniMax-H3-Image",
+    "revision": "8ced60068623def5b74b4d10558117cb61d6482d",
+    "diffusers_commit": "875373ac7f5856071e345a3e394c74efccc6b9e6",
+    "diffusers_reference_files": {
+      "src/diffusers/modular_pipelines/minimax_h3_image/encoders.py": "e4ddd0e51d9be072575f5efbb607d3d3238cb40b1274b75c487b294d0f80fe9c",
+      "src/diffusers/modular_pipelines/minimax_h3_image/before_encoder.py": "2e6a2012045656c1e91561b148f59fa2a027afd1da336938ab0f3a67d2224ef5",
+      "src/diffusers/modular_pipelines/minimax_h3_image/modular_pipeline.py": "7ecdae21bf754f6733a78bcfe6a35f29fbfe87cd39f45bf91b33b6d57e50543d"
+    },
+    "diffusers_reference_steps": {
+      "text2image": "MiniMaxH3ImageTextEncoderStep",
+      "image_conditioned": "MiniMaxH3ImageEditTextEncoderStep"
+    },
+    "text_encoder": {
+      "inherited_from": "MiniMaxAI/MiniMax-H3@42ed227ee7df40d41602854ae760620d6eb651fe",
+      "contract": "h3-qwen3vl-layer50-v1",
+      "layer": 50,
+      "feature_width": 5120
+    },
+    "max_sequence_length": 4096,
+    "label_template": "Picture {index}: ",
+    "tags": {
+      "image": 0,
+      "text": 1
+    },
+    "special_tokens": {
+      "<|vision_start|>": 151652,
+      "<|vision_end|>": 151653,
+      "<|image_pad|>": 151655,
+      "<|video_pad|>": 151656
+    }
+  },
+  "inherited_text_encoder_sha256": "fa3a3ec973b6530cc0be32ed4c158376ed50ab3846a3ce101d1941e2a580951d",
+  "presentation_files": {
+    "processor/chat_template.json": "5c72a170d2a4a1a3bc5adad2e689ae28138a9700e5b8c96c0266331e86c0acce",
+    "processor/merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+    "processor/preprocessor_config.json": "27225450ac9c6529872ee1924fcb0962ff5634834f817040f444118116f4e516",
+    "processor/tokenizer.json": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+    "processor/tokenizer_config.json": "a07e942ac874baa13758de8d1fbdb186683cc03416b5589e1b6671c6b3057c68",
+    "processor/video_preprocessor_config.json": "7768af27c1fafa9cc9011c1dc20067e03f8915e03b63504550e11d5066986d13",
+    "processor/vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910",
+    "tokenizer/merges.txt": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3",
+    "tokenizer/tokenizer.json": "a5d85b6dcc535e6b93115a9ef287e6132fdbf30270da6218194ba742261173c7",
+    "tokenizer/tokenizer_config.json": "a07e942ac874baa13758de8d1fbdb186683cc03416b5589e1b6671c6b3057c68",
+    "tokenizer/vocab.json": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+  },
+  "diffusers_files": {
+    "src/diffusers/modular_pipelines/minimax_h3_image/encoders.py": "e4ddd0e51d9be072575f5efbb607d3d3238cb40b1274b75c487b294d0f80fe9c",
+    "src/diffusers/modular_pipelines/minimax_h3_image/before_encoder.py": "2e6a2012045656c1e91561b148f59fa2a027afd1da336938ab0f3a67d2224ef5",
+    "src/diffusers/modular_pipelines/minimax_h3_image/modular_pipeline.py": "7ecdae21bf754f6733a78bcfe6a35f29fbfe87cd39f45bf91b33b6d57e50543d"
+  },
+  "env": {
+    "device_key": "sm_100|torch 2.13.0+cu130|transformers 5.17.0",
+    "gpu": "NVIDIA B200",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "transformers": "5.17.0",
+    "diffusers": "0.42.0.dev0",
+    "python": "3.12.14",
+    "runtime": {
+      "matmul_allow_tf32": false,
+      "matmul_allow_bf16_reduced_precision_reduction": true,
+      "matmul_allow_fp16_reduced_precision_reduction": true,
+      "cudnn_allow_tf32": true,
+      "cudnn_deterministic": false,
+      "cudnn_benchmark": false,
+      "sdpa_flash": true,
+      "sdpa_mem_efficient": true,
+      "sdpa_math": true,
+      "sdpa_cudnn": true
+    }
+  },
+  "text_encoder_files": {
+    "count": 23,
+    "seconds": 109.0,
+    "pin": "h3-qwen3vl-layer50-v1 (MiniMaxAI/MiniMax-H3)"
+  },
+  "full_model_load": {
+    "num_layers": 64,
+    "checkpoint_layers": 64,
+    "skipped_keys": 0,
+    "dtype": "bfloat16",
+    "device": "cuda"
+  },
+  "probes": {
+    "I9_swap_reference_order": {
+      "token_ids_differ": true,
+      "same_shape": true,
+      "bitwise_equal": false,
+      "max_abs": 20550.0,
+      "rows_differing": 3951
+    },
+    "I19_chat_template": {
+      "rows": 43,
+      "same_shape": false,
+      "shapes": [
+        [
+          1,
+          43,
+          5120
+        ],
+        [
+          1,
+          38,
+          5120
+        ]
+      ]
+    },
+    "I19_add_special_tokens": {
+      "ids_equal_release": true,
+      "note": "the released tokenizer adds no BOS/EOS, so this policy change is a no-op"
+    },
+    "I19_truncate_4095": {
+      "rows": 4095,
+      "same_shape": false,
+      "shapes": [
+        [
+          1,
+          4095,
+          5120
+        ],
+        [
+          1,
+          4096,
+          5120
+        ]
+      ],
+      "shared_prefix": {
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      }
+    },
+    "I19_truncate_4097": {
+      "rows": 4097,
+      "same_shape": false,
+      "shapes": [
+        [
+          1,
+          4097,
+          5120
+        ],
+        [
+          1,
+          4096,
+          5120
+        ]
+      ],
+      "shared_prefix": {
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      }
+    },
+    "I19_prompt_before_references": {
+      "rows": 3957,
+      "same_shape": true,
+      "bitwise_equal": false,
+      "max_abs": 20560.0,
+      "rows_differing": 3957
+    }
+  },
+  "stack_load": {
+    "num_layers": 50,
+    "checkpoint_layers": 64,
+    "skipped_keys": 154,
+    "dtype": "bfloat16",
+    "device": "cuda"
+  },
+  "stack_peak_gib": 50.59,
+  "cases": {
+    "t2i": {
+      "cpu_digests_match_sealed": true,
+      "token_ids_equal_diffusers": true,
+      "tags_equal_diffusers": true,
+      "vision_inputs_equal_diffusers": true,
+      "num_rows": 38,
+      "diffusers": {
+        "shape": [
+          1,
+          38,
+          5120
+        ],
+        "dtype": "bfloat16",
+        "sha256": "0baff003b3679391dd2ad90a1004464f03d5c3cedb22da78439a6ea6042d4e73",
+        "ms": 5785.9
+      },
+      "contract_full_model": {
+        "sha256": "0baff003b3679391dd2ad90a1004464f03d5c3cedb22da78439a6ea6042d4e73",
+        "ms": 24.4,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      },
+      "contract_50_layer_stack": {
+        "sha256": "0baff003b3679391dd2ad90a1004464f03d5c3cedb22da78439a6ea6042d4e73",
+        "ms": 28.6,
+        "repeat_bitwise_equal": true,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      }
+    },
+    "t2i_truncated": {
+      "cpu_digests_match_sealed": true,
+      "token_ids_equal_diffusers": true,
+      "tags_equal_diffusers": true,
+      "vision_inputs_equal_diffusers": true,
+      "num_rows": 4096,
+      "diffusers": {
+        "shape": [
+          1,
+          4096,
+          5120
+        ],
+        "dtype": "bfloat16",
+        "sha256": "575d12f12767e013dcd19d7acfa65e2f472249643f3c5c2e9bbb1b713f05f200",
+        "ms": 585.0
+      },
+      "contract_full_model": {
+        "sha256": "575d12f12767e013dcd19d7acfa65e2f472249643f3c5c2e9bbb1b713f05f200",
+        "ms": 319.3,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      },
+      "contract_50_layer_stack": {
+        "sha256": "575d12f12767e013dcd19d7acfa65e2f472249643f3c5c2e9bbb1b713f05f200",
+        "ms": 323.7,
+        "repeat_bitwise_equal": true,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      }
+    },
+    "edit": {
+      "cpu_digests_match_sealed": true,
+      "token_ids_equal_diffusers": true,
+      "tags_equal_diffusers": true,
+      "vision_inputs_equal_diffusers": true,
+      "num_rows": 3957,
+      "diffusers": {
+        "shape": [
+          1,
+          3957,
+          5120
+        ],
+        "dtype": "bfloat16",
+        "sha256": "482935d7ae4401a3cc19212360735a69b27c1e881a4820982a326b7f0853de82",
+        "ms": 1766.2
+      },
+      "contract_full_model": {
+        "sha256": "482935d7ae4401a3cc19212360735a69b27c1e881a4820982a326b7f0853de82",
+        "ms": 406.0,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      },
+      "contract_50_layer_stack": {
+        "sha256": "482935d7ae4401a3cc19212360735a69b27c1e881a4820982a326b7f0853de82",
+        "ms": 396.3,
+        "repeat_bitwise_equal": true,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      }
+    },
+    "edit_swapped": {
+      "cpu_digests_match_sealed": true,
+      "token_ids_equal_diffusers": true,
+      "tags_equal_diffusers": true,
+      "vision_inputs_equal_diffusers": true,
+      "num_rows": 3957,
+      "diffusers": {
+        "shape": [
+          1,
+          3957,
+          5120
+        ],
+        "dtype": "bfloat16",
+        "sha256": "85e60733c236300e7366ac4d53a1e81275d70937ad33d73a2f7690f5b1388e76",
+        "ms": 513.2
+      },
+      "contract_full_model": {
+        "sha256": "85e60733c236300e7366ac4d53a1e81275d70937ad33d73a2f7690f5b1388e76",
+        "ms": 393.2,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      },
+      "contract_50_layer_stack": {
+        "sha256": "85e60733c236300e7366ac4d53a1e81275d70937ad33d73a2f7690f5b1388e76",
+        "ms": 431.0,
+        "repeat_bitwise_equal": true,
+        "same_shape": true,
+        "bitwise_equal": true,
+        "max_abs": 0.0,
+        "rows_differing": 0
+      }
+    }
+  },
+  "all_equal_diffusers": true,
+  "all_cpu_digests_match_sealed": true
+}
