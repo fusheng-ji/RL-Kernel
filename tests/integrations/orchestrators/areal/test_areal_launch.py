@@ -90,6 +90,22 @@ def test_native_sync_arm_is_stock_and_async_native_only_observes(tmp_path):
     assert config["rollout"]["max_head_offpolicyness"] == 2
 
 
+def test_native_observe_adds_metrics_to_the_sync_native_arm_only(tmp_path):
+    spec = _spec(native_observe=True)
+    env = launch.arm_environment(spec, "native", readback_dir=tmp_path, stats_path=tmp_path / "s")
+    config = launch.build_config(BASE, spec, "native", arm_dir=tmp_path, env_vars=env,
+                                 trial_name="t")
+    assert env["RL_KERNEL_AREAL_MODE"] == "observe"
+    assert config["actor"]["scheduling_spec"][0]["cmd"] == launch.WORKER_CMD
+    assert config["rollout"]["max_head_offpolicyness"] == 0
+    assert not any(key.startswith("RL_KERNEL_")
+                   and key not in ("RL_KERNEL_AREAL_STATS_JSONL", "RL_KERNEL_AREAL_MODE")
+                   for key in env)
+    rlkernel = launch.arm_environment(spec, "rlkernel", readback_dir=tmp_path,
+                                      stats_path=tmp_path / "s")
+    assert rlkernel["RL_KERNEL_AREAL_MODE"] == "strict"
+
+
 def test_spec_validation_and_cp_backend():
     assert _spec(train_cp=2, train_tp=4, rollout_tp=0, rollout_dp=0).actor_backend() == (
         "megatron:d1p1t4c2"

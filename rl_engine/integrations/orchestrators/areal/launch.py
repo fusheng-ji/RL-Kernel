@@ -80,6 +80,8 @@ class ExperimentSpec:
     extra_env: Mapping[str, str] = field(default_factory=dict)
     # Actor versions profiled with torch.profiler on rank 0 (both arms); empty = off.
     profile_steps: tuple[int, ...] = ()
+    # Same-version consistency metrics on the native arm in sync mode too (numerics unchanged).
+    native_observe: bool = False
 
     def validate(self) -> None:
         if self.mode not in (MODE_SYNC, MODE_ASYNC):
@@ -188,12 +190,12 @@ def _scheduling_spec(base: Any, *, cmd: str, env_vars: Mapping[str, str]) -> lis
     return [first]
 
 
-def worker_mode(arm: str, mode: str) -> str | None:
+def worker_mode(arm: str, mode: str, native_observe: bool = False) -> str | None:
     """Adapter mode for the actor workers of one arm."""
 
     if arm == ARM_RLKERNEL:
         return "strict"
-    if arm == ARM_NATIVE and mode == MODE_ASYNC:
+    if arm == ARM_NATIVE and (mode == MODE_ASYNC or native_observe):
         return "observe"  # native numerics, same-version metrics only
     return None
 
@@ -216,7 +218,7 @@ def arm_environment(
     overrides = vllm_server_overrides(spec)
     if overrides:
         env[VLLM_SERVER_ARGS_ENV] = json.dumps(overrides, separators=(",", ":"))
-    mode = worker_mode(arm, spec.mode)
+    mode = worker_mode(arm, spec.mode, spec.native_observe)
     if mode is not None:
         env["RL_KERNEL_AREAL_MODE"] = mode
     if arm == ARM_NATIVE:
@@ -326,7 +328,7 @@ def build_config(
     # The example config has no ref model when kl_ctl == 0; drop it to keep
     # AReaL's shared compute_logp metric free of reference-model scoring.
     config.pop("ref", None)
-    mode = worker_mode(arm, spec.mode)
+    mode = worker_mode(arm, spec.mode, spec.native_observe)
     # The profiler is installed by the RL-Kernel worker, which runs AReaL's RPC
     # server unchanged when no adapter mode is selected.
     actor_cmd = WORKER_CMD if mode is not None or spec.profile_steps else DEFAULT_RPC_CMD

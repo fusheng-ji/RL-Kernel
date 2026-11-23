@@ -333,6 +333,7 @@ def _spec_from_args(args: argparse.Namespace) -> launch.ExperimentSpec:
         profile_steps=tuple(
             sorted({int(item) for item in (args.profile_steps or "").split(",") if item})
         ),
+        native_observe=args.native_observe,
     )
 
 
@@ -620,6 +621,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--env", action="append", help="extra KEY=VALUE for the RL-Kernel arm")
     run.add_argument("--profile-steps", default="",
                      help="comma-separated actor versions to torch.profile on rank 0 (both arms)")
+    run.add_argument("--native-observe", action="store_true",
+                     help="add the same-version consistency metrics to the native arm in sync "
+                          "mode as well (async native arms always observe); numerics unchanged")
     run.add_argument("--dataset-path",
                      help="local GSM8K dataset (default: openai/gsm8k from the HF hub)")
     run.add_argument("--base-config", help=f"default: <areal-root>/{launch.DEFAULT_CONFIG}")

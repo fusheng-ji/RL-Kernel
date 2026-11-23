@@ -50,7 +50,8 @@ In `RL_KERNEL_AREAL_MODE=strict` the worker:
 
 `RL_KERNEL_AREAL_MODE=observe` only adds the metrics (native numerics); the
 native arm of an asynchronous comparison uses it so both arms report the same
-breakdown. The native arm of a synchronous comparison runs stock AReaL.
+breakdown. The native arm of a synchronous comparison runs stock AReaL, unless
+`verify run --native-observe` is given, which switches it to observe as well.
 
 ## Supported scope
 
