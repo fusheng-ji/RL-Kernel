@@ -91,6 +91,39 @@ def test_install_overrides_wraps_areal_build_args(monkeypatch):
     }
 
 
+def test_parse_role_resources():
+    assert run_trainer.parse_role_resources(" actor=a_node , rollout=r_node,") == {
+        "actor": "a_node", "rollout": "r_node",
+    }
+    for raw in ("actor", "=a_node", "actor=", " , "):
+        with pytest.raises(SystemExit):
+            run_trainer.parse_role_resources(raw)
+
+
+def test_install_ray_role_resources_pins_only_the_named_role(monkeypatch):
+    calls = []
+
+    class FakeScheduler:
+        def _create_placement_group(self, role, bundles, timeout):
+            calls.append((role, bundles, timeout))
+
+    ray_module = types.ModuleType("areal.infra.scheduler.ray")
+    ray_module.RayScheduler = FakeScheduler
+    for name in ("areal", "areal.infra", "areal.infra.scheduler"):
+        monkeypatch.setitem(sys.modules, name, types.ModuleType(name))
+    monkeypatch.setitem(sys.modules, "areal.infra.scheduler.ray", ray_module)
+    run_trainer.install_ray_role_resources("actor=a_node")
+    run_trainer.install_ray_role_resources("actor=a_node")  # idempotent
+    bundles = [{"GPU": 1, "CPU": 4}]
+    FakeScheduler()._create_placement_group("actor", bundles, 30.0)
+    FakeScheduler()._create_placement_group("rollout", bundles, 30.0)
+    assert calls == [
+        ("actor", [{"GPU": 1, "CPU": 4, "a_node": 0.001}], 30.0),
+        ("rollout", [{"GPU": 1, "CPU": 4}], 30.0),
+    ]
+    assert bundles == [{"GPU": 1, "CPU": 4}]
+
+
 def _write_arm(arm_dir, *, arm, execution, rollout, log_lines, mode="sync"):
     arm_dir.mkdir(parents=True)
     rows = []

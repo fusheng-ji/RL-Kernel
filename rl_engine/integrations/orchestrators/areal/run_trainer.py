@@ -34,6 +34,11 @@ VLLM_SERVER_ARGS_ENV = "RL_KERNEL_AREAL_VLLM_SERVER_ARGS"
 # Not RL_KERNEL_-prefixed on purpose: it is a launch-environment setting, not a numeric
 # switch, so the verifier does not scrub it and both arms get the same value.
 WORKERS_READY_TIMEOUT_ENV = "RLK_AREAL_WORKERS_READY_TIMEOUT"
+# "role=resource[,role=resource]": every Ray placement-group bundle of that role also
+# requests a sliver of the custom resource, so the role only lands on nodes whose
+# raylet was started with it (e.g. keep the actor off the node running the driver).
+RAY_ROLE_RESOURCES_ENV = "RLK_AREAL_RAY_ROLE_RESOURCES"
+_ROLE_RESOURCE_AMOUNT = 0.001
 
 
 def _plain(value: Any) -> Any:
@@ -135,6 +140,47 @@ def install_workers_ready_timeout(raw: str) -> float:
     return seconds
 
 
+def parse_role_resources(raw: str) -> dict[str, str]:
+    roles: dict[str, str] = {}
+    for item in raw.split(","):
+        item = item.strip()
+        if not item:
+            continue
+        role, sep, resource = item.partition("=")
+        if not sep or not role.strip() or not resource.strip():
+            raise SystemExit(
+                f"{RAY_ROLE_RESOURCES_ENV} entries must be role=resource, got {item!r}"
+            )
+        roles[role.strip()] = resource.strip()
+    if not roles:
+        raise SystemExit(f"{RAY_ROLE_RESOURCES_ENV} is set but empty")
+    return roles
+
+
+def pin_bundles(bundles: list[dict[str, Any]], resource: str) -> list[dict[str, Any]]:
+    return [{**bundle, resource: _ROLE_RESOURCE_AMOUNT} for bundle in bundles]
+
+
+def install_ray_role_resources(raw: str) -> dict[str, str]:
+    roles = parse_role_resources(raw)
+    from areal.infra.scheduler.ray import RayScheduler
+
+    original = RayScheduler._create_placement_group
+    if getattr(original, "__rl_kernel_role_resources__", None) is not None:
+        return roles
+
+    def _create_placement_group(self: Any, role: str, bundles: list, timeout: float) -> Any:
+        resource = roles.get(role)
+        if resource is not None:
+            bundles = pin_bundles(bundles, resource)
+        return original(self, role, bundles, timeout)
+
+    _create_placement_group.__rl_kernel_role_resources__ = roles  # type: ignore[attr-defined]
+    RayScheduler._create_placement_group = _create_placement_group
+    print(f"[RL-Kernel][areal] Ray role resources: {json.dumps(roles)}", flush=True)
+    return roles
+
+
 def main(argv: list[str] | None = None) -> None:
     args = list(sys.argv[1:] if argv is None else argv)
     if not args or not args[0].endswith(".py"):
@@ -149,6 +195,9 @@ def main(argv: list[str] | None = None) -> None:
     timeout = os.getenv(WORKERS_READY_TIMEOUT_ENV, "").strip()
     if timeout:
         install_workers_ready_timeout(timeout)
+    role_resources = os.getenv(RAY_ROLE_RESOURCES_ENV, "").strip()
+    if role_resources:
+        install_ray_role_resources(role_resources)
     script = args[0]
     sys.argv = [script, *args[1:]]
     sys.path.insert(0, str(Path(script).resolve().parent))

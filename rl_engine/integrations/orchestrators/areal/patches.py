@@ -25,14 +25,20 @@ import contextvars
 import functools
 import os
 from types import ModuleType
+from collections.abc import Mapping
 from typing import Any
 
 from rl_engine.integrations.orchestrators.areal import contract
 from rl_engine.integrations.orchestrators.areal.hooks import when_imported
+from rl_engine.integrations.orchestrators.areal.launch import NATIVE_ROPE_FUSION_ENV
 
 ACTOR_MODULE = "areal.trainer.ppo.actor"
 ENGINE_MODULE = "areal.engine.megatron_engine"
+_ATTENTION_MODULE = "megatron.core.transformer.attention"
+_TRANSFORMER_CONFIG_MODULE = "megatron.core.transformer.transformer_config"
 _ENGINE_MARKER = "__rl_kernel_areal_strict__"
+_NATIVE_ROPE_FUSION_CHECK = "__rlk_native_rope_fusion_check__"
+_NATIVE_ROPE_LOG = "__rlk_native_rope_fusion_log__"
 _CURRENT_ENGINE: contextvars.ContextVar[Any] = contextvars.ContextVar(
     "rl_kernel_areal_engine", default=None
 )
@@ -166,6 +172,90 @@ def patch_actor(module: ModuleType) -> None:
     install_actor_stats(module)
 
 
+def native_rope_fusion_enabled(environ: Mapping[str, str] | None = None) -> bool:
+    env = os.environ if environ is None else environ
+    return env.get(NATIVE_ROPE_FUSION_ENV, "").strip().lower() in ("1", "true", "yes")
+
+
+def _enable_native_rope_fusion(module: ModuleType) -> None:
+    """Turn on ``apply_rope_fusion`` for every ``TransformerConfig`` construction."""
+
+    transformer_config = module.TransformerConfig
+    original = transformer_config.__post_init__
+    if getattr(original, "_rlk_rope_fusion", False):
+        return
+
+    def __post_init__(self: Any) -> None:
+        self.apply_rope_fusion = True
+        original(self)
+
+    __post_init__._rlk_rope_fusion = True  # type: ignore[attr-defined]
+    transformer_config.__post_init__ = __post_init__  # type: ignore[method-assign]
+    print(
+        "[RL-Kernel][areal] native RoPE fusion: TransformerConfig.__post_init__ patched",
+        flush=True,
+    )
+
+
+def _check_native_rope_fusion(module: ModuleType) -> None:
+    """Verify built models use fused RoPE and TE exposes the THD entry point."""
+
+    if getattr(module, _NATIVE_ROPE_FUSION_CHECK, False):
+        return
+    original_make_model = module.make_mcore_model
+
+    @functools.wraps(original_make_model)
+    def make_mcore_model(*args: Any, **kwargs: Any) -> Any:
+        models = original_make_model(*args, **kwargs)
+        from megatron.core.models.common.embeddings import rope_utils
+
+        if rope_utils.fused_apply_rotary_pos_emb_thd is None:
+            raise RuntimeError(
+                "native RoPE fusion requires TE fused_apply_rotary_pos_emb_thd; install TE >= 1.4"
+            )
+        for model in models:
+            gpt = module.unwrap_to_gpt_model(model)
+            if not bool(getattr(gpt.config, "apply_rope_fusion", False)):
+                raise RuntimeError(
+                    "native RoPE fusion enabled but built model has apply_rope_fusion=False"
+                )
+        print(
+            "[RL-Kernel][areal] native model built with apply_rope_fusion=True, "
+            "TE fused THD rope available",
+            flush=True,
+        )
+        return models
+
+    module.make_mcore_model = make_mcore_model
+    setattr(module, _NATIVE_ROPE_FUSION_CHECK, True)
+
+
+def _log_native_rope_fusion_first_call(module: ModuleType) -> None:
+    original = module.apply_rotary_pos_emb
+    if getattr(original, _NATIVE_ROPE_LOG, False):
+        return
+    state = {"done": False}
+
+    @functools.wraps(original)
+    def apply_rotary_pos_emb(*args: Any, **kwargs: Any) -> Any:
+        if not state["done"]:
+            state["done"] = True
+            config = args[2] if len(args) > 2 else kwargs.get("config")
+            cu_seqlens = args[3] if len(args) > 3 else kwargs.get("cu_seqlens")
+            fusion = bool(getattr(config, "apply_rope_fusion", False))
+            if fusion and cu_seqlens is not None:
+                path = "fused_thd"
+            elif fusion:
+                path = "fused_bshd"
+            else:
+                path = "unfused"
+            print(f"[RL-Kernel][areal] native RoPE first call: path={path}", flush=True)
+        return original(*args, **kwargs)
+
+    setattr(apply_rotary_pos_emb, _NATIVE_ROPE_LOG, True)
+    module.apply_rotary_pos_emb = apply_rotary_pos_emb
+
+
 def install(mode: str | None = None) -> str | None:
     """Register lazy patches for the current process; returns the active mode."""
 
@@ -179,10 +269,26 @@ def install(mode: str | None = None) -> str | None:
         when_imported(ACTOR_MODULE, patch_actor)
         if selected == contract.MODE_STRICT:
             when_imported(ENGINE_MODULE, patch_megatron_engine)
+    if native_rope_fusion_enabled():
+        if selected == contract.MODE_STRICT:
+            raise ValueError(
+                "native RoPE fusion cannot be combined with RL_KERNEL_AREAL_MODE=strict"
+            )
+        when_imported(_TRANSFORMER_CONFIG_MODULE, _enable_native_rope_fusion)
+        when_imported(ENGINE_MODULE, _check_native_rope_fusion)
+        when_imported(_ATTENTION_MODULE, _log_native_rope_fusion_first_call)
     # Registered last so its ranges wrap the strict routes installed above.
     if profiling.enabled():
         when_imported(ENGINE_MODULE, profiling.install_engine_profiler)
     return selected
 
 
-__all__ = ["ACTOR_MODULE", "ENGINE_MODULE", "install", "patch_actor", "patch_megatron_engine"]
+__all__ = [
+    "ACTOR_MODULE",
+    "ENGINE_MODULE",
+    "_enable_native_rope_fusion",
+    "install",
+    "native_rope_fusion_enabled",
+    "patch_actor",
+    "patch_megatron_engine",
+]

@@ -52,6 +52,9 @@ In `RL_KERNEL_AREAL_MODE=strict` the worker:
 native arm of an asynchronous comparison uses it so both arms report the same
 breakdown. The native arm of a synchronous comparison runs stock AReaL, unless
 `verify run --native-observe` is given, which switches it to observe as well.
+`verify run --native-rope-fusion` turns on Megatron ``apply_rope_fusion`` for the
+native arm via the RL-Kernel worker (TransformerConfig patch only; AReaL
+unchanged). It cannot be combined with the RL-Kernel strict arm.
 
 ## Supported scope
 
@@ -113,6 +116,15 @@ per node; training TP×CP and rollout TP must each fit in one node). Start the
 Ray cluster first and export `RAY_ADDRESS`. If the first data-service worker on
 a remote node needs more than AReaL's fixed 30 s to start, set
 `RLK_AREAL_WORKERS_READY_TIMEOUT` (seconds); both arms get the same value.
+
+Placement matters for timing: a GPU role that shares a node with the driver, the
+AReaL controller and the Ray head ran up to ~4x slower in our runs. Prefer a Ray
+head with `--num-gpus=0` on a separate CPU node and run the driver there. To pin a
+role instead, start the chosen raylets with a custom resource
+(`ray start --resources='{"rlk_actor_node": 1}'`) and set
+`RLK_AREAL_RAY_ROLE_RESOURCES=actor=rlk_actor_node` (comma-separated
+`role=resource` pairs); every placement-group bundle of that role then also asks
+for a sliver of the resource.
 
 `--profile-steps 3` (comma-separated actor versions) wraps every recomputed-logp
 `forward_batch` and PPO `train_batch` call of those versions on actor rank 0

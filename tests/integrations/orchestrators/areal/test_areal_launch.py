@@ -90,6 +90,18 @@ def test_native_sync_arm_is_stock_and_async_native_only_observes(tmp_path):
     assert config["rollout"]["max_head_offpolicyness"] == 2
 
 
+def test_native_rope_fusion_uses_worker_and_env_only_on_native(tmp_path):
+    spec = _spec(native_rope_fusion=True)
+    env = launch.arm_environment(spec, "native", readback_dir=tmp_path, stats_path=tmp_path / "s")
+    config = launch.build_config(BASE, spec, "native", arm_dir=tmp_path, env_vars=env,
+                                 trial_name="t")
+    assert env[launch.NATIVE_ROPE_FUSION_ENV] == "1"
+    assert config["actor"]["scheduling_spec"][0]["cmd"] == launch.WORKER_CMD
+    rlkernel = launch.arm_environment(spec, "rlkernel", readback_dir=tmp_path,
+                                      stats_path=tmp_path / "s")
+    assert launch.NATIVE_ROPE_FUSION_ENV not in rlkernel
+
+
 def test_native_observe_adds_metrics_to_the_sync_native_arm_only(tmp_path):
     spec = _spec(native_observe=True)
     env = launch.arm_environment(spec, "native", readback_dir=tmp_path, stats_path=tmp_path / "s")

@@ -44,6 +44,7 @@ VLLM_SERVER_ARGS_ENV = "RL_KERNEL_AREAL_VLLM_SERVER_ARGS"
 # Not RL_KERNEL_-prefixed, so the scrubbing below keeps them for the native arm too.
 PROFILE_STEPS_ENV = "RLK_AREAL_PROFILE_STEPS"
 PROFILE_DIR_ENV = "RLK_AREAL_PROFILE_DIR"
+NATIVE_ROPE_FUSION_ENV = "RLK_AREAL_NATIVE_ROPE_FUSION"
 
 # Environment that would change numerics; scrubbed from every arm, then the
 # RL-Kernel arm sets exactly what it needs.
@@ -82,6 +83,8 @@ class ExperimentSpec:
     profile_steps: tuple[int, ...] = ()
     # Same-version consistency metrics on the native arm in sync mode too (numerics unchanged).
     native_observe: bool = False
+    # Megatron TE fused RoPE on the native arm only (numerics unchanged vs stock AReaL intent).
+    native_rope_fusion: bool = False
 
     def validate(self) -> None:
         if self.mode not in (MODE_SYNC, MODE_ASYNC):
@@ -223,6 +226,8 @@ def arm_environment(
         env["RL_KERNEL_AREAL_MODE"] = mode
     if arm == ARM_NATIVE:
         env["VLLM_PLUGINS"] = ""
+        if spec.native_rope_fusion:
+            env[NATIVE_ROPE_FUSION_ENV] = "1"
         return env
     if spec.real_vocab_size is None or spec.padded_vocab_size is None:
         raise ValueError("the RL-Kernel arm needs the real and padded vocabulary sizes")
@@ -331,7 +336,12 @@ def build_config(
     mode = worker_mode(arm, spec.mode, spec.native_observe)
     # The profiler is installed by the RL-Kernel worker, which runs AReaL's RPC
     # server unchanged when no adapter mode is selected.
-    actor_cmd = WORKER_CMD if mode is not None or spec.profile_steps else DEFAULT_RPC_CMD
+    needs_worker = (
+        mode is not None
+        or spec.profile_steps
+        or (arm == ARM_NATIVE and spec.native_rope_fusion)
+    )
+    actor_cmd = WORKER_CMD if needs_worker else DEFAULT_RPC_CMD
     actor_base = config.get("actor", {}).get("scheduling_spec")
     config["actor"]["scheduling_spec"] = _scheduling_spec(
         actor_base, cmd=actor_cmd, env_vars=env_vars

@@ -334,6 +334,7 @@ def _spec_from_args(args: argparse.Namespace) -> launch.ExperimentSpec:
             sorted({int(item) for item in (args.profile_steps or "").split(",") if item})
         ),
         native_observe=args.native_observe,
+        native_rope_fusion=args.native_rope_fusion,
     )
 
 
@@ -624,6 +625,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--native-observe", action="store_true",
                      help="add the same-version consistency metrics to the native arm in sync "
                           "mode as well (async native arms always observe); numerics unchanged")
+    run.add_argument("--native-rope-fusion", action="store_true",
+                     help="enable Megatron apply_rope_fusion on the native arm via the RL-Kernel "
+                          "worker (TE fused THD RoPE); numerics differ from the unfused baseline")
     run.add_argument("--dataset-path",
                      help="local GSM8K dataset (default: openai/gsm8k from the HF hub)")
     run.add_argument("--base-config", help=f"default: <areal-root>/{launch.DEFAULT_CONFIG}")
