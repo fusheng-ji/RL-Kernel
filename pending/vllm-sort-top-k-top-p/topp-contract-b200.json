@@ -1,0 +1,84 @@
+{
+ "device": "NVIDIA B200",
+ "torch": "2.13.0+cu130",
+ "vllm": "0.30.0",
+ "vocab": 151936,
+ "temperature": 0.7,
+ "support": [
+  {
+   "rows": 64,
+   "top_p": 0.8,
+   "sort_equals_policy": true,
+   "triton_superset_of_policy": true,
+   "rows_differing_triton": 60,
+   "extra_tokens_per_row_max": 10,
+   "extra_tokens_total": 241,
+   "triton_only_prob_mass_mean": 2.581738772278186e-05,
+   "triton_only_prob_mass_max": 6.85664126649499e-05
+  },
+  {
+   "rows": 64,
+   "top_p": 0.9,
+   "sort_equals_policy": true,
+   "triton_superset_of_policy": true,
+   "rows_differing_triton": 54,
+   "extra_tokens_per_row_max": 13,
+   "extra_tokens_total": 268,
+   "triton_only_prob_mass_mean": 1.3616467185784131e-05,
+   "triton_only_prob_mass_max": 4.230101694702171e-05
+  },
+  {
+   "rows": 64,
+   "top_p": 0.95,
+   "sort_equals_policy": true,
+   "triton_superset_of_policy": true,
+   "rows_differing_triton": 55,
+   "extra_tokens_per_row_max": 35,
+   "extra_tokens_total": 305,
+   "triton_only_prob_mass_mean": 8.738228643778712e-06,
+   "triton_only_prob_mass_max": 6.429683708120137e-05
+  },
+  {
+   "rows": 64,
+   "top_p": 0.99,
+   "sort_equals_policy": true,
+   "triton_superset_of_policy": false,
+   "rows_differing_triton": 53,
+   "extra_tokens_per_row_max": 38,
+   "extra_tokens_total": 673,
+   "triton_only_prob_mass_mean": 6.986495918681612e-06,
+   "triton_only_prob_mass_max": 2.5243010895792395e-05
+  }
+ ],
+ "batch_dependence": {
+  "triton": 23,
+  "sort": 2,
+  "cases": 128
+ },
+ "timing": [
+  {
+   "rows": 1,
+   "triton_ms": 0.1060428810119629,
+   "sort_ms": 0.16196287155151368,
+   "clone_ms": 0.0049055999517440795
+  },
+  {
+   "rows": 8,
+   "triton_ms": 0.11957504272460938,
+   "sort_ms": 0.4353408050537109,
+   "clone_ms": 0.005028480291366577
+  },
+  {
+   "rows": 64,
+   "triton_ms": 0.6068947219848633,
+   "sort_ms": 1.0443827056884765,
+   "clone_ms": 0.01034432053565979
+  },
+  {
+   "rows": 256,
+   "triton_ms": 1.5372352600097656,
+   "sort_ms": 3.4973809814453123,
+   "clone_ms": 0.051291518211364746
+  }
+ ]
+}
