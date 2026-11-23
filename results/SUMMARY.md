@@ -36,6 +36,7 @@ Environment:
 | T5 a | pytest `test_h3_image_reference_conditioning.py` | 0 | **46 passed, 0 skipped** |
 | T5 b | `h3_image_reference_conditioning.py --device cuda` | 0 | `arms not equal to the CPU reference or failing the fixed-row loop: none`; CPU-generator arms equal B200 for all 4 fixtures; `probes` equal B200 exactly |
 | T5 c | `h3_image_refcond_real_vae_check.py` | 0 | `all_green True`; all 4 arms bitwise equal to Diffusers, rows fixed over 6 steps |
+| T6 | `h3_image_full_chain.py --root <IMG> --text-encoder-root <CKPT> --out <OUT>/T6/run --repeat`, then pytest `test_h3_image_full_chain.py` (`<V>` + accelerate 1.16.0) | 0 / 0 | `exit=0`, `all_gates_pass True`; all 4 fixtures: `gate`, `secondary_equal`, `run_to_run_equal` true, `first_drift` null, all 11 stages equal; **26 passed**; peak memory 64.9 / 67.0 / 67.0 / **67.3** GiB (`t2i_upscaled` / `t2i_example` / `edit_two_refs` / `edit_example`); seconds per fixture, RL-Kernel chain / Diffusers: 4.6 / 6.4, 21.7 / 28.8, 17.3 / 19.1, 23.0 / 29.8 |
 
 ## Findings
 
@@ -68,3 +69,13 @@ All three fail with `TypeError: MiniMaxH3Scheduler.__init__() got an unexpected 
 - `T1/rc.txt`: the `build …` and `d …` lines record `rc=$?` after a `$(basename …)` substitution in the same `echo`, so they show the substitution's status 0, not the command's. The exit codes in this table come from the logs: all builds completed, and both `tests/models` runs had failures, so pytest's exit code was 1.
 - `T3/c-file-v.txt` and `T4/c-file-v.txt` say `inside`, but `<W3>`/`<W4>` are not built: `import rl_engine._C` raised `ModuleNotFoundError`, and the `inside` refers to the last printed line, `rl_engine/__init__.py` in the checkout. No `_C` was used there; the image rows do not need it.
 - T2 was run on node-b while T1 was still running on node-a. The node-a script, which had T2 queued after T1, was cancelled right after `T1 end`, during T2's setup and before the probe started. Its partial files (nvidia-smi, commit, env, host) are in `not-green-attempts/T2-node-a-cancelled-before-probe/`.
+
+**T6 (full chain on the released weights).**
+- Everything the README expects holds: the exit code, the gates, the 26 tests, `first_drift` null at every stage, and the digests of the two arms agree stage by stage on the same GPU.
+- Peak memory is within 0.2 GiB of B200's on every fixture. `edit_example` peaks at 67.3 GiB, 0.1 GiB above the README's "at most 67.2 GiB" (B200 measured 67.2); it fits on the 80 GB card.
+- Time: the whole runner took about 10 minutes (B200: 8 minutes). Per fixture, the RL-Kernel chain takes 1.5x B200's (4.6–23.0 s vs 3.0–14.6 s), and Diffusers takes 1.5–1.6x B200's.
+- `final_latent_sha256` and `output_sha256` differ from B200's for all four fixtures, as the README expects for BF16 matmuls (the comparison is made elsewhere).
+- Setup: `accelerate==1.16.0` installed into `<V>` only (`<E1>` still sees 1.15.0); `transformer_diffusers/`, `examples/` and `assets/showcase/photo.jpg` were added to `<IMG>` (28 files, `T6/setup/files-added.txt`).
+- Hosts: T6 ran on node-c, GPU 0, which showed 0 MiB and no other job at the start.
+- The first launch of T6 on node-a was stopped within a minute of starting, because another job of the same allocation had just started on that node and the GPU was no longer guaranteed idle. Its partial records are in `not-green-attempts/T6-aborted-on-node-a/`; it produced no result.
+- The 8 PNG files are not committed, as the README asks.

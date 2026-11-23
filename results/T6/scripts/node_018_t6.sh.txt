@@ -1,0 +1,13 @@
+#!/bin/bash
+# Node 018, GPU0: T6 as in the README of 337713f40.
+source <HOME>/datastorage/h3img_20261123/env.sh
+W6=$WS/w6
+O=$OUT/T6; start $O; rec $O $W6 $V before; log "T6 start $(hostname -s)"
+cfile $O $W6 $V v
+cd $W6
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W6 $V/bin/python tools/validation/models/h3_image_full_chain.py \
+  --root $IMG --text-encoder-root $CKPT --out $O/run --repeat > $O/evidence.log 2>&1; echo "exit=$?" >> $O/evidence.log
+log "T6 runner done"; nvidia-smi > $O/nvidia-smi-after-runner.txt 2>&1
+CUDA_VISIBLE_DEVICES=0 PYTHONPATH=$W6 $V/bin/python -m pytest -q -p no:cacheprovider -rs \
+  tests/models/minimax_h3_image/test_h3_image_full_chain.py > $O/pytest-full-chain.txt 2>&1; echo "pytest rc=$?" >> $O/rc.txt
+rec $O $W6 $V after; log "T6 end"
