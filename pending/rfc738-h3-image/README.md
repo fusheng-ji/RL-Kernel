@@ -1,6 +1,6 @@
 # RFC #738 MiniMax-H3-Image PR evidence
 
-These are the evidence files for the H3-Image row PRs that target `test-h3-image`. The row branches sit on the `test-h3` sync commit `bf297aaa3`.
+These are the evidence files for the H3-Image row PRs that target `test-h3-image`. The row branches sit on the `test-h3` sync commit `45351cc9e` (#767). The stack-head runs are labelled `104eb599f`, the stack head before that sync was squashed into one commit; its file tree is identical to the current head `a5989aede`.
 
 | Folder | What | Where it ran |
 |---|---|---|
