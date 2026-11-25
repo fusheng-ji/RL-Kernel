@@ -153,3 +153,67 @@ def test_a_projection_of_the_wrong_shape_is_refused(tiny_checkpoint, tmp_path):
     save_file(tensors, str(bad / file), metadata={"format": "pt"})
     with pytest.raises(ValueError, match="to_q.weight: checkpoint shape"):
         sl.load_sharded_model(bad, 2, 0, "cpu")
+
+
+@pytest.mark.parametrize("pp", [1, 2])
+def test_the_stages_of_a_pipeline_load_the_whole_model_once(tiny_checkpoint, pp):
+    """Each stage holds its own parameters and shards only; together they are the unsplit load."""
+    from rl_engine.validation.models import h3_pipeline as pipe
+
+    root, reference = tiny_checkpoint
+    ref, seen = dict(reference.named_parameters()), set()
+    whole = sl.load_sharded_model(root, 2, 1, "cpu")
+    for s in range(pp):
+        stage = pipe.StageSpec.make(TINY["num_layers"], pp, s)
+        model = sl.load_sharded_model(root, 2, 1, "cpu", stage=stage)
+        for name, p in model.named_parameters():
+            local = ".".join(name.split(".")[2:])
+            if name.startswith(sl.BLOCKS + ".") and local in sl.UNLOADED:
+                assert p.is_meta, name
+            elif stage.owns_parameter(name):
+                assert torch.equal(p, ref[name]), name
+                assert name not in seen, name
+                seen.add(name)
+            else:
+                assert p.is_meta, name
+        for i, block in enumerate(model.transformer_blocks):
+            if not stage.owns_block(i):
+                assert pm.SHARDS_ATTR not in block.__dict__
+                continue
+            mine = getattr(block, pm.SHARDS_ATTR)["tensors"]
+            for name, t in getattr(whole.transformer_blocks[i], pm.SHARDS_ATTR)["tensors"].items():
+                assert torch.equal(mine[name], t)
+        assert torch.equal(model.rope.inv_freq, reference.rope.inv_freq)  # on every stage
+    expected = {
+        n
+        for n in ref
+        if not (n.startswith(sl.BLOCKS + ".") and ".".join(n.split(".")[2:]) in sl.UNLOADED)
+    }
+    assert seen == expected
+
+
+def test_a_module_of_another_stage_raises_when_called(tiny_checkpoint):
+    """Its parameters are on ``meta``: running it would return a tensor without values."""
+    from rl_engine.validation.models import h3_pipeline as pipe
+
+    root, _ = tiny_checkpoint
+    first, last = (
+        sl.load_sharded_model(root, 1, 0, "cpu", stage=pipe.StageSpec.make(2, 2, s)) for s in (0, 1)
+    )
+    x = torch.zeros(1, 4, TINY["hidden_size"])
+    calls = [
+        lambda: first.proj_out(x),
+        lambda: first.norm_out(x, torch.zeros(1, 128), torch.zeros(4, dtype=torch.long)),
+        lambda: first.transformer_blocks[1](x, None, None, None),
+        lambda: first.transformer_blocks[1].norm1(x),
+        lambda: last.time_embedder(torch.zeros(1, 256)),
+        lambda: last.time_embedder.linear_1(torch.zeros(1, 256)),
+        lambda: last.token_refiner(x),
+        lambda: last.proj_in(torch.zeros(1, 4, 96)),
+    ]
+    for call in calls:
+        with pytest.raises(RuntimeError, match="another pipeline stage"):
+            call()
+    # owned modules, and the parameter-free ones every stage runs, are untouched
+    assert first.proj_in(torch.zeros(1, 4, 96)).shape == (1, 4, TINY["hidden_size"])
+    assert last.rope(torch.zeros(4, 3))[0].shape[0] == 4

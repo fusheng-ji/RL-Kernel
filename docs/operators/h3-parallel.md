@@ -3,8 +3,8 @@
 ## Summary
 
 RFC #420 rows `tp_attention_7168`, `tp_ffn_14336`, `cp_full_attention` (Ulysses and ring),
-`cp_metadata_coshard`, `cp_arbitrary_length`, `distributed_packed_io`, and closeouts
-`ws2_tp2_tp4_tp8`, `ws2_tp4_cp2`, `ws2_tp4_cp2_sp`. Contract `h3-parallel-v2`
+`cp_metadata_coshard`, `cp_arbitrary_length`, `distributed_packed_io`, closeouts
+`ws2_tp2_tp4_tp8`, `ws2_tp4_cp2`, `ws2_tp4_cp2_sp`, and `ws2_pipeline_parallel`. Contract `h3-parallel-v2`
 (`rl_engine/backends/cuda/model_specific/minimax_h3/parallel.py`); the ring is
 `.../minimax_h3/ring_attention.py` (`h3-ring-cp-v1`); the block that composes them is
 `rl_engine/validation/models/h3_tp.py`, and the full 50-block model on a grid is
@@ -138,6 +138,51 @@ twice the 33B weights on top of the weights themselves, which does not fit a 94 
 so its temporaries stay bounded. It is not a hash, but it always sees a change of one or two 16-bit
 words.
 
+## Pipeline stages (`h3-pipeline-v1`)
+
+RFC #420 row `ws2_pipeline_parallel`: `rl_engine/validation/models/h3_pipeline.py` splits the 50 blocks
+into `pp` contiguous stages (PP2 25/25, PP4 13/13/12/12; other splits on request), each on its own
+TP x CP (x SP) grid. Global rank = `(pp_rank, cp_rank, tp_rank)` with TP fastest. The first stage also runs
+everything before block 0, the last everything after block 49; `rope` and `time_proj` have no
+parameters and are on every stage. `load_sharded_model(stage=...)` reads only what a stage owns and leaves
+the rest on `meta` (calling it raises).
+
+The tensors are moved by `torch.distributed.pipelining` (GPipe or 1F1B over passes, one pipeline per
+`(cp_rank, tp_rank)` column); it is not reimplemented, because it is bitwise for H3 (see the PR for the
+measurements). What it does not have is added here:
+
+- **What crosses a boundary.** Forward: the packed `hidden_states` (BF16) and `temb` (FP32), unchanged.
+  The rotary tables and the AdaLN row index are computed on every stage from the request, which every
+  rank must hold (refused before anything runs if a rank holds another one).
+- **The `temb` gradient.** Unsplit it is one FP32 chain, `norm_out + block 49 + ... + block 0`. The partial
+  sum of the later stages comes back as the gradient of the `temb` the stage passed on; autograd adds
+  it first and the stage's blocks continue the chain in the same order. Summing every stage's
+  contribution on its own and adding the sums is a different FP32 result (tested). The chain needs whole
+  rows on every rank, so a trainable time embedder is refused under CP and SP, where a rank's `temb`
+  gradient is partial with or without stages.
+- **Passes.** Several passes (micro-batches) accumulate their gradients in pass order on every stage,
+  whatever the schedule interleaves: serial, GPipe and 1F1B give the same bytes. Passes of one shape share a
+  schedule; a change of packed length starts a new one, and fewer passes than stages run as GPipe (1F1B
+  needs one per stage). Several passes in flight are refused while a keyed strict row (`proj_in`, `proj_out`,
+  the refiner) trains: one canonical backward session holds one pass.
+- **Checks.** Both ends of every handoff reduce the tensor to the two checksums of `exact_digest` as it leaves
+  and as it is used, forward and backward; after the passes the world compares them, and a difference
+  raises `HandoffError` on every rank, naming pass, tensor and boundary. The columns of a stage must also
+  have carried the same bytes.
+- **First drift.** `stage_drift` compares a stage's block outputs, gradients and `handoff.<k>` (what the
+  stage that starts at block `k` read; the unsplit counterpart is block `k - 1`'s output) with the single-GPU
+  run; `merge_drift` picks the first one of the whole model and names the global owner ranks.
+
+`h3_parallel_full_model.py --pp P [--sharded] [--pp-sizes a,b,...]` runs the comparison above for a pipeline:
+velocities, input gradients (first stage), every block's output and output gradient, the weight-shard
+gradients of the stage's blocks (and of the LoRA), with `--train-time-embedder` the time embedder's gradients
+(on the provider boundaries with PyTorch's deterministic kernels: the provider's final AdaLN gathers rows, and
+the default CUDA backward of that gather does not repeat, so the single-GPU run differs from itself), and on rank 0 that the stages hold every block exactly once. `--inject` (a block's row) and
+`--inject-handoff BLOCK:ROW[:grad][:wire]` are the negative controls.
+
+Weights resident on the fullest rank, 8 GPUs (GiB, from the checkpoint): TP8 30.3, TP4 x PP2 18.2, TP2 x PP4
+12.6, PP8 10.0. TP keeps `adaln_proj.linear` (about 0.5 GiB per block) whole on every rank; stages split it.
+
 ## LoRA on the grid (`h3-parallel-lora-v2`)
 
 `rl_engine/backends/cuda/model_specific/minimax_h3/parallel_lora.py` puts a LoRA,
@@ -257,7 +302,11 @@ this is the time of a whole `block_case(..., backward=False)` call, not of the k
 
 - Attention, SwiGLU and QK norm inside the block are the repo's interim operators; the parallel
   rows only require them to be row/head independent, which the bitwise results confirm.
-- Pipeline parallelism is out of scope (`ws2_pipeline_parallel` is not part of this change).
+- Pipeline stages (`h3-pipeline-v1`) cover the actor's forward and backward. The vLLM-Omni rollout
+  still refuses pipeline parallelism (`h3_omni_model`).
+- A stage that raises in the middle of a pass leaves the other stages waiting until the process
+  group's timeout; only what can be checked before a pass (requests, schedule, trainable modules)
+  and what is checked after it (the handoff digests) raises on every rank at once.
 - dW under CP is the unsharded token sweep (exact gather of every CP rank's rows, then the same
   fixed-order GEMM), also in the TP x CP block, whose weight-gradient shards are compared with the
   single-GPU block's. The gather makes every rank hold all rows of the GEMM operands for the

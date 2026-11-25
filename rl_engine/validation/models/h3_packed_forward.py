@@ -23,8 +23,10 @@ from __future__ import annotations
 
 import hashlib
 import inspect
+from collections.abc import Callable
 from contextlib import contextmanager
 from types import MethodType
+from typing import Any, NamedTuple
 
 import torch
 
@@ -37,6 +39,11 @@ KNOWN_FORWARDS = {
     "ae200f2868ad388f1f40fccb7529f39ec3bc00c999725babef1f6d73d05361d4": "parameter",
 }
 ROWS = {"packed_index_copy": "row", "packed_index_select": "reference"}
+
+
+# The bound ``packed_index_copy`` op, on the model while ``bind`` is active (a pipeline stage runs
+# ``packed_parts`` instead of the whole forward and takes the op from here).
+PACK_ATTR = "_rlk_packed_op"
 
 
 class UnknownForwardError(RuntimeError):
@@ -63,12 +70,116 @@ def _dtype_reader(variant: str):
     return get_parameter_dtype
 
 
+class PackedParts(NamedTuple):
+    """The provider forward in the two pieces around its block loop (one copy of the graph).
+
+    ``embed(model, inputs)`` runs up to the first block and returns ``(hidden_states, temb,
+    adaln_indices, rotary_emb)``; ``metadata(model, inputs)`` is the part of it that has no
+    parameters (``adaln_indices, rotary_emb``); ``head(model, hidden_states, temb, inputs)`` runs
+    what follows the last block and returns ``(video, audio)``. ``inputs`` maps the forward's
+    argument names to tensors.
+    """
+
+    embed: Callable[..., tuple[torch.Tensor, torch.Tensor, torch.Tensor, Any]]
+    metadata: Callable[..., tuple[torch.Tensor, Any]]
+    head: Callable[..., tuple[torch.Tensor, torch.Tensor]]
+
+
+def check_inputs(inputs) -> None:
+    """The provider forward's shape checks."""
+
+    position_ids = inputs["position_ids"]
+    token_tags, timestep_indices = inputs["token_tags"], inputs["timestep_indices"]
+    if position_ids.ndim != 2 or position_ids.shape[-1] != 3:
+        raise ValueError(
+            f"`position_ids` must be a `(seq_len, 3)` tensor, got {list(position_ids.shape)}."
+        )
+    sequence_length = position_ids.shape[0]
+    if token_tags.shape != (sequence_length,) or timestep_indices.shape != (sequence_length,):
+        raise ValueError(
+            "`token_tags` and `timestep_indices` must both be `(seq_len,)` tensors matching "
+            f"`position_ids`, got {list(token_tags.shape)} and {list(timestep_indices.shape)} "
+            f"for seq_len={sequence_length}."
+        )
+
+
+def packed_parts(variant: str, pack) -> PackedParts:
+    """The parts of the provider forward that reads dtypes as ``variant``, with ``pack``."""
+
+    dtype_of = _dtype_reader(variant)
+
+    def metadata(self, inputs):
+        """Row -> AdaLN table row, and the rotary tables."""
+        adaln_indices = inputs["timestep_indices"] * MODALITY_NUM + inputs["token_tags"]
+        return adaln_indices, self.rope(inputs["position_ids"])
+
+    def embed(self, inputs):
+        """Everything before the first block."""
+        check_inputs(inputs)
+        sequence_length = inputs["position_ids"].shape[0]
+        rotary_emb = self.rope(inputs["position_ids"])
+        video_embeds = self.proj_in(inputs["hidden_states"].to(dtype_of(self.proj_in)))
+        audio_embeds = self.audio_proj_in(
+            inputs["audio_hidden_states"].to(dtype_of(self.audio_proj_in))
+        )
+        text_embeds = self.context_embedder(
+            inputs["encoder_hidden_states"].to(dtype_of(self.context_embedder))
+        )
+        text_embeds = self.token_refiner(text_embeds)
+        # packed_index_copy: zero rows, then text, video and audio rows (the provider's order)
+        hidden_states = pack(
+            text_embeds.contiguous(),
+            video_embeds.contiguous(),
+            audio_embeds.contiguous(),
+            # the row validates contiguous indices; the provider's index_copy takes any view
+            inputs["text_indices"].contiguous(),
+            inputs["video_indices"].contiguous(),
+            inputs["audio_indices"].contiguous(),
+            sequence_length,
+        )
+        temb = self.time_proj(inputs["timestep"])
+        temb = self.time_embedder(
+            temb.to(
+                self.time_embedder.linear_1.weight.dtype
+                if variant == "weight"
+                else dtype_of(self.time_embedder)
+            )
+        )
+        adaln_indices = inputs["timestep_indices"] * MODALITY_NUM + inputs["token_tags"]
+        return hidden_states, temb, adaln_indices, rotary_emb
+
+    def head(self, hidden_states, temb, inputs):
+        """Everything after the last block."""
+        hidden_states = self.norm_out(hidden_states, temb, inputs["timestep_indices"]).to(
+            dtype_of(self.proj_out)
+        )
+        # packed_index_select: the provider's index_select (reference)
+        video_output = self.proj_out(hidden_states).index_select(1, inputs["video_indices"])
+        audio_output = self.audio_proj_out(hidden_states).index_select(1, inputs["audio_indices"])
+        return video_output, audio_output
+
+    return PackedParts(embed, metadata, head)
+
+
+def run_blocks(self, blocks, hidden_states, temb, adaln_indices, rotary_emb):
+    """The provider's block loop over ``blocks`` (checkpointed as the model is)."""
+
+    for block in blocks:
+        if torch.is_grad_enabled() and self.gradient_checkpointing:
+            hidden_states = self._gradient_checkpointing_func(
+                block, hidden_states, temb, adaln_indices, rotary_emb
+            )
+        else:
+            hidden_states = block(hidden_states, temb, adaln_indices, rotary_emb)
+    return hidden_states
+
+
 def _packed_forward(model_cls, pack, variant):
     """The provider forward of ``model_cls`` with the scatter on ``pack`` (an unbound method)."""
 
     module = inspect.getmodule(inspect.unwrap(model_cls.forward))
     output_cls = module.MiniMaxH3TransformerOutput
-    dtype_of = _dtype_reader(variant)
+    parts = packed_parts(variant, pack)
 
     def forward(
         self,
@@ -85,57 +196,23 @@ def _packed_forward(model_cls, pack, variant):
         attention_kwargs=None,
         return_dict=True,
     ):
-        if position_ids.ndim != 2 or position_ids.shape[-1] != 3:
-            raise ValueError(
-                f"`position_ids` must be a `(seq_len, 3)` tensor, got {list(position_ids.shape)}."
-            )
-        sequence_length = position_ids.shape[0]
-        if token_tags.shape != (sequence_length,) or timestep_indices.shape != (sequence_length,):
-            raise ValueError(
-                "`token_tags` and `timestep_indices` must both be `(seq_len,)` tensors matching "
-                f"`position_ids`, got {list(token_tags.shape)} and {list(timestep_indices.shape)} "
-                f"for seq_len={sequence_length}."
-            )
-        rotary_emb = self.rope(position_ids)
-        video_embeds = self.proj_in(hidden_states.to(dtype_of(self.proj_in)))
-        audio_embeds = self.audio_proj_in(audio_hidden_states.to(dtype_of(self.audio_proj_in)))
-        text_embeds = self.context_embedder(
-            encoder_hidden_states.to(dtype_of(self.context_embedder))
+        inputs = dict(
+            hidden_states=hidden_states,
+            audio_hidden_states=audio_hidden_states,
+            encoder_hidden_states=encoder_hidden_states,
+            timestep=timestep,
+            timestep_indices=timestep_indices,
+            token_tags=token_tags,
+            position_ids=position_ids,
+            video_indices=video_indices,
+            audio_indices=audio_indices,
+            text_indices=text_indices,
         )
-        text_embeds = self.token_refiner(text_embeds)
-        # packed_index_copy: zero rows, then text, video and audio rows (the provider's order)
-        hidden_states = pack(
-            text_embeds.contiguous(),
-            video_embeds.contiguous(),
-            audio_embeds.contiguous(),
-            # the row validates contiguous indices; the provider's index_copy takes any view
-            text_indices.contiguous(),
-            video_indices.contiguous(),
-            audio_indices.contiguous(),
-            sequence_length,
+        hidden_states, temb, adaln_indices, rotary_emb = parts.embed(self, inputs)
+        hidden_states = run_blocks(
+            self, self.transformer_blocks, hidden_states, temb, adaln_indices, rotary_emb
         )
-        temb = self.time_proj(timestep)
-        temb = self.time_embedder(
-            temb.to(
-                self.time_embedder.linear_1.weight.dtype
-                if variant == "weight"
-                else dtype_of(self.time_embedder)
-            )
-        )
-        adaln_indices = timestep_indices * MODALITY_NUM + token_tags
-        for block in self.transformer_blocks:
-            if torch.is_grad_enabled() and self.gradient_checkpointing:
-                hidden_states = self._gradient_checkpointing_func(
-                    block, hidden_states, temb, adaln_indices, rotary_emb
-                )
-            else:
-                hidden_states = block(hidden_states, temb, adaln_indices, rotary_emb)
-        hidden_states = self.norm_out(hidden_states, temb, timestep_indices).to(
-            dtype_of(self.proj_out)
-        )
-        # packed_index_select: the provider's index_select (reference)
-        video_output = self.proj_out(hidden_states).index_select(1, video_indices)
-        audio_output = self.audio_proj_out(hidden_states).index_select(1, audio_indices)
+        video_output, audio_output = parts.head(self, hidden_states, temb, inputs)
         if not return_dict:
             return (video_output, audio_output)
         return output_cls(sample=video_output, audio_sample=audio_output)
@@ -143,6 +220,27 @@ def _packed_forward(model_cls, pack, variant):
     from diffusers.utils import apply_lora_scale
 
     return apply_lora_scale("attention_kwargs")(forward)
+
+
+def known_variant(model_cls) -> str:
+    """How ``model_cls``'s forward reads dtypes; ``UnknownForwardError`` if it is not known."""
+
+    digest = forward_source_sha256(model_cls)
+    variant = KNOWN_FORWARDS.get(digest)
+    if variant is None:
+        raise UnknownForwardError(
+            f"{model_cls.__name__}.forward source {digest[:12]} is not a known provider forward"
+        )
+    return variant
+
+
+def provider_pack(text, video, audio, text_indices, video_indices, audio_indices, length):
+    """The provider's scatter (``new_zeros``, three ``index_copy``), with ``pack``'s arguments."""
+
+    packed = text.new_zeros((text.shape[0], length, text.shape[-1]))
+    packed = packed.index_copy(1, text_indices, text)
+    packed = packed.index_copy(1, video_indices, video.to(text.dtype))
+    return packed.index_copy(1, audio_indices, audio.to(text.dtype))
 
 
 @contextmanager
@@ -156,14 +254,11 @@ def bind(model, pack):
 
     if "forward" in model.__dict__:
         raise UnknownForwardError("the model's forward is already wrapped on the instance")
-    digest = forward_source_sha256(type(model))
-    variant = KNOWN_FORWARDS.get(digest)
-    if variant is None:
-        raise UnknownForwardError(
-            f"{type(model).__name__}.forward source {digest[:12]} is not a known provider forward"
-        )
+    variant = known_variant(type(model))
     model.forward = MethodType(_packed_forward(type(model), pack, variant), model)
+    model.__dict__[PACK_ATTR] = pack
     try:
         yield
     finally:
         model.__dict__.pop("forward", None)
+        model.__dict__.pop(PACK_ATTR, None)

@@ -100,8 +100,10 @@ def check_injection(spans: list[tuple[int, int]], row: int, rank: int) -> None:
         )
 
 
-def _assemble(rows: torch.Tensor, spans: list[tuple[int, int]], length: int) -> torch.Tensor:
-    """All-gather every rank's rows and place them at their spans (copies only)."""
+def _assemble(
+    rows: torch.Tensor, spans: list[tuple[int, int]], length: int, group=None
+) -> torch.Tensor:
+    """All-gather every rank's rows (``group``: the grid's ranks) and place them at their spans."""
 
     if len(spans) == 1:  # the canonical single-GPU layout: nothing to exchange
         return rows
@@ -109,7 +111,7 @@ def _assemble(rows: torch.Tensor, spans: list[tuple[int, int]], length: int) -> 
     widest = max(sizes)
     mine = torch.cat([rows, rows.new_zeros((1, widest - rows.shape[1], rows.shape[2]))], dim=1)
     parts = [torch.empty_like(mine) for _ in spans]
-    dist.all_gather(parts, mine.contiguous())
+    dist.all_gather(parts, mine.contiguous(), group=group)
     full = rows.new_empty((1, length, rows.shape[2]))
     for (lo, hi), part in zip(spans, parts):
         full[:, lo:hi] = part[:, : hi - lo]
@@ -120,28 +122,28 @@ class _RowsGather(torch.autograd.Function):
     """Rows held per rank -> the full packed tensor everywhere; backward keeps this rank's rows."""
 
     @staticmethod
-    def forward(ctx, rows, spans, rank, length):
+    def forward(ctx, rows, spans, rank, length, group=None):
         ctx.span = spans[rank]
-        return _assemble(rows, spans, length)
+        return _assemble(rows, spans, length, group)
 
     @staticmethod
     def backward(ctx, grad):
         lo, hi = ctx.span
-        return grad[:, lo:hi].contiguous(), None, None, None
+        return grad[:, lo:hi].contiguous(), None, None, None, None
 
 
 class _RowsSlice(torch.autograd.Function):
     """The full packed tensor -> this rank's rows; backward gathers the rows' gradients."""
 
     @staticmethod
-    def forward(ctx, full, spans, rank):
-        ctx.spans, ctx.length = spans, full.shape[1]
+    def forward(ctx, full, spans, rank, group=None):
+        ctx.spans, ctx.length, ctx.group = spans, full.shape[1], group
         lo, hi = spans[rank]
         return full[:, lo:hi].contiguous()
 
     @staticmethod
     def backward(ctx, grad):
-        return _assemble(grad.contiguous(), ctx.spans, ctx.length), None, None
+        return _assemble(grad.contiguous(), ctx.spans, ctx.length, ctx.group), None, None, None
 
 
 class ParallelState:
@@ -205,13 +207,13 @@ def _block_forward(index: int, grid: h3_tp.Grid, sp: bool, ops, state: ParallelS
         if hidden_states.shape[0] != 1:
             raise ValueError("the parallel block takes one packed sequence (batch 1)")
         length = hidden_states.shape[1]
-        rank = dist.get_rank() if grid.tp * grid.cp > 1 else 0
+        rank = grid.rank
         spans = rank_spans(grid.tp, grid.cp, length, sp)
         shard = grid.seq_shard(length)
         lo, hi = spans[rank]
         if state.inject is not None and state.inject[0] == index:
             check_injection(spans, state.inject[1], state.inject[2])  # before any collective
-        h_res = _RowsSlice.apply(hidden_states, spans, rank)
+        h_res = _RowsSlice.apply(hidden_states, spans, rank, grid.group)
         cos, sin = par.coshard(shard, rotary_emb[0], rotary_emb[1], dim=0)
         idx = par.coshard(shard, adaln_indices, dim=0)[0]
         idx_res = idx[lo - shard.lo : hi - shard.lo].contiguous()
@@ -259,7 +261,7 @@ def _block_forward(index: int, grid: h3_tp.Grid, sp: bool, ops, state: ParallelS
         elif leaves is not None:
             state.leaves[index] = leaves  # a recomputation (checkpointing) replaces the entry
         state.calls += 1
-        return _RowsGather.apply(out, spans, rank, length)
+        return _RowsGather.apply(out, spans, rank, length, grid.group)
 
     return forward
 
@@ -296,6 +298,23 @@ def parallel_model_execution(
 DIGEST_CHUNK = 1 << 24  # int16 words per step: bounds the int64 temporaries to ~384 MiB
 
 
+def digest_tensor(t: torch.Tensor, *, chunk: int = DIGEST_CHUNK) -> torch.Tensor:
+    """``exact_digest`` as an int64 tensor on ``t``'s device (no host synchronisation)."""
+
+    flat = t.detach().contiguous().view(torch.uint8).reshape(-1)
+    pad = (-flat.numel()) % 2
+    if pad:
+        flat = torch.cat([flat, flat.new_zeros(pad)])
+    words = flat.view(torch.int16)
+    total = torch.zeros(2, dtype=torch.int64, device=words.device)
+    for lo in range(0, words.numel(), chunk):
+        part = words[lo : lo + chunk].to(torch.int64)
+        positions = torch.arange(lo, lo + part.numel(), device=words.device, dtype=torch.int64)
+        total[0] += part.sum()
+        total[1] += (part * ((positions % 2147483629) + 1)).sum()
+    return total
+
+
 def exact_digest(t: torch.Tensor, *, chunk: int = DIGEST_CHUNK) -> list[int]:
     """Two wrap-around int64 checksums of a tensor's bytes (on the tensor's device).
 
@@ -314,17 +333,7 @@ def exact_digest(t: torch.Tensor, *, chunk: int = DIGEST_CHUNK) -> list[int]:
     gradients by digest.
     """
 
-    flat = t.detach().contiguous().view(torch.uint8).reshape(-1)
-    pad = (-flat.numel()) % 2
-    if pad:
-        flat = torch.cat([flat, flat.new_zeros(pad)])
-    words = flat.view(torch.int16)
-    total = torch.zeros(2, dtype=torch.int64, device=words.device)
-    for lo in range(0, words.numel(), chunk):
-        part = words[lo : lo + chunk].to(torch.int64)
-        positions = torch.arange(lo, lo + part.numel(), device=words.device, dtype=torch.int64)
-        total[0] += part.sum()
-        total[1] += (part * ((positions % 2147483629) + 1)).sum()
+    total = digest_tensor(t, chunk=chunk)
     return [int(total[0]), int(total[1])]
 
 
@@ -425,7 +434,8 @@ def grid_readback(grid: h3_tp.Grid, *, sp: bool, ops) -> dict[str, Any]:
         "sp": sp,
         "tp_rank": grid.tp_rank,
         "cp_rank": grid.cp_rank,
-        "rank_order": "rank = cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+        "first_rank": grid.first_rank,
+        "rank_order": "first_rank + cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
         "tp_group_ranks": (
             dist.get_process_group_ranks(coll.group) if coll is not None else [rank]
         ),

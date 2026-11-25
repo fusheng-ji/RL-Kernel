@@ -39,6 +39,16 @@ class Grid:
     # Ulysses and the ring (``cp_mode="ring"``, any CP size) reproduce bitwise.
     attention: str = "interim"
     cp_mode: str = "ulysses"
+    # The ranks of this grid when it is not the whole world (one pipeline stage; ``None``: the
+    # world, or a single GPU), and the global rank of its first member.
+    group: Any = None
+    first_rank: int = 0
+
+    @property
+    def rank(self) -> int:
+        """This rank's position in the grid: ``cp_rank * tp + tp_rank``."""
+
+        return self.cp_rank * self.tp + self.tp_rank
 
     def seq_shard(self, length: int) -> par.SeqShard:
         return par.SeqShard(length, self.cp, self.cp_rank)
@@ -74,8 +84,13 @@ def make_grid(
     local_size: int | None = None,
     attention: str = "interim",
     cp_mode: str = "ulysses",
+    pp: int = 1,
 ) -> Grid:
     """Rank ``r`` is ``(cp_rank, tp_rank) = divmod(r, tp)``; TP groups are consecutive ranks.
+
+    With ``pp > 1`` the world is ``pp`` such grids of ``tp * cp`` consecutive ranks each (one per
+    pipeline stage, ``h3_pipeline``), and the rank's own one is returned. Every rank creates the
+    groups of every grid, in one order.
 
     ``local_size`` (ranks per node) selects the cross-node collective when the TP group spans
     nodes; ``None`` means the TP group is on one node (CUDA IPC fixed tree).
@@ -90,22 +105,26 @@ def make_grid(
         raise ValueError("the ring continues the H3 kernels' dK/dV chain: use attention='h3_full'")
     check_ulysses_heads(tp, cp, attention=attention, cp_mode=cp_mode)
     world, rank = dist.get_world_size(), dist.get_rank()
-    if world != tp * cp:
-        raise ValueError(f"world {world} != tp {tp} x cp {cp}")
-    cp_rank, tp_rank = divmod(rank, tp)
-    tp_ranks = [list(range(c * tp, (c + 1) * tp)) for c in range(cp)]
+    size = tp * cp
+    if pp < 1 or world != size * pp:
+        raise ValueError(f"world {world} != tp {tp} x cp {cp}" + (f" x pp {pp}" if pp != 1 else ""))
+    stage, in_stage = divmod(rank, size)
+    cp_rank, tp_rank = divmod(in_stage, tp)
+    bases = range(0, world, size)
+    tp_ranks = [list(range(b + c * tp, b + (c + 1) * tp)) for b in bases for c in range(cp)]
     tp_groups = [dist.new_group(ranks) for ranks in tp_ranks]
-    cp_groups = [dist.new_group(list(range(t, world, tp))) for t in range(tp)]
+    cp_groups = [dist.new_group(list(range(b + t, b + size, tp))) for b in bases for t in range(tp)]
+    grids = [dist.new_group(list(range(b, b + size))) for b in bases] if pp > 1 else [None]
     collective: DeterministicCollective | HierarchicalCollective | None = None
     if tp > 1:
-        mine = tp_groups[cp_rank]
+        mine = tp_groups[stage * cp + cp_rank]
         if local_size is not None and local_size < tp:
             collective = HierarchicalCollective(
                 local_size,
                 mine,
                 torch.cuda.current_device(),
                 max_size_bytes=256 << 20,
-                group_ranks=tp_ranks,  # every rank creates all TP groups' subgroups (CP > 1)
+                group_ranks=tp_ranks,  # every rank creates all TP groups' subgroups
             )
         else:
             collective = DeterministicCollective(
@@ -117,9 +136,11 @@ def make_grid(
         tp_rank,
         cp_rank,
         collective,
-        cp_groups[tp_rank] if cp > 1 else None,
+        cp_groups[stage * tp + tp_rank] if cp > 1 else None,
         attention,
         cp_mode,
+        grids[stage],
+        stage * size,
     )
 
 

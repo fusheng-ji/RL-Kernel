@@ -16,6 +16,9 @@ those projections outside the grid raises.
 
 The checkpoint already stores the dtypes ``from_pretrained(torch_dtype=torch.bfloat16)`` gives
 (FP32 for the modules Diffusers keeps in FP32, BF16 otherwise), and tensors are loaded as stored.
+
+With ``stage`` (a pipeline stage, ``h3_pipeline.StageSpec``) only the parameters the stage owns are
+read; the modules of the other stages keep their parameters on ``meta`` and raise when called.
 """
 
 from __future__ import annotations
@@ -61,6 +64,12 @@ def _refuse_outside_grid(module, args):
     )
 
 
+def _refuse_off_stage(module, args):
+    """Forward pre-hook of a module another pipeline stage owns (its parameters are on ``meta``)."""
+
+    raise RuntimeError("this module's parameters are on another pipeline stage (h3_sharded_load)")
+
+
 def cut_shard(view, shape: tuple[int, ...], how: str, tp: int, tp_rank: int) -> torch.Tensor:
     """This rank's shard of a weight of ``shape`` from ``view`` (a tensor or safetensors slice).
 
@@ -101,9 +110,12 @@ def load_sharded_model(
     device: torch.device | str,
     *,
     config_overrides: dict[str, Any] | None = None,
+    stage: Any = None,
 ):
     """The H3 transformer with this rank's projection shards (see the module docstring).
 
+    ``stage`` loads only what that pipeline stage owns (``stage.owns_parameter(name)`` and
+    ``stage.owns_block(index)``). Every stage keeps the parameter-free ``rope`` and ``time_proj``.
     ``config_overrides`` (tests only, e.g. ``num_layers``) changes the model built; checkpoint
     tensors of blocks the model does not have are not read.
     """
@@ -124,9 +136,10 @@ def load_sharded_model(
     if missing:
         raise ValueError(f"checkpoint lacks {len(missing)} model parameters, e.g. {missing[:3]}")
 
+    owned = [n for n in params if stage is None or stage.owns_parameter(n)]
     shards: dict[int, dict[str, torch.Tensor]] = {}
     by_file: dict[str, list[str]] = {}
-    for name in params:
+    for name in owned:
         by_file.setdefault(weight_map[name], []).append(name)
     for file, names in sorted(by_file.items()):
         with safe_open(str(root / file), framework="pt") as f:
@@ -151,7 +164,20 @@ def load_sharded_model(
         for key, buf in list(buffer_owner._buffers.items()):
             if buf is not None:
                 buffer_owner._buffers[key] = buf.to(device)
+    if stage is not None:
+        off = {n.rpartition(".")[0] for n in set(params) - set(owned)}
+        # the module that holds the parameter and every module above it up to the top-level one
+        # (``time_embedder``, ``transformer_blocks.7``), whose forward would run it
+        for name in sorted(off):
+            parts = name.split(".")
+            top = 2 if parts[0] == BLOCKS else 1
+            for depth in range(top, len(parts) + 1):
+                module = model.get_submodule(".".join(parts[:depth]))
+                if _refuse_off_stage not in module._forward_pre_hooks.values():
+                    module.register_forward_pre_hook(_refuse_off_stage)
     for index, block in enumerate(model.transformer_blocks):
+        if stage is not None and not stage.owns_block(index):
+            continue
         tensors = shards.get(index, {})
         if set(tensors) != set(SHARD_SOURCES):
             raise ValueError(
