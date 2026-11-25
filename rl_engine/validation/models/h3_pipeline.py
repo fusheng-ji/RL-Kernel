@@ -471,6 +471,16 @@ class _Shape:
     audio: tuple[int, ...]
 
 
+@dataclass(frozen=True)
+class _Facts:
+    """What every rank must know of parameters it may not hold (``Pipeline._facts``)."""
+
+    hidden: torch.dtype
+    velocities: tuple[torch.dtype, torch.dtype]
+    temb_grad: bool
+    keyed: bool
+
+
 class Pipeline:
     """The H3 transformer on this rank's stage (see the module docstring).
 
@@ -508,37 +518,64 @@ class Pipeline:
 
     # --- what is refused ------------------------------------------------------------------
 
-    def _temb_requires_grad(self, grad: bool) -> bool:
-        """Whether ``temb`` carries a gradient: decided by stage 0, agreed by every rank."""
+    def _facts(self, grad: bool) -> _Facts:
+        """What the boundaries need to know of the parameters, agreed by every rank.
 
-        mine = grad and any(p.requires_grad for p in self.model.time_embedder.parameters())
-        flags = _gather(self.layout, (self.layout.stage.first, mine), self.layout.world)
-        first = {f for is_first, f in flags if is_first}
-        if len(first) != 1:
-            raise ValueError("the first stage's ranks disagree on a trainable time_embedder")
-        return first.pop()
+        Each fact comes from the stage that owns the module: elsewhere the parameter is a
+        placeholder the loader left on ``meta``, whose dtype and ``requires_grad`` mean nothing.
+        (A wrong dtype is a receive buffer of the wrong size: NCCL waits for the rest of it.)
+        """
 
-    def _check(self, passes, loss_fn, schedule: str, temb_grad: bool) -> None:
+        model, stage = self.model, self.layout.stage
+        mine: dict[str, Any] = {}
+        if stage.first:
+            # the text stream sets the packed sequence's dtype
+            mine["hidden"] = model.context_embedder.weight.dtype
+            mine["temb_grad"] = grad and any(
+                p.requires_grad for p in model.time_embedder.parameters()
+            )
+        if stage.last:  # the heads' weights set the velocities'
+            mine["velocities"] = (model.proj_out.weight.dtype, model.audio_proj_out.weight.dtype)
+        keyed = self._keyed_rows_train()
+        everyone = _gather(self.layout, (mine, keyed), self.layout.world)
+        agreed: dict[str, Any] = {}
+        for key in ("hidden", "temb_grad", "velocities"):
+            values = {m[key] for m, _ in everyone if key in m}
+            if len(values) != 1:
+                raise ValueError(
+                    f"the ranks that own it disagree on {key}: {sorted(map(str, values))}"
+                )
+            agreed[key] = values.pop()
+        return _Facts(**agreed, keyed=any(k for _, k in everyone))
+
+    def _check(self, passes, loss_fn, schedule: str, facts: _Facts) -> None:
         grid = self.layout.grid
         if schedule not in SCHEDULES:
             raise ValueError(f"unknown schedule {schedule!r}")
         if not passes:
             raise ValueError("no passes")
-        if temb_grad and (grid.cp > 1 or self.sp):
+        if facts.temb_grad and (grid.cp > 1 or self.sp):
             # under CP / SP a rank's blocks hold its rows only, so its ``temb`` gradient is partial
             # (``norm_out``'s is not): no chain over the stages would be the unsplit gradient
             raise ValueError("a trainable time_embedder needs cp=1 and no sequence parallelism")
-        if len(passes) > 1 and loss_fn is not None and self._keyed_rows_train():
+        if len(passes) > 1 and loss_fn is not None and facts.keyed:
             raise ValueError(
                 "one canonical backward session holds one pass of the keyed rows: freeze proj_in / "
                 "proj_out, or run one pass per call"
             )
 
     def _keyed_rows_train(self) -> bool:
+        """Whether a keyed row this stage owns is trainable."""
+
         if not self.strict_boundaries:
             return False
         mods = ("proj_in", "proj_out", "token_refiner")
-        return any(p.requires_grad for m in mods for p in getattr(self.model, m).parameters())
+        return any(
+            p.requires_grad
+            for m in mods
+            for name, p in getattr(self.model, m).named_parameters()
+            if self.layout.stage.owns_parameter(f"{m}.{name}")
+        )
 
     # --- the execution context --------------------------------------------------------------
 
@@ -611,8 +648,8 @@ class Pipeline:
         passes = [{k: p[k] for k in p if k != "return_dict"} for p in passes]
         layout, stage = self.layout, self.layout.stage
         check_requests(layout, passes)
-        temb_grad = self._temb_requires_grad(loss_fn is not None)
-        self._check(passes, loss_fn, schedule, temb_grad)
+        facts = self._facts(loss_fn is not None)
+        self._check(passes, loss_fn, schedule, facts)
         outputs: list[tuple[torch.Tensor, torch.Tensor]] = []
         losses: list[torch.Tensor] = []
         grad = torch.enable_grad() if loss_fn is not None else torch.no_grad()
@@ -622,16 +659,16 @@ class Pipeline:
             module = _StageModule(self.model, layout, passes, trace, self.corrupt)
             for first, count, kind in self._groups(passes, schedule):
                 out, loss = self._run_group(
-                    module, passes[first], first, count, kind, loss_fn, temb_grad
+                    module, passes[first], first, count, kind, loss_fn, facts
                 )
                 outputs += out
                 losses += loss
         self._verify(module)
         if stage.pp > 1:
-            outputs, losses = self._share(passes, outputs, losses, loss_fn is not None)
+            outputs, losses = self._share(passes, outputs, losses, facts, loss_fn is not None)
         return outputs, losses
 
-    def _run_group(self, module, example, first, count, kind, loss_fn, temb_grad):
+    def _run_group(self, module, example, first, count, kind, loss_fn, facts: _Facts):
         """One schedule over passes ``first .. first + count - 1`` (equal shapes)."""
 
         from torch.distributed.pipelining import PipelineStage, Schedule1F1B, ScheduleGPipe
@@ -663,16 +700,15 @@ class Pipeline:
             return [outs[n] for n in sorted(outs)], losses
 
         grad = loss_fn is not None
-        # the text stream sets the packed sequence's dtype; the heads' weights the velocities'
         boundary = (
+            _meta((shape.video[0], shape.rows, hidden), facts.hidden, grad),
             _meta(
-                (shape.video[0], shape.rows, hidden), self.model.context_embedder.weight.dtype, grad
+                (shape.timesteps, self.model.config.time_embed_dim), torch.float32, facts.temb_grad
             ),
-            _meta((shape.timesteps, self.model.config.time_embed_dim), torch.float32, temb_grad),
         )
         velocities = (
-            _meta(shape.video, self.model.proj_out.weight.dtype, grad),
-            _meta(shape.audio, self.model.audio_proj_out.weight.dtype, grad),
+            _meta(shape.video, facts.velocities[0], grad),
+            _meta(shape.audio, facts.velocities[1], grad),
         )
         pipe = PipelineStage(
             module,
@@ -721,7 +757,7 @@ class Pipeline:
         if problems:
             raise HandoffError("; ".join(problems[:8]))
 
-    def _share(self, passes, outputs, losses, grad: bool):
+    def _share(self, passes, outputs, losses, facts: _Facts, grad: bool):
         """The last stage's velocities and losses on every rank of the column (copies)."""
 
         layout = self.layout
@@ -730,12 +766,11 @@ class Pipeline:
         for n, inputs in enumerate(passes):
             shape = self._shape(inputs)
             pair = []
-            heads = (self.model.proj_out, self.model.audio_proj_out)
             for k, size in enumerate((shape.video, shape.audio)):
                 t = (
                     outputs[n][k].detach().contiguous()
                     if layout.stage.last
-                    else torch.empty(size, dtype=heads[k].weight.dtype, device=device)
+                    else torch.empty(size, dtype=facts.velocities[k], device=device)
                 )
                 dist.broadcast(t, src=src, group=layout.column)
                 pair.append(t)

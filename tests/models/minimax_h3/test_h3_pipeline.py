@@ -148,6 +148,19 @@ def layout_of(pp, sizes=None):
     return pipe.Layout(stage, grid, column)
 
 
+def unload_off_stage(model, stage):
+    """What the sharded loader leaves of the other stages: trainable ``meta`` placeholders.
+
+    FP64 (the loader leaves the default dtype, which may happen to be the right one), so any use of
+    a placeholder's dtype shows.
+    """
+    for name, p in list(model.named_parameters()):
+        if not stage.owns_parameter(name):
+            owner, _, leaf = name.rpartition(".")
+            empty = torch.empty(p.shape, dtype=torch.float64, device="meta")
+            setattr(model.get_submodule(owner), leaf, torch.nn.Parameter(empty))
+
+
 # --- real gloo ranks -----------------------------------------------------------------------------
 
 
@@ -214,6 +227,7 @@ def _staged(rank, world, *, sizes, checkpoint, schedule, lengths, dtype, frozen_
             m.enable_gradient_checkpointing()
     reference = unsplit(ref_model, passes)
     layout = layout_of(world, sizes)
+    unload_off_stage(model, layout.stage)
     runner = ProviderPipeline(model, layout, sp=False, strict_boundaries=False)
     mine = with_grads(passes)
     outs, losses = runner.run(mine, loss_fn, trace=Trace(), schedule=schedule)
@@ -323,6 +337,35 @@ def test_the_staged_model_equals_the_unsplit_one_bitwise(
         frozen_time=frozen_time,
     )
     assert results == [[]] * pp
+
+
+def _keyed(rank, world, *, trainable):
+    """The refusal of two strict passes on this rank (``None``: not refused), and both dtypes."""
+    model = tiny_model().requires_grad_(False)
+    model.proj_out.requires_grad_(trainable)  # on the last stage only
+    layout = layout_of(world)
+    unload_off_stage(model, layout.stage)
+    runner = ProviderPipeline(model, layout, sp=False, strict_boundaries=True)
+    facts = runner._facts(True)
+    try:
+        runner.run(with_grads([request(), request(1)]), loss_fn, trace=Trace())
+        refused = None
+    except ValueError as exc:
+        refused = str(exc)
+    return facts.hidden, facts.velocities, facts.temb_grad, refused
+
+
+@pytest.mark.parametrize("trainable", [True, False])
+def test_every_rank_learns_of_parameters_from_the_stage_that_owns_them(trainable):
+    """A placeholder's dtype and ``requires_grad`` decide nothing, and a refusal is every rank's."""
+    results = run_ranks(3, _keyed, trainable=trainable)
+    for hidden, velocities, temb_grad, refused in results:
+        assert hidden == torch.bfloat16 and velocities == (torch.float32, torch.float32)
+        assert temb_grad is False
+        if trainable:
+            assert "one pass of the keyed rows" in refused
+        else:
+            assert refused is None
 
 
 def test_adding_each_stages_temb_sum_afterwards_is_not_the_unsplit_gradient():
