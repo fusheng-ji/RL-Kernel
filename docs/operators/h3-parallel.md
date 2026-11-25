@@ -191,7 +191,7 @@ between two renames can leave files of two steps; every rank raises then.
 `tools/validation/models/h3_grid_train_step.py --pp P` is G5 on a pipeline.
 
 Weights resident on the fullest rank, 8 GPUs (GiB, from the checkpoint): TP8 30.3, TP4 x PP2 18.2, TP2 x PP4
-12.6, PP8 10.0. TP keeps `adaln_proj.linear` (about 0.5 GiB per block) whole on every rank; stages split it.
+12.5, PP8 10.0. TP keeps `adaln_proj.linear` (about 0.5 GiB per block) whole on every rank; stages split it.
 
 ## LoRA on the grid (`h3-parallel-lora-v2`)
 
