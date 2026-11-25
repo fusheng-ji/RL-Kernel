@@ -789,7 +789,7 @@ def _grid_target(collective, dummy, *, pp, tp, cp, sp, cp_mode, sizes, schedule,
     model, ops = _grid_model(), hb.CandidateOps()
     for p in model.time_embedder.parameters():
         p.requires_grad_(trained_time)
-    passes = [_grid_request(n) for n in range(3)]
+    passes = [_grid_request(n) for n in range(max(3, pp + 1))]  # 1F1B needs one per stage
     singles = [dist.new_group([r]) for r in range(dist.get_world_size())]
     layout = pipe.make_layout(
         pp, tp, cp, total=BLOCKS, sizes=sizes, attention="h3_full", cp_mode=cp_mode
@@ -834,10 +834,11 @@ def _grid_target(collective, dummy, *, pp, tp, cp, sp, cp_mode, sizes, schedule,
         GridPipeline(model, alone, sp=False, strict_boundaries=False, ops=ops),
         lambda name, g: pm.shard_of(g, name, tp, grid.tp_rank),
     )
-    got = run(
-        GridPipeline(model, layout, sp=sp, strict_boundaries=False, ops=ops), lambda name, g: g
-    )
+    staged = GridPipeline(model, layout, sp=sp, strict_boundaries=False, ops=ops)
+    got = run(staged, lambda name, g: g)
     bad = []
+    if schedule == "1f1b" and staged._groups(passes, schedule) != [(0, len(passes), "1f1b")]:
+        bad.append("the passes did not run as 1F1B")
     for n in range(len(passes)):
         bad += [f"out{n}.{k}" for k in (0, 1) if not torch.equal(ref[0][n][k], got[0][n][k])]
         if stage.first:
@@ -878,7 +879,7 @@ def _grid_target(collective, dummy, *, pp, tp, cp, sp, cp_mode, sizes, schedule,
 def test_stages_on_the_grid_equal_the_single_gpu_run_bitwise(
     pp, tp, cp, sp, mode, sizes, schedule, trained_time, h3_block_weights_cuda
 ):
-    """Three accumulated passes: velocities, losses, input, weight-shard and time-embedder
+    """The accumulated passes: velocities, losses, input, weight-shard and time-embedder
     gradients of PP x TP x CP (x SP) equal the canonical single-GPU run bit for bit."""
     del h3_block_weights_cuda
     pytest.importorskip("triton")
