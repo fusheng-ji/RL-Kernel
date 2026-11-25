@@ -17,6 +17,7 @@ from rl_engine.backends.cuda.model_specific.minimax_h3 import parallel_lora as p
 from rl_engine.integrations.engines.train import h3_grid_actor as ga
 from rl_engine.validation.models import h3_lora
 from rl_engine.validation.models import h3_parallel_model as pm
+from rl_engine.validation.models import h3_pipeline as pipe
 from rl_engine.validation.models import h3_tp
 
 R = 2  # LoRA rank of the stubs
@@ -543,3 +544,300 @@ def test_a_shard_that_sinks_twice_counts_once():
     actor._sink(index, name, torch.ones_like(p))
     assert actor._received == {(index, name)}
     assert torch.equal(p.grad, 2 * torch.ones_like(p))
+
+
+# --- a pipeline stage (``h3-pipeline-v1``) -------------------------------------------------------
+
+
+def _stage_layout(pp_rank, *, tp=4, cp=2, tp_rank=1, cp_rank=0, pp=2, blocks=2, **groups):
+    grid = h3_tp.Grid(
+        tp,
+        cp,
+        tp_rank,
+        cp_rank,
+        None,
+        None,
+        "h3_full",
+        "ring",
+        groups.get("group"),
+        pp_rank * tp * cp,
+    )
+    stage = pipe.StageSpec.make(blocks, pp, pp_rank)
+    return pipe.Layout(stage, grid, groups.get("column"))
+
+
+def _stage_model(stage, *, tp=4, tp_rank=1, refiner=True, seed=0):
+    model = _model(tp, tp_rank, refiner=refiner and stage.first, seed=seed)
+    pipe.drop_off_stage_lora(model, stage)
+    return model
+
+
+def _stage_actor(pp_rank, model=None, **kw):
+    layout = _stage_layout(pp_rank, **kw)
+    model = model or _stage_model(layout.stage, tp=layout.grid.tp, tp_rank=layout.grid.tp_rank)
+    return ga.H3GridActor(model, layout.grid, sp=True, strict_boundaries=False, pipeline=layout)
+
+
+class TestStageParameters:
+    def test_the_stages_hold_every_tensor_once_under_its_global_name(self):
+        """Block indices stay global; the refiner's tensors are on the first stage."""
+        first, last = _stage_actor(0), _stage_actor(1)
+        assert all(n.startswith(("0.", "refiner.")) for n in first.names)
+        assert all(n.startswith("1.") for n in last.names)
+        assert first.names + last.names != sorted(first.names) and not set(first.names) & set(
+            last.names
+        )
+        assert set(first.names) | set(last.names) == set(_actor().names)
+        assert set(first.digests()) == set(first.names) and set(last.digests()) == set(last.names)
+        whole = _actor().digests()
+        assert {**first.digests(), **last.digests()} == whole
+
+    def test_attach_lora_fills_the_stage_only(self):
+        """``attach_lora(stage=)`` leaves the other stages' blocks and the refiner empty."""
+        shapes = h3_lora.SHAPES
+        model = _Model()
+        stage = pipe.StageSpec.make(2, 2, 1)
+        h3_lora.attach_lora(model, 4, 1, rank=R, device="cpu", refiner=True, stage=stage)
+        assert pm.LORA_ATTR not in model.transformer_blocks[0].__dict__
+        assert set(model.transformer_blocks[1].__dict__[pm.LORA_ATTR]["tensors"]) == set(shapes)
+        assert not h3_lora.has_refiner_lora(model)
+
+    def test_refuses_what_is_on_another_stage(self):
+        """A block LoRA or a refiner LoRA another stage should hold."""
+        with pytest.raises(ValueError, match="block 1 holds a LoRA but is on another stage"):
+            _stage_actor(0, _model())
+        stage = pipe.StageSpec.make(2, 2, 1)
+        model = _model()
+        pipe.drop_off_stage_lora(model, stage)
+        with pytest.raises(ValueError, match="the refiner is on the first stage"):
+            _stage_actor(1, model)
+        with pytest.raises(ValueError, match="the pipeline splits 4 blocks"):
+            _stage_actor(0, _model(), blocks=4)
+        layout = _stage_layout(0)
+        with pytest.raises(ValueError, match="the pipeline layout's grid"):
+            ga.H3GridActor(_model(), _grid(), sp=True, strict_boundaries=False, pipeline=layout)
+
+    def test_only_the_first_stage_exchanges_refiner_gradients(self, monkeypatch):
+        """``finish_grads`` runs in the stage's own group; the last stage joins nothing."""
+        seen = []
+        monkeypatch.setattr(
+            ga.dist, "all_reduce", lambda t, op=None, group=None: seen.append(group)
+        )
+        monkeypatch.setattr(
+            ga.dist, "broadcast", lambda t, src, group=None: seen.append((src, group))
+        )
+        monkeypatch.setattr(ga.dist, "get_global_rank", lambda group, r: 0)
+        last = _stage_actor(1)
+        last.world = 16
+        last.finish_grads()
+        assert seen == []
+        first = _stage_actor(0, group="stage 0")
+        first.world = 16
+        for p in first._refiner:
+            p.grad = torch.ones_like(p)
+        first.finish_grads()
+        assert seen[:2] == ["stage 0"] * 2
+        assert seen[2:] == [(0, "stage 0")] * len(first._refiner)
+
+
+class _Runner:
+    """Stands in for ``h3_pipeline.Pipeline``: calls the sink as a backward of the passes would."""
+
+    def __init__(self, skip=None, times=1):
+        self.skip, self.times, self.ops = skip, times, None
+
+    def run(self, passes, loss_fn, *, trace, schedule, configure):
+        state = SimpleNamespace(grad_sink=None)
+        configure(state)
+        video = torch.ones(1)
+        for n in range(len(passes)):
+            for key, p in self.actor._by_leaf.items():
+                if (n, key) != self.skip:
+                    for _ in range(self.times):
+                        state.grad_sink(*key, torch.full_like(p, n + 1.0))
+        return [(video, video)] * len(passes), [
+            loss_fn(n, video, video) for n in range(len(passes))
+        ]
+
+
+class TestPasses:
+    def _actor(self, **kw):
+        actor = _stage_actor(1)
+        actor._runner = _Runner(**kw)
+        actor._runner.actor = actor
+        return actor
+
+    def test_the_gradients_of_the_passes_accumulate_in_order(self):
+        """Three passes: one gradient per shard, the sum in pass order; losses per pass."""
+        actor = self._actor()
+        losses, outputs = actor.forward_backward_many([{}] * 3, lambda n, v, a: v.sum() * n)
+        assert [float(x) for x in losses] == [0.0, 1.0, 2.0] and len(outputs) == 3
+        for p in actor._by_leaf.values():
+            assert torch.equal(p.grad, torch.full_like(p, 6.0))
+
+    def test_a_shard_without_a_gradient_in_one_pass_is_refused(self):
+        """A shard that got two gradients of three is named, not silently averaged."""
+        key = next(iter(_stage_actor(1)._by_leaf))
+        with pytest.raises(RuntimeError, match="without a gradient in every pass"):
+            self._actor(skip=(1, key)).forward_backward_many([{}] * 3, lambda n, v, a: v.sum())
+
+    def test_without_a_pipeline_the_passes_run_one_after_the_other(self, monkeypatch):
+        """``forward_backward`` per pass, with its own number."""
+        actor, calls = _actor(), []
+
+        def forward_backward(inputs, loss_fn):
+            calls.append((inputs, float(loss_fn(torch.ones(1), torch.ones(1)))))
+            return torch.tensor(calls[-1][1]), ("v", "a")
+
+        monkeypatch.setattr(actor, "forward_backward", forward_backward)
+        losses, outputs = actor.forward_backward_many(["x", "y"], lambda n, v, a: v.sum() * (n + 5))
+        assert calls == [("x", 5.0), ("y", 6.0)]
+        assert [float(v) for v in losses] == [5.0, 6.0] and outputs == [("v", "a")] * 2
+
+
+class TestStageState:
+    def test_a_stage_checkpoint_round_trips_and_names_its_stage(self):
+        """Another stage's, another split's or an unsplit checkpoint is refused, and vice versa."""
+        actor = _stage_actor(1)
+        for p in actor.parameters():
+            p.data.add_(0.5)
+        saved = actor.checkpoint_state()
+        assert saved["stage"] == (2, 1, 1, 2) and saved["lora"]["first_block"] == 1
+        fresh = _stage_actor(1)
+        fresh.load_checkpoint_state(saved)
+        assert fresh.digests() == actor.digests()
+        unsplit = _actor()
+        for other in (_stage_actor(0), unsplit):
+            with pytest.raises(ValueError, match="checkpoint of pipeline stage"):
+                other.load_checkpoint_state(saved)
+        with pytest.raises(ValueError, match="checkpoint of pipeline stage None"):
+            fresh.load_checkpoint_state(unsplit.checkpoint_state())
+        assert "stage" not in unsplit.checkpoint_state()  # the files of earlier runs still load
+
+    def _states(self):
+        return [_stage_actor(s).lora_state() for s in (0, 1)]
+
+    def test_the_merged_stages_are_the_unsplit_state(self):
+        """The same file content as the actor without a pipeline writes."""
+        merged, whole = ga.H3GridActor.merge_stages(self._states(), 2), _actor().lora_state()
+        assert set(merged) == set(whole)
+        assert merged["digests"] == whole["digests"] and merged["scale"] == whole["scale"]
+        for got, want in zip(merged["shards"], whole["shards"]):
+            for target, parts in want.items():
+                for part, t in parts.items():
+                    assert torch.equal(got[target][part], t)
+
+    @pytest.mark.parametrize(
+        ("break_it", "match"),
+        [
+            (lambda s: s.reverse(), "starts at block 1, expected 0"),
+            (lambda s: s.pop(), "the stages hold 1 blocks of 2"),
+            (lambda s: s.append(s[1]), "starts at block 1, expected 2"),
+            (lambda s: s[1].update(scale=1.0), "another rank's LoRA or scale"),
+            (lambda s: s[1].update(tp_rank=2), "another rank's LoRA or scale"),
+            (lambda s: s[1].update(refiner=[]), "stage 1 holds a refiner LoRA"),
+            (lambda s: s[1]["shards"][0]["attn.to_q"]["A"].add_(1), "arrived changed from stage 1"),
+            (lambda s: s[1]["shards"][0]["attn.to_q"].pop("A"), "sent no such tensor"),
+        ],
+    )
+    def test_a_merge_that_is_not_the_whole_lora_is_refused(self, break_it, match):
+        """Order, count, identity, refiner placement and every tensor's bytes."""
+        states = self._states()
+        break_it(states)
+        with pytest.raises(ValueError, match=match):
+            ga.H3GridActor.merge_stages(states, 2)
+
+
+def _export_rank(rank, world, *, directory, fail_stage=None):
+    import torch.distributed as dist
+
+    column = dist.new_group(list(range(world)))
+    actor = _stage_actor(rank, tp=1, cp=1, tp_rank=0, column=column)
+    if fail_stage == rank:
+        ga.torch.save = _disk_full
+    try:
+        out = actor.export(directory)
+        return out["path"], out["digests"]
+    except RuntimeError as exc:
+        return "error", str(exc)
+
+
+def _disk_full(*args, **kwargs):
+    raise OSError("disk full")
+
+
+class TestStageExport:
+    def test_the_first_stage_writes_what_the_rollout_installs(self, tmp_path):
+        """Two gloo stages: one file, every rank knows its digests, and it installs whole."""
+        from tests.models.minimax_h3.test_h3_pipeline import run_ranks
+
+        results = run_ranks(2, _export_rank, directory=str(tmp_path))
+        path = str(tmp_path / "cp0" / "rank0.pt")
+        assert [r[0] for r in results] == [path, path] and results[0][1] == results[1][1]
+        sent = torch.load(path, weights_only=True)
+        receiver = _Model()
+        got = h3_lora.install_lora_shards(
+            receiver,
+            sent["shards"],
+            1,
+            0,
+            scale=sent["scale"],
+            expected=sent["digests"],
+            device="cpu",
+            refiner=sent["refiner"],
+        )
+        assert got == results[0][1] == _actor(_model(1, 0), tp=1, cp=1, tp_rank=0).digests()
+        assert sorted(p.name for p in (tmp_path / "cp0").iterdir()) == ["rank0.pt"]
+
+    def test_a_failed_write_publishes_nothing_and_raises_on_every_rank(self, tmp_path):
+        """The old file stays; no rank returns."""
+        from tests.models.minimax_h3.test_h3_pipeline import run_ranks
+
+        old = tmp_path / "cp0" / "rank0.pt"
+        old.parent.mkdir()
+        old.write_bytes(b"old")
+        results = run_ranks(2, _export_rank, directory=str(tmp_path), fail_stage=0)
+        for kind, text in results:
+            assert kind == "error" and "export failed on ranks [(0, 'OSError: disk full')]" in text
+        assert old.read_bytes() == b"old"
+
+
+class TestG5Pipeline:
+    def _steps(self, names, **change):
+        step = dict(
+            norm=1.0,
+            losses=[0.5],
+            grads={n: "g" + n for n in names},
+            digests={n: "d" + n for n in names},
+        )
+        return [{**step, **change}]
+
+    NAMES = ("0.attn.to_q.A", "49.attn.to_q.A", "refiner.0.attn.to_q.A")
+
+    def test_a_stage_is_compared_on_what_it_holds(self):
+        """The last stage holds block 49 only; a wrong or missing tensor of its own is found."""
+        from tools.validation.models.h3_grid_train_step import _compare, _owns
+
+        last = pipe.StageSpec.make(50, 2, 1)
+        assert [n for n in self.NAMES if _owns(last, n)] == ["49.attn.to_q.A"]
+        ref, mine = self._steps(self.NAMES), self._steps(["49.attn.to_q.A"])
+        assert _compare(ref, mine, last)["blocks_bitwise"]
+        assert not _compare(ref, self._steps([]), last)["blocks_bitwise"]
+        assert not _compare(ref, self._steps(self.NAMES), last)["blocks_bitwise"]
+        assert not _compare(ref, self._steps(["49.attn.to_q.A"], losses=[0.6]), last)[
+            "blocks_bitwise"
+        ]
+        assert not _compare(ref, mine)["blocks_bitwise"]  # without a pipeline it must hold all
+
+    def test_an_injection_on_a_rank_of_another_stage_is_refused(self):
+        """``--inject`` must name a tensor the rank holds."""
+        import argparse
+
+        from tools.validation.models.h3_grid_train_step import _check_args
+
+        args = dict(optimizer_steps=2, passes=3, tp=2, cp=1, pp=2)
+        ok = argparse.Namespace(**args, inject="30.attn.to_v.A:3")
+        _check_args(argparse.ArgumentParser(), ok)
+        for bad in ("30.attn.to_v.A:1", "3.attn.to_v.A:2", "3.attn.to_v.A:4"):
+            with pytest.raises(SystemExit):
+                _check_args(argparse.ArgumentParser(), argparse.Namespace(**args, inject=bad))

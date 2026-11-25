@@ -240,16 +240,21 @@ def attach_lora(
     b_zero: bool = False,
     device: torch.device | str = "cuda",
     refiner: bool = False,
+    stage=None,
 ) -> int:
     """Put this TP rank's shards of a seeded LoRA on every transformer block of ``model``
     (replacing any), for ``h3_parallel_model.parallel_model_execution``; with ``refiner`` also a
-    whole one on each token-refiner block, without it any refiner LoRA is removed. Returns the
-    bytes held."""
+    whole one on each token-refiner block, without it any refiner LoRA is removed. With ``stage``
+    (an ``h3_pipeline.StageSpec``) only what that stage owns holds one: its blocks, and the refiner
+    on the first stage. Returns the bytes held."""
 
     from rl_engine.validation.models import h3_parallel_model as pm
 
     held = 0
     for index, block in enumerate(model.transformer_blocks):
+        if stage is not None and not stage.owns_block(index):
+            block.__dict__.pop(pm.LORA_ATTR, None)
+            continue
         full = make_block_lora(index, rank=rank, seed=seed, b_zero=b_zero)
         tensors = {
             t: {p: v.to(device) for p, v in parts.items()}
@@ -263,7 +268,7 @@ def attach_lora(
             pm.LORA_ATTR,
             {"tp": tp, "tp_rank": tp_rank, "scale": alpha / rank, "tensors": tensors},
         )
-    if refiner:
+    if refiner and (stage is None or stage.first):
         held += attach_refiner_lora(
             model, rank=rank, alpha=alpha, seed=seed, b_zero=b_zero, device=device
         )

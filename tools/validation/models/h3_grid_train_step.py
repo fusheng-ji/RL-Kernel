@@ -26,6 +26,12 @@ checks that both CP replicas of each TP rank hold the same tensors.
     srun --ntasks 8 python tools/validation/models/h3_grid_train_step.py \\
         --checkpoint <dir with transformer/> --tp 4 --cp 2 --sp --cp-mode ring --size 925 \\
         --provider-boundaries --refiner-lora --repeat --out <dir>
+
+``--pp P`` runs the grid as ``P`` pipeline stages (``h3-pipeline-v1``; ``P * tp * cp`` ranks): each
+rank compares the tensors its stage holds, rank 0 checks that the ranks together hold every tensor
+of the canonical run, the passes of an optimizer step go through ``--schedule`` (the repeat through
+``--repeat-schedule``, so it also shows that the schedule changes no byte), and the exported files,
+written by the first stage, must hold the canonical run's final LoRA.
 """
 
 from __future__ import annotations
@@ -46,6 +52,7 @@ from rl_engine.backends.cuda.model_specific.minimax_h3 import parallel_lora as p
 from rl_engine.integrations.engines.rollout.vllm.h3_omni_model import tensor_digest
 from rl_engine.integrations.engines.train import h3_grid_actor as ga
 from rl_engine.validation.models import h3_lora
+from rl_engine.validation.models import h3_pipeline as pipe
 from rl_engine.validation.models import h3_sharded_load as sl
 from rl_engine.validation.models import h3_tp
 
@@ -112,8 +119,10 @@ def _prepare(model) -> None:
         p.requires_grad_(False)
 
 
-def _schedule(actor, opt, args, cut, inject=None) -> list[dict]:
+def _schedule(actor, opt, args, cut, inject=None, schedule="serial") -> list[dict]:
     """Run the schedule; after each optimizer step, the norm and ``cut(name, tensor)``'s digests.
+
+    On a pipeline the passes of one optimizer step are interleaved by ``schedule``.
 
     ``inject = (name, rank)``: before the first clip, global rank ``rank`` changes the first element
     of tensor ``name``'s accumulated gradient by about one BF16 step (a negative control; Adam's
@@ -122,12 +131,13 @@ def _schedule(actor, opt, args, cut, inject=None) -> list[dict]:
 
     steps = []
     for step in range(args.optimizer_steps):
-        losses, began = [], time.perf_counter()
-        for n in range(args.passes):
-            loss, _ = actor.forward_backward(
-                _inputs(args.size, step, n), _loss_fn(step, n, args.passes)
-            )
-            losses.append(float(loss))
+        began = time.perf_counter()
+        results, _ = actor.forward_backward_many(
+            [_inputs(args.size, step, n) for n in range(args.passes)],
+            lambda n, video, audio: _loss_fn(step, n, args.passes)(video, audio),
+            schedule=schedule,
+        )
+        losses = [float(loss) for loss in results]
         if inject is not None and step == 0 and actor.rank == inject[1]:
             g = actor.parameters()[actor.names.index(inject[0])].grad.view(-1)
             g[0] = g[0] * 1.0078125 + 2.0**-20
@@ -166,22 +176,43 @@ def _export(actor, out: Path, *, injected: bool) -> dict:
     """
 
     try:
-        path = actor.export(str(out / "export"))["path"]
+        exported = actor.export(str(out / "export"))
     except RuntimeError as exc:
         if not injected:
             raise
         return {"error": str(exc), "file_digests_equal": False, "cp_replicas_agree": False}
+    path = exported["path"]
     back = torch.load(path, weights_only=True)
+    mine = actor.digests()
     return {
         "path": os.path.relpath(path, out),
-        "file_digests_equal": back["digests"] == actor.digests(),
+        # a pipeline's file holds every stage's tensors; without one it holds exactly this rank's
+        "file_digests_equal": back["digests"] == exported["digests"]
+        and all(back["digests"].get(k) == v for k, v in mine.items())
+        and (actor.pipeline is not None or len(mine) == len(back["digests"])),
+        "file_digests": back["digests"],
         "cp_replicas_agree": True,  # export raises otherwise
     }
 
 
-def _compare(reference: list[dict], run: list[dict]) -> dict:
+def _owns(stage, name: str) -> bool:
+    """Whether the stage (``None``: no pipeline) holds the LoRA tensor ``name``."""
+
+    if stage is None:
+        return True
+    return stage.first if name.startswith("refiner.") else stage.owns_block(int(_split(name)[0]))
+
+
+def _compare(reference: list[dict], run: list[dict], stage=None) -> dict:
     out = []
-    for i, (ref, got) in enumerate(zip(reference, run)):
+    for i, (whole, got) in enumerate(zip(reference, run)):
+        ref = {
+            **whole,
+            **{
+                part: {k: v for k, v in whole[part].items() if _owns(stage, k)}
+                for part in ("digests", "grads")
+            },
+        }
         bad = sorted(k for k in ref["digests"] if ref["digests"][k] != got["digests"].get(k))
         bad_g = sorted(k for k in ref["grads"] if ref["grads"][k] != got["grads"].get(k))
         if set(ref["grads"]) != set(got["grads"]):
@@ -197,6 +228,7 @@ def _compare(reference: list[dict], run: list[dict]) -> dict:
                 "block_grads_mismatched": [k for k in bad_g if not k.startswith("refiner.")][:10],
                 "block_grad_mismatches": sum(1 for k in bad_g if not k.startswith("refiner.")),
                 "refiner_grad_mismatches": sum(1 for k in bad_g if k.startswith("refiner.")),
+                "other_tensors": sorted(set(got["digests"]) - set(ref["digests"]))[:10],
                 "tensors_compared": len(ref["digests"]),
                 "grads_compared": len(ref["grads"]),
             }
@@ -204,7 +236,11 @@ def _compare(reference: list[dict], run: list[dict]) -> dict:
     return {
         "steps": out,
         "blocks_bitwise": all(
-            s["norm_equal"] and not s["block_mismatches"] and not s["block_grad_mismatches"]
+            s["norm_equal"]
+            and s["losses_equal"]
+            and not s["block_mismatches"]
+            and not s["block_grad_mismatches"]
+            and not s["other_tensors"]
             for s in out
         )
         and len(run) == len(reference),
@@ -224,11 +260,16 @@ def _check_args(ap: argparse.ArgumentParser, args: argparse.Namespace) -> None:
     name, colon, at = args.inject.rpartition(":")
     if not colon or not at.isdecimal():
         ap.error("--inject takes NAME:RANK")
-    if int(at) >= args.tp * args.cp:
-        ap.error(f"--inject: no rank {at} in a tp {args.tp} x cp {args.cp} grid")
+    pp = getattr(args, "pp", 1)
+    if int(at) >= args.tp * args.cp * pp:
+        ap.error(f"--inject: no rank {at} in a pp {pp} x tp {args.tp} x cp {args.cp} run")
     if name.startswith("refiner."):
         # finish_grads replaces every rank's refiner gradients with rank 0's
         ap.error("--inject: the refiner broadcast would overwrite it; name a block tensor")
+    if pp > 1:  # every rank refuses alike
+        stage = pipe.StageSpec.make(50, pp, int(at) // (args.tp * args.cp))
+        if not stage.owns_block(int(_split(name)[0])):
+            ap.error(f"--inject: rank {at} is on another stage than {name}")
 
 
 def main() -> None:
@@ -251,6 +292,9 @@ def main() -> None:
     ap.add_argument("--lr", type=float, default=3e-4)
     ap.add_argument("--weight-decay", type=float, default=1e-4)
     ap.add_argument("--repeat", action="store_true")
+    ap.add_argument("--pp", type=int, default=1, help="pipeline stages")
+    ap.add_argument("--schedule", choices=pipe.SCHEDULES, default="1f1b")
+    ap.add_argument("--repeat-schedule", choices=pipe.SCHEDULES, default="serial")
     ap.add_argument(
         "--inject",
         help="NAME:RANK, e.g. 17.attn.to_v.A:2: perturb that gradient on that rank in the first "
@@ -271,8 +315,8 @@ def main() -> None:
         world_size=world,
         device_id=torch.device("cuda", local),
     )
-    if world != args.tp * args.cp:
-        raise SystemExit(f"world {world} != tp {args.tp} x cp {args.cp}")
+    if world != args.tp * args.cp * args.pp:
+        raise SystemExit(f"world {world} != tp {args.tp} x cp {args.cp} x pp {args.pp}")
     torch.backends.cuda.matmul.allow_tf32 = False
     torch.backends.cudnn.allow_tf32 = False
     singles = [dist.new_group([r]) for r in range(world)]  # every rank creates every group
@@ -285,7 +329,12 @@ def main() -> None:
         refiner=args.refiner_lora,
     )
     opt_kw = dict(lr=args.lr, weight_decay=args.weight_decay)
-    grid = h3_tp.make_grid(args.tp, args.cp, attention="h3_full", cp_mode=args.cp_mode)
+    layout = stage = None
+    if args.pp > 1:
+        layout = pipe.make_layout(args.pp, args.tp, args.cp, cp_mode=args.cp_mode)
+        grid, stage = layout.grid, layout.stage
+    else:
+        grid = h3_tp.make_grid(args.tp, args.cp, attention="h3_full", cp_mode=args.cp_mode)
     transformer = args.checkpoint / "transformer"
 
     # 1. canonical: the whole model and LoRA on Grid(1, 1); this rank's cut of each tensor
@@ -308,14 +357,14 @@ def main() -> None:
     torch.cuda.empty_cache()
 
     # 2. the grid, once (and again with --repeat), from the same initial LoRA
-    model = sl.load_sharded_model(transformer, grid.tp, grid.tp_rank, "cuda").eval()
+    model = sl.load_sharded_model(transformer, grid.tp, grid.tp_rank, "cuda", stage=stage).eval()
     _prepare(model)
     runs, exported = [], None
     rows = int(_inputs(args.size, 0, 0)["token_tags"].numel())  # before the peak is measured
     torch.cuda.reset_peak_memory_stats()
-    for _ in range(2 if args.repeat else 1):
-        h3_lora.attach_lora(model, grid.tp, grid.tp_rank, **lora_kw)
-        actor = ga.H3GridActor(model, grid, sp=args.sp, strict_boundaries=strict)
+    for schedule in (args.schedule, args.repeat_schedule)[: 2 if args.repeat else 1]:
+        h3_lora.attach_lora(model, grid.tp, grid.tp_rank, stage=stage, **lora_kw)
+        actor = ga.H3GridActor(model, grid, sp=args.sp, strict_boundaries=strict, pipeline=layout)
         opt = ga.make_optimizer(actor.parameters(), **opt_kw)
         inject = None
         if args.inject and not runs:
@@ -323,7 +372,7 @@ def main() -> None:
             if name not in actor.names:
                 raise SystemExit(f"--inject: no LoRA tensor {name!r}")
             inject = (name, int(at))
-        runs.append(_schedule(actor, opt, args, lambda name, t: t, inject))
+        runs.append(_schedule(actor, opt, args, lambda name, t: t, inject, schedule))
         if exported is None:
             exported = _export(actor, args.out, injected=inject is not None)
         readback = actor.readback()
@@ -344,7 +393,15 @@ def main() -> None:
         "optimizer_steps": args.optimizer_steps,
         "max_norm": args.max_norm,
         "norms": [s["norm"] for s in reference],
-        "grid_vs_canonical": _compare(reference, runs[0]),
+        "pp": args.pp,
+        "stage": None if stage is None else vars(stage),
+        "schedules": [args.schedule, args.repeat_schedule] if args.pp > 1 else None,
+        "grid_vs_canonical": _compare(reference, runs[0], stage),
+        "tensor_names": sorted(runs[0][0]["digests"]),
+        "canonical_tensors": len(reference[0]["digests"]),
+        "canonical_names": sorted(reference[0]["digests"]) if rank == 0 else None,
+        # the file the rollout would load holds this TP rank's cut of the canonical final LoRA
+        "export_is_canonical": exported.pop("file_digests", None) == reference[-1]["digests"],
         "grid_repeat": _compare(runs[0], runs[1]) if args.repeat else None,
         "export": exported,
         "grid_seconds_per_step": [s["seconds"] for s in runs[0]],
@@ -371,13 +428,20 @@ def main() -> None:
         and (not args.repeat or report["grid_repeat"]["blocks_bitwise"])
         and (not (args.repeat and args.refiner_lora) or report["grid_repeat"]["refiner_bitwise"])
         and exported["file_digests_equal"]
+        and (args.pp == 1 or report["export_is_canonical"])
     )
     everyone = [None] * world
     dist.all_gather_object(everyone, report)
     if rank == 0:
         args.out.mkdir(parents=True, exist_ok=True)
+        names = everyone[0].pop("canonical_names")
+        held = set().union(*(r["tensor_names"] for r in everyone))
+        for r in everyone:
+            del r["tensor_names"]
+            r.pop("canonical_names", None)
         summary = {
-            "pass": all(r["pass"] for r in everyone),
+            "pass": all(r["pass"] for r in everyone) and held == set(names),
+            "every_canonical_tensor_is_held": held == set(names),
             "ranks": [
                 {
                     "rank": r["rank"],

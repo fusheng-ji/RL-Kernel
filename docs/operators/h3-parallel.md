@@ -180,6 +180,16 @@ gradients of the stage's blocks (and of the LoRA), with `--train-time-embedder` 
 the default CUDA backward of that gather does not repeat, so the single-GPU run differs from itself), and on rank 0 that the stages hold every block exactly once. `--inject` (a block's row) and
 `--inject-handoff BLOCK:ROW[:grad][:wire]` are the negative controls.
 
+**Training step.** `H3GridActor(pipeline=layout)` (`h3-grid-train-v1`) is one stage of the LoRA training step:
+tensors keep their global block names, the refiner LoRA is on the first stage (whose ranks alone
+exchange its gradients), `forward_backward_many` pipelines the passes of an optimizer step and returns the
+losses and outputs on every rank, the exact clip counts over all stages, and a checkpoint names its stage.
+`export` gathers every stage's blocks to the first stage, checks every tensor's digest, and replaces the
+files the rollout reads (`cp<c>/rank<t>.pt`, all 50 blocks, unchanged format) only after every file was
+written and read back and the replicas agree. The replacement is one rename per file, so a failure
+between two renames can leave files of two steps; every rank raises then.
+`tools/validation/models/h3_grid_train_step.py --pp P` is G5 on a pipeline.
+
 Weights resident on the fullest rank, 8 GPUs (GiB, from the checkpoint): TP8 30.3, TP4 x PP2 18.2, TP2 x PP4
 12.6, PP8 10.0. TP keeps `adaln_proj.linear` (about 0.5 GiB per block) whole on every rank; stages split it.
 
