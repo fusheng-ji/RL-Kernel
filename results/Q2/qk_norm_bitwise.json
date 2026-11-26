@@ -1,0 +1,649 @@
+{
+  "kind": "h3_bitwise_reuse",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "qk_norm",
+  "rl_kernel_commit": "c56b81c4f61ad725c361c964e466d6c256e878a5",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": "0.16.0rc0"
+    },
+    "mode_environment": {
+      "plain": {}
+    }
+  },
+  "cases": [
+    1,
+    257,
+    925,
+    4097
+  ],
+  "results": {
+    "diffusers": {
+      "source": "diffusers nn.RMSNorm(128) (F.rms_norm)",
+      "vs rl_kernel": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 1842176,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 27,
+              "numel": 1842176,
+              "max_abs": 0.00390625
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 29367296,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 576,
+              "numel": 29367296,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": false,
+              "differ": 58,
+              "numel": 128,
+              "max_abs": 4.0
+            }
+          }
+        },
+        "925": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 6630400,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 134,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        }
+      }
+    },
+    "rl_kernel": {
+      "source": "rl-kernel H3QKRMSNormCudaOp",
+      "vs diffusers": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 1842176,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 27,
+              "numel": 1842176,
+              "max_abs": 0.00390625
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 29367296,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 576,
+              "numel": 29367296,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": false,
+              "differ": 58,
+              "numel": 128,
+              "max_abs": 4.0
+            }
+          }
+        },
+        "925": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 6630400,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 134,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        }
+      }
+    },
+    "rl_kernel_generic_cuda": {
+      "source": "rl-kernel generic RMSNormCudaOp (the Qwen QK-norm operator)",
+      "vs diffusers": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 2,
+              "numel": 1842176,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 46,
+              "numel": 1842176,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 73,
+              "numel": 29367296,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 633,
+              "numel": 29367296,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": false,
+              "differ": 58,
+              "numel": 128,
+              "max_abs": 4.0
+            }
+          }
+        },
+        "925": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 22,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 157,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        }
+      },
+      "vs rl_kernel": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 2,
+              "numel": 1842176,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 44,
+              "numel": 1842176,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 73,
+              "numel": 29367296,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 696,
+              "numel": 29367296,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": false,
+              "differ": 1,
+              "numel": 128,
+              "max_abs": 0.0625
+            }
+          }
+        },
+        "925": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 22,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 165,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        }
+      }
+    },
+    "rl_kernel_generic_triton": {
+      "source": "rl-kernel generic RMSNormTritonOp",
+      "vs diffusers": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 3,
+              "numel": 1842176,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 35,
+              "numel": 1842176,
+              "max_abs": 0.00390625
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 77,
+              "numel": 29367296,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 600,
+              "numel": 29367296,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 58,
+              "numel": 128,
+              "max_abs": 4.0
+            }
+          }
+        },
+        "925": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 17,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 141,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        }
+      },
+      "vs rl_kernel": {
+        "1": {
+          "out": [
+            {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": true,
+              "differ": 0,
+              "numel": 7168,
+              "max_abs": 0.0
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "257": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 3,
+              "numel": 1842176,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 37,
+              "numel": 1842176,
+              "max_abs": 0.00390625
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        },
+        "4097": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 77,
+              "numel": 29367296,
+              "max_abs": 0.015625
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 646,
+              "numel": 29367296,
+              "max_abs": 0.015625
+            },
+            "w": {
+              "equal": false,
+              "differ": 1,
+              "numel": 128,
+              "max_abs": 0.0625
+            }
+          }
+        },
+        "925": {
+          "out": [
+            {
+              "equal": false,
+              "differ": 17,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            }
+          ],
+          "grads": {
+            "x": {
+              "equal": false,
+              "differ": 155,
+              "numel": 6630400,
+              "max_abs": 0.0078125
+            },
+            "w": {
+              "equal": true,
+              "differ": 0,
+              "numel": 128,
+              "max_abs": 0.0
+            }
+          }
+        }
+      }
+    },
+    "sglang_qknorm": {
+      "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+    },
+    "liger": {
+      "unavailable": "ModuleNotFoundError: No module named 'liger_kernel'"
+    },
+    "transformer_engine": {
+      "unavailable": "ModuleNotFoundError: No module named 'transformer_engine'"
+    }
+  }
+}

@@ -1,0 +1,503 @@
+{
+  "kind": "h3_prior_art",
+  "rfc": "RL-Align/RL-Kernel#420",
+  "op": "qk_norm",
+  "rl_kernel_commit": "c56b81c4f61ad725c361c964e466d6c256e878a5",
+  "tracked_tree_dirty": false,
+  "environment": {
+    "gpu": "NVIDIA H100",
+    "capability": [
+      9,
+      0
+    ],
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "python": "3.12.15",
+    "tf32": false,
+    "libraries": {
+      "torch": "2.13.0+cu130",
+      "triton": "3.7.1",
+      "diffusers": "0.41.0",
+      "vllm": "0.30.0",
+      "flashinfer-python": "0.6.18.post1",
+      "sglang": null,
+      "liger-kernel": null,
+      "transformer_engine": null,
+      "megatron-core": "0.16.0rc0"
+    },
+    "megatron_source_commit": null,
+    "mode_environment": {
+      "plain": {}
+    }
+  },
+  "quick": false,
+  "results": {
+    "plain": {
+      "diffusers": {
+        "source": "diffusers nn.RMSNorm(128) (F.rms_norm)",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "1025": {
+              "rows": 3075,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 4097,
+            "sub_batch_sizes": [
+              1,
+              7,
+              257,
+              1025,
+              4097
+            ],
+            "sub_batches": 2094,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025
+            ],
+            "probe_rows": [
+              0,
+              131,
+              259,
+              387,
+              515,
+              643,
+              771,
+              1024
+            ],
+            "comparisons": 2112,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "257": {
+            "fwd_rel_err": 0.0025036253753653926,
+            "grad_rel_err": {
+              "x": 0.002115001212446301,
+              "w": 0.0023029253784270717
+            },
+            "fwd_us": 23.00800010561943,
+            "fwd_bwd_us": 204.76800203323364
+          },
+          "925": {
+            "fwd_rel_err": 0.002470468745755297,
+            "grad_rel_err": {
+              "x": 0.002116772983535259,
+              "w": 0.0026561005403043666
+            },
+            "fwd_us": 45.35999894142151,
+            "fwd_bwd_us": 337.39200234413147
+          },
+          "4097": {
+            "fwd_rel_err": 0.002223299192977358,
+            "grad_rel_err": {
+              "x": 0.0019266020083286643,
+              "w": 0.002371879115457424
+            },
+            "fwd_us": 162.84799575805664,
+            "fwd_bwd_us": 493.3120012283325
+          }
+        }
+      },
+      "rl_kernel_generic_cuda": {
+        "source": "rl-kernel generic RMSNormCudaOp (the Qwen QK-norm operator)",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "1025": {
+              "rows": 3075,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 4097,
+            "sub_batch_sizes": [
+              1,
+              7,
+              257,
+              1025,
+              4097
+            ],
+            "sub_batches": 2094,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025
+            ],
+            "probe_rows": [
+              0,
+              131,
+              259,
+              387,
+              515,
+              643,
+              771,
+              1024
+            ],
+            "comparisons": 2112,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "257": {
+            "fwd_rel_err": 0.0025036253753653926,
+            "grad_rel_err": {
+              "x": 0.002115001212446301,
+              "w": 0.0023029253784270717
+            },
+            "fwd_us": 51.24799907207489,
+            "fwd_bwd_us": 3127.6479959487915
+          },
+          "925": {
+            "fwd_rel_err": 0.002470468745755297,
+            "grad_rel_err": {
+              "x": 0.002116672662293974,
+              "w": 0.0026561005403043666
+            },
+            "fwd_us": 68.7520019710064,
+            "fwd_bwd_us": 13267.007827758789
+          },
+          "4097": {
+            "fwd_rel_err": 0.002223299192977358,
+            "grad_rel_err": {
+              "x": 0.001926510699951979,
+              "w": 0.002172168755139867
+            },
+            "fwd_us": 201.55199617147446,
+            "fwd_bwd_us": 87934.01718139648
+          }
+        }
+      },
+      "rl_kernel_generic_triton": {
+        "source": "rl-kernel generic RMSNormTritonOp",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "1025": {
+              "rows": 3075,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 4097,
+            "sub_batch_sizes": [
+              1,
+              7,
+              257,
+              1025,
+              4097
+            ],
+            "sub_batches": 2094,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025
+            ],
+            "probe_rows": [
+              0,
+              131,
+              259,
+              387,
+              515,
+              643,
+              771,
+              1024
+            ],
+            "comparisons": 2112,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "257": {
+            "fwd_rel_err": 0.0025036253753653926,
+            "grad_rel_err": {
+              "x": 0.002115001212446301,
+              "w": 0.0023029253784270717
+            },
+            "fwd_us": 68.81600245833397,
+            "fwd_bwd_us": 2998.1600046157837
+          },
+          "925": {
+            "fwd_rel_err": 0.002470468745755297,
+            "grad_rel_err": {
+              "x": 0.002116772983535259,
+              "w": 0.0026561005403043666
+            },
+            "fwd_us": 114.43199962377548,
+            "fwd_bwd_us": 15538.608074188232
+          },
+          "4097": {
+            "fwd_rel_err": 0.002223299192977358,
+            "grad_rel_err": {
+              "x": 0.0019266020083286643,
+              "w": 0.002172168755139867
+            },
+            "fwd_us": 187.42399662733078,
+            "fwd_bwd_us": 87485.19897460938
+          }
+        }
+      },
+      "transformer_engine": {
+        "unavailable": "ModuleNotFoundError: No module named 'transformer_engine'"
+      },
+      "liger": {
+        "unavailable": "ModuleNotFoundError: No module named 'liger_kernel'"
+      },
+      "sglang_qknorm": {
+        "unavailable": "ModuleNotFoundError: No module named 'sglang'"
+      },
+      "rl_kernel": {
+        "source": "rl-kernel H3QKRMSNormCudaOp",
+        "has_backward": true,
+        "batch_invariance": {
+          "all_rows": {
+            "64": {
+              "rows": 192,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "257": {
+              "rows": 771,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            },
+            "1025": {
+              "rows": 3075,
+              "fwd_differ": 0,
+              "rowgrad_differ": 0
+            }
+          },
+          "params_repeatable": true,
+          "full_vs_sub_batches": {
+            "full_batch": 4097,
+            "sub_batch_sizes": [
+              1,
+              7,
+              257,
+              1025,
+              4097
+            ],
+            "sub_batches": 2094,
+            "fwd_differ": 0,
+            "rowgrad_differ": 0
+          },
+          "batch_size_sweep": {
+            "batch_sizes": [
+              1,
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9,
+              15,
+              16,
+              17,
+              31,
+              32,
+              33,
+              63,
+              64,
+              65,
+              127,
+              128,
+              129,
+              255,
+              256,
+              257,
+              511,
+              512,
+              513,
+              1023,
+              1024,
+              1025
+            ],
+            "probe_rows": [
+              0,
+              131,
+              259,
+              387,
+              515,
+              643,
+              771,
+              1024
+            ],
+            "comparisons": 2112,
+            "differ": 0,
+            "first_failures": []
+          },
+          "batch_invariant": true
+        },
+        "accuracy_latency": {
+          "257": {
+            "fwd_rel_err": 0.0025036253753653926,
+            "grad_rel_err": {
+              "x": 0.002115001212446301,
+              "w": 0.0023029253784270717
+            },
+            "fwd_us": 41.120000183582306,
+            "fwd_bwd_us": 284.0479910373688
+          },
+          "925": {
+            "fwd_rel_err": 0.002470468745755297,
+            "grad_rel_err": {
+              "x": 0.002116772983535259,
+              "w": 0.0026561005403043666
+            },
+            "fwd_us": 56.20799958705902,
+            "fwd_bwd_us": 283.32799673080444
+          },
+          "4097": {
+            "fwd_rel_err": 0.002223299192977358,
+            "grad_rel_err": {
+              "x": 0.0019266020083286643,
+              "w": 0.002172168755139867
+            },
+            "fwd_us": 176.92799866199493,
+            "fwd_bwd_us": 571.152001619339
+          }
+        }
+      }
+    }
+  }
+}
