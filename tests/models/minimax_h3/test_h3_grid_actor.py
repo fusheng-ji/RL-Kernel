@@ -486,6 +486,38 @@ class TestG5Arguments:
             self._check(**kw)
 
 
+class TestG5InjectTarget:
+    """Under PP only the injected rank's stage holds the tensor; the others must not refuse."""
+
+    def _target(self, monkeypatch, rank, spec, elsewhere_missing=False):
+        from tools.validation.models import h3_grid_train_step as g5
+
+        def all_reduce(t, op=None, group=None):
+            assert op == g5.dist.ReduceOp.MIN
+            if elsewhere_missing:
+                t.zero_()
+
+        monkeypatch.setattr(g5.dist, "all_reduce", all_reduce)
+        actor = SimpleNamespace(
+            rank=rank, names=["30.attn.to_v.A"] if rank >= 4 else ["3.attn.to_v.A"]
+        )
+        return g5._inject_target(actor, spec, "cpu")
+
+    def test_a_rank_of_another_stage_accepts_a_tensor_it_does_not_hold(self, monkeypatch):
+        assert self._target(monkeypatch, 1, "30.attn.to_v.A:5") == ("30.attn.to_v.A", 5)
+
+    def test_the_injected_rank_holds_the_tensor(self, monkeypatch):
+        assert self._target(monkeypatch, 5, "30.attn.to_v.A:5") == ("30.attn.to_v.A", 5)
+
+    def test_the_injected_rank_refuses_a_tensor_it_does_not_hold(self, monkeypatch):
+        with pytest.raises(SystemExit, match="rank 5 holds no LoRA tensor"):
+            self._target(monkeypatch, 5, "31.attn.to_v.A:5")
+
+    def test_every_rank_refuses_when_the_injected_rank_does(self, monkeypatch):
+        with pytest.raises(SystemExit, match="rank 5 holds no LoRA tensor"):
+            self._target(monkeypatch, 1, "31.attn.to_v.A:5", elsewhere_missing=True)
+
+
 class TestRefinerBroadcast:
     def _two_ranks(self, monkeypatch, disagree_on=None):
         actor = _actor()

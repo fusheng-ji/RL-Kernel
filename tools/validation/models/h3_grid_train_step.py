@@ -168,6 +168,20 @@ def _schedule(actor, opt, args, cut, inject=None, schedule="serial") -> list[dic
     return steps
 
 
+def _inject_target(actor, spec: str, device) -> tuple[str, int]:
+    """``--inject NAME:RANK`` as ``(name, rank)``, refused on every rank alike.
+
+    Only rank ``RANK`` must hold ``NAME``: under PP the other stages hold none of its block.
+    """
+
+    name, at = spec.rsplit(":", 1)
+    held = torch.tensor([int(actor.rank != int(at) or name in actor.names)], device=device)
+    dist.all_reduce(held, op=dist.ReduceOp.MIN)
+    if not held.item():
+        raise SystemExit(f"--inject: rank {at} holds no LoRA tensor {name!r}")
+    return name, int(at)
+
+
 def _export(actor, out: Path, *, injected: bool) -> dict:
     """Export the LoRA and check the file against it.
 
@@ -368,10 +382,7 @@ def main() -> None:
         opt = ga.make_optimizer(actor.parameters(), **opt_kw)
         inject = None
         if args.inject and not runs:
-            name, at = args.inject.rsplit(":", 1)
-            if name not in actor.names:
-                raise SystemExit(f"--inject: no LoRA tensor {name!r}")
-            inject = (name, int(at))
+            inject = _inject_target(actor, args.inject, "cuda")
         runs.append(_schedule(actor, opt, args, lambda name, t: t, inject, schedule))
         if exported is None:
             exported = _export(actor, args.out, injected=inject is not None)
