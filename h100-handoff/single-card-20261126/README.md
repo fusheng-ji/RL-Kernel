@@ -1,4 +1,4 @@
-# H100 单卡任务包：T7、T8、T9、QK（2026-11-26）
+# H100 单卡任务包：T7、T8、T9、QK、QK2（2026-11-26）
 
 本文位于 fork 分支 `handoff/h100-single-card-20261126` 的 `h100-handoff/single-card-20261126/README.md`。这个分支从 `handoff/h100-h3-image-20261123` 切出，后来又合并了它的 `8644ab8f8`，所以 T7、T8 和 T9 的文件夹也在里面。QK 的文件夹在 `handoff/h100-h3-qk-rmsnorm-20261125` 上。
 
@@ -266,6 +266,36 @@ CUDA_VISIBLE_DEVICES=$GPU <E>/bin/python tools/validation/models/h3_bitwise_reus
 - Q2：`rl_kernel` 和 `diffusers` 都 batch-invariant；`rl_kernel` 的 forward 在每个尺寸上都等于 provider 的字节。`<E>` 里没装的库（TransformerEngine、Liger、SGLang）报 unavailable 即可，不要安装。时间照实记录。
 
 **交回**：新建分支 `handoff/h100-h3-qk-rmsnorm-results-20261125`，`results/` 下放 `Q1/tests.txt`、`Q2/`、`c-file.txt`、`build.log`、`nvidia-smi.txt`、`env.txt`、`pip-list.txt`（torch、triton、diffusers 和 survey 用到的库），以及 `SUMMARY.md`（写清每一处偏差，包括第 2 条的 `$GPU`）。
+
+### QK2：补 QK 的两个缺口（几分钟，单卡）
+
+QK 结果（`handoff/h100-h3-qk-rmsnorm-results-20261125` @ `25d570b34`）已经核对过，Q2 与期望一致。Q1 还有两处没测到：
+- `RL_KERNEL_H3_WEIGHTS` 没设，两个真实权重的 QK 测试被跳过了；
+- `test_ws1_candidate_evidence` 失败（det_gemm 回退：`cuBLASLt no-split-K startup contract is unavailable`），但没在 base `13d0f906` 上对照，也没交回 `build.log`，看不出编译时是否设了 `KERNEL_ALIGN_DET_GEMM_SM90=1`。
+
+用 QK 那次的 `<WQ>`（`c56b81c4`）。如果当时编译没带 `KERNEL_ALIGN_DET_GEMM_SM90=1`，按上面 QK 一节的命令重新编译，并保留 `build.log`。再用同样的参数在第二个 worktree `<WB>`（`13d0f906`）上编译：
+
+```bash
+cd <REPO> && git worktree add --detach <WB> 13d0f906
+cd <WB> && RL_KERNEL_H3_STRICT=1 RL_KERNEL_REQUIRE_EXT=1 KERNEL_ALIGN_DET_GEMM_SM90=1 <E>/bin/python setup.py build_ext --inplace > <OUT>/QK2/build-base.log 2>&1
+mkdir -p <OUT>/QK2
+# a. 两个真实权重的 QK 测试，权重目录要有 h3_block0.safetensors 和 hf_full/
+cd <WQ> && RL_KERNEL_H3_WEIGHTS=<WEIGHTS> PYTHONPATH=<WQ>:<PROVIDER>/src CUDA_VISIBLE_DEVICES=$GPU <E>/bin/python -m pytest -v -p no:cacheprovider -rfs \
+  tests/models/minimax_h3/test_h3_qk_rmsnorm.py -k "test_block_0s_weights or test_the_strict_block_and_refiner_bind_the_row" > <OUT>/QK2/qk-weights.txt 2>&1
+# b. 同一个 ws1 证据测试，head 和 base 各跑一次
+for W in <WQ> <WB>; do n=$(basename $W)
+  cd $W && <E>/bin/python -c "from rl_engine.backends.extension import _C; print(_C.__file__)" > <OUT>/QK2/c-file-$n.txt
+  PYTHONPATH=$W:<PROVIDER>/src CUDA_VISIBLE_DEVICES=$GPU <E>/bin/python -m pytest -v -p no:cacheprovider -rfs \
+    tests/validation/operators/test_ws1_candidate_evidence.py::test_ws1_cuda_and_triton_candidate_runtime_provenance > <OUT>/QK2/ws1-evidence-$n.txt 2>&1
+done
+```
+
+**期望**：
+- a：两个测试都 **passed**，不能是 skipped。skipped 说明权重目录不对，修好再跑。
+- b：head 和 base 的结果一样（都过或都失败）时，这个失败不是 QK 引入的，照实交回。只在 head 上失败就是发现。
+- 在 `env.txt` 里只记**运行用的那个**环境的 torch、diffusers、transformers 版本（上次 `env.txt` 和 `pip-list.txt` 来自两个环境）。
+
+**交回**：加到 `handoff/h100-h3-qk-rmsnorm-results-20261125` 的 `results/QK2/`，先 fetch，不要 force push。包括 `build.log`（若重新编译）、`build-base.log`、两个 `c-file-*.txt`、`qk-weights.txt`、两个 `ws1-evidence-*.txt`、`nvidia-smi.txt`、`env.txt`，`SUMMARY.md` 追加一行 QK2。
 
 ---
 
