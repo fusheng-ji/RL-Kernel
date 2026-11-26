@@ -80,3 +80,6 @@ All three fail with `TypeError: MiniMaxH3Scheduler.__init__() got an unexpected 
 - The first launch of T6 on node-a was stopped within a minute of starting, because another job of the same allocation had just started on that node and the GPU was no longer guaranteed idle. Its partial records are in `not-green-attempts/T6-aborted-on-node-a/`; it produced no result.
 - The 8 PNG files are not committed, as the README asks.
 | T7 | mix, $GPU not 0; mem 95G/8CPU; other busy in env | evidence exit=0; data logged |
+| T8 | mix node-a, $GPU not hardcoded 0; 95G/8CPU; run-t2i exit=0; run-edit ValueError ffn_down row count; run-b exit=2 | partial |
+| T9-t2i | mix; ext True h3-cuda-strict-v1; run-a/b exit=0; pytest-suite 530 passed 1 failed | ok |
+| T9-edit | job time limit 12:00; run-a started 17:14 terminated before complete | not-green |

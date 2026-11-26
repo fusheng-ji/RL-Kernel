@@ -1,0 +1,1027 @@
+{
+ "binding_counts": {
+  "interim": 6,
+  "reference": 3,
+  "row": 30
+ },
+ "bindings": {
+  "block.adaln_projection": {
+   "backend": "H3AdaLNProjectionCudaOp",
+   "rfc_row": "adaln_projection_3mod",
+   "status": "row"
+  },
+  "block.attention": {
+   "backend": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+   "rfc_row": "h3_full_attention",
+   "status": "row"
+  },
+  "block.ffn_down": {
+   "backend": "rl_engine.ops.gemm.h3_ffn_down.H3FFNDownGemmOp",
+   "rfc_row": "h3_ffn_down_gemm",
+   "status": "row"
+  },
+  "block.ffn_gate_up": {
+   "backend": "rl_engine.ops.gemm.h3_projections.H3FFNGateUpGemmOp",
+   "rfc_row": "h3_ffn_gate_up_gemm",
+   "status": "row"
+  },
+  "block.k_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "block.k_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "block.norm1": {
+   "backend": "H3RMSNormCudaOp.forward_modulated",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "block.norm2": {
+   "backend": "H3RMSNormCudaOp.forward_modulated",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "block.o_proj": {
+   "backend": "rl_engine.ops.gemm.h3_projections.H3AttentionOGemmOp",
+   "rfc_row": "h3_attention_o_gemm",
+   "status": "row"
+  },
+  "block.q_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "block.q_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "block.residual_attn": {
+   "backend": "H3GateResidualCudaOp",
+   "rfc_row": "adaln_gate_residual",
+   "status": "row"
+  },
+  "block.residual_mlp": {
+   "backend": "H3GateResidualCudaOp",
+   "rfc_row": "adaln_gate_residual",
+   "status": "row"
+  },
+  "block.rope_k": {
+   "backend": "provider_apply_rotary",
+   "rfc_row": "h3_mm_rope_3axis_partial",
+   "status": "reference"
+  },
+  "block.rope_q": {
+   "backend": "provider_apply_rotary",
+   "rfc_row": "h3_mm_rope_3axis_partial",
+   "status": "reference"
+  },
+  "block.swiglu": {
+   "backend": "SwiGLUCudaOp",
+   "rfc_row": "h3_swiglu",
+   "status": "interim"
+  },
+  "block.v_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "context_embedder": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3TextContextProjectionCudaOp",
+   "rfc_row": "text_context_projection",
+   "status": "row"
+  },
+  "norm_out": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.final_adaln_out.H3FinalAdaLNOutCudaOp",
+   "rfc_row": "final_adaln_out",
+   "status": "row"
+  },
+  "packed": {
+   "backend": "rl_engine.backends.cuda.packing.packed_index_copy.PackedIndexCopyCudaOp",
+   "rfc_row": "packed_index_copy",
+   "status": "row"
+  },
+  "pdd_proj_out": {
+   "backend": "triton-video-output-projection-fp32",
+   "rfc_row": "video_output_projection_fp32",
+   "status": "row"
+  },
+  "proj_in": {
+   "backend": "triton-video-input-projection-fp32",
+   "rfc_row": "video_input_projection_fp32",
+   "status": "row"
+  },
+  "refiner.attention": {
+   "backend": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+   "rfc_row": "h3_full_attention",
+   "status": "row"
+  },
+  "refiner.ffn_down": {
+   "backend": "rl_engine.ops.gemm.h3_ffn_down.H3FFNDownGemmOp",
+   "rfc_row": "h3_ffn_down_gemm",
+   "status": "row"
+  },
+  "refiner.ffn_gate_up": {
+   "backend": "rl_engine.ops.gemm.h3_projections.H3FFNGateUpGemmOp",
+   "rfc_row": "h3_ffn_gate_up_gemm",
+   "status": "row"
+  },
+  "refiner.k_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "refiner.k_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "refiner.norm1": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "refiner.norm2": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "refiner.o_proj": {
+   "backend": "rl_engine.ops.gemm.h3_projections.H3AttentionOGemmOp",
+   "rfc_row": "h3_attention_o_gemm",
+   "status": "row"
+  },
+  "refiner.q_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "refiner.q_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "refiner.residual_attn": {
+   "backend": "torch.add (BF16 elementwise)",
+   "rfc_row": "token_refiner_block",
+   "status": "row"
+  },
+  "refiner.residual_mlp": {
+   "backend": "torch.add (BF16 elementwise)",
+   "rfc_row": "token_refiner_block",
+   "status": "row"
+  },
+  "refiner.swiglu": {
+   "backend": "SwiGLUCudaOp",
+   "rfc_row": "h3_swiglu",
+   "status": "interim"
+  },
+  "refiner.v_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "time_embedder": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.timestep_mlp.H3TimestepMLPCudaOp",
+   "rfc_row": "timestep_mlp_fp32",
+   "status": "row"
+  },
+  "time_proj": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.timestep_sinusoid.H3TimestepSinusoidCudaOp",
+   "rfc_row": "timestep_sinusoid_h3",
+   "status": "row"
+  },
+  "velocity": {
+   "backend": "torch.Tensor.index_select on canonical image rows",
+   "rfc_row": "image_transformer_output_gather",
+   "status": "reference"
+  }
+ },
+ "contract_id": "h3-image-ws1-full-v1",
+ "environment": {
+  "compute_capability": [
+   9,
+   0
+  ],
+  "cuda": "13.0",
+  "diffusers": "0.42.0.dev0",
+  "extension_in_checkout": true,
+  "gpu": "NVIDIA H100",
+  "python": "3.12.15",
+  "torch": "2.13.0+cu130",
+  "triton": "3.7.1"
+ },
+ "fixtures": {
+  "t2i_example": {
+   "canvas": [
+    3552,
+    4736
+   ],
+   "final_latent_sha256": "cdb3579eacf48e6693a8b9fc07b5556cad9ae66de8ead69ea3a61308d7bec7a0",
+   "num_reference_rows": 0,
+   "output_sha256": "067eff9b8c79af68a626756bf3bf2703fe6e5d22b1eb4be659a57c5bf063f3e5",
+   "provider": {
+    "against_variants": {
+     "output_psnr_db": {
+      "strict": 18.21481914894462,
+      "variants_min": 17.714151763392266
+     },
+     "per_step": [
+      {
+       "latent_ratio": 0.9360966755638553,
+       "step": 0,
+       "velocity_target_ratio": 0.9360966636110134
+      },
+      {
+       "latent_ratio": 0.9322849768342054,
+       "step": 1,
+       "velocity_target_ratio": 0.9337307567118093
+      },
+      {
+       "latent_ratio": 0.9334565507301187,
+       "step": 2,
+       "velocity_target_ratio": 0.9390094842651149
+      },
+      {
+       "latent_ratio": 0.9319720607166291,
+       "step": 3,
+       "velocity_target_ratio": 0.936158847755256
+      },
+      {
+       "latent_ratio": 0.934533853981445,
+       "step": 4,
+       "velocity_target_ratio": 0.9424687972441995
+      },
+      {
+       "latent_ratio": 0.9346776667004255,
+       "step": 5,
+       "velocity_target_ratio": 0.9390908915496169
+      }
+     ],
+     "variants": 2
+    },
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "input_mismatches": [],
+    "schedule_equal": true,
+    "seconds": 21.6,
+    "strict_vs_provider": {
+     "first_drift": {
+      "kind": "velocity",
+      "pdd_head": 0,
+      "rows": "all_image",
+      "stage": "step",
+      "step": 0
+     },
+     "output_psnr_db": 18.21481914894462,
+     "per_step": [
+      {
+       "latent": 0.0014574625361244828,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.026412367820739746,
+       "step": 0,
+       "velocity_bitwise": false,
+       "velocity_target": 0.03267607184983979
+      },
+      {
+       "latent": 0.024600097434434413,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.3697660565376282,
+       "step": 1,
+       "velocity_bitwise": false,
+       "velocity_target": 0.20475919253945993
+      },
+      {
+       "latent": 0.07491314044041318,
+       "latent_bitwise": false,
+       "latent_max_abs": 1.0611321926116943,
+       "step": 2,
+       "velocity_bitwise": false,
+       "velocity_target": 0.2378202652359679
+      },
+      {
+       "latent": 0.17328077332856878,
+       "latent_bitwise": false,
+       "latent_max_abs": 2.109673798084259,
+       "step": 3,
+       "velocity_bitwise": false,
+       "velocity_target": 0.2494382471874872
+      },
+      {
+       "latent": 0.2712327445057996,
+       "latent_bitwise": false,
+       "latent_max_abs": 3.550209641456604,
+       "step": 4,
+       "velocity_bitwise": false,
+       "velocity_target": 0.27424042109668334
+      },
+      {
+       "latent": 0.2899624154596127,
+       "latent_bitwise": false,
+       "latent_max_abs": 4.61510968208313,
+       "step": 5,
+       "velocity_bitwise": false,
+       "velocity_target": 0.2960830940231352
+      }
+     ]
+    },
+    "variants": {
+     "blas-cublaslt": {
+      "equal_to_default": true
+     },
+     "sdpa-cudnn": {
+      "equal_to_default": true
+     },
+     "sdpa-efficient": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 17.82709550838535,
+      "per_step": [
+       {
+        "latent": 0.0012931787865592638,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.0236208438873291,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_target": 0.02899285630665682
+       },
+       {
+        "latent": 0.025526463061409956,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.42593705654144287,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_target": 0.21248051612048513
+       },
+       {
+        "latent": 0.07786493363322955,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.9003950953483582,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_target": 0.24684798927691992
+       },
+       {
+        "latent": 0.1815634175730756,
+        "latent_bitwise": false,
+        "latent_max_abs": 1.831226885318756,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_target": 0.26235901423331875
+       },
+       {
+        "latent": 0.28387162317876946,
+        "latent_bitwise": false,
+        "latent_max_abs": 3.275612235069275,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_target": 0.28631005303987156
+       },
+       {
+        "latent": 0.3035149635562156,
+        "latent_bitwise": false,
+        "latent_max_abs": 4.341211438179016,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_target": 0.3097023278982347
+       }
+      ]
+     },
+     "sdpa-flash": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 17.714151763392266,
+      "per_step": [
+       {
+        "latent": 0.0015569572824800217,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.02848246693611145,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_target": 0.03490672824726362
+       },
+       {
+        "latent": 0.02638688603346358,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.3751797676086426,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_target": 0.21929147248028127
+       },
+       {
+        "latent": 0.08025348408752246,
+        "latent_bitwise": false,
+        "latent_max_abs": 1.006550371646881,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_target": 0.2532671599393803
+       },
+       {
+        "latent": 0.18592915027444765,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.0128076672554016,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_target": 0.26644863506401306
+       },
+       {
+        "latent": 0.29023319310504603,
+        "latent_bitwise": false,
+        "latent_max_abs": 3.4611709117889404,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_target": 0.2909809023901573
+       },
+       {
+        "latent": 0.31022717862001603,
+        "latent_bitwise": false,
+        "latent_max_abs": 4.4930455684661865,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_target": 0.31528694047342026
+       }
+      ]
+     }
+    }
+   },
+   "reference_latents": [],
+   "sequence_length": 16741,
+   "size": [
+    3552,
+    4736
+   ],
+   "source": "examples/request.t2i.json",
+   "strict": {
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "fixed_reference_rows": {
+     "fixed": null,
+     "num_reference_rows": 0
+    },
+    "peak_memory_gib": 69.2,
+    "seconds": 579.2
+   },
+   "task": "t2i"
+  },
+  "t2i_upscaled": {
+   "canvas": [
+    1760,
+    2368
+   ],
+   "controls": {
+    "batch_row_0": {
+     "partner_first_drift": null,
+     "peak_memory_gib": 66.7,
+     "request_first_drift": null,
+     "seconds": 76.6
+    },
+    "batch_row_1": {
+     "partner_first_drift": null,
+     "peak_memory_gib": 66.7,
+     "request_first_drift": null,
+     "seconds": 76.5
+    },
+    "loop_alone": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "first_drift": null,
+     "seconds": 40.1
+    },
+    "ok": true,
+    "partner": {
+     "differs_from_request": true,
+     "fixed_reference_rows": null,
+     "seed": 43
+    },
+    "permuted_first_drift": null,
+    "training": {
+     "0": {
+      "checkpointed": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 40.1
+      },
+      "checkpointed_again": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 36.01
+      },
+      "finite_and_nonzero": {
+       "image_rows": true,
+       "pdd_proj_out.0.bias": true,
+       "pdd_proj_out.0.weight": true,
+       "proj_in.bias": true,
+       "proj_in.weight": true,
+       "prompt_embeds": true
+      },
+      "gradient_norms": {
+       "image_rows": 1696.6968684785006,
+       "pdd_proj_out.0.bias": 697.3385773451502,
+       "pdd_proj_out.0.weight": 4537.5521422780885,
+       "proj_in.bias": 540.9267145530387,
+       "proj_in.weight": 1088.415462822422,
+       "prompt_embeds": 541.7118889336487
+      },
+      "gradients_equal": {
+       "checkpointed_again": true
+      },
+      "head": 0,
+      "ok": true,
+      "other_heads_have_no_gradient": true
+     },
+     "1": {
+      "checkpointed": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 35.98
+      },
+      "checkpointed_again": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 35.99
+      },
+      "finite_and_nonzero": {
+       "image_rows": true,
+       "pdd_proj_out.1.bias": true,
+       "pdd_proj_out.1.weight": true,
+       "proj_in.bias": true,
+       "proj_in.weight": true,
+       "prompt_embeds": true
+      },
+      "gradient_norms": {
+       "image_rows": 4013.7686894487515,
+       "pdd_proj_out.1.bias": 697.3385773451502,
+       "pdd_proj_out.1.weight": 3713.9023901394125,
+       "proj_in.bias": 535.7598193916641,
+       "proj_in.weight": 2083.372465164226,
+       "prompt_embeds": 273.13630849382207
+      },
+      "gradients_equal": {
+       "checkpointed_again": true
+      },
+      "head": 1,
+      "ok": true,
+      "other_heads_have_no_gradient": true
+     },
+     "2": {
+      "checkpointed": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 36.01
+      },
+      "checkpointed_again": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 35.97
+      },
+      "finite_and_nonzero": {
+       "image_rows": true,
+       "pdd_proj_out.2.bias": true,
+       "pdd_proj_out.2.weight": true,
+       "proj_in.bias": true,
+       "proj_in.weight": true,
+       "prompt_embeds": true
+      },
+      "gradient_norms": {
+       "image_rows": 3156.945433850885,
+       "pdd_proj_out.2.bias": 697.3385773451502,
+       "pdd_proj_out.2.weight": 3518.8759570098646,
+       "proj_in.bias": 222.4806440926366,
+       "proj_in.weight": 1716.5043397733693,
+       "prompt_embeds": 112.33050179512185
+      },
+      "gradients_equal": {
+       "checkpointed_again": true
+      },
+      "head": 2,
+      "ok": true,
+      "other_heads_have_no_gradient": true
+     },
+     "3": {
+      "checkpointed": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 36.02
+      },
+      "checkpointed_again": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 36.02
+      },
+      "finite_and_nonzero": {
+       "image_rows": true,
+       "pdd_proj_out.3.bias": true,
+       "pdd_proj_out.3.weight": true,
+       "proj_in.bias": true,
+       "proj_in.weight": true,
+       "prompt_embeds": true
+      },
+      "gradient_norms": {
+       "image_rows": 4918.301272148569,
+       "pdd_proj_out.3.bias": 697.3385773451502,
+       "pdd_proj_out.3.weight": 3650.9859080870697,
+       "proj_in.bias": 203.77324088923427,
+       "proj_in.weight": 2283.639892380141,
+       "prompt_embeds": 202.43366253466732
+      },
+      "gradients_equal": {
+       "checkpointed_again": true
+      },
+      "head": 3,
+      "ok": true,
+      "other_heads_have_no_gradient": true
+     },
+     "4": {
+      "checkpointed": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 36.06
+      },
+      "checkpointed_again": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 35.94
+      },
+      "finite_and_nonzero": {
+       "image_rows": true,
+       "pdd_proj_out.4.bias": true,
+       "pdd_proj_out.4.weight": true,
+       "proj_in.bias": true,
+       "proj_in.weight": true,
+       "prompt_embeds": true
+      },
+      "gradient_norms": {
+       "image_rows": 2001.5206369586626,
+       "pdd_proj_out.4.bias": 697.3385773451502,
+       "pdd_proj_out.4.weight": 4141.757249124943,
+       "proj_in.bias": 116.09480053390392,
+       "proj_in.weight": 929.6295295646204,
+       "prompt_embeds": 49.46732887558205
+      },
+      "gradients_equal": {
+       "checkpointed_again": true
+      },
+      "head": 4,
+      "ok": true,
+      "other_heads_have_no_gradient": true
+     },
+     "5": {
+      "checkpointed": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 36.07
+      },
+      "checkpointed_again": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 67.9,
+       "seconds": 35.92
+      },
+      "finite_and_nonzero": {
+       "image_rows": true,
+       "pdd_proj_out.5.bias": true,
+       "pdd_proj_out.5.weight": true,
+       "proj_in.bias": true,
+       "proj_in.weight": true,
+       "prompt_embeds": true
+      },
+      "gradient_norms": {
+       "image_rows": 1698.7347673484894,
+       "pdd_proj_out.5.bias": 697.3385773451502,
+       "pdd_proj_out.5.weight": 5612.858232877964,
+       "proj_in.bias": 140.42737746465593,
+       "proj_in.weight": 1188.7263675231775,
+       "prompt_embeds": 73.41097250237648
+      },
+      "gradients_equal": {
+       "checkpointed_again": true
+      },
+      "head": 5,
+      "ok": true,
+      "other_heads_have_no_gradient": true
+     }
+    }
+   },
+   "final_latent_sha256": "823fbda1619766de5b63fe61ae68e1b6a971de6b223f800f21ae6a561f3061d8",
+   "num_reference_rows": 0,
+   "output_sha256": "ee3963f58b73d29c21deb380ef146776914d150f6866a59752f7584421446d77",
+   "provider": {
+    "against_variants": {
+     "output_psnr_db": {
+      "strict": 17.826870864034547,
+      "variants_min": 17.165295870644073
+     },
+     "per_step": [
+      {
+       "latent_ratio": 0.7386006679081052,
+       "step": 0,
+       "velocity_target_ratio": 0.7386007309156484
+      },
+      {
+       "latent_ratio": 0.980755303336417,
+       "step": 1,
+       "velocity_target_ratio": 0.9810510923683557
+      },
+      {
+       "latent_ratio": 0.9303511128716834,
+       "step": 2,
+       "velocity_target_ratio": 0.8984925747184839
+      },
+      {
+       "latent_ratio": 0.9154558989652383,
+       "step": 3,
+       "velocity_target_ratio": 0.9087811879303737
+      },
+      {
+       "latent_ratio": 0.9121632856285867,
+       "step": 4,
+       "velocity_target_ratio": 0.9120775682693152
+      },
+      {
+       "latent_ratio": 0.9124511598758623,
+       "step": 5,
+       "velocity_target_ratio": 0.9185046978956453
+      }
+     ],
+     "variants": 2
+    },
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "input_mismatches": [],
+    "schedule_equal": true,
+    "seconds": 5.3,
+    "strict_vs_provider": {
+     "first_drift": {
+      "kind": "velocity",
+      "pdd_head": 0,
+      "rows": "all_image",
+      "stage": "step",
+      "step": 0
+     },
+     "output_psnr_db": 17.826870864034547,
+     "per_step": [
+      {
+       "latent": 0.0006543397428211227,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.004647672176361084,
+       "step": 0,
+       "velocity_bitwise": false,
+       "velocity_target": 0.013993247626687239
+      },
+      {
+       "latent": 0.023241144672911964,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.3011739253997803,
+       "step": 1,
+       "velocity_bitwise": false,
+       "velocity_target": 0.19898241464899483
+      },
+      {
+       "latent": 0.07263031699908426,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.7251496911048889,
+       "step": 2,
+       "velocity_bitwise": false,
+       "velocity_target": 0.24100797641531882
+      },
+      {
+       "latent": 0.17235975857542551,
+       "latent_bitwise": false,
+       "latent_max_abs": 1.4424819946289062,
+       "step": 3,
+       "velocity_bitwise": false,
+       "velocity_target": 0.2606490266357382
+      },
+      {
+       "latent": 0.2749956941194113,
+       "latent_bitwise": false,
+       "latent_max_abs": 2.516459107398987,
+       "step": 4,
+       "velocity_bitwise": false,
+       "velocity_target": 0.2821749147485869
+      },
+      {
+       "latent": 0.29485601951083257,
+       "latent_bitwise": false,
+       "latent_max_abs": 3.3920412063598633,
+       "step": 5,
+       "velocity_bitwise": false,
+       "velocity_target": 0.3051949838631122
+      }
+     ]
+    },
+    "variants": {
+     "blas-cublaslt": {
+      "equal_to_default": true
+     },
+     "sdpa-cudnn": {
+      "equal_to_default": true
+     },
+     "sdpa-efficient": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 20.48308580545244,
+      "per_step": [
+       {
+        "latent": 0.0005938850495468128,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.00530397891998291,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_target": 0.012700405765537137
+       },
+       {
+        "latent": 0.005768367584372417,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.05999255180358887,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_target": 0.04883248217006287
+       },
+       {
+        "latent": 0.04328486691971025,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.7614756524562836,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_target": 0.18265075728173297
+       },
+       {
+        "latent": 0.12403291615040649,
+        "latent_bitwise": false,
+        "latent_max_abs": 1.8278202414512634,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_target": 0.21950691831780805
+       },
+       {
+        "latent": 0.21336890776880374,
+        "latent_bitwise": false,
+        "latent_max_abs": 3.3999855518341064,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_target": 0.24367167004195014
+       },
+       {
+        "latent": 0.2313092474630385,
+        "latent_bitwise": false,
+        "latent_max_abs": 4.493949890136719,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_target": 0.2565508218268594
+       }
+      ]
+     },
+     "sdpa-flash": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 17.165295870644073,
+      "per_step": [
+       {
+        "latent": 0.0008859181574725221,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.008675813674926758,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_target": 0.018945618438990324
+       },
+       {
+        "latent": 0.02369718990440149,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.3036590814590454,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_target": 0.20282574087821595
+       },
+       {
+        "latent": 0.07806764133908403,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.7248903512954712,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_target": 0.26823591334723224
+       },
+       {
+        "latent": 0.18827751153304914,
+        "latent_bitwise": false,
+        "latent_max_abs": 1.485114336013794,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_target": 0.28681164409810367
+       },
+       {
+        "latent": 0.30147638964651735,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.856851100921631,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_target": 0.30937600546850336
+       },
+       {
+        "latent": 0.32314718033888773,
+        "latent_bitwise": false,
+        "latent_max_abs": 3.777024030685425,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_target": 0.332273732036792
+       }
+      ]
+     }
+    }
+   },
+   "reference_latents": [],
+   "sequence_length": 4383,
+   "size": [
+    768,
+    1024
+   ],
+   "source": "examples/request.t2i.json at 1024x768",
+   "strict": {
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "fixed_reference_rows": {
+     "fixed": null,
+     "num_reference_rows": 0
+    },
+    "peak_memory_gib": 65.3,
+    "seconds": 44.1
+   },
+   "task": "t2i"
+  }
+ },
+ "heads_released": true,
+ "ok": true,
+ "sampler": {
+  "backend_id": "H3ImageVelocityStepTritonOp",
+  "contract_id": "h3-image-velocity-step-v1",
+  "schedule": "772530004483a843a4f47ad041f54dcc272191e16b58658bd5105ab25ac5a459",
+  "semantic_op": "h3_image_velocity_step",
+  "update": "fp32(x) + (sigma_i - sigma_{i+1}) * fp32(v), generated rows only"
+ },
+ "schema": "rlkernel.h3_image.ws1_full_evidence.v1"
+}
