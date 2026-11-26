@@ -1,0 +1,13 @@
+diff --git a/vime/backends/megatron_utils/initialize.py b/vime/backends/megatron_utils/initialize.py
+index 228c9d8e..2b710d69 100644
+--- a/vime/backends/megatron_utils/initialize.py
++++ b/vime/backends/megatron_utils/initialize.py
+@@ -68,7 +68,7 @@ def init(args):
+     _initialize_distributed(args)
+ 
+     # https://github.com/NVIDIA/Megatron-LM/issues/1563
+-    assert np.__version__.startswith("1."), "Megatron does not support numpy 2.x"
++    assert np.__version__.startswith("1.") or __import__("os").environ.get("V4_ALLOW_NUMPY2"), "Megatron does not support numpy 2.x"
+ 
+     # Random seeds for reproducibility.
+     if args.rank == 0:

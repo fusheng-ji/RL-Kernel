@@ -1,0 +1,66 @@
+diff --git a/megatron/core/optimizer/clip_grads.py b/megatron/core/optimizer/clip_grads.py
+index 2e0ff0fa9..ad7ac1c89 100644
+--- a/megatron/core/optimizer/clip_grads.py
++++ b/megatron/core/optimizer/clip_grads.py
+@@ -117,12 +117,17 @@ def get_grad_norm_fp32(
+             # Use apex's multi-tensor applier for efficiency reasons.
+             # Multi-tensor applier takes a function and a list of list
+             # and performs the operation on that list all in one kernel.
+-            grad_norm, _ = multi_tensor_applier(
+-                l2_norm_impl, dummy_overflow_buf, [grads_for_norm], False  # no per-parameter norm
+-            )
+-            # Since we will be summing across data parallel groups,
+-            # we need the pow(norm-type).
+-            total_norm = grad_norm**norm_type
++            # The multi-tensor kernels read the whole list with one dtype: group by dtype.
++            by_dtype = {}
++            for grad in grads_for_norm:
++                by_dtype.setdefault(grad.dtype, []).append(grad)
++            for group in by_dtype.values():
++                grad_norm, _ = multi_tensor_applier(
++                    l2_norm_impl, dummy_overflow_buf, [group], False  # no per-parameter norm
++                )
++                # Since we will be summing across data parallel groups,
++                # we need the pow(norm-type).
++                total_norm += grad_norm**norm_type
+         else:
+             for grad in grads_for_norm:
+                 grad_norm = torch.norm(grad, norm_type)
+@@ -189,6 +194,9 @@ def clip_grad_by_total_norm_fp32(
+     else:
+         clip_coeff = max_norm / (total_norm + 1.0e-6)
+     dummy_overflow_buf = torch.zeros(1, dtype=torch.int, device='cuda')
++    by_dtype = {}
++    for grad in grads:
++        by_dtype.setdefault(grad.dtype, []).append(grad)
+     if isinstance(clip_coeff, torch.Tensor):
+         clip_coeff.clamp_max_(1.0)
+         assert (
+@@ -196,16 +204,18 @@ def clip_grad_by_total_norm_fp32(
+         ), "clip_coeff is tensor type. But multi_tensor_scale_tensor not available."
+         # The kernel reads a float32 scale. A float64 coefficient is rounded here, once, as a
+         # Python float is when it is passed to the float-scalar kernel below.
+-        multi_tensor_applier(
+-            multi_tensor_scale_tensor_impl,
+-            dummy_overflow_buf,
+-            [grads, grads],
+-            clip_coeff.to(torch.float32),
+-        )
++        for group in by_dtype.values():
++            multi_tensor_applier(
++                multi_tensor_scale_tensor_impl,
++                dummy_overflow_buf,
++                [group, group],
++                clip_coeff.to(torch.float32),
++            )
+     elif clip_coeff < 1.0:
+-        multi_tensor_applier(
+-            multi_tensor_scale_impl, dummy_overflow_buf, [grads, grads], clip_coeff
+-        )
++        for group in by_dtype.values():
++            multi_tensor_applier(
++                multi_tensor_scale_impl, dummy_overflow_buf, [group, group], clip_coeff
++            )
+ 
+ 
+ def _gtp_pad_zero_count(param: torch.Tensor, grad: torch.Tensor) -> int:

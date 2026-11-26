@@ -1,0 +1,197 @@
+{
+ "_note": "B200 dry run of THIS package's scripts (sm100 environment, same commits): core.sbatch with STEPS_50=2 ONLY='T0-50 det-R0a det-R0b det-R1', drift.sbatch with STEPS_24=2 CASES=qat-M2-a. Checks the scripts and the H100 layouts' memory (peak_gib = torch max_memory_allocated; an H100 94 GB card has about 93.6 GiB). The core job was preempted and requeued twice before this run; finished cases are skipped on requeue as intended.",
+ "pkgtest-core": {
+  "cases": {
+   "T0-50": {
+    "rc": "0",
+    "steps": [
+     {
+      "step": 0,
+      "logprob_diff": 0.09625411033630371,
+      "entropy": 2.834925651550293,
+      "raw_reward": 0.8992063111222902,
+      "step_time_s": 56.43020415306091
+     },
+     {
+      "step": 1,
+      "logprob_diff": 0.09383480995893478,
+      "entropy": 2.836968421936035,
+      "raw_reward": 0.8956175767795858,
+      "step_time_s": 14.497130393981934
+     }
+    ],
+    "n_steps": 2,
+    "ranks": {
+     "0": {
+      "host": "node-a",
+      "peak_gib": 78.08
+     },
+     "1": {
+      "host": "node-a",
+      "peak_gib": 78.08
+     }
+    },
+    "grad_records": 4,
+    "grad_records_nonfinite": 0
+   },
+   "det-R0a": {
+    "rc": "0",
+    "steps": [
+     {
+      "step": 0,
+      "logprob_diff": 0.09609680622816086,
+      "entropy": 2.8350114822387695,
+      "raw_reward": 0.8992063111222902,
+      "step_time_s": 37.87794756889343
+     }
+    ],
+    "n_steps": 1,
+    "ranks": {
+     "0": {
+      "host": "node-a",
+      "peak_gib": 78.08
+     },
+     "1": {
+      "host": "node-a",
+      "peak_gib": 78.08
+     }
+    },
+    "grad_records": 2,
+    "grad_records_nonfinite": 0
+   },
+   "det-R0b": {
+    "rc": "0",
+    "steps": [
+     {
+      "step": 0,
+      "logprob_diff": 0.09609680622816086,
+      "entropy": 2.8350114822387695,
+      "raw_reward": 0.8992063111222902,
+      "step_time_s": 37.171212911605835
+     }
+    ],
+    "n_steps": 1,
+    "ranks": {
+     "0": {
+      "host": "node-a",
+      "peak_gib": 78.08
+     },
+     "1": {
+      "host": "node-a",
+      "peak_gib": 78.08
+     }
+    },
+    "grad_records": 2,
+    "grad_records_nonfinite": 0
+   },
+   "det-R1": {
+    "rc": "0",
+    "steps": [
+     {
+      "step": 0,
+      "logprob_diff": 0.09609680622816086,
+      "entropy": 2.8350114822387695,
+      "raw_reward": 0.8992063111222902,
+      "step_time_s": 59.34253478050232
+     }
+    ],
+    "n_steps": 1,
+    "ranks": {
+     "0": {
+      "host": "node-a",
+      "peak_gib": 57.57
+     },
+     "1": {
+      "host": "node-a",
+      "peak_gib": 57.57
+     },
+     "2": {
+      "host": "node-b",
+      "peak_gib": 20.51
+     },
+     "3": {
+      "host": "node-b",
+      "peak_gib": 20.51
+     }
+    },
+    "grad_records": 4,
+    "grad_records_nonfinite": 0
+   }
+  },
+  "replays": {
+   "det-R1_train_vs_rollout": {
+    "tokens": 1024,
+    "mean_abs": 0.09609680622816086
+   },
+   "det-R0b_train_vs_rollout": {
+    "tokens": 1024,
+    "mean_abs": 0.09609680622816086
+   },
+   "det-R0a_train_vs_rollout": {
+    "tokens": 1024,
+    "mean_abs": 0.09609680622816086
+   },
+   "det-R1_vs_det-R0a": {
+    "tokens": 1024,
+    "mean_abs": 0.0,
+    "max_abs": 0.0,
+    "bitwise_equal_frac": 1.0
+   },
+   "det-R0b_vs_det-R0a": {
+    "tokens": 1024,
+    "mean_abs": 0.0,
+    "max_abs": 0.0,
+    "bitwise_equal_frac": 1.0
+   }
+  }
+ },
+ "pkgtest-drift": {
+  "cases": {
+   "qat-M2-a": {
+    "rc": "0",
+    "steps": [
+     {
+      "step": 0,
+      "logprob_diff": 0.08434966951608658,
+      "entropy": 2.8241477012634277,
+      "raw_reward": 0.7269872885719109,
+      "step_time_s": 61.453691482543945
+     },
+     {
+      "step": 1,
+      "logprob_diff": 0.08672130107879639,
+      "entropy": 2.6984004974365234,
+      "raw_reward": 0.7047240476143777,
+      "step_time_s": 11.956782579421997
+     }
+    ],
+    "n_steps": 2,
+    "ranks": {
+     "0": {
+      "host": "node-c",
+      "peak_gib": 87.47
+     },
+     "1": {
+      "host": "node-c",
+      "peak_gib": 85.4
+     },
+     "2": {
+      "host": "node-c",
+      "peak_gib": 85.52
+     },
+     "3": {
+      "host": "node-c",
+      "peak_gib": 87.47
+     }
+    },
+    "grad_records": 8,
+    "grad_records_nonfinite": 0,
+    "qat_moved_frac_rank0": [
+     0.1176,
+     0.1208
+    ]
+   }
+  },
+  "replays": {}
+ }
+}
