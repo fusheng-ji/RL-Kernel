@@ -1,0 +1,432 @@
+{
+ "hardware": "8x B200 (one node), driver 580.126.20",
+ "image": "radixark/miles:inkling-2-mini",
+ "image_amd64_digest": "sha256:0a106222fae2ac646cbd8ca69b2d883dcd1da866b29d0b322e1bcbbbd8f789fa",
+ "software": {
+  "miles": "1e1d3fe8",
+  "sglang": "99f0be56 + partial-load patch",
+  "torch": "2.14.1+cu130",
+  "torchtitan": "0.4.0 (45e33cd4)"
+ },
+ "revisions": {
+  "model": "7a67ae2314b44ef05c87fd1d4d311c58aaeb18f6",
+  "dataset": "2e65612930298bde4c5d58fd97b3f23a483aaff9"
+ },
+ "download_sha256": {
+  "datasets/dapo-math-17k/.gitattributes": "f9dbca9d734c21c39036c522232acd03cc6a505445482225abf9359a7e2fac58",
+  "datasets/dapo-math-17k/dapo-math-17k.jsonl": "cc9c39c2aa19177abe9464741e121cf4cac90fd25484ef3cdf86535101e3a5b6",
+  "models/Inkling-2-Mini/.gitattributes": "34448b82c17d60fec9b65b1f093c115ddbaadc04beb1b0140b6bfed2e012a930",
+  "models/Inkling-2-Mini/README.md": "ab4fbc79a26f57a4160eae83ff33f7ec5442f4a6cae21478fdda36b4a0c13592",
+  "models/Inkling-2-Mini/chat_template.jinja": "53a9035f3255945704b5857657cfb00c1165090c0641c4f782a0cbf268cc16dc",
+  "models/Inkling-2-Mini/config.json": "a7a349601f0984c4abf999c480ef775d8567d21f5f84b4e8a3e035b44f288dc2",
+  "models/Inkling-2-Mini/generation_config.json": "a08737c07a65a8fdf69f7cf086576210e5aad4b241437090b26d7b0c4f7905f7",
+  "models/Inkling-2-Mini/hf_quant_config.json": "7c656207d3ce37879c7be209a036b0dde43bf01f78159bff06880b868ed57143",
+  "models/Inkling-2-Mini/model-00001-of-00001.safetensors": "65e60f51aa1284d4fb022584908c315270334d991828bb774af60584523539d1",
+  "models/Inkling-2-Mini/model.safetensors.index.json": "c1631065b7b00787993522dddc66a68b3abee869192977fb3dcb796e63bc5838",
+  "models/Inkling-2-Mini/mtp.safetensors": "7c3b651317f01f73bcf4e1dceba66ef8b7e1a1eac6bc171e882e690a4b10a1d2",
+  "models/Inkling-2-Mini/processor_config.json": "d7350adce18c8be4b607f261c8f0f7eabbf720bb7aaf648a43d4f8372bbacc2d",
+  "models/Inkling-2-Mini/special_tokens_map.json": "c16f44b3594563d82743ddb0417a2be1bfe3e2000dfad2da4b8f32554593e1a0",
+  "models/Inkling-2-Mini/tiktoken/tokenizer.model": "f170372dd655728909228220d77cf6b8104a59f38a91262a7d2c4027906ec0d8",
+  "models/Inkling-2-Mini/tokenizer.json": "7f332727f9a3f093dd452a39cc978e6757627e5dad1b0673aa4e75174f236dd6",
+  "models/Inkling-2-Mini/tokenizer_config.json": "bf09342d285139fd37ce10c70878af1d52cb390e9901e10248654293a80ee636"
+ },
+ "bf16": {
+  "tensors": 1116,
+  "converted_twice_byte_identical": true,
+  "checkpoint_sha256": "10cb747ebae84b26f35740159a4ba880bc33ffd78e92610af1367320aacc3480",
+  "note": "checkpoint_sha256 = sha256 of json.dumps(bf16_tensors.json, sort_keys=True); H1 should reproduce it"
+ },
+ "recipe": {
+  "sglang_tp": 1,
+  "sglang_mem_fraction": 0.55,
+  "ep": 8,
+  "rollout_batch": "32 prompts x 8 samples",
+  "max_response_len": 4096,
+  "recipe_sha256": "77a046246fc7ce1aad51ba9f171cdd97c831b4f83e94edd3c96520fc5c39ac5c",
+  "dataset_sha256": "cc9c39c2aa19177abe9464741e121cf4cac90fd25484ef3cdf86535101e3a5b6"
+ },
+ "pr_tests": "9 + 1 + 1 + 1 passed (incl. GPU forward)",
+ "smoke_3_steps": {
+  "weight_sync_bitwise_first_sync": true,
+  "skip_list": "mlp.gate._one (checker false positive)",
+  "steps": {
+   "0": {
+    "ne_frac": 0.9075205326080322,
+    "mean_abs": 0.015641149720081345,
+    "kl_k3_mean": 0.0008414374699495168,
+    "max_abs": 4.706853866577148
+   },
+   "1": {
+    "ne_frac": 0.9253817796707153,
+    "mean_abs": 0.016316068731939647,
+    "kl_k3_mean": 0.0009381086575000199,
+    "max_abs": 3.0573153495788574
+   },
+   "2": {
+    "ne_frac": 0.9144473671913147,
+    "mean_abs": 0.015541985276595675,
+    "kl_k3_mean": 0.0008631066987274202,
+    "max_abs": 2.4176783561706543
+   }
+  },
+  "train_grad_vs_nograd_differ": 0
+ },
+ "consistency": {
+  "trainer_replay_twice_differ": "0 / 2,284,383",
+  "sglang_prefill_repeat_differ": 0,
+  "sglang_prefill_solo_vs_concurrent16_differ": {
+   "default": "138 / 89,781",
+   "deterministic": 0
+  },
+  "sglang_greedy_repeat_same": "16/16",
+  "decode_vs_prefill": {
+   "ne": 81292,
+   "mean_abs": 0.0149
+  },
+  "trainer_vs_prefill": {
+   "ne": 76520,
+   "mean_abs": 0.0159,
+   "max_abs": 2.32
+  },
+  "trainer_vs_decode": {
+   "ne": 81356,
+   "mean_abs": 0.016
+  },
+  "ne_frac_first_last_10_steps": [
+   0.907,
+   0.825
+  ],
+  "note": "signed zero counts equal; bitwise nearly 100% differ"
+ },
+ "options": {
+  "use_rollout_routing_replay": "unusable: rollout reports 'routed_experts payload is all zeros', then retries forever",
+  "true_on_policy_mode": "accepted, 1 step ran; only a Qwen3 dense contract exists, so for this model it only turns on SGLang deterministic inference"
+ },
+ "performance": {
+  "run10_a": {
+   "steps": [
+    1,
+    9
+   ],
+   "step_s": 219.8,
+   "rollout_s": 101.8,
+   "actor_train_s": 78.3,
+   "log_probs_s": 20.0,
+   "update_weights_s": 9.3,
+   "generated_tok_per_s_8gpu": 3446,
+   "ttft_ms": [
+    350,
+    966
+   ],
+   "itl_ms": [
+    18.4,
+    20.4
+   ],
+   "peak_mem_gib": 136.8
+  },
+  "run10_b": {
+   "steps": [
+    1,
+    9
+   ],
+   "step_s": 223.2,
+   "rollout_s": 101.5,
+   "actor_train_s": 80.4,
+   "log_probs_s": 21.3,
+   "update_weights_s": 9.2,
+   "generated_tok_per_s_8gpu": 3406,
+   "ttft_ms": [
+    354,
+    750
+   ],
+   "itl_ms": [
+    18.3,
+    20.6
+   ],
+   "peak_mem_gib": 139.3
+  },
+  "run100_steps_1_9": {
+   "steps": [
+    1,
+    9
+   ],
+   "step_s": 221.7,
+   "rollout_s": 100.7,
+   "actor_train_s": 78.9,
+   "log_probs_s": 19.9,
+   "update_weights_s": 9.4,
+   "generated_tok_per_s_8gpu": 3412,
+   "ttft_ms": [
+    408,
+    672
+   ],
+   "itl_ms": [
+    18.4,
+    20.2
+   ],
+   "peak_mem_gib": 135.1
+  },
+  "run100_steps_1_99": {
+   "steps": [
+    1,
+    99
+   ],
+   "step_s": 193.0,
+   "rollout_s": 79.1,
+   "actor_train_s": 72.9,
+   "log_probs_s": 19.2,
+   "update_weights_s": 9.9,
+   "generated_tok_per_s_8gpu": 2611,
+   "ttft_ms": [
+    288,
+    672
+   ],
+   "itl_ms": [
+    16.2,
+    20.2
+   ],
+   "peak_mem_gib": 136.1
+  },
+  "run100_steps_90_99": {
+   "steps": [
+    90,
+    99
+   ],
+   "step_s": 177.3,
+   "rollout_s": 66.6,
+   "actor_train_s": 68.8,
+   "log_probs_s": 18.9,
+   "update_weights_s": 10.4,
+   "generated_tok_per_s_8gpu": 2042,
+   "ttft_ms": [
+    316,
+    420
+   ],
+   "itl_ms": [
+    16.2,
+    17.7
+   ],
+   "peak_mem_gib": 122.2
+  },
+  "noise_line": "steps 1-9 mean of three runs 219.8 / 223.2 / 221.7 s = 1.5%",
+  "run100_wall": "5 h 29 min",
+  "dump_overhead": "< ~1% (3-step smoke); 100-step dump 3.8 GB"
+ },
+ "run100_curve": {
+  "reward_first_last_10": [
+   0.542,
+   0.857
+  ],
+  "kl_steps_in_0.7_1.2e-3": "94/100 (outside: 46, 66, 73, 74, 87, 98; max 1.37e-3)",
+  "abs_diff_first_last_10": [
+   0.01441,
+   0.01488
+  ],
+  "abs_diff_slope_per_100_steps": "+0.0015 +- 0.0004",
+  "truncated_first_last_10": [
+   0.451,
+   0.054
+  ]
+ },
+ "drift": {
+  "method": "drift.py: bins on |trainer old logprob| edges 1e-4, 1e-2, 0.1, 0.5, 1, 2; steps 0-19 vs 80-99",
+  "within_bucket_rise": "+22% to +30% in every bucket",
+  "token_weighted_mean_abs": [
+   0.01492,
+   0.01704
+  ],
+  "within_bucket_effect": 0.0037,
+  "mix_effect": -0.0016,
+  "plateau": "no clear rise after about step 70"
+ },
+ "localization": {
+  "orig_weights_x_data0": {
+   "name": "orig_w_data0",
+   "samples": 256,
+   "matched": 256,
+   "trainer_vs_live_decode": {
+    "tokens": 714939,
+    "mean_abs": 0.015329150690253819,
+    "ne_frac": 0.9067109221905645,
+    "bucket_share": [
+     0.3256,
+     0.1412,
+     0.1169,
+     0.1504,
+     0.0927,
+     0.095,
+     0.0781
+    ],
+    "bucket_mean_abs": [
+     1.682417440004475e-06,
+     0.00028088937984169443,
+     0.0034852910973769964,
+     0.014166487103336647,
+     0.028425819549329927,
+     0.04408186126627295,
+     0.07586179972932752
+    ]
+   },
+   "trainer_vs_fresh_prefill": {
+    "tokens": 714939,
+    "mean_abs": 0.015430785345379653,
+    "ne_frac": 0.8541847626161113,
+    "bucket_share": [
+     0.3256,
+     0.1412,
+     0.1169,
+     0.1504,
+     0.0927,
+     0.095,
+     0.0781
+    ],
+    "bucket_mean_abs": [
+     2.0968783117729366e-06,
+     0.00027758067251646166,
+     0.003525176150070794,
+     0.01428347611426671,
+     0.028513081293619864,
+     0.044516448728453464,
+     0.07624985459002044
+    ]
+   },
+   "live_decode_vs_fresh_prefill": {
+    "tokens": 714939,
+    "mean_abs": 0.014459157871712373,
+    "ne_frac": 0.906263331556958,
+    "bucket_share": [
+     0.3256,
+     0.1412,
+     0.1169,
+     0.1504,
+     0.0927,
+     0.095,
+     0.0781
+    ],
+    "bucket_mean_abs": [
+     2.0767500365093114e-06,
+     0.0002638072274397969,
+     0.0032846834545271235,
+     0.01324095390079794,
+     0.026885172343731667,
+     0.041701765053933165,
+     0.0715603264588035
+    ]
+   }
+  },
+  "orig_weights_x_data99": {
+   "name": "orig_w_data99",
+   "samples": 256,
+   "matched": 256,
+   "trainer_vs_live_decode": {
+    "tokens": 270682,
+    "mean_abs": 0.16391485648931364,
+    "ne_frac": 0.8410755055748074,
+    "bucket_share": [
+     0.396,
+     0.1336,
+     0.1051,
+     0.1279,
+     0.0785,
+     0.0823,
+     0.0767
+    ],
+    "bucket_mean_abs": [
+     4.1389328940853695e-05,
+     0.004878622098380769,
+     0.04290820835091954,
+     0.1424752788962974,
+     0.2826823389436528,
+     0.44305664430839475,
+     1.067584747969282
+    ]
+   },
+   "trainer_vs_fresh_prefill": {
+    "tokens": 270682,
+    "mean_abs": 0.016024450914276196,
+    "ne_frac": 0.781699558891984,
+    "bucket_share": [
+     0.396,
+     0.1336,
+     0.1051,
+     0.1279,
+     0.0785,
+     0.0823,
+     0.0767
+    ],
+    "bucket_mean_abs": [
+     1.2640984876481384e-06,
+     0.0002941066364659406,
+     0.0037984303556752824,
+     0.015842864087129364,
+     0.032218903425189294,
+     0.050562044413663326,
+     0.08958052374203954
+    ]
+   },
+   "live_decode_vs_fresh_prefill": {
+    "tokens": 270682,
+    "mean_abs": 0.16471778742962465,
+    "ne_frac": 0.8402886043401482,
+    "bucket_share": [
+     0.396,
+     0.1336,
+     0.1051,
+     0.1279,
+     0.0785,
+     0.0823,
+     0.0767
+    ],
+    "bucket_mean_abs": [
+     4.154137449167573e-05,
+     0.004897809382422448,
+     0.043126803502228896,
+     0.14313470332478848,
+     0.28397223207456773,
+     0.44506467957107015,
+     1.073146591164265
+    ]
+   }
+  },
+  "late_weights_x_data99_live": {
+   "name": "late_w_data99",
+   "samples": 256,
+   "matched": 0,
+   "trainer_vs_live_decode": {
+    "tokens": 270682,
+    "mean_abs": 0.015578177011461077,
+    "ne_frac": 0.7925314575775264,
+    "bucket_share": [
+     0.42,
+     0.1274,
+     0.1076,
+     0.1314,
+     0.0761,
+     0.0757,
+     0.0618
+    ],
+    "bucket_mean_abs": [
+     1.2053651841215622e-06,
+     0.00034073755682496263,
+     0.004130363979985825,
+     0.01754191478339273,
+     0.036004889017385175,
+     0.05697690336431613,
+     0.09279253394108694
+    ]
+   }
+  },
+  "reading": "switching to late data alone raises the per-bucket diff by +6..+17% (trainer vs fresh prefill); the real run shows +19..+29% (trainer vs live decode). The rest (weights vs sync) is not yet separated on B200: the rerun with exports is pending.",
+  "excluded": [
+   "FP32->BF16 rounding at sync: the trainer forward already uses BF16 weights (code reading)",
+   "mlp.gate.bias: frozen buffer, checksum unchanged between exports 0 and 1"
+  ],
+  "sync_checksum": "exports 0 and 1: 8 engines x 574 tensors equal to a fresh server on the export"
+ },
+ "not_covered": [
+  "H100",
+  "multi-node",
+  "MFU (HF config lacks use_sconv)",
+  "48-visit routing export"
+ ]
+}
