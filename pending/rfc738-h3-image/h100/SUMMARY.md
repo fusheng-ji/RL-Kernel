@@ -79,3 +79,17 @@ All three fail with `TypeError: MiniMaxH3Scheduler.__init__() got an unexpected 
 - Hosts: T6 ran on node-c, GPU 0, which showed 0 MiB and no other job at the start.
 - The first launch of T6 on node-a was stopped within a minute of starting, because another job of the same allocation had just started on that node and the GPU was no longer guaranteed idle. Its partial records are in `not-green-attempts/T6-aborted-on-node-a/`; it produced no result.
 - The 8 PNG files are not committed, as the README asks.
+
+## T8 / T9 (2026-11-26)
+
+T8 ran `b685c4991` (PDD head + one step), T9 ran `69e0e42c9` (ws1_full), each on one idle H100 of a shared node (`env.txt`). On H100 the FP32 boundary rows and the three GEMM rows bind as rows: bindings 30 row / 6 interim / 3 reference (B200 22 / 14 / 3). Logs are not uploaded; the JSON and pytest files are.
+
+| Task | Exit | Headline |
+|---|---|---|
+| T8 `run-t2i` (`t2i_upscaled`, six steps) | 0 | `ok` true; controls `ok`: repeat, batch rows 0 / 1 and permutation first drift null, next head first drift at `pdd_proj_out`, training step ok |
+| T8 `run-edit` (`edit_two_refs`) | 1 | the batch control batches 2 x 17,203 = 34,406 rows; `h3_ffn_down_gemm` refuses more than 32,768 (`row count must be in [1,32768]`). Fixed in `f4171b776`; not rerun yet |
+| T8 pytest new / image suite | 1 / 1 | 82 passed, 1 failed / 513 passed, 1 failed: `test_cuda_projection_is_accurate_and_row_invariant`, `x must be contiguous` (the SM90 projection row on a slice). Fixed in `d3bc9fe41`; not rerun yet |
+| T9-t2i `run-a` (`t2i_upscaled` controls + training at steps 0-5, `t2i_example`) | 0 | `ok` true; every control drift null; training ok at all six heads; schedule and inputs equal to Diffusers; strict chain 44.1 s / 579 s (B200 42.2 / 481), peak 65.3 / 69.2 GiB; PSNR to Diffusers default, strict / closest variant: 17.8 / 17.2 dB (`t2i_upscaled`), 18.2 / 17.7 dB (`t2i_example`) |
+| T9-t2i `run-b` | 0 | `equal_to_other_process` true for both fixtures |
+| T9-t2i pytest new / suite | 0 / 1 | 17 passed / 530 passed, 1 failed (the same projection test) |
+| T9-edit | - | the job hit its time limit before the first fixture finished; to be rerun with the fixes |
