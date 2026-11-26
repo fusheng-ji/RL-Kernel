@@ -79,3 +79,4 @@ All three fail with `TypeError: MiniMaxH3Scheduler.__init__() got an unexpected 
 - Hosts: T6 ran on node-c, GPU 0, which showed 0 MiB and no other job at the start.
 - The first launch of T6 on node-a was stopped within a minute of starting, because another job of the same allocation had just started on that node and the GPU was no longer guaranteed idle. Its partial records are in `not-green-attempts/T6-aborted-on-node-a/`; it produced no result.
 - The 8 PNG files are not committed, as the README asks.
+| T7 | mix, $GPU not 0; mem 95G/8CPU; other busy in env | evidence exit=0; data logged |
