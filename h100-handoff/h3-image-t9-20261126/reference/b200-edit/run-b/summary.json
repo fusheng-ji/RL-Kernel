@@ -1,0 +1,336 @@
+{
+ "binding_counts": {
+  "interim": 14,
+  "reference": 3,
+  "row": 22
+ },
+ "bindings": {
+  "block.adaln_projection": {
+   "backend": "H3AdaLNProjectionCudaOp",
+   "rfc_row": "adaln_projection_3mod",
+   "status": "row"
+  },
+  "block.attention": {
+   "backend": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+   "rfc_row": "h3_full_attention",
+   "status": "row"
+  },
+  "block.ffn_down": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_down_gemm",
+   "status": "interim"
+  },
+  "block.ffn_gate_up": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_gate_up_gemm",
+   "status": "interim"
+  },
+  "block.k_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "block.k_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "block.norm1": {
+   "backend": "H3RMSNormCudaOp.forward_modulated",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "block.norm2": {
+   "backend": "H3RMSNormCudaOp.forward_modulated",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "block.o_proj": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_attention_o_gemm",
+   "status": "interim"
+  },
+  "block.q_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "block.q_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "block.residual_attn": {
+   "backend": "H3GateResidualCudaOp",
+   "rfc_row": "adaln_gate_residual",
+   "status": "row"
+  },
+  "block.residual_mlp": {
+   "backend": "H3GateResidualCudaOp",
+   "rfc_row": "adaln_gate_residual",
+   "status": "row"
+  },
+  "block.rope_k": {
+   "backend": "provider_apply_rotary",
+   "rfc_row": "h3_mm_rope_3axis_partial",
+   "status": "reference"
+  },
+  "block.rope_q": {
+   "backend": "provider_apply_rotary",
+   "rfc_row": "h3_mm_rope_3axis_partial",
+   "status": "reference"
+  },
+  "block.swiglu": {
+   "backend": "SwiGLUCudaOp",
+   "rfc_row": "h3_swiglu",
+   "status": "interim"
+  },
+  "block.v_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "context_embedder": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3TextContextProjectionCudaOp",
+   "rfc_row": "text_context_projection",
+   "status": "row"
+  },
+  "norm_out": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.final_adaln_out.H3FinalAdaLNOutCudaOp",
+   "rfc_row": "final_adaln_out",
+   "status": "row"
+  },
+  "packed": {
+   "backend": "rl_engine.backends.cuda.packing.packed_index_copy.PackedIndexCopyCudaOp",
+   "rfc_row": "packed_index_copy",
+   "status": "row"
+  },
+  "pdd_proj_out": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32)",
+   "rfc_row": "video_output_projection_fp32",
+   "status": "interim"
+  },
+  "proj_in": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32)",
+   "rfc_row": "video_input_projection_fp32",
+   "status": "interim"
+  },
+  "refiner.attention": {
+   "backend": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+   "rfc_row": "h3_full_attention",
+   "status": "row"
+  },
+  "refiner.ffn_down": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_down_gemm",
+   "status": "interim"
+  },
+  "refiner.ffn_gate_up": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_gate_up_gemm",
+   "status": "interim"
+  },
+  "refiner.k_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "refiner.k_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "refiner.norm1": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "refiner.norm2": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "refiner.o_proj": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_attention_o_gemm",
+   "status": "interim"
+  },
+  "refiner.q_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "refiner.q_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "refiner.residual_attn": {
+   "backend": "torch.add (BF16 elementwise)",
+   "rfc_row": "token_refiner_block",
+   "status": "row"
+  },
+  "refiner.residual_mlp": {
+   "backend": "torch.add (BF16 elementwise)",
+   "rfc_row": "token_refiner_block",
+   "status": "row"
+  },
+  "refiner.swiglu": {
+   "backend": "SwiGLUCudaOp",
+   "rfc_row": "h3_swiglu",
+   "status": "interim"
+  },
+  "refiner.v_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "time_embedder": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.timestep_mlp.H3TimestepMLPCudaOp",
+   "rfc_row": "timestep_mlp_fp32",
+   "status": "row"
+  },
+  "time_proj": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.timestep_sinusoid.H3TimestepSinusoidCudaOp",
+   "rfc_row": "timestep_sinusoid_h3",
+   "status": "row"
+  },
+  "velocity": {
+   "backend": "torch.Tensor.index_select on canonical image rows",
+   "rfc_row": "image_transformer_output_gather",
+   "status": "reference"
+  }
+ },
+ "contract_id": "h3-image-ws1-full-v1",
+ "environment": {
+  "compute_capability": [
+   10,
+   0
+  ],
+  "cuda": "13.0",
+  "diffusers": "0.42.0.dev0",
+  "extension_in_checkout": true,
+  "gpu": "NVIDIA B200",
+  "python": "3.12.14",
+  "torch": "2.13.0+cu130",
+  "triton": "3.7.1"
+ },
+ "fixtures": {
+  "edit_example": {
+   "canvas": [
+    4096,
+    4096
+   ],
+   "equal_to_other_process": true,
+   "final_latent_sha256": "59eafde0cd3f9fb26a52a59b9ae82e3bc772b2258f939bd5dfe2fd7379922466",
+   "num_reference_rows": 1024,
+   "output_sha256": "198390367b95deea2d3b3b22da5da92e1b05672ad67c447b981935a6f3d13322",
+   "reference_latents": [
+    [
+     64,
+     64
+    ]
+   ],
+   "sequence_length": 18867,
+   "size": [
+    4096,
+    4096
+   ],
+   "source": "examples/edit.py defaults: reference1.png, prompt.edit.txt, 4096x4096, seed 1234",
+   "strict": {
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "fixed_reference_rows": {
+     "conditioned_sha256": "e52106f93ded4af21afe18fbe178368695b4efd71d280f35f39757c2cbdda752",
+     "fixed": true,
+     "num_reference_rows": 1024,
+     "steps_equal_to_conditioned": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    "peak_memory_gib": 70.3,
+    "seconds": 596.7
+   },
+   "task": "edit"
+  },
+  "edit_two_refs": {
+   "canvas": [
+    2048,
+    2048
+   ],
+   "equal_to_other_process": true,
+   "final_latent_sha256": "3ab950e2e63c142a772596605162d58e4d4fb9cf09f4e84ec858826726c3c62d",
+   "num_reference_rows": 6528,
+   "output_sha256": "ca6d84b1abee9273b8d5d158b2b64cb472f8f3e9f5d8f078068a3feb2d445224",
+   "reference_latents": [
+    [
+     64,
+     64
+    ],
+    [
+     64,
+     344
+    ]
+   ],
+   "sequence_length": 17203,
+   "size": [
+    2048,
+    2048
+   ],
+   "source": "reference1.png + assets/showcase/photo.jpg, 2048x2048, seed 7",
+   "strict": {
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "fixed_reference_rows": {
+     "conditioned_sha256": "e63a46eb6524729f56a8acd7243284cf32e5b966eec462b904445376dff04c92",
+     "fixed": true,
+     "num_reference_rows": 6528,
+     "steps_equal_to_conditioned": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    "peak_memory_gib": 69.8,
+    "seconds": 499.2
+   },
+   "task": "edit"
+  }
+ },
+ "heads_released": true,
+ "ok": true,
+ "sampler": {
+  "backend_id": "H3ImageVelocityStepTritonOp",
+  "contract_id": "h3-image-velocity-step-v1",
+  "schedule": "772530004483a843a4f47ad041f54dcc272191e16b58658bd5105ab25ac5a459",
+  "semantic_op": "h3_image_velocity_step",
+  "update": "fp32(x) + (sigma_i - sigma_{i+1}) * fp32(v), generated rows only"
+ },
+ "schema": "rlkernel.h3_image.ws1_full_evidence.v1"
+}
