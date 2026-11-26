@@ -1,0 +1,937 @@
+{
+ "binding_counts": {
+  "interim": 14,
+  "reference": 3,
+  "row": 22
+ },
+ "bindings": {
+  "block.adaln_projection": {
+   "backend": "H3AdaLNProjectionCudaOp",
+   "rfc_row": "adaln_projection_3mod",
+   "status": "row"
+  },
+  "block.attention": {
+   "backend": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+   "rfc_row": "h3_full_attention",
+   "status": "row"
+  },
+  "block.ffn_down": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_down_gemm",
+   "status": "interim"
+  },
+  "block.ffn_gate_up": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_gate_up_gemm",
+   "status": "interim"
+  },
+  "block.k_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "block.k_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "block.norm1": {
+   "backend": "H3RMSNormCudaOp.forward_modulated",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "block.norm2": {
+   "backend": "H3RMSNormCudaOp.forward_modulated",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "block.o_proj": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_attention_o_gemm",
+   "status": "interim"
+  },
+  "block.q_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "block.q_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "block.residual_attn": {
+   "backend": "H3GateResidualCudaOp",
+   "rfc_row": "adaln_gate_residual",
+   "status": "row"
+  },
+  "block.residual_mlp": {
+   "backend": "H3GateResidualCudaOp",
+   "rfc_row": "adaln_gate_residual",
+   "status": "row"
+  },
+  "block.rope_k": {
+   "backend": "provider_apply_rotary",
+   "rfc_row": "h3_mm_rope_3axis_partial",
+   "status": "reference"
+  },
+  "block.rope_q": {
+   "backend": "provider_apply_rotary",
+   "rfc_row": "h3_mm_rope_3axis_partial",
+   "status": "reference"
+  },
+  "block.swiglu": {
+   "backend": "SwiGLUCudaOp",
+   "rfc_row": "h3_swiglu",
+   "status": "interim"
+  },
+  "block.v_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "context_embedder": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3TextContextProjectionCudaOp",
+   "rfc_row": "text_context_projection",
+   "status": "row"
+  },
+  "norm_out": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.final_adaln_out.H3FinalAdaLNOutCudaOp",
+   "rfc_row": "final_adaln_out",
+   "status": "row"
+  },
+  "packed": {
+   "backend": "rl_engine.backends.cuda.packing.packed_index_copy.PackedIndexCopyCudaOp",
+   "rfc_row": "packed_index_copy",
+   "status": "row"
+  },
+  "pdd_proj_out": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32)",
+   "rfc_row": "video_output_projection_fp32",
+   "status": "interim"
+  },
+  "proj_in": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32)",
+   "rfc_row": "video_input_projection_fp32",
+   "status": "interim"
+  },
+  "refiner.attention": {
+   "backend": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+   "rfc_row": "h3_full_attention",
+   "status": "row"
+  },
+  "refiner.ffn_down": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_down_gemm",
+   "status": "interim"
+  },
+  "refiner.ffn_gate_up": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_ffn_gate_up_gemm",
+   "status": "interim"
+  },
+  "refiner.k_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "refiner.k_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "refiner.norm1": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "refiner.norm2": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_rmsnorm",
+   "status": "row"
+  },
+  "refiner.o_proj": {
+   "backend": "triton _det_gemm_fp32_kernel (FP32 K loop, one BF16 rounding)",
+   "rfc_row": "h3_attention_o_gemm",
+   "status": "interim"
+  },
+  "refiner.q_norm": {
+   "backend": "H3RMSNormCudaOp.forward",
+   "rfc_row": "h3_qk_rmsnorm_d128",
+   "status": "interim"
+  },
+  "refiner.q_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "refiner.residual_attn": {
+   "backend": "torch.add (BF16 elementwise)",
+   "rfc_row": "token_refiner_block",
+   "status": "row"
+  },
+  "refiner.residual_mlp": {
+   "backend": "torch.add (BF16 elementwise)",
+   "rfc_row": "token_refiner_block",
+   "status": "row"
+  },
+  "refiner.swiglu": {
+   "backend": "SwiGLUCudaOp",
+   "rfc_row": "h3_swiglu",
+   "status": "interim"
+  },
+  "refiner.v_proj": {
+   "backend": "H3QKVGemmCudaOp.forward",
+   "rfc_row": "h3_qkv_gemm",
+   "status": "row"
+  },
+  "time_embedder": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.timestep_mlp.H3TimestepMLPCudaOp",
+   "rfc_row": "timestep_mlp_fp32",
+   "status": "row"
+  },
+  "time_proj": {
+   "backend": "rl_engine.backends.cuda.model_specific.minimax_h3.timestep_sinusoid.H3TimestepSinusoidCudaOp",
+   "rfc_row": "timestep_sinusoid_h3",
+   "status": "row"
+  },
+  "velocity": {
+   "backend": "torch.Tensor.index_select on canonical image rows",
+   "rfc_row": "image_transformer_output_gather",
+   "status": "reference"
+  }
+ },
+ "contract_id": "h3-image-ws1-full-v1",
+ "environment": {
+  "compute_capability": [
+   10,
+   0
+  ],
+  "cuda": "13.0",
+  "diffusers": "0.42.0.dev0",
+  "extension_in_checkout": true,
+  "gpu": "NVIDIA B200",
+  "python": "3.12.14",
+  "torch": "2.13.0+cu130",
+  "triton": "3.7.1"
+ },
+ "fixtures": {
+  "edit_example": {
+   "canvas": [
+    4096,
+    4096
+   ],
+   "final_latent_sha256": "59eafde0cd3f9fb26a52a59b9ae82e3bc772b2258f939bd5dfe2fd7379922466",
+   "num_reference_rows": 1024,
+   "output_sha256": "198390367b95deea2d3b3b22da5da92e1b05672ad67c447b981935a6f3d13322",
+   "provider": {
+    "against_variants": {
+     "output_psnr_db": {
+      "strict": 37.84112339492331,
+      "variants_min": 36.541118765145995
+     },
+     "per_step": [
+      {
+       "latent_ratio": 1.056153801779071,
+       "step": 0,
+       "velocity_reference_ratio": 1.045034844034313,
+       "velocity_target_ratio": 1.056153803576369
+      },
+      {
+       "latent_ratio": 0.901058508317879,
+       "step": 1,
+       "velocity_reference_ratio": 0.9837007231947373,
+       "velocity_target_ratio": 0.894313110697938
+      },
+      {
+       "latent_ratio": 0.8197760581956084,
+       "step": 2,
+       "velocity_reference_ratio": 0.9372737929993445,
+       "velocity_target_ratio": 0.8162357127394891
+      },
+      {
+       "latent_ratio": 0.8649804329989439,
+       "step": 3,
+       "velocity_reference_ratio": 0.9475079586015968,
+       "velocity_target_ratio": 0.9166399323163916
+      },
+      {
+       "latent_ratio": 0.8779395846132365,
+       "step": 4,
+       "velocity_reference_ratio": 1.0043045349321769,
+       "velocity_target_ratio": 0.9027526725135947
+      },
+      {
+       "latent_ratio": 0.8813137153832248,
+       "step": 5,
+       "velocity_reference_ratio": 0.9332105981156757,
+       "velocity_target_ratio": 0.9122144552325594
+      }
+     ],
+     "variants": 2
+    },
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "input_mismatches": [],
+    "schedule_equal": true,
+    "seconds": 14.7,
+    "strict_vs_provider": {
+     "first_drift": {
+      "kind": "velocity",
+      "pdd_head": 0,
+      "rows": "all_image",
+      "stage": "step",
+      "step": 0
+     },
+     "output_psnr_db": 37.84112339492331,
+     "per_step": [
+      {
+       "latent": 0.0010816432107378542,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.11600083112716675,
+       "step": 0,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.07271232987965567,
+       "velocity_target": 0.021544305279520778
+      },
+      {
+       "latent": 0.0034982177065893,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.13978195190429688,
+       "step": 1,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.06887882620299232,
+       "velocity_target": 0.025386471210268
+      },
+      {
+       "latent": 0.009632442515636752,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.38019900023937225,
+       "step": 2,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.06575625836643882,
+       "velocity_target": 0.0320800551003552
+      },
+      {
+       "latent": 0.024476821991076432,
+       "latent_bitwise": false,
+       "latent_max_abs": 1.1406051069498062,
+       "step": 3,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.0712572316505325,
+       "velocity_target": 0.04045327584820783
+      },
+      {
+       "latent": 0.041491616996364875,
+       "latent_bitwise": false,
+       "latent_max_abs": 2.3371695280075073,
+       "step": 4,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.07622502756856507,
+       "velocity_target": 0.0478202010091612
+      },
+      {
+       "latent": 0.0456481501605061,
+       "latent_bitwise": false,
+       "latent_max_abs": 3.1636869311332703,
+       "step": 5,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.07899178437914953,
+       "velocity_target": 0.057013854062084146
+      }
+     ]
+    },
+    "variants": {
+     "blas-cublaslt": {
+      "equal_to_default": true
+     },
+     "sdpa-cudnn": {
+      "equal_to_default": true
+     },
+     "sdpa-efficient": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 36.541118765145995,
+      "per_step": [
+       {
+        "latent": 0.0010241341828395134,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.10694518685340881,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.06957885691060098,
+        "velocity_target": 0.020398833206458213
+       },
+       {
+        "latent": 0.0038634749375673558,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.18155092000961304,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.06790452347948481,
+        "velocity_target": 0.028224092839611425
+       },
+       {
+        "latent": 0.011470808608661108,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.5482541620731354,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.06964223354426347,
+        "velocity_target": 0.03930243996882542
+       },
+       {
+        "latent": 0.028297544149309465,
+        "latent_bitwise": false,
+        "latent_max_abs": 1.2627883851528168,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.07520488984145236,
+        "velocity_target": 0.044132133482315705
+       },
+       {
+        "latent": 0.04726021895304265,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.259088397026062,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.07524169230354005,
+        "velocity_target": 0.052971541890883815
+       },
+       {
+        "latent": 0.051795574451779354,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.9202452898025513,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.08232042224445245,
+        "velocity_target": 0.06250049397380912
+       }
+      ]
+     },
+     "sdpa-flash": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 37.118870716920554,
+      "per_step": [
+       {
+        "latent": 0.0010145785763679305,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.07849183678627014,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.06805941350983977,
+        "velocity_target": 0.02020850361051368
+       },
+       {
+        "latent": 0.003882342460890658,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.17154544591903687,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.07002010324776065,
+        "velocity_target": 0.028386558249667106
+       },
+       {
+        "latent": 0.01175009006342356,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.5426975339651108,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.07015693691382749,
+        "velocity_target": 0.03911434354201075
+       },
+       {
+        "latent": 0.027915835039346137,
+        "latent_bitwise": false,
+        "latent_max_abs": 1.219308152794838,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.07266648377873934,
+        "velocity_target": 0.04275711074851346
+       },
+       {
+        "latent": 0.04582422630593413,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.2677434384822845,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.07589832059626489,
+        "velocity_target": 0.050992829700573866
+       },
+       {
+        "latent": 0.050086007482105156,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.927366077899933,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.08464518570475786,
+        "velocity_target": 0.06049395927923623
+       }
+      ]
+     }
+    }
+   },
+   "reference_latents": [
+    [
+     64,
+     64
+    ]
+   ],
+   "sequence_length": 18867,
+   "size": [
+    4096,
+    4096
+   ],
+   "source": "examples/edit.py defaults: reference1.png, prompt.edit.txt, 4096x4096, seed 1234",
+   "strict": {
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "fixed_reference_rows": {
+     "conditioned_sha256": "e52106f93ded4af21afe18fbe178368695b4efd71d280f35f39757c2cbdda752",
+     "fixed": true,
+     "num_reference_rows": 1024,
+     "steps_equal_to_conditioned": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    "peak_memory_gib": 70.3,
+    "seconds": 596.6
+   },
+   "task": "edit"
+  },
+  "edit_two_refs": {
+   "canvas": [
+    2048,
+    2048
+   ],
+   "controls": {
+    "batch_row_0": {
+     "partner_first_drift": null,
+     "peak_memory_gib": 75.6,
+     "request_first_drift": null,
+     "seconds": 946.9
+    },
+    "batch_row_1": {
+     "partner_first_drift": null,
+     "peak_memory_gib": 75.6,
+     "request_first_drift": null,
+     "seconds": 946.8
+    },
+    "loop_alone": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "first_drift": null,
+     "seconds": 495.0
+    },
+    "ok": true,
+    "partner": {
+     "differs_from_request": true,
+     "fixed_reference_rows": true,
+     "seed": 8
+    },
+    "permuted_first_drift": null,
+    "training": {
+     "5": {
+      "checkpointed": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 81.6,
+       "seconds": 372.04
+      },
+      "checkpointed_again": {
+       "forward_first_drift_vs_rollout": null,
+       "peak_memory_gib": 81.6,
+       "seconds": 371.17
+      },
+      "finite_and_nonzero": {
+       "image_rows": true,
+       "pdd_proj_out.5.bias": true,
+       "pdd_proj_out.5.weight": true,
+       "proj_in.bias": true,
+       "proj_in.weight": true,
+       "prompt_embeds": true
+      },
+      "gradient_norms": {
+       "image_rows": 53955.93303768387,
+       "pdd_proj_out.5.bias": 1163.8977330436016,
+       "pdd_proj_out.5.weight": 13346.586149707322,
+       "proj_in.bias": 2079.579938337037,
+       "proj_in.weight": 25020.941725637833,
+       "prompt_embeds": 4692.323265029666
+      },
+      "gradients_equal": {
+       "checkpointed_again": true
+      },
+      "head": 5,
+      "ok": true,
+      "other_heads_have_no_gradient": true
+     }
+    }
+   },
+   "final_latent_sha256": "3ab950e2e63c142a772596605162d58e4d4fb9cf09f4e84ec858826726c3c62d",
+   "num_reference_rows": 6528,
+   "output_sha256": "ca6d84b1abee9273b8d5d158b2b64cb472f8f3e9f5d8f078068a3feb2d445224",
+   "provider": {
+    "against_variants": {
+     "output_psnr_db": {
+      "strict": 30.24690756638781,
+      "variants_min": 28.24285280363234
+     },
+     "per_step": [
+      {
+       "latent_ratio": 0.9190377507860734,
+       "step": 0,
+       "velocity_reference_ratio": 1.0051010496669222,
+       "velocity_target_ratio": 0.9190378047708376
+      },
+      {
+       "latent_ratio": 0.7801566772065758,
+       "step": 1,
+       "velocity_reference_ratio": 1.007391728094968,
+       "velocity_target_ratio": 0.775718028412919
+      },
+      {
+       "latent_ratio": 0.7938605394901638,
+       "step": 2,
+       "velocity_reference_ratio": 1.0047389117288925,
+       "velocity_target_ratio": 0.7901032653219874
+      },
+      {
+       "latent_ratio": 0.7939941222933666,
+       "step": 3,
+       "velocity_reference_ratio": 0.9657865690704174,
+       "velocity_target_ratio": 0.8376074304867485
+      },
+      {
+       "latent_ratio": 0.8218840773217139,
+       "step": 4,
+       "velocity_reference_ratio": 0.9654765267468306,
+       "velocity_target_ratio": 0.8835052787510781
+      },
+      {
+       "latent_ratio": 0.8330112061816598,
+       "step": 5,
+       "velocity_reference_ratio": 0.937542811528744,
+       "velocity_target_ratio": 0.8972579592660853
+      }
+     ],
+     "variants": 2
+    },
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "input_mismatches": [],
+    "schedule_equal": true,
+    "seconds": 11.1,
+    "strict_vs_provider": {
+     "first_drift": {
+      "kind": "velocity",
+      "pdd_head": 0,
+      "rows": "all_image",
+      "stage": "step",
+      "step": 0
+     },
+     "output_psnr_db": 30.24690756638781,
+     "per_step": [
+      {
+       "latent": 0.0014158019645992303,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.029622316360473633,
+       "step": 0,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.18180870958581055,
+       "velocity_target": 0.027422839227714078
+      },
+      {
+       "latent": 0.005437845038909485,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.07162588834762573,
+       "step": 1,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.21143844951170407,
+       "velocity_target": 0.04014170466219689
+      },
+      {
+       "latent": 0.01942278926856467,
+       "latent_bitwise": false,
+       "latent_max_abs": 0.4923197478055954,
+       "step": 2,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.23856142950942746,
+       "velocity_target": 0.07119158788735873
+      },
+      {
+       "latent": 0.04897841519622075,
+       "latent_bitwise": false,
+       "latent_max_abs": 1.3159430027008057,
+       "step": 3,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.2649320830101536,
+       "velocity_target": 0.08323416713142283
+      },
+      {
+       "latent": 0.08380398096945708,
+       "latent_bitwise": false,
+       "latent_max_abs": 2.5784480571746826,
+       "step": 4,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.2890468948521766,
+       "velocity_target": 0.09910806607320222
+      },
+      {
+       "latent": 0.0932043208488154,
+       "latent_bitwise": false,
+       "latent_max_abs": 3.53522527217865,
+       "step": 5,
+       "velocity_bitwise": false,
+       "velocity_reference": 0.27716000176098576,
+       "velocity_target": 0.11915024480153798
+      }
+     ]
+    },
+    "variants": {
+     "blas-cublaslt": {
+      "equal_to_default": true
+     },
+     "sdpa-cudnn": {
+      "equal_to_default": true
+     },
+     "sdpa-efficient": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 29.662670450600874,
+      "per_step": [
+       {
+        "latent": 0.0015405264510497674,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.02772676944732666,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.180886001110097,
+        "velocity_target": 0.02983864111504311
+       },
+       {
+        "latent": 0.00697019611288876,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.1292039155960083,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.20988702171651294,
+        "velocity_target": 0.05174780421737115
+       },
+       {
+        "latent": 0.01996323516957032,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.36071205139160156,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.23577841986378245,
+        "velocity_target": 0.07027908559863777
+       },
+       {
+        "latent": 0.052603159560169165,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.9459155648946762,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.26247318178024753,
+        "velocity_target": 0.09239292271527773
+       },
+       {
+        "latent": 0.09156269194048224,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.004473626613617,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.28794454720590407,
+        "velocity_target": 0.10756375263284408
+       },
+       {
+        "latent": 0.10179079349649625,
+        "latent_bitwise": false,
+        "latent_max_abs": 2.7355476021766663,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.2819733200321129,
+        "velocity_target": 0.12750915065608875
+       }
+      ]
+     },
+     "sdpa-flash": {
+      "first_drift": {
+       "kind": "velocity",
+       "pdd_head": 0,
+       "rows": "all_image",
+       "stage": "step",
+       "step": 0
+      },
+      "output_psnr_db": 28.24285280363234,
+      "per_step": [
+       {
+        "latent": 0.0014899501339419913,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.030326031148433685,
+        "step": 0,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.18013467927198934,
+        "velocity_target": 0.028859022981769004
+       },
+       {
+        "latent": 0.006161062886599083,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.10832817852497101,
+        "step": 1,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.20892492113107322,
+        "velocity_target": 0.045456495459444
+       },
+       {
+        "latent": 0.0244662485441567,
+        "latent_bitwise": false,
+        "latent_max_abs": 0.8549293875694275,
+        "step": 2,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.23743624012622913,
+        "velocity_target": 0.09010415601604473
+       },
+       {
+        "latent": 0.06168611809713637,
+        "latent_bitwise": false,
+        "latent_max_abs": 1.7651564478874207,
+        "step": 3,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.27431742322235264,
+        "velocity_target": 0.0993713332784715
+       },
+       {
+        "latent": 0.10196569477602047,
+        "latent_bitwise": false,
+        "latent_max_abs": 3.1227277517318726,
+        "step": 4,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.2993826228236941,
+        "velocity_target": 0.1121759750131898
+       },
+       {
+        "latent": 0.111888435782327,
+        "latent_bitwise": false,
+        "latent_max_abs": 4.185027599334717,
+        "step": 5,
+        "velocity_bitwise": false,
+        "velocity_reference": 0.2956238353628381,
+        "velocity_target": 0.13279374517780512
+       }
+      ]
+     }
+    }
+   },
+   "reference_latents": [
+    [
+     64,
+     64
+    ],
+    [
+     64,
+     344
+    ]
+   ],
+   "sequence_length": 17203,
+   "size": [
+    2048,
+    2048
+   ],
+   "source": "reference1.png + assets/showcase/photo.jpg, 2048x2048, seed 7",
+   "strict": {
+    "denoiser": {
+     "calls": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+     ],
+     "six_in_order": true
+    },
+    "fixed_reference_rows": {
+     "conditioned_sha256": "e63a46eb6524729f56a8acd7243284cf32e5b966eec462b904445376dff04c92",
+     "fixed": true,
+     "num_reference_rows": 6528,
+     "steps_equal_to_conditioned": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+     ]
+    },
+    "peak_memory_gib": 69.8,
+    "seconds": 499.0
+   },
+   "task": "edit"
+  }
+ },
+ "heads_released": true,
+ "ok": true,
+ "sampler": {
+  "backend_id": "H3ImageVelocityStepTritonOp",
+  "contract_id": "h3-image-velocity-step-v1",
+  "schedule": "772530004483a843a4f47ad041f54dcc272191e16b58658bd5105ab25ac5a459",
+  "semantic_op": "h3_image_velocity_step",
+  "update": "fp32(x) + (sigma_i - sigma_{i+1}) * fp32(v), generated rows only"
+ },
+ "schema": "rlkernel.h3_image.ws1_full_evidence.v1"
+}
