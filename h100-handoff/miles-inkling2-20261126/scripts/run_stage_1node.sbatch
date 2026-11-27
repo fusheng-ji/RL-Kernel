@@ -13,6 +13,8 @@ STAGE=$1; shift
 export RUN=$WORK/runs/$(basename "$STAGE" .sh)-$TAG
 mkdir -p "$RUN"
 df -h / /tmp /dev/shm "$WORK" 2>/dev/null
+# a launcher step may leave its own CPU and memory limits in the environment; srun would apply them to this step
+unset SLURM_CPUS_PER_TASK SLURM_TRES_PER_TASK SLURM_CPUS_PER_GPU SLURM_MEM_PER_CPU SLURM_MEM_PER_GPU SLURM_MEM_PER_NODE
 srun --container-image="$WORK/images/miles-inkling2-mini.sqsh" --container-remap-root --no-container-mount-home \
      --container-writable --container-mounts="$WORK:$WORK,$THIS:$THIS" --container-workdir=/root \
      bash -c "unset WANDB_API_KEY HF_TOKEN; export HOME=/root HF_HOME=$WORK/cache/hf HF_HUB_DISABLE_IMPLICIT_TOKEN=1 HF_HUB_DISABLE_TELEMETRY=1 HF_HUB_OFFLINE=1 \
