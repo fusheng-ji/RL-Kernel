@@ -81,7 +81,14 @@ sbatch -A <ACCOUNT> -p <PARTITION> --gres=gpu:1 $H/build.sbatch
 
 - 镜像固定为 `vllm/vllm-openai@sha256:cb12c301…`（vLLM `0.32.1rc1.dev361+g83c078d95`，torch 2.14.0+cu130）。enroot 里要写成 `docker://vllm/vllm-openai:sha256:<digest>`：`@sha256` 会被当成 user@host。脚本已经这样写了。
 - 镜像的 entrypoint 会吞掉命令，所以每次 `enroot start` 都带 `--rc rc.sh`。
-- 镜像里自带的包冻结不动（`-c base.txt`）。另外编译这些，都针对 sm90：
+- **所有 pip 安装都以 `reference/constraints-b200.txt` 为约束**。它是 B200 的 freeze，去掉了下面这些本地编译的包。只从 pypi.org 装：宿主机传进容器的 `PIP_*` 变量会被清掉（包括 NGC 之类的 extra index），`PIP_CONFIG_FILE=/dev/null`。装不上就记一条 `STEP_FAIL`，不会再不带约束重试。
+- 第一轮（`b88c1f51a`）在 H100 上失败过：受约束安装失败后回退成不带约束重装，pip 按当天的 PyPI 重新解析，装进了 `flash-attn-4`，`nvidia-cutlass-dsl` 也升到 4.8.1（`libs-cu13` 还是 4.8.0）。于是导入 `vllm` 时 `cutlass.cute` 缺 `ThrMma`。这个回退已经去掉。
+- 脚本额外做三项检查，任何一项不过都记 `STEP_FAIL`，也不导出 sqsh：
+  - 镜像自带的包要和 B200 freeze 一致（写到 `wheels-sm90/base-image-freeze.txt`）。不一致说明镜像不同。注意：`image.sha256` 是本地 sqsh 文件的哈希，每次 `enroot import` 都会变，不能用来比较镜像；镜像身份看 digest 和这项检查。
+  - 最终环境除本地编译的包外要和 B200 freeze 逐行相同（差异写到 `wheels-sm90/freeze-diff-vs-b200.txt`）。
+  - 不能装有 `flash-attn-4`。
+- 编译并发 `MAX_JOBS` 取 `SLURM_CPUS_PER_TASK`（没设时为 32）。
+- 另外编译这些，都针对 sm90：
   - FlashAttention 2.8.3，打 C++20 补丁；
   - fast-hadamard-transform `f134af63`；
   - apex `10417ace`；
@@ -90,7 +97,7 @@ sbatch -A <ACCOUNT> -p <PARTITION> --gres=gpu:1 $H/build.sbatch
   - torch_memory_saver `8d30c59c`。
 - wheel 缓存在 `<WORK>/wheels-sm90`。被抢占或失败后重新提交，已经编好的会跳过。
 
-**期望：** 日志里没有 `STEP_FAIL`，结尾是 `IMPORTS_OK` 和 `BUILD_DONE`。`build_inner.sh` 在最后的导入检查里断言 capability 为 `(9, 0)`。把 `<WORK>/wheels-sm90/env-freeze-sm90.txt` 交回。B200 的对照是 `reference/env-freeze-b200.txt`，除了几个编出来的包的本地版本号以外应该相同。**任何一步 `STEP_FAIL` 都停下来报告**，不要换版本。
+**期望：** 日志里没有 `STEP_FAIL`，结尾是 `IMPORTS_OK` 和 `BUILD_DONE`。`build_inner.sh` 在最后的导入检查里断言 capability 为 `(9, 0)`。把 `<WORK>/wheels-sm90/` 下的 `env-freeze-sm90.txt`、`base-image-freeze.txt`、`freeze-diff-vs-b200.txt`、`build-steps.log` 交回。B200 的对照是 `reference/env-freeze-b200.txt`，除了几个编出来的包的本地版本号以外应该相同。**任何一步 `STEP_FAIL` 都停下来报告**，不要换版本。
 
 ## V1. checkpoint（CPU）
 
@@ -220,7 +227,7 @@ python3 $H/analyze.py <WORK>/runs/drift > <OUT>/V4/summary.json
 
 ```
 SUMMARY.md                 每个任务一行：通过/失败、关键数字、与期望不同的地方、DSA 后端、所有偏离本文的地方
-V0/  build 日志（脱敏）、env-freeze-sm90.txt、image.sha256
+V0/  build 日志（脱敏）、env-freeze-sm90.txt、base-image-freeze.txt、freeze-diff-vs-b200.txt、build-steps.log
 V1/  sha256sum -c 的输出
 V2/  runs/smoke/ 下所有文件
 V3/  summary.json、progress.txt、pins-*.txt、gpus-*.txt、每个 case 的 train.log、node*.log、probe-rank*.jsonl、rc；nccl 日志只要 grep "NET/" 的结果
