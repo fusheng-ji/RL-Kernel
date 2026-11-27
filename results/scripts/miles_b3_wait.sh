@@ -29,6 +29,7 @@ while :; do
   break
 done
 NA=$(nodes_of "$J" | sed -n 1p)
+driver_2node_sync "$J" "$NA" "0:15:00" milesCpusetCheck "export SLURM_JOB_ID=$J; bash $D/cpuset_check.sh" || exit 1
 while :; do
   driver_2node_sync "$J" "$NA" "3:30:00" "milesB3_${TAG}" \
     "export TAG=$TAG SLURM_JOB_ID=$J; bash $D/u_miles_b3.sh $J"

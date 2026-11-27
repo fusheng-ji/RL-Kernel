@@ -1,0 +1,20 @@
+# sacct AllocCPUS for miles H2 round 1 nested drivers and P2 pipeline inner steps (job <JOB_1>)
+# NodeList: node-x -> node-a, node-x -> node-b, <NODES> -> node-a+node-b
+#
+# Miles H2 round 1 (driver_2node -c 4 on node-a, nested -N2):
+<JOB_1>.27|2026-11-27T16:48:59|2026-11-27T20:32:36|4|1|node-a
+<JOB_1>.28|2026-11-27T16:48:59|2026-11-27T17:51:43|8|2|node-a+node-b
+<JOB_1>.35|2026-11-27T17:51:43|2026-11-27T18:26:57|8|2|node-a+node-b
+<JOB_1>.42|2026-11-27T18:26:57|2026-11-27T19:29:49|8|2|node-a+node-b
+<JOB_1>.43|2026-11-27T19:29:49|2026-11-27T20:32:34|8|2|node-a+node-b
+#
+# P2 (jobxB1b step .55 driver; nested u_pipeline rows, 64 CPU per inner step, node-a):
+<JOB_1>.57|2026-11-27T22:26:41|2026-11-27T22:29:01|64|1|node-a
+<JOB_1>.58|2026-11-27T22:29:01|2026-11-27T22:31:31|64|1|node-a
+<JOB_1>.59|2026-11-27T22:31:31|2026-11-27T22:34:00|64|1|node-a
+<JOB_1>.60|2026-11-27T22:34:00|2026-11-27T22:36:47|64|1|node-a
+<JOB_1>.61|2026-11-27T22:36:47|2026-11-27T22:39:07|64|1|node-a
+<JOB_1>.62|2026-11-27T22:39:07|2026-11-27T22:41:21|64|1|node-a
+<JOB_1>.63|2026-11-27T22:41:21|2026-11-27T22:43:38|64|1|node-a
+<JOB_1>.64|2026-11-27T22:43:38|2026-11-27T22:45:53|64|1|node-a
+# (.56 V2 retry 32 CPU; .65 V2 gpu:1 16 CPU — not P2 rows)
