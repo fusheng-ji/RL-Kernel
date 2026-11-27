@@ -18,7 +18,7 @@ from torch.autograd.function import once_differentiable
 
 from rl_engine.contracts.operators.index_select import require_unique_indices
 
-_SUPPORTED_DEVICES = ("cuda", "hip", "xpu", "musa")
+_SUPPORTED_DEVICES = ("cuda",)  # NVIDIA CUDA; the registry routes ROCm to the reference
 _SUPPORTED_DTYPES = (torch.float32, torch.float16, torch.bfloat16)
 _INDEX_DTYPES = (torch.int32, torch.int64)
 _BLOCK_SIZE = 1024

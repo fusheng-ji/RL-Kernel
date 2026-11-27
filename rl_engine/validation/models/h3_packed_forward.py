@@ -10,7 +10,9 @@ audio rows after the output heads (``index_select``). Neither is a submodule, so
 module-forward rebinding of ``h3_full_model`` cannot reach them. The candidate can bind the
 input scatter to ``packed_index_copy`` (#545) and the two output gathers to the shared
 ``index_select`` (#663). Each binding is optional so a missing scatter kernel still allows
-the gather to run, and vice versa.
+the gather to run, and vice versa. ``h3_full_model`` binds the gather to the shared operator's
+PyTorch reference (``NativeIndexSelectOp``), which gives the provider's bytes and is faster than
+the Triton backend; the trace reports it as ``reference``.
 
 ``packed_index_copy`` is pure data movement, one writer per output row and no arithmetic, so the
 forward and every gradient are bitwise the provider's (``tests/models/minimax_h3/
@@ -37,7 +39,7 @@ KNOWN_FORWARDS = {
     # diffusers 0.43.0 (the verl-omni run environment): ``get_parameter_dtype(module)``
     "ae200f2868ad388f1f40fccb7529f39ec3bc00c999725babef1f6d73d05361d4": "parameter",
 }
-ROWS = {"packed_index_copy": "row", "packed_index_select": "row"}
+ROWS = {"packed_index_copy": "row", "packed_index_select": "reference"}
 
 
 class UnknownForwardError(RuntimeError):

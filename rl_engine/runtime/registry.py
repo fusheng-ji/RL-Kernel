@@ -235,6 +235,7 @@ class OpBackend(Enum, metaclass=_KernelEnumMeta):
     TRITON_INDEX_SELECT = (
         "rl_engine.backends.shared.triton.embedding.index_select.TritonIndexSelectOp"
     )
+    PYTORCH_NATIVE_INDEX_SELECT = "rl_engine.reference.embedding.index_select.NativeIndexSelectOp"
     CUDA_SM90_LM_HEAD = "rl_engine.kernels.ops.cuda.linear.lm_head.SM90LMHeadOp"
     CUDA_SM90_EMBEDDING = "rl_engine.kernels.ops.cuda.linear.embedding.SM90EmbeddingOp"
 
@@ -600,7 +601,7 @@ def _default_semantic_descriptors() -> tuple[OperatorBackendDescriptor, ...]:
             semantic_op="index_select",
             backend_id="triton-index-select",
             supported_targets=frozenset({"rollout", "training"}),
-            supported_devices=frozenset({"cuda", "rocm", "musa", "xpu"}),
+            supported_devices=frozenset({"cuda"}),
             supported_dtypes=frozenset({"float32", "float16", "bfloat16"}),
             supported_topologies={
                 "rollout": {
@@ -1174,7 +1175,7 @@ class KernelRegistry:
                 "rms_norm": [OpBackend.PYTORCH_NATIVE_RMS_NORM],
                 "lm_head": [OpBackend.PYTORCH_NATIVE_LM_HEAD],
                 "embedding": [OpBackend.PYTORCH_NATIVE_EMBEDDING],
-                "index_select": [OpBackend.TRITON_INDEX_SELECT],
+                "index_select": [OpBackend.PYTORCH_NATIVE_INDEX_SELECT],
                 "silu": [OpBackend.TRITON_SILU, OpBackend.PYTORCH_NATIVE_SILU],
                 "swiglu": [OpBackend.TRITON_SWIGLU, OpBackend.PYTORCH_NATIVE_SWIGLU],
                 "timestep_sinusoid_h3": [OpBackend.PYTORCH_H3_TIMESTEP_SINUSOID],
@@ -1243,7 +1244,7 @@ class KernelRegistry:
                     OpBackend.TRITON_EMBEDDING,
                     OpBackend.PYTORCH_NATIVE_EMBEDDING,
                 ],
-                "index_select": [OpBackend.TRITON_INDEX_SELECT],
+                "index_select": [OpBackend.PYTORCH_NATIVE_INDEX_SELECT],
                 "silu": [OpBackend.TRITON_SILU, OpBackend.PYTORCH_NATIVE_SILU],
                 "swiglu": [OpBackend.TRITON_SWIGLU, OpBackend.PYTORCH_NATIVE_SWIGLU],
                 "timestep_sinusoid_h3": [OpBackend.PYTORCH_H3_TIMESTEP_SINUSOID],
@@ -1286,6 +1287,7 @@ class KernelRegistry:
                 "rms_norm": [OpBackend.PYTORCH_NATIVE_RMS_NORM],
                 "lm_head": [OpBackend.PYTORCH_NATIVE_LM_HEAD],
                 "embedding": [OpBackend.PYTORCH_NATIVE_EMBEDDING],
+                "index_select": [OpBackend.PYTORCH_NATIVE_INDEX_SELECT],
                 "silu": [OpBackend.PYTORCH_NATIVE_SILU],
                 "swiglu": [OpBackend.PYTORCH_NATIVE_SWIGLU],
                 "timestep_sinusoid_h3": [OpBackend.PYTORCH_H3_TIMESTEP_SINUSOID],
@@ -1626,20 +1628,7 @@ class KernelRegistry:
             raise RuntimeError("video input projection is qualified on CUDA SM90 only")
         if op_type == "video_output_projection_fp32" and platform != "cuda":
             raise RuntimeError("video output projection is qualified on CUDA SM90 only")
-        candidates = self._priority_map.get(platform, {}).get(op_type)
-        if candidates is None and op_type == "index_select":
-            # The legacy dispatcher maps devices without a priority table to CPU.
-            # For an explicit XPU or HIP device, use this operator's descriptor.
-            # An unsupported device gets no candidate: the generic fallback is a logp op.
-            if device is not None:
-                device_type = torch.device(device).type
-                platform = "rocm" if device_type == "hip" else device_type
-            descriptor = self.semantic.backend_descriptor(op_type, "triton-index-select")
-            candidates = (
-                [OpBackend.TRITON_INDEX_SELECT] if platform in descriptor.supported_devices else []
-            )
-        if candidates is None:
-            candidates = [OpBackend.PYTORCH_NATIVE]
+        candidates = self._priority_map.get(platform, {}).get(op_type, [OpBackend.PYTORCH_NATIVE])
 
         for backend in candidates:
             op_instance = self._get_or_create_backend(backend)

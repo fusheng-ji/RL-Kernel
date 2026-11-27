@@ -66,21 +66,27 @@ def test_video_output_projection_rejects_unqualified_platforms(monkeypatch, plat
 def test_index_select_dispatch_and_fail_closed(monkeypatch):
     registry = KernelRegistry()
     descriptor = registry.semantic.backend_descriptor("index_select", "triton-index-select")
-    assert descriptor.supported_devices == frozenset({"cuda", "rocm", "musa", "xpu"})
+    assert descriptor.supported_devices == frozenset({"cuda"})
     assert descriptor.supported_dtypes == frozenset({"float32", "float16", "bfloat16"})
     assert descriptor.determinism_or_alignment_properties["unique_indices_required"] is True
     assert descriptor.fallback_policy.value == "error"
     monkeypatch.setattr(registry, "_get_or_create_backend", lambda backend: backend)
-    for platform in ("cuda", "rocm", "musa"):
-        assert registry._priority_map[platform]["index_select"] == [OpBackend.TRITON_INDEX_SELECT]
-    for device in ("cuda:0", "hip:0", "xpu:0"):
-        assert registry.get_op("index_select", device=device) is OpBackend.TRITON_INDEX_SELECT
-    monkeypatch.setattr(registry_module.torch.version, "hip", "test")
+    # Triton is qualified on NVIDIA CUDA only; every other platform gets the PyTorch reference.
+    assert registry._priority_map["cuda"]["index_select"] == [OpBackend.TRITON_INDEX_SELECT]
+    for platform in ("rocm", "musa", "cpu"):
+        assert registry._priority_map[platform]["index_select"] == [
+            OpBackend.PYTORCH_NATIVE_INDEX_SELECT
+        ]
     assert registry.get_op("index_select", device="cuda:0") is OpBackend.TRITON_INDEX_SELECT
-    monkeypatch.setattr(registry, "_platform", lambda: "musa")
-    assert registry.get_op("index_select") is OpBackend.TRITON_INDEX_SELECT
-    with pytest.raises(RuntimeError, match="No functional backend"):
-        registry.get_op("index_select", device="cpu")
+    for device in ("cpu", "xpu:0"):
+        assert registry.get_op("index_select", device=device) is (
+            OpBackend.PYTORCH_NATIVE_INDEX_SELECT
+        )
+    monkeypatch.setattr(registry_module.torch.version, "hip", "test")
+    assert registry.get_op("index_select", device="cuda:0") is (
+        OpBackend.PYTORCH_NATIVE_INDEX_SELECT
+    )
+    monkeypatch.setattr(registry_module.torch.version, "hip", None)
     monkeypatch.setattr(registry, "_get_or_create_backend", lambda _backend: None)
     with pytest.raises(RuntimeError, match="No functional backend"):
         registry.get_op("index_select", device="cuda:0")

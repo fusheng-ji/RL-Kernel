@@ -76,13 +76,13 @@ Three seeds of the single-vs-batched Euler control (`reports/experiments/h3-full
   - The row is data movement only, so the forward and every gradient are bitwise the provider's.
     `full_model_execution` binds it in candidate runs whenever the CUDA operator is present.
     `FullModelTrace.validate()["packed_bindings"]` reports `row` or `provider`.
-- **`packed_index_select` (#663).** On NVIDIA CUDA, the H3 candidate binds the shared
-  [index_select](index-select.md) after `proj_out` and `audio_proj_out`. Both calls select
-  distinct sequence positions along `dim=1` and pass `unique_indices=True`. With Triton
-  debugging off, the caller must keep every video and audio index in `[0, S)`, where `S`
-  is the packed sequence length. Out-of-range positions can pass silently. The trace reports
-  `row` when the Triton gather is bound and `reference` when the provider handles selection.
-  Input packing and output selection can be bound independently.
+- **`packed_index_select` (#663).** The H3 candidate calls the shared
+  [index_select](index-select.md) after `proj_out` and `audio_proj_out`, on its PyTorch
+  reference (`NativeIndexSelectOp`). Both calls select distinct sequence positions along
+  `dim=1` and pass `unique_indices=True`; the reference checks every index against `[0, S)`,
+  where `S` is the packed sequence length. The Triton backend gives the same bytes but is
+  2.27-2.32x slower for forward + backward on H100 at the H3 shapes, so H3 does not bind it.
+  The trace reports `reference`. Input packing and output selection are bound independently.
 - **`conditioning_noise_mix` (#476).** The FL2VA / Ref2VA anchors are noised once by
   `scheduler.scale_noise`. `h3_conditioning_noise.bind` routes that call to
   `ConditioningNoiseMixCudaOp`, which is bitwise the eager expression.

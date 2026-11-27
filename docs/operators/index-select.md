@@ -102,11 +102,12 @@ batch slices, and autograd computes first-order gradients for `x`.
 
 ## Validation and benchmark
 
-The registry entry selects Triton on CUDA, ROCm, XPU and MUSA with a matching
-Triton backend. Pass `device=x.device` for dispatch. On CPU, instantiate
-`rl_engine.reference.embedding.index_select.NativeIndexSelectOp` directly or
-use the validation CLI below. PyTorch exposes ROCm tensors through the `cuda`
-device type.
+The registry selects Triton on NVIDIA CUDA, where it is tested, and the PyTorch
+reference `rl_engine.reference.embedding.index_select.NativeIndexSelectOp` on every
+other platform (CPU, ROCm, MUSA, XPU). Pass `device=x.device` for dispatch. PyTorch
+exposes ROCm tensors through the `cuda` device type; the registry still routes them
+to the reference. MiniMax-H3 binds the reference on every device: it gives the same
+bytes as the Triton backend and is faster at the H3 shapes.
 `forward_fp32` casts the input to FP32 before calling the same PyTorch gather.
 This lets native autograd scatter FP32 upstream gradients before rounding the
 result to the input dtype.

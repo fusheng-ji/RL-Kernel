@@ -13,17 +13,15 @@ import pytest
 import torch
 
 from rl_engine.contracts.numerical import load_contract, resolve_tolerance
-from rl_engine.platforms.device import device_ctx
 from rl_engine.reference.embedding.index_select import NativeIndexSelectOp
 
 DTYPES = (torch.float32, torch.float16, torch.bfloat16)
-requires_cuda = pytest.mark.skipif(not torch.cuda.is_available(), reason="requires CUDA or ROCm")
-# PyTorch also exposes ROCm through cuda. The project device probe imports torch_musa.
+# The Triton backend is registered and tested on NVIDIA CUDA only. PyTorch also exposes ROCm
+# through the cuda device type, where the registry selects the PyTorch reference.
+requires_cuda = pytest.mark.skipif(
+    not torch.cuda.is_available() or torch.version.hip is not None, reason="requires NVIDIA CUDA"
+)
 TRITON_DEVICES = [pytest.param("cuda", marks=requires_cuda)]
-if hasattr(torch, "xpu") and torch.xpu.is_available():
-    TRITON_DEVICES.append(pytest.param("xpu"))
-if device_ctx.is_musa:
-    TRITON_DEVICES.append(pytest.param("musa"))
 
 
 def assert_bits(actual, expected):

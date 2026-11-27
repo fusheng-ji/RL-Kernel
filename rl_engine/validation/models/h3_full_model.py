@@ -443,6 +443,7 @@ def _strict_boundaries(model, trace, ops, native=frozenset()):
 def _packed_rows(model, trace):
     """Bind the available scatter and gather independently and record which rows ran."""
 
+    from rl_engine.reference.embedding.index_select import NativeIndexSelectOp
     from rl_engine.runtime.registry import KernelRegistry, OpBackend
     from rl_engine.validation.models import h3_packed_forward as hpf
 
@@ -461,23 +462,20 @@ def _packed_rows(model, trace):
         return None
 
     pack = resolve("packed_index_copy", OpBackend.CUDA_PACKED_INDEX_COPY, "cuda")
-    select = None
-    # PyTorch also exposes ROCm tensors as 'cuda'. H3's first rollout targets NVIDIA CUDA.
-    output_weight = next(model.proj_out.parameters(), None)
-    if output_weight is not None and output_weight.is_cuda and torch.version.hip is None:
-        select = resolve("index_select", OpBackend.TRITON_INDEX_SELECT, output_weight.device)
+    # The output selection is the shared operator's PyTorch reference on every device. It gives
+    # the provider's bytes, and on H100 it is 2.3x faster than the Triton gather (#663), so the
+    # Triton backend is not bound here.
+    select = NativeIndexSelectOp()
 
     with ExitStack() as stack:
-        if pack is not None or select is not None:
-            try:
-                stack.enter_context(hpf.bind(model, pack, select=select))
-            except (hpf.UnknownForwardError, ImportError):
-                pass  # An unknown provider or an existing wrapper keeps its original forward.
-            else:
-                if pack is not None:
-                    trace.packed_bindings["packed_index_copy"] = hpf.ROWS["packed_index_copy"]
-                if select is not None:
-                    trace.packed_bindings["packed_index_select"] = hpf.ROWS["packed_index_select"]
+        try:
+            stack.enter_context(hpf.bind(model, pack, select=select))
+        except (hpf.UnknownForwardError, ImportError):
+            pass  # An unknown provider or an existing wrapper keeps its original forward.
+        else:
+            if pack is not None:
+                trace.packed_bindings["packed_index_copy"] = hpf.ROWS["packed_index_copy"]
+            trace.packed_bindings["packed_index_select"] = hpf.ROWS["packed_index_select"]
         # Errors while running a bound operator propagate to the caller.
         yield
 

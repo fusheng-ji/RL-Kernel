@@ -239,7 +239,7 @@ def test_the_full_model_binds_the_cuda_rows_and_reports_them(monkeypatch, pack_a
     if hpf.forward_source_sha256(MODEL) not in hpf.KNOWN_FORWARDS:
         pytest.skip("unknown provider forward")
     if not pack_available:
-        # The Triton gather can run even when the optional CUDA scatter extension is absent.
+        # The output selection is bound even when the optional CUDA scatter extension is absent.
         get_op = KernelRegistry.get_op
 
         def without_pack(registry, name, device):
@@ -258,10 +258,36 @@ def test_the_full_model_binds_the_cuda_rows_and_reports_them(monkeypatch, pack_a
     assert "forward" not in model.__dict__
     assert trace.packed_bindings == {
         "packed_index_copy": "row" if pack_available else "provider",
-        "packed_index_select": "row",
+        "packed_index_select": "reference",
     }
     for g, w in zip(got, want, strict=True):
         assert _bitwise(g, w)
+
+
+def test_the_full_model_binds_the_pytorch_reference_for_selection(monkeypatch):
+    """H3 selects its outputs with the shared operator's PyTorch reference, not the Triton gather:
+    both give the provider's bytes, and the reference is the faster one (#663)."""
+
+    from rl_engine.validation.models import h3_full_model as hfm
+
+    if hpf.forward_source_sha256(MODEL) not in hpf.KNOWN_FORWARDS:
+        pytest.skip("unknown provider forward")
+    selects = []
+    bind = hpf.bind
+
+    def spy(model, pack, *, select=None):
+        selects.append(select)
+        return bind(model, pack, select=select)
+
+    monkeypatch.setattr(hpf, "bind", spy)
+    model = _Model()
+    model.__class__ = type("_Bound", (MODEL,), {})
+    trace = hfm.FullModelTrace()
+    with hfm._packed_rows(model, trace):
+        assert "forward" in model.__dict__
+    assert "forward" not in model.__dict__
+    assert len(selects) == 1 and type(selects[0]) is NativeIndexSelectOp
+    assert trace.packed_bindings["packed_index_select"] == "reference"
 
 
 def test_a_replay_wrapper_installed_after_bind_serves_the_packed_forward(tmp_path):
