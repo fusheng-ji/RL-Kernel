@@ -93,3 +93,16 @@ T8 ran `b685c4991` (PDD head + one step), T9 ran `69e0e42c9` (ws1_full), each on
 | T9-t2i `run-b` | 0 | `equal_to_other_process` true for both fixtures |
 | T9-t2i pytest new / suite | 0 / 1 | 17 passed / 530 passed, 1 failed (the same projection test) |
 | T9-edit | - | the job hit its time limit before the first fixture finished; to be rerun with the fixes |
+
+## T10 (2026-11-27)
+
+T10 ran `4cfa3cbfc` (ws1_full with the two SM90 fixes, `d3bc9fe41` contiguous head rows and `f4171b776` row-sliced `ffn_down`) on two idle H100s of a shared node (`a/env.txt`, `edit/env.txt`). It replaces T8 `run-edit`, the failed projection test and T9-edit. Bindings 30 row / 6 interim / 3 reference everywhere. `ext.txt`: `True h3-cuda-strict-v1 3.7.1`. Logs are included (redacted); a first upload of the results had a job-id rule that rewrote numbers inside the JSON, and the results branch restored them from the raw output (results commit `9991f16fa`), which is what is here.
+
+| Task | Exit | Headline |
+|---|---|---|
+| a, image suite | 0 | 535 passed, 0 failed (B200 at `4cfa3cbfc`: 535); `test_cuda_projection_is_accurate_and_row_invariant` passes |
+| a, `run-edit` (`edit_two_refs`, the T8 replay that stopped) | 0 | `ok` true; repeat, batch rows 0 / 1 and permutation first drift null, next head first drift at `pdd_proj_out`; the batch of two (34,406 rows) runs in `ffn_down` slices; training step ok, peak 79.6 GiB |
+| a, `run-t2i` / `run-b` (`t2i_upscaled`) | 0 / 0 | `ok` true, controls as above, training ok; second process `equal_to_other_process` true at steps 0 and 5 |
+| a, `t2i-vs-t9` (strict `t2i_upscaled` against T9 `run-a` at `69e0e42c9`) | 0 | `equal_to_other_process` true: the fixes leave T9's step records and output unchanged on H100 |
+| T10-edit `run-a` (`edit_two_refs` controls + training at step 5, `edit_example`) | 0 | `ok` true; loop alone, batch rows 0 / 1 (and the partner request) and permutation first drift null; training at head 5 ok, checkpointed twice equal, peak 81.8 GiB; reference rows fixed at all six steps (6,528 and 1,024 rows); schedule and inputs equal to Diffusers; strict chain 610.0 s / 731.4 s (B200 499 / 597), peak 69.3 / 69.8 GiB |
+| T10-edit `run-b` (second process) | - | not run; sent again as T11 |
