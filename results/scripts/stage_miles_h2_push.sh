@@ -4,7 +4,7 @@ set -euo pipefail
 D=$(dirname "$0")
 # shellcheck source=/dev/null
 [ -f "$D/stage_push.local.sh" ] && source "$D/stage_push.local.sh"
-S=${SCHED_ROOT:-<WORK>}
+S=${SCHED_ROOT:-<SCRATCH>/sched_20261127}
 ST=$S/stage_miles_h2_redacted
 rm -rf "$ST"
 rsync -a "$S/stage_miles_h2_results/" "$ST/"
@@ -17,7 +17,23 @@ export LEAK_PAT_CPU_PART LEAK_PAT_CLUSTER_LOGIN LEAK_PAT_CLUSTER_HOST LEAK_PAT_F
 find "$ST" -type f -print0 | while IFS= read -r -d '' f; do
   python3 "$D/redact_tree.py" "$f"
 done
-sed -i -e 's/node-x/node-a/g' -e 's/node-x/node-b/g' \
-  -e 's/<CLUSTER>\[[^]]*\]/node-a+node-b/g' "$ST/extra/job_steps_timeline.txt" 2>/dev/null || true
+sed -i -e 's/<NODE_A_HOST>/node-a/g' -e 's/<NODE_B_HOST>/node-b/g' \
+  -e 's/<CLUSTER_NODE_PREFIX>\[[^]]*\]/node-a+node-b/g' "$ST/extra/job_steps_timeline.txt" 2>/dev/null || true
+bash "$D/gzip_large_logs.sh" "$ST"
+python3 - "$ST/SUMMARY.md" <<'PY'
+import pathlib, sys
+p = pathlib.Path(sys.argv[1])
+extra = """
+
+## Log size notes (round 1 H2 evidence)
+- `train.log` files were copied verbatim from the run tree (not head/tail truncated).
+- Files over 90 MiB are stored as `*.log.gz` in this results branch.
+- sacct steps <JOBID>.36–.41 (≈5 s, 2 CPU, no GPU, 2026-11-27T18:17Z): read-only overlap checks during probe b; no GPU, no recipe change.
+"""
+if p.exists():
+    t = p.read_text()
+    if "Log size notes" not in t:
+        p.write_text(t.rstrip() + extra + "\n")
+PY
 bash "$D/stage_push_validate.sh" "$ST"
 echo "miles H2 redacted tree: $ST"

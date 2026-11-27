@@ -9,10 +9,12 @@ ROOT=${1:?tree root}
 PCI_RE='[0-9A-Fa-f]{8}:[0-9A-Fa-f]{2}:[0-9A-Fa-f]{2}\.[0-7]'
 LEAK_RE="$LEAK_GREP_I"
 
-if grep -rniE "$LEAK_RE" "$ROOT" >/tmp/validate_leak.txt 2>/dev/null; then
+grep -raE "$LEAK_RE" "$ROOT" >/tmp/validate_leak.txt 2>/dev/null || true
+if [ -s /tmp/validate_leak.txt ]; then
   echo "== LEAK contents =="; head -30 /tmp/validate_leak.txt; exit 1
 fi
-if grep -rniE "$PCI_RE" "$ROOT" >/tmp/validate_pci.txt 2>/dev/null; then
+grep -raE "$PCI_RE" "$ROOT" >/tmp/validate_pci.txt 2>/dev/null || true
+if [ -s /tmp/validate_pci.txt ]; then
   echo "== PCI leak =="; head -20 /tmp/validate_pci.txt; exit 1
 fi
 
