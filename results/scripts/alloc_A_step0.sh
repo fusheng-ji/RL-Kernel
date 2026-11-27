@@ -5,7 +5,7 @@ mapfile -t N < <(nodes_of $J); NA=${N[0]}; NB=${N[1]}
 NLIST=$(squeue -h -j $J -o %N)
 log "A step0-only on job $J: node-a=$NA node-b=$NB"
 srun --jobid=$J -N2 --ntasks-per-node=1 --overlap --gres=none --mem=0 \
-  env SLURM_JOB_NODELIST="$NLIST" bash $D/step0_checks.sh
+  /usr/bin/env SLURM_JOB_NODELIST="$NLIST" bash $D/step0_checks.sh
 bash $D/step0_twocards.sh $NB $J
 if ! bash $D/step0_nested.sh $J $NA $NB; then
   DRIVER_MODE=login bash $D/step0_nested.sh $J $NA $NB || { log "STOP: nested_srun failed inside and login"; exit 1; }

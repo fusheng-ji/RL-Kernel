@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH -p <CPU_PARTITION>
-#SBATCH --qos=cpu
+#SBATCH --qos=<QOS>
 #SBATCH -N1 -n1 -c 8 #SBATCH -t 04:00:00
 #SBATCH --mem=120G
 #SBATCH -J sched_prep
-#SBATCH -o <SCRATCH>/sched_20261127/checks/cpu_job_%j.log
+#SBATCH -o <WORK>/checks/cpu_job_%j.log
 S=$SCRATCH_ROOT/sched_20261127; WORK=$S/miles
 echo "== host"; hostname; date
 echo "== enroot"; which enroot; enroot version

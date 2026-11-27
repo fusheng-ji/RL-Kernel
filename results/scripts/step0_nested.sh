@@ -20,7 +20,7 @@ nested_run() {
     )
   else
     srun --jobid="$J" -w "$NA" --overlap -N1 -n1 -c 2 --gres=none --mem=0 \
-      env SLURM_GRES=gpu:4 SLURM_OVERLAP=1 bash -c "
+      /usr/bin/env SLURM_GRES=gpu:4 SLURM_OVERLAP=1 bash -c "
         source $D/common.sh
         slurm_job_env_exports $J
         echo '=== miles: srun --ntasks-per-node=1 --overlap ===' 
@@ -39,10 +39,10 @@ import re, sys
 t = open(sys.argv[1], errors="replace").read()
 # hash gpus cuda — lines like: abc123 4 CUDA_VISIBLE_DEVICES=0,1,2,3
 pat = re.compile(r"^([0-9a-f]{6}) (\d+) CUDA_VISIBLE_DEVICES=(\S+)", re.M)
-blocks = t.split("===")
+blocks = re.split(r"^=== ", t, flags=re.M)
 def block_ok(name_part):
     for blk in blocks:
-        if name_part in blk:
+        if blk.startswith(name_part):
             ms = pat.findall(blk)
             if len(ms) < 2:
                 return False, ms

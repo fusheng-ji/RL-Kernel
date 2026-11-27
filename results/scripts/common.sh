@@ -14,9 +14,11 @@ export CUDA_HOME=$H/cuda13_home PATH=$H/extra_ninja/bin:$H/cuda13_home/bin:$PATH
 export PYTHONNOUSERSITE=1 TOKENIZERS_PARALLELISM=false HF_HUB_DISABLE_IMPLICIT_TOKEN=1
 export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=core.fileMode GIT_CONFIG_VALUE_0=false
 unset PYTHONPATH WANDB_API_KEY HF_TOKEN
+# ~/.local/bin holds a non-executable file named "env" that shadows /usr/bin/env under srun (exit 13): drop it from PATH.
+PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -vxF "$HOME/.local/bin" | paste -sd:); export PATH
 # job ids and the node order: node-a = first node of the job that runs this allocation
 export JA=${JA:-<JOB_1>} JB=${JB:-<JOB_2>}
-GATES=$OUT/gates; mkdir -p $GATES $OUT
+GATES=$OUT/gates; mkdir -p $GATES $OUT $OUT/checks $OUT/logs $OUT/vime $OUT/miles $OUT/build $OUT/runs $OUT/pipeline $OUT/areal $OUT/verlomni
 log()   { echo "[$(date -u +%FT%TZ)] $*" >> $OUT/steps.txt; }
 gate_set()  { echo "$(date -u +%FT%TZ) $2" > $GATES/$1; }       # gate_set NAME note
 gate_ok()   { [ -f $GATES/$1 ] && ! grep -q FAIL $GATES/$1; }     # gate_ok NAME
@@ -62,10 +64,7 @@ i = 0
 for k in n:
     chunk = cpus[i:i+k]
     i += k
-    if len(chunk) == 1:
-        print(str(chunk[0]))
-    else:
-        print(f"{chunk[0]}-{chunk[-1]}")
+    print(",".join(map(str, chunk)))
 PY
 }
 # Job-level SLURM exports for nested srun from login or allocation driver (unset step-local only).
@@ -100,7 +99,7 @@ node_step() {
 alloc_driver() {   # alloc_driver JOB NODELIST_FIRST NAME script [args]   (env must be exported by the caller)
   local J=$1 N=$2 NAME=$3; shift 3
   setsid nohup srun --jobid=$J -w $N --overlap -N1 -n1 -c 2 --gres=none --mem=0 \
-    env SLURM_OVERLAP=1 bash "$@" > $OUT/logs/$NAME.driver.log 2>&1 &
+    /usr/bin/env SLURM_OVERLAP=1 bash "$@" > $OUT/logs/$NAME.driver.log 2>&1 &
   disown; log "launched driver $NAME on job $J"
 }
 

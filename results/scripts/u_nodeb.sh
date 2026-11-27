@@ -5,20 +5,11 @@ D=$(dirname "$0")
 vime_skip=0; gate_ok vime_local || vime_skip=1
 lane() {  # lane GPU CPUSPEC script...
   local gpu=$1 spec=$2 ncpus=$3; shift 3
-  taskset -c "$spec" env CUDA_VISIBLE_DEVICES=$gpu MAX_JOBS=$ncpus bash "$@"
+  taskset -c "$spec" env CUDA_VISIBLE_DEVICES=$gpu MAX_JOBS=$ncpus "$@"
 }
 mkdir -p "$OUT/logs"
 mapfile -t SPECS < <(cpu_lane_specs 16 8 8 32) || { gate_set nodeb_done "FAIL cpuspec"; exit 1; }
-mapfile -t NCOUNT < <(python3 - "${SPECS[@]}" <<'PY'
-import sys
-for s in sys.argv[1:]:
-    if "-" in s:
-        a, b = s.split("-", 1)
-        print(int(b) - int(a) + 1)
-    else:
-        print(1)
-PY
-)
+NCOUNT=(); for sp in "${SPECS[@]}"; do NCOUNT+=( $(echo "$sp" | tr ',' '\n' | wc -l) ); done
 ALLOWED=$(read_step_cpus)
 {
   echo "Cpus_allowed_list=$ALLOWED"

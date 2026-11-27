@@ -29,7 +29,7 @@ start_ray_cluster() {
   local head_log=$O/logs/ray_head${tag}.log worker_log=$O/logs/ray_worker${tag}.log
   # shellcheck disable=SC2086
   setsid nohup srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 $head_extra \
-    env RAY_NODE_RESOURCES="$head_res" RAY_BLOCK=1 bash "$BUNDLE_SCRIPTS/start_ray.sh" head > "$head_log" 2>&1 &
+    /usr/bin/env RAY_NODE_RESOURCES="$head_res" RAY_BLOCK=1 bash "$BUNDLE_SCRIPTS/start_ray.sh" head > "$head_log" 2>&1 &
   sleep 4; sacct -j "$J" -S today -n --format=JobID,Command 2>/dev/null | grep 'start_ray.sh head' | awk '{print $1}' | tail -1 >> "$RAY_STEPS" || true
   local hip=""; for _ in $(seq 1 40); do
     hip=$(grep -oE 'RAY_ADDRESS=[0-9.]+:' "$head_log" 2>/dev/null | head -1 | sed 's/RAY_ADDRESS=//;s/:$//')
@@ -39,7 +39,7 @@ start_ray_cluster() {
   echo "$hip" > "$O/ray_head_ip_${tag}.txt"
   # shellcheck disable=SC2086
   setsid nohup srun --jobid=$J --overlap -w "$NB" -N1 -n1 --ntasks=1 $worker_extra \
-    env RAY_NODE_RESOURCES="$worker_res" RAY_BLOCK=1 bash "$BUNDLE_SCRIPTS/start_ray.sh" worker "$hip" > "$worker_log" 2>&1 &
+    /usr/bin/env RAY_NODE_RESOURCES="$worker_res" RAY_BLOCK=1 bash "$BUNDLE_SCRIPTS/start_ray.sh" worker "$hip" > "$worker_log" 2>&1 &
   sleep 4; sacct -j "$J" -S today -n --format=JobID,Command 2>/dev/null | grep 'start_ray.sh worker' | awk '{print $1}' | tail -1 >> "$RAY_STEPS" || true
   for i in $(seq 1 12); do
     if srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 bash -c \
@@ -149,7 +149,7 @@ start_ray_cluster "$C_HEAD" "$C_WORK" "_C2" && \
 stop_ray_steps
 start_ray_cluster "$C_HEAD" "$C_WORK" "_C3" && \
   srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 \
-    env OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 \
+    /usr/bin/env OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 \
     bash "$D/areal_run_verify.sh" "$(cat $O/ray_head_ip_C3.txt)" "$O/runs/C3-thread-limit" --arms native --steps 4 \
     > "$O/runs/C3-thread-limit/driver.log" 2>&1 || log "C3 failed"
 
