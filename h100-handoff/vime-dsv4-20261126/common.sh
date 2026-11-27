@@ -8,7 +8,7 @@ mapfile -t NODES < <(for n in $(scontrol show hostnames $SLURM_JOB_NODELIST); do
 HEAD=$(echo ${NODES[0]} | awk '{print $1}')
 { date -u; nvidia-smi --query-gpu=index,name,memory.total,memory.used --format=csv; } > $S/gpus-$SLURM_JOB_ID.txt 2>&1
 { git -C $VIMEDIR rev-parse HEAD; git -C $VIMEDIR diff | sha256sum; git -C $W/src/Megatron-run rev-parse HEAD; git -C $W/src/Megatron-run diff | sha256sum; sha256sum $H/patches/*.patch $H/probe/v4probe.py; } > $S/pins-$SLURM_JOB_ID.txt
-srun -N$SLURM_NNODES --ntasks-per-node=1 bash -c "mkdir -p $R/{data,run,tmp}; export ENROOT_DATA_PATH=$R/data ENROOT_RUNTIME_PATH=$R/run ENROOT_TEMP_PATH=$R/tmp TMPDIR=$R/tmp; enroot create --name v4 $ENV_SQSH" > $S/create-$SLURM_JOB_ID.log 2>&1
+srun -N$SLURM_NNODES --ntasks-per-node=1 bash -c "mkdir -p $R/{data,run,tmp}; export ENROOT_MOUNT_HOME=n ENROOT_DATA_PATH=$R/data ENROOT_RUNTIME_PATH=$R/run ENROOT_TEMP_PATH=$R/tmp TMPDIR=$R/tmp; enroot create --name v4 $ENV_SQSH" > $S/create-$SLURM_JOB_ID.log 2>&1
 trap "srun -N$SLURM_NNODES --ntasks-per-node=1 rm -rf $R" EXIT
 VARS="CUDA_VISIBLE_DEVICES W H RUN TOPO STEPS LR EXTRA EXTRA_ENV OPT_ARGS NNODES TOPO_ARGS CKPT VIMEDIR DSV4_NUM_LAYERS DSV4_COMPRESS_RATIOS V4REWARD V4_ROUND_SYNC V4_QAT"
 EARGS=""; for v in $VARS; do EARGS="$EARGS -e $v"; done
@@ -29,7 +29,7 @@ run() {
   echo "$(date -u +%T) START $1" >> $S/progress.txt
   for ((i=0;i<NNODES;i++)); do
     local row=(${NODES[$i]}) role=worker; [ $i = 0 ] && role=head
-    timeout -k 30 $((maxmin*60)) srun -N1 -n1 --overlap -w ${row[1]} bash -c "IFN=\$(ip -o -4 addr show | grep -F ' ${row[0]}/' | awk '{print \$2; exit}'); export ENROOT_DATA_PATH=$R/data ENROOT_RUNTIME_PATH=$R/run ENROOT_TEMP_PATH=$R/tmp TMPDIR=$R/tmp; enroot start --rw --rc $H/rc.sh -m $W:$W -m $H:$H $EARGS v4 bash $H/node_run.sh $role $HEAD ${g[$i]} ${row[0]} \$IFN" > $RUN/node$i.log 2>&1 &
+    timeout -k 30 $((maxmin*60)) srun -N1 -n1 --overlap -w ${row[1]} bash -c "IFN=\$(ip -o -4 addr show | grep -F ' ${row[0]}/' | awk '{print \$2; exit}'); export ENROOT_MOUNT_HOME=n ENROOT_DATA_PATH=$R/data ENROOT_RUNTIME_PATH=$R/run ENROOT_TEMP_PATH=$R/tmp TMPDIR=$R/tmp; enroot start --rw --rc $H/rc.sh -m $W:$W -m $H:$H $EARGS v4 bash $H/node_run.sh $role $HEAD ${g[$i]} ${row[0]} \$IFN" > $RUN/node$i.log 2>&1 &
     pids+=($!)
   done
   wait ${pids[0]}; st=$?; touch $RUN/DONE; wait

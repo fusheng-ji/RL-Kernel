@@ -3,6 +3,9 @@
 set -x; OUT=$1
 export PYTHONNOUSERSITE=1 HOME=/tmp/home PYTHONDONTWRITEBYTECODE=1; mkdir -p $HOME
 export XDG_CACHE_HOME=$W/jitcache VLLM_CACHE_ROOT=$W/jitcache/vllm TILELANG_CACHE_DIR=$W/jitcache/tilelang TRITON_CACHE_DIR=/tmp/triton-cache
+rm -f $OUT/V2-verdict.txt
+# the GPU must be free: another process on it makes the smokes OOM and the result meaningless
+python3 -c "import torch;f,t=torch.cuda.mem_get_info();u=(t-f)/2**30;print(f'gpu_used_gib={u:.2f}');exit(u>2)" > $OUT/gpu-free.txt 2>&1 || { cat $OUT/gpu-free.txt; echo "FAIL gpu_not_free $(cat $OUT/gpu-free.txt)" > $OUT/V2-verdict.txt; exit 3; }
 # a. preflight (capability, cuDNN DSA, DeepGEMM scale format, FP8 grid) and the grad-norm kernel check
 PYTHONPATH=$W/src/vime-fix-run:$W/src/Megatron-run:$H/probe V4_ALLOW_NUMPY2=1 python3 $H/preflight.py $W/ckpt/v4-4l > $OUT/preflight.json 2> $OUT/preflight.err; tail -3 $OUT/preflight.err
 python3 $H/l2test.py > $OUT/l2test.log 2>&1
@@ -17,4 +20,11 @@ python3 $H/l2test.py > $OUT/l2test.log 2>&1
 ( cd $W/src/vime-fix-run; export PYTHONPATH=$W/src/vime-fix-run:$W/src/Megatron-run V4_ALLOW_NUMPY2=1
   python3 -m pytest -q -p no:cacheprovider tests/test_vllm_cli_args_compat.py tests/test_optimizer_grad_norm_guards.py tests/test_deepseek_v4_weights.py tests/test_hf_to_megatron.py tests/test_deepseek_v4_routing_replay.py tests/test_stateless_adam.py tests/test_megatron_argument_validation.py tests/test_vllm_weight_checker.py -rs > $OUT/fix-pytest.log 2>&1; echo rc=$? >> $OUT/fix-pytest.log )
 python3 -m pip list --format=freeze > $OUT/pip-list.txt 2>/dev/null
+# verdict: every item with an rc= line must be rc=0 and the PR tree clean. preflight, l2test and the
+# cuDNN DSA probe are recorded, not judged here (README V2). Exit 1 if any item failed.
+v=0; for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest; do
+  r=$(grep -h '^rc=' $OUT/$f.log 2>/dev/null | tail -1); echo "$f ${r:-rc=missing}" >> $OUT/V2-verdict.txt; [ "$r" = rc=0 ] || v=1; done
+[ -s $OUT/pr-tree-status.txt ] && { echo "pr-tree-status not_empty" >> $OUT/V2-verdict.txt; v=1; }
+[ $v = 0 ] && echo "PASS" >> $OUT/V2-verdict.txt || echo "FAIL" >> $OUT/V2-verdict.txt
 for f in $OUT/*.log; do echo "== $(basename $f)"; tail -3 $f; done
+cat $OUT/V2-verdict.txt; exit $v

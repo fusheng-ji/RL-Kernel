@@ -88,6 +88,7 @@ sbatch -A <ACCOUNT> -p <PARTITION> --gres=gpu:1 $H/build.sbatch
   - 最终环境除本地编译的包外要和 B200 freeze 逐行相同（差异写到 `wheels-sm90/freeze-diff-vs-b200.txt`）。
   - 不能装有 `flash-attn-4`。
 - 编译并发 `MAX_JOBS` 取 `SLURM_CPUS_PER_TASK`（没设时为 32）。
+- 所有 `enroot start` 前都设了 `ENROOT_MOUNT_HOME=n`（build、smoke、core、drift），容器里另外设 `PYTHONNOUSERSITE=1`。H100 第二次 V0 失败就是因为 `--root` 把宿主机 home 挂成了 `/root`：容器看到了 home 里的 user-site 包和上次留下的 `/root/FlashMLA`，于是报 `STEP_FAIL flashmla`、`freeze_differs_from_b200`、`flash-attn-4_installed`。FlashMLA 现在每次都重新 clone。
 - 另外编译这些，都针对 sm90：
   - FlashAttention 2.8.3，打 C++20 补丁；
   - fast-hadamard-transform `f134af63`；
@@ -115,6 +116,11 @@ bash $H/prep_ckpt.sh            # 加 --bf16 再生成 52 GB 的 BF16 版（只�
 ```bash
 sbatch -A <ACCOUNT> -p <PARTITION> --gres=gpu:1 $H/smoke.sbatch
 ```
+
+**判定：** `smoke.sbatch` 的退出码就是 V2 的结果，以 `<WORK>/runs/smoke/V2-verdict.txt` 为准。
+- 开始前先检查分到的 GPU 是空的（已用显存 ≤ 2 GiB，写到 `gpu-free.txt`）。不空就写 `FAIL gpu_not_free`，退出码 3，什么都不跑。这是排程的问题，换一张空卡重跑，那次尝试放进 `not-green-attempts/`。
+- 下表里带 `rc=` 的七项（`pr-pytest`、三个 `smoke--*`、`rollout_smoke`、`runtime_checks`、`fix-pytest`）都要 `rc=0`，`pr-tree-status.txt` 要为空，才写 `PASS`、退出码 0；否则写 `FAIL` 和每项的 rc，退出码 1。
+- `preflight.json`、`l2test.log` 是记录项，不进判定；cuDNN DSA 的处理见下面。
 
 结果在 `<WORK>/runs/smoke/`：
 

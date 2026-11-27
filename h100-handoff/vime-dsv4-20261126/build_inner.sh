@@ -10,7 +10,7 @@ W=$1; WH=$W/wheels-sm90; mkdir -p $WH; HD=$(cd "$(dirname "$0")" && pwd); cd /ro
 for v in $(env | grep -oE '^PIP_[A-Z_]+'); do unset $v; done
 fail(){ echo "STEP_FAIL $*" | tee -a $WH/build-steps.log; }; : > $WH/build-steps.log   # any STEP_FAIL: no export
 export PIP_CONFIG_FILE=/dev/null PIP_INDEX_URL=https://pypi.org/simple PIP_CONSTRAINT=$HD/reference/constraints-b200.txt
-export PIP_NO_CACHE_DIR=1 TMPDIR=/root/tmp PIP_ROOT_USER_ACTION=ignore PIP_DISABLE_PIP_VERSION_CHECK=1; mkdir -p /root/tmp
+export PYTHONNOUSERSITE=1 PIP_NO_CACHE_DIR=1 TMPDIR=/root/tmp PIP_ROOT_USER_ACTION=ignore PIP_DISABLE_PIP_VERSION_CHECK=1; mkdir -p /root/tmp
 wh(){ n=$1; shift; f=$(ls $WH/$n-*.whl 2>/dev/null | head -1); if [ -z "$f" ]; then d=$(mktemp -d /root/tmp/w.XXXX); python3 -m pip wheel --no-build-isolation --no-deps -w $d "$@" && f=$(ls $d/*.whl | head -1) && cp "$f" $WH/.part-$n && mv $WH/.part-$n "$WH/$(basename $f)"; f=$(ls $WH/$n-*.whl 2>/dev/null | head -1); fi; [ -n "$f" ] && python3 -m pip install -q --no-deps "$f" || fail $n; }
 PY=python3; P="python3 -m pip install -q"; NB="python3 -m pip install --no-build-isolation --no-deps"
 ln -sf "$(command -v python3)" /usr/local/bin/python
@@ -32,7 +32,7 @@ mkdir -p /root/link; ln -sf $NC/lib/libnccl.so.2 /root/link/libnccl.so; CD=$(pyt
 ln -sf $NC/lib/libnccl.so.2 /usr/local/lib/libnccl.so; export CMAKE_LIBRARY_PATH=/root/link
 CPATH=$NC/include:$CPATH LIBRARY_PATH=/root/link LDFLAGS=-L/root/link NVTE_CUDA_ARCHS="90" wh transformer_engine git+https://github.com/NVIDIA/TransformerEngine.git@27486e03cfc1fa41f6932dcecdc47c71c47eac3e
 rm -f /usr/local/lib/libnccl.so
-git clone -q -b nv_dev https://github.com/deepseek-ai/FlashMLA /root/FlashMLA && (cd /root/FlashMLA && git submodule update -q --init --recursive && git checkout -q b7643bd54521f563b839b98289b5cd048c062ba2 && git submodule update -q --init --recursive && git rev-parse HEAD && wh flash_mla .) || fail flashmla
+rm -rf /root/FlashMLA; git clone -q -b nv_dev https://github.com/deepseek-ai/FlashMLA /root/FlashMLA && (cd /root/FlashMLA && git submodule update -q --init --recursive && git checkout -q b7643bd54521f563b839b98289b5cd048c062ba2 && git submodule update -q --init --recursive && git rev-parse HEAD && wh flash_mla .) || fail flashmla
 TMS_CUDA_MAJOR=13 $P --no-deps git+https://github.com/zhuzilin/torch_memory_saver.git@8d30c59ca12a68d9deccbc9c6599076a1218cbc5 || fail tms
 for r in onnxscript nvdlfw-inspect nvidia-resiliency-ext einops pytest; do $P $r || fail req $r; done
 python3 -m pip list --format=freeze 2>/dev/null > $WH/env-freeze-sm90.txt

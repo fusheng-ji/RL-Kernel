@@ -9,7 +9,8 @@
 set -uo pipefail
 : "${H:?export H=<THIS_DIR> before sbatch}"; source $H/env.sh
 R=$SCRATCH/vime-dsv4-$SLURM_JOB_ID; mkdir -p $R/{data,run,tmp} $W/enroot $W/logs; trap 'rm -rf $R' EXIT
-export ENROOT_CACHE_PATH=$W/enroot/cache ENROOT_DATA_PATH=$R/data ENROOT_RUNTIME_PATH=$R/run ENROOT_TEMP_PATH=$R/tmp TMPDIR=$R/tmp ENROOT_SQUASH_OPTIONS="-comp zstd -noD"
+# ENROOT_MOUNT_HOME=n: with --root the host home would be mounted at /root (user-site packages, old clones)
+export ENROOT_MOUNT_HOME=n ENROOT_CACHE_PATH=$W/enroot/cache ENROOT_DATA_PATH=$R/data ENROOT_RUNTIME_PATH=$R/run ENROOT_TEMP_PATH=$R/tmp TMPDIR=$R/tmp ENROOT_SQUASH_OPTIONS="-comp zstd -noD"
 IMG=$W/enroot/vllm-cb12c30.sqsh
 if [ ! -f $IMG ]; then
   # "@sha256:" would be parsed by enroot as user@host; ":sha256:" is the digest form it accepts
