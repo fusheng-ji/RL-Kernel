@@ -1,0 +1,43 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.15, pytest-9.1.1, pluggy-1.7.0 -- <HOME>/datastorage/venvs/<E>/bin/python
+rootdir: <WORK>/wt/WB
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 1 item
+
+tests/validation/operators/test_ws1_candidate_evidence.py::test_ws1_cuda_and_triton_candidate_runtime_provenance FAILED [100%]
+
+=================================== FAILURES ===================================
+____________ test_ws1_cuda_and_triton_candidate_runtime_provenance _____________
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="WS1 candidate evidence requires CUDA")
+    def test_ws1_cuda_and_triton_candidate_runtime_provenance():
+        proc = subprocess.run(
+            [sys.executable, str(EVIDENCE_SCRIPT), "--emit-json", "-"],
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            timeout=600,
+        )
+>       assert proc.returncode == 0, proc.stderr
+E       AssertionError: [RL-Kernel][route] mode=strict module=gemm requested=auto actual=rlkernel.det_gemm.sm90.v1 fallback=true reason=cuBLASLt no-split-K startup contract is unavailable
+E         INFO 11-27 13:56:14 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).
+E         INFO 11-27 13:56:15 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).
+E         INFO 11-27 13:56:15 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+E         INFO 11-27 13:56:15 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).
+E         INFO 11-27 13:56:15 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+E         INFO 11-27 13:56:15 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).
+E         INFO 11-27 13:56:15 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+E         INFO 11-27 13:56:15 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+E         INFO 11-27 13:56:15 [RL-Kernel]: Successfully linked to precompiled _C.fused_logp fallback kernel.
+E         INFO 11-27 13:56:16 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+E         INFO 11-27 13:56:16 [RL-Kernel]: Successfully linked to precompiled _C.fused_logp fallback kernel.
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['<HOME>/datastorage/venvs/<E>/bin/python', '<WORK>/wt/WB/tools/validation/operators/ws1_candidate_evidence.py', '--emit-json', '-'], returncode=1, stdout='{\n  "cases": [\n    {\n      "actual_backend_id": "cuda",\n      "actual_kernel_config_id": "rl_engine.kernels.ops.cuda.matmul.det_gemm.DetGemmOp",\n      "algorithm_property": "no_split_k_deterministic_gemm",\n      "case_id": "gemm-short-m8-k4096-n4096-cuda-v2",\n      "expected_backend_id": "cuda",\n      "expected_kernel_config_id": "rl_engine.kernels.ops.cuda.matmul.det_gemm.DetGemmOp",\n      "fixture_id": "short_full_model_seq8",\n      "judgment_status": {\n        "forward_accuracy": false\n      },\n      "operator_spec": "det_gemm",\n      "outputs": [\n        {\n          "dtype": "torch.bfloat16",\n          "judgment": "forward_accuracy",\n          "max_abs_error": 0.5,\n          "passed": false,\n          "shape": [\n            8,\n            4096\n          ],\n          "tensor": ""\n        }\n      ],\n      "runtime_status": "failed",\n      "shape": {\n        "K": 4096,\n        "M": 8,\n        "N": 4096,\n        ...uested=auto actual=rlkernel.det_gemm.sm90.v1 fallback=true reason=cuBLASLt no-split-K startup contract is unavailable\nINFO 11-27 13:56:14 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).\nINFO 11-27 13:56:15 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).\nINFO 11-27 13:56:15 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).\nINFO 11-27 13:56:15 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).\nINFO 11-27 13:56:15 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).\nINFO 11-27 13:56:15 [RL-Kernel]: DetGemmTreeReferenceOp ready (leaf-space mid-split tree gold).\nINFO 11-27 13:56:15 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.\nINFO 11-27 13:56:15 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.\nINFO 11-27 13:56:15 [RL-Kernel]: Successfully linked to precompiled _C.fused_logp fallback kernel.\nINFO 11-27 13:56:16 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.\nINFO 11-27 13:56:16 [RL-Kernel]: Successfully linked to precompiled _C.fused_logp fallback kernel.\n').returncode
+
+tests/validation/operators/test_ws1_candidate_evidence.py:30: AssertionError
+=========================== short test summary info ============================
+FAILED tests/validation/operators/test_ws1_candidate_evidence.py::test_ws1_cuda_and_triton_candidate_runtime_provenance
+============================== 1 failed in 12.61s ==============================
