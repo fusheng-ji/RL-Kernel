@@ -16,6 +16,14 @@ if [ "$GC" != 0 ]; then
 fi
 nvidia-smi --query-gpu=timestamp,index,memory.used,utilization.gpu --format=csv,noheader -l 5 > "$RUN/gpu_mem_node$N.csv" 2>/dev/null & MON="$!"
 python3 "$THIS/scripts/scrape_metrics.py" "$RUN/sglang_metrics_node$N.jsonl" > "$RUN/scrape_node$N.log" 2>&1 & MON="$MON $!"
+# NCCL flight recorder: on a collective timeout every rank writes its last collectives (with Python frames) to
+# $RUN/fr/. Exported before `ray start` so the trainer actors on both nodes inherit it.
+mkdir -p "$RUN/fr"
+export TORCH_NCCL_TRACE_BUFFER_SIZE=${TORCH_NCCL_TRACE_BUFFER_SIZE:-2000} TORCH_NCCL_DUMP_ON_TIMEOUT=1 \
+       TORCH_FR_DUMP_TEMP_FILE=$RUN/fr/node${N}_rank_
+case $(basename "$STAGE") in
+  h2_*|h3_*) bash "$THIS/scripts/hang_stacks.sh" "$RUN" "$RUN/stacks" "$N" > "$RUN/hang_stacks_node$N.log" 2>&1 & MON="$MON $!" ;;
+esac
 case $(basename "$STAGE") in
   h6_*) python3 "$THIS/scripts/sidecar_checksum.py" "$RUN/run/train.log" "$RUN/live_node$N.json" 12 > "$RUN/sidecar_node$N.log" 2>&1 & MON="$MON $!" ;;
 esac

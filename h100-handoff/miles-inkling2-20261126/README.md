@@ -1,20 +1,20 @@
 # H100 handoff: native miles x Inkling-2-Mini end-to-end baseline on 2 nodes x 4 H100 (2026-11-26)
 
-## Round 2 (2026-11-27): what changed and what to run
+## Round 3 (2026-11-27): what changed and what to run
 
-Round 1 stopped at H2: no probe passed. H0 and H1 passed and stay valid; do not rerun them. Round 1 ran on nodes shared with other steps, so its memory numbers are not usable. Read from the round-1 logs:
-- `a` (TP1, 0.55): SGLang does not start (hybrid state cache memory negative). As expected; **not rerun**.
-- `b` (TP1, 0.80): rollout and one training step finished (`perf 0`), then an NCCL ALLTOALL watchdog timeout, peak about 94 GB per GPU. Other steps held memory on the same GPUs, so this is **rerun** on idle nodes.
-- `c`, `d` (TP2): `Inkling2 tensor parallelism requires NVLink multicast`. The image's SGLang notes that H100 TP2 reports multicast support but the driver refuses the mapping (`symm_workspace.py`, `is_multicast_supported`), and Inkling2's custom all-reduce only takes groups of 4, 6 or 8. **Not rerun.**
+Round 1 stopped at H2: no probe passed. Round 2 (TP4 probes `e`, `f`) is withdrawn; if any of it ran, move it to `not-green-attempts/round2/` unchanged. H0 and H1 passed and stay valid; do not rerun them. Findings so far:
+- **SGLang TP > 1 cannot run on these nodes.** Each node has 4 H100 joined pairwise by `NV6` links and no NVSwitch (fabric state N/A). Inkling2's SGLang needs NVLink multicast for TP > 1 (`RuntimeError: Inkling2 tensor parallelism requires NVLink multicast`, probes `c`, `d`), and multicast needs an NVSwitch. TP2 and TP4 are not run.
+- `a` (TP1, 0.55): SGLang does not start (hybrid state cache memory negative). As expected.
+- `b` (TP1, 0.80): the rollout finished and the trainer started its first step, then hung. **Not memory**: every GPU stayed at about 30 GB during training. Only rank 0 posted the first expert all-to-all (NCCL `ALLTOALL` SeqNum 881, 128 elements). Ranks 1 to 7 stopped after "moving the model to device", never posted it (last enqueued 880) and sat at 0% GPU for 600 s until the watchdog fired. The 880 collectives before it (init, weight sync) all completed, so the link between the nodes works. Where ranks 1 to 7 waited is unknown; most likely in the CPU-side fetch of their rollout shard (`get_rollout_data`, which reads through Ray).
 
-Changes in this round:
-1. **New probes `e` and `f`: TP4**, one engine over the 4 GPUs of a node (2 engines in all), at 0.55 and 0.70. Each GPU then holds 12.5 GB of weights instead of 50 GB. Whether it starts depends on NVLink multicast inside one node; the fabric state is recorded (point 3).
-2. **Idle-GPU check at every stage start** (`scripts/gpu_idle_check.sh`, called by `node_entry.sh` on both nodes and by `run_stage_1node.sbatch`). The stage does not start, rc 96, if a node does not see exactly 4 GPUs or a GPU already uses more than 1 GiB. **Nothing else may run on these GPUs for the whole job**: no other `srun` step, before or during. The cleanup in `lib_train.sh` kills every SGLang server on both nodes, other jobs' included. A rc 96 is not a result: wait for idle nodes and rerun with a new `TAG`.
-3. Each stage writes `gpu_check_node{0,1}.txt`: memory and processes per GPU, `nvidia-smi topo -m`, `nvlink -s` and the fabric section of `nvidia-smi -q`.
-4. H2 sets `NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET` (unless already set), so `train.log` shows which NIC and HCA each rank uses. A debug setting only.
+Round 3 reruns only `b` as `b3`, with hang diagnostics:
+1. **`H0b`, py-spy** (`scripts/h0b_tools.sh`, on a node with internet): py-spy 0.4.0 as a standalone binary in `<WORK>/tools/` (wheel sha256 pinned). Nothing goes into the image. `hang_stacks.sh` uses it to dump the Python stack of every trainer actor on each node, 240 s and 360 s after `Timer log_probs start` if `Timer log_probs end` has not appeared (`stacks/`). If py-spy is refused (ptrace), the refusal is the result: do not change ptrace or any other security setting; the script then records each thread's kernel wait channel instead. **Not tested anywhere.**
+2. **NCCL flight recorder** on both nodes (`TORCH_NCCL_TRACE_BUFFER_SIZE=2000`, `TORCH_NCCL_DUMP_ON_TIMEOUT=1`): on a collective timeout every rank writes its last collectives with Python frames to `fr/node<N>_rank_<r>`. In round 1 the dump went to the container's `/tmp` and was lost.
+3. **Idle-GPU check at every stage start** (`scripts/gpu_idle_check.sh`, from `node_entry.sh` on both nodes and from `run_stage_1node.sbatch`). The stage does not start, rc 96, if a node does not see exactly 4 GPUs or a GPU already uses more than 1 GiB. **Nothing else may run on these GPUs for the whole job**: no other `srun` step, before or during. The cleanup in `lib_train.sh` kills every SGLang server on both nodes, other jobs' included (in round 1 probe `a` held 13.9 GiB on a GPU another step was using). A rc 96 is not a result: wait for idle nodes and rerun with a new `TAG`. Each stage also writes `gpu_check_node{0,1}.txt` (memory, processes, `topo -m`, `nvlink -s`, fabric).
+4. H2 sets `NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET` (unless already set; miles forwards `NCCL_DEBUG` to the Ray job), so `train.log` shows which NIC and HCA each rank uses.
+5. **Gates count trainer steps**, not `perf N:` lines. Each step logs two `perf N:` lines, one from the rollout and one from the trainer; round 1's `b` had only the rollout one. A step is done when `train.log` has the trainer's ` - step N: {` line (`log_utils.py`).
 
-Run in round 2: H2 probes `b2`, `e`, `f` (each on its own idle 2-node job, one after the other), then continue with H3 as written if one passes. Round-1 outputs go to `not-green-attempts/round1/` unchanged; results go on the same results branch.
-
+Run in round 3: move the round-1 outputs to `not-green-attempts/round1/` unchanged, run `H0b`, then H2 probe `b3` alone (below). If it passes, write `h100.env` and continue with H3. If it fails, **stop and report** with `train.log`, `stacks/`, `fr/`, `gpu_check_node*.txt`, `gpu_mem_node*.csv` and both nodes' `ray_logs`.
 
 ## Why
 
@@ -109,10 +109,8 @@ Each probe is one real recipe step (rollout, train, weight sync), in its own job
 |---|---|---|---|
 | `a` | 1 | 0.55 | the recipe as it is; expected to fail at engine start |
 | `b` | 1 | 0.80 | the recipe's TP1 layout |
-| `c` | 2 | 0.55 | round 1 only (multicast refused, see Round 2) |
-| `d` | 2 | 0.70 | round 1 only (multicast refused, see Round 2) |
-| `e` | 4 | 0.55 | round 2: one engine per node |
-| `f` | 4 | 0.70 | round 2 |
+| `c` | 2 | 0.55 | round 1 only (no NVLink multicast, see Round 3) |
+| `d` | 2 | 0.70 | round 1 only (no NVLink multicast, see Round 3) |
 
 ```bash
 $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=a --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh a 1 0.55
@@ -121,21 +119,20 @@ $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=c --time=01:30:00 <THIS_DIR>/sc
 $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=d --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh d 2 0.70
 ```
 
-Round 2 (new tags, idle nodes, one job at a time):
+Round 3 (idle nodes, nothing else on them):
 
 ```bash
-$SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=b2 --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh b2 1 0.80
-$SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=e --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh e 4 0.55
-$SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=f --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh f 4 0.70
+WORK=<WORK> bash <THIS_DIR>/scripts/h0b_tools.sh     # H0b, on a node with internet
+$SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=b3 --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh b3 1 0.80
 ```
 
-A probe **passes** when its `train.log` ends with `train rc=0`, has one `perf 0:` line, and shows no out-of-memory error. Pick the first passing probe in the order `b2`, `e`, `f` (TP1 first, it is the recipe's layout; in round 1 the order was `b`, `c`, `d`), and write it down for every later task:
+A probe **passes** when its `train.log` ends with `train rc=0`, has the trainer's ` - step 0: {` line, and shows no out-of-memory error. In round 3 only `b3` runs; if it passes, write it down for every later task:
 
 ```bash
 echo "export SG_TP=1 SG_MEM=0.80" > <WORK>/h100.env    # the chosen probe's values
 ```
 
-If none of `b2`, `e`, `f` passes, **stop and report H2** with the `gpu_check_node*.txt` files. Do not try other settings and do not turn on offload. The B200 reference is one TP1 engine per GPU at 0.55, peak 135 to 136 GiB per GPU.
+If `b3` does not pass, **stop and report H2** with the files listed in Round 3. Do not try other settings and do not turn on offload. The B200 reference is one TP1 engine per GPU at 0.55, peak 135 to 136 GiB per GPU.
 
 ## H3. Smoke, 3 steps (2 nodes)
 
@@ -144,7 +141,7 @@ $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=r0 --time=01:30:00 <THIS_DIR>/s
 ```
 
 **Gates:**
-- `train rc=0`, three `perf N:` lines, no NaN;
+- `train rc=0`, three trainer ` - step N: {` lines (N = 0, 1, 2), no NaN;
 - the first weight sync passes `--check-weight-update-equal` (skip list `mlp.gate._one`: the checker reports that tensor falsely; B200 needed the same skip). The check covers the first sync only;
 - `dump/rollout_data/` and `dump/policy_loss_debug/` exist.
 
@@ -178,7 +175,7 @@ $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=a --time=03:00:00 <THIS_DIR>/sc
 $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=b --time=03:00:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h5_run.sh 10
 ```
 
-Run them one after the other, not at the same time. **Gate:** both reach `perf 9:` with `train rc=0`. The noise line is the difference of the step-1-to-9 mean step times (step 0 is warm-up). B200: 219.8 / 223.2 s.
+Run them one after the other, not at the same time. **Gate:** both reach the trainer's ` - step 9: {` line with `train rc=0`. The noise line is the difference of the step-1-to-9 mean step times (step 0 is warm-up). B200: 219.8 / 223.2 s.
 
 Before H6, estimate its length as 100 x the H5 mean step time + 4 exports (about 2 min each on B200). **If it is above 16 h, stop and report** with the estimate.
 
@@ -192,7 +189,7 @@ HF exports land in `runs/h6_run100-r0/run/hf/{32,65,98,99}`. The weights in expo
 
 **If the job is requeued**, the run restarts from step 0. Move the partial directory to `not-green-attempts/` and rerun with `TAG=r1`.
 
-**Gates:** `train rc=0`, 100 `perf` lines, no NaN; four exports; each `live_node*.json` has entries for 4 exports.
+**Gates:** `train rc=0`, 100 trainer ` - step N: {` lines, no NaN; four exports; each `live_node*.json` has entries for 4 exports.
 
 ## H7. Drift localization
 
@@ -233,7 +230,7 @@ Write the stage directories you used into `<WORK>/h8.env`, for example:
 ```bash
 cat > <WORK>/h8.env <<'EOF'
 H1=<WORK>/runs/h1_env-r0
-H2_DIRS="<WORK>/runs/h2_memprobe-b2 <WORK>/runs/h2_memprobe-e <WORK>/runs/h2_memprobe-f"
+H2_DIRS="<WORK>/runs/h2_memprobe-b3"
 H3=<WORK>/runs/h3_smoke-r0
 H4T=<WORK>/runs/h4_trainer-r0
 H4S=<WORK>/runs/h4_sglang-r0
@@ -270,9 +267,9 @@ Everything lands in `<WORK>/runs/report/`. `run100_summary.txt` and `run100_drif
 ## What to send back
 
 Push the fork branch `handoff/h100-miles-inkling2-results-20261126` (from this branch), with `results/`:
-- `H0/`: `image_digest.txt`, `download.sha256`, `revisions.txt`;
+- `H0/`: `image_digest.txt`, `download.sha256`, `revisions.txt`, `py-spy.sha256` (H0b);
 - `H1/`: `env.txt`, `bf16_a.sha256`, `bf16_b.sha256`, `pytest_*.log`, the job log;
-- `H2/`: `h2_probe_summary.json`, and per probe `train.log`, `h100_config.txt`, `gpu_mem_node*.csv`, `gpu_check_node*.txt`, the job log; for a probe that fails, the first traceback with file and line;
+- `H2/`: `h2_probe_summary.json`, and per probe `train.log`, `h100_config.txt`, `gpu_mem_node*.csv`, `gpu_check_node*.txt`, `stacks/`, `fr/`, `hang_stacks_node*.log`, the job log; for a probe that fails, the first traceback with file and line;
 - per H3 to H7 run: `train.log` (and the sub-run ones), `h100_config.txt`, `gpu_mem_node*.csv`, `gpu_check_node*.txt`, `ray_gpus.txt`, the job log;
 - `report/`: everything H8 wrote **except** `run100_drift_rows.pt` if it is above 20 MB;
 - `SUMMARY.md`: the H2 choice, each gate's verdict, every deviation (including the SGLang setting and any NCCL variable), and the tables: H5 speed, H6 curve (first / last 10 steps), H7 2 x 2.

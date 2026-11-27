@@ -46,7 +46,9 @@ for st in sys.argv[1:]:
                 "probe": os.path.basename(os.path.dirname(log)),
                 "config": cfg,
                 "train_rc": int(rc[-1]) if rc else None,
-                "steps_done": len(re.findall(r"perf \d+: \{", txt)),
+                "steps_done": len(
+                    re.findall(r" - step \d+: \{", txt)
+                ),  # trainer step lines; rollout perf lines alone do not count
                 "peak_mib_per_node": peak,
                 "first_error": err[:500] if err else None,
                 "phase_guess": next((p for p, r in PHASE if err and r.search(err)), None),
