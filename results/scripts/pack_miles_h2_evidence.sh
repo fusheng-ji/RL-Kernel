@@ -26,8 +26,11 @@ for letter in c d; do
   grep -nA20 'requires NVLink multicast' "$WORK/runs/h2_memprobe-$letter"/*/train.log 2>/dev/null \
     > "$DEST/extra/h2_${letter}_nvlink_multicast_traceback.txt" || true
 done
-sacct -j "${JA:-<JOB_1>}" --format=JobID,Start,End,NodeList -P \
-  | sed -e 's/node-x/node-a/g' -e 's/node-x/node-b/g' \
+_lp="$(dirname "$0")/stage_push.local.sh"
+[ -f "$_lp" ] && source "$_lp"
+sacct -j "${JA:?JA unset}" --format=JobID,Start,End,NodeList -P \
+  | sed -e "s/${LEAK_HOST_A:-node-x}/${LEAK_REPL_NODE_A:-node-a}/g" \
+      -e "s/${LEAK_HOST_B:-node-x}/${LEAK_REPL_NODE_B:-node-b}/g" \
     -e 's/<CLUSTER>\[[^]]*\]/node-a+node-b/g' \
   > "$DEST/extra/job_steps_timeline.txt"
 cat > "$DEST/SUMMARY.md" <<EOF

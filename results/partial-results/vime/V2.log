@@ -1,5 +1,5 @@
 [INFO] Extracting squashfs filesystem...
-Parallel unsquashfs: Using 32 processors
+Parallel unsquashfs: Using 16 processors
 203734 inodes (377740 blocks) to write
 
 
@@ -20,13 +20,15 @@ created 0 sockets
 + VLLM_CACHE_ROOT=<WORK>/vime/jitcache/vllm
 + TILELANG_CACHE_DIR=<WORK>/vime/jitcache/tilelang
 + TRITON_CACHE_DIR=/tmp/triton-cache
++ rm -f <WORK>/vime/runs/smoke/V2-verdict.txt
++ python3 -c 'import torch;f,t=torch.cuda.mem_get_info();u=(t-f)/2**30;print(f'\''gpu_used_gib={u:.2f}'\'');exit(u>2)'
 + PYTHONPATH=<WORK>/vime/src/vime-fix-run:<WORK>/vime/src/Megatron-run:<WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/probe
 + V4_ALLOW_NUMPY2=1
 + python3 <WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/preflight.py <WORK>/vime/ckpt/v4-4l
 + tail -3 <WORK>/vime/runs/smoke/preflight.err
-W1127 17:05:36.957000 1432217 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
-W1127 17:05:36.958000 1432217 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
-W1127 17:05:36.959000 1432217 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1127 22:46:38.367000 2363231 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1127 22:46:38.369000 2363231 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1127 22:46:38.369000 2363231 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
 + python3 <WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/l2test.py
 + cd <WORK>/vime/src/vime
 + export PYTHONPATH=<WORK>/vime/src/vime:<WORK>/vime/src/Megatron-LM DSV4_CHECKPOINT=<WORK>/vime/ckpt/v4-4l
@@ -44,7 +46,7 @@ W1127 17:05:36.959000 1432217 torch/_library/opaque_object.py:211] typ='value' i
 + python3 tools/dsv4_checkpoint_layer_smoke.py <WORK>/vime/ckpt/v4-4l --num-layers 4
 + echo rc=1
 + python3 tools/dsv4_rollout_smoke.py <WORK>/vime/ckpt/v4-4l --tensor-parallel-size 1 --return-routed-experts
-+ echo rc=1
++ echo rc=0
 + python3 tools/dsv4_runtime_checks.py <WORK>/vime/ckpt/v4-4l
 + echo rc=0
 + git status --porcelain --untracked-files=no
@@ -55,38 +57,85 @@ W1127 17:05:36.959000 1432217 torch/_library/opaque_object.py:211] typ='value' i
 + python3 -m pytest -q -p no:cacheprovider tests/test_vllm_cli_args_compat.py tests/test_optimizer_grad_norm_guards.py tests/test_deepseek_v4_weights.py tests/test_hf_to_megatron.py tests/test_deepseek_v4_routing_replay.py tests/test_stateless_adam.py tests/test_megatron_argument_validation.py tests/test_vllm_weight_checker.py -rs
 + echo rc=0
 + python3 -m pip list --format=freeze
++ v=0
++ for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest
+++ tail -1
+++ grep -h '^rc=' <WORK>/vime/runs/smoke/pr-pytest.log
++ r=rc=0
++ echo 'pr-pytest rc=0'
++ '[' rc=0 = rc=0 ']'
++ for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest
+++ grep -h '^rc=' <WORK>/vime/runs/smoke/smoke--layer-index_2.log
+++ tail -1
++ r=rc=0
++ echo 'smoke--layer-index_2 rc=0'
++ '[' rc=0 = rc=0 ']'
++ for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest
+++ grep -h '^rc=' <WORK>/vime/runs/smoke/smoke--layer-index_3.log
+++ tail -1
++ r=rc=0
++ echo 'smoke--layer-index_3 rc=0'
++ '[' rc=0 = rc=0 ']'
++ for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest
+++ grep -h '^rc=' <WORK>/vime/runs/smoke/smoke--num-layers_4.log
+++ tail -1
++ r=rc=1
++ echo 'smoke--num-layers_4 rc=1'
++ '[' rc=1 = rc=0 ']'
++ v=1
++ for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest
+++ grep -h '^rc=' <WORK>/vime/runs/smoke/rollout_smoke.log
+++ tail -1
++ r=rc=0
++ echo 'rollout_smoke rc=0'
++ '[' rc=0 = rc=0 ']'
++ for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest
+++ grep -h '^rc=' <WORK>/vime/runs/smoke/runtime_checks.log
+++ tail -1
++ r=rc=0
++ echo 'runtime_checks rc=0'
++ '[' rc=0 = rc=0 ']'
++ for f in pr-pytest smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4 rollout_smoke runtime_checks fix-pytest
+++ grep -h '^rc=' <WORK>/vime/runs/smoke/fix-pytest.log
+++ tail -1
++ r=rc=0
++ echo 'fix-pytest rc=0'
++ '[' rc=0 = rc=0 ']'
++ '[' -s <WORK>/vime/runs/smoke/pr-tree-status.txt ']'
++ '[' 1 = 0 ']'
++ echo FAIL
 + for f in $OUT/*.log
 ++ basename <WORK>/vime/runs/smoke/fix-pytest.log
 + echo '== fix-pytest.log'
 == fix-pytest.log
 + tail -3 <WORK>/vime/runs/smoke/fix-pytest.log
 SKIPPED [1] tests/test_deepseek_v4_weights.py:227: Set DSV4_CHECKPOINT to validate the local Flash checkpoint
-================== 93 passed, 3 skipped, 7 warnings in 23.34s ==================
+================== 93 passed, 3 skipped, 7 warnings in 23.59s ==================
 rc=0
 + for f in $OUT/*.log
 ++ basename <WORK>/vime/runs/smoke/l2test.log
 + echo '== l2test.log'
 == l2test.log
 + tail -3 <WORK>/vime/runs/smoke/l2test.log
-  TE   norm= 0.127125546336174 overflow= 0
-grouped torch.float32 ref= 0.12731814726789434
-  TE   norm= 0.1273181438446045 overflow= 0
+  TE   norm= 0.1285114735364914 overflow= 0
+grouped torch.float32 ref= 0.12805220146575091
+  TE   norm= 0.12805220484733582 overflow= 0
 + for f in $OUT/*.log
 ++ basename <WORK>/vime/runs/smoke/pr-pytest.log
 + echo '== pr-pytest.log'
 == pr-pytest.log
 + tail -3 <WORK>/vime/runs/smoke/pr-pytest.log
-(255 durations < 0.005s hidden.  Use -vv to show these durations.)
-======================= 96 passed, 43 warnings in 26.87s =======================
+(261 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================= 96 passed, 43 warnings in 26.33s =======================
 rc=0
 + for f in $OUT/*.log
 ++ basename <WORK>/vime/runs/smoke/rollout_smoke.log
 + echo '== rollout_smoke.log'
 == rollout_smoke.log
 + tail -3 <WORK>/vime/runs/smoke/rollout_smoke.log
-    raise RuntimeError(
-RuntimeError: Engine core initialization failed. See root cause above. Failed core proc(s): {}
-rc=1
+(EngineCore pid=2366909) INFO 11-27 22:58:48 [core.py:1731] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=2366909) INFO 11-27 22:58:48 [core.py:1561] [shutdown] EngineCore: exiting busy loop
+rc=0
 + for f in $OUT/*.log
 ++ basename <WORK>/vime/runs/smoke/runtime_checks.log
 + echo '== runtime_checks.log'
@@ -101,7 +150,7 @@ rc=0
 == smoke--layer-index_2.log
 + tail -3 <WORK>/vime/runs/smoke/smoke--layer-index_2.log
 loaded=546
-loaded=546 loss=0.924604 finite_gradient_tensors=545
+loaded=546 loss=0.924605 finite_gradient_tensors=545
 rc=0
 + for f in $OUT/*.log
 ++ basename <WORK>/vime/runs/smoke/smoke--layer-index_3.log
@@ -109,7 +158,7 @@ rc=0
 == smoke--layer-index_3.log
 + tail -3 <WORK>/vime/runs/smoke/smoke--layer-index_3.log
 loaded=540
-loaded=540 loss=0.951205 finite_gradient_tensors=539
+loaded=540 loss=0.951206 finite_gradient_tensors=539
 rc=0
 + for f in $OUT/*.log
 ++ basename <WORK>/vime/runs/smoke/smoke--num-layers_4.log
@@ -117,5 +166,16 @@ rc=0
 == smoke--num-layers_4.log
 + tail -3 <WORK>/vime/runs/smoke/smoke--num-layers_4.log
 [rank0]:                    ^^^^^^^^^^^^
-[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.00 GiB. GPU 0 has a total capacity of 93.09 GiB of which 679.06 MiB is free. Process 1421092 has 13.52 GiB memory in use. Including non-PyTorch memory, this process has 78.85 GiB memory in use. Of the allocated memory 77.41 GiB is allocated by PyTorch, and 163.22 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
+[rank0]: torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 4.00 GiB. GPU 0 has a total capacity of 93.09 GiB of which 2.17 GiB is free. Including non-PyTorch memory, this process has 90.91 GiB memory in use. Of the allocated memory 89.40 GiB is allocated by PyTorch, and 234.24 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)
 rc=1
++ cat <WORK>/vime/runs/smoke/V2-verdict.txt
+pr-pytest rc=0
+smoke--layer-index_2 rc=0
+smoke--layer-index_3 rc=0
+smoke--num-layers_4 rc=1
+rollout_smoke rc=0
+runtime_checks rc=0
+fix-pytest rc=0
+FAIL
++ exit 1
+V2 rc=1 (verdict in <WORK>/vime/runs/smoke/V2-verdict.txt)

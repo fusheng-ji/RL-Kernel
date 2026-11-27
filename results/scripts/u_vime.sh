@@ -11,17 +11,10 @@ case $1 in
      if [ $rc = 0 ] && grep -q BUILD_DONE $OUT/vime/V0.log && ! grep -q STEP_FAIL $OUT/vime/V0.log; then gate_set vime_V0 OK; else gate_set vime_V0 "FAIL rc=$rc (STEP_FAIL or no BUILD_DONE)"; fi;;
  V2) gate_ok vime_V0 || exit 1
      bash $H/smoke.sbatch > $OUT/vime/V2.log 2>&1; rc=$?
-     subfail=0
-     if [ -f "$OUT/vime/V2.log" ] && grep -qE 'rc=[1-9]' "$OUT/vime/V2.log"; then subfail=1; fi
-     for logf in pr-pytest fix-pytest rollout_smoke runtime_checks \
-       smoke--layer-index_2 smoke--layer-index_3 smoke--num-layers_4; do
-       f=$S/smoke/${logf}.log
-       if [ ! -f "$f" ]; then subfail=1; continue; fi
-       grep -qE '^rc=0$' "$f" || subfail=1
-       grep -E '^rc=[1-9]' "$f" >/dev/null && subfail=1
-     done
-     if [ "$rc" = 0 ] && [ "$subfail" = 0 ]; then gate_set vime_V2 OK
-     else gate_set vime_V2 "FAIL rc=$rc sublogs=$subfail"; exit 1; fi
+     verdict=$(cat $S/smoke/V2-verdict.txt 2>/dev/null || echo missing)
+     if [ "$rc" = 3 ]; then log "vime V2 gpu_not_free (rc=3, not a result)"; exit 3; fi
+     if [ "$rc" = 0 ] && grep -q '^PASS' "$S/smoke/V2-verdict.txt" 2>/dev/null; then gate_set vime_V2 OK
+     else gate_set vime_V2 "FAIL rc=$rc verdict=$verdict"; exit 1; fi
      # cuDNN DSA failure is not a stop: V3/V4 then run with DSA_BACKEND=none
      python3 - $S/smoke/preflight.json <<'PY' && echo cudnn_dsa_ok > $GATES/vime_dsa || echo "DSA_BACKEND=none" > $GATES/vime_dsa
 import json, sys

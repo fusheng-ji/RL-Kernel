@@ -17,7 +17,9 @@ unset PYTHONPATH WANDB_API_KEY HF_TOKEN
 # ~/.local/bin holds a non-executable file named "env" that shadows /usr/bin/env under srun (exit 13): drop it from PATH.
 PATH=$(printf '%s' "$PATH" | tr ':' '\n' | grep -vxF "$HOME/.local/bin" | paste -sd:); export PATH
 # job ids and the node order: node-a = first node of the job that runs this allocation
-export JA=${JA:-<JOB_1>} JB=${JB:-<JOB_2>}
+_lp="${BASH_SOURCE[0]%/*}/stage_push.local.sh"
+[ -f "$_lp" ] && source "$_lp"
+export JA=${JA:-${LEAK_JOB1:-}} JB=${JB:-${LEAK_JOB2:-}}
 GATES=$OUT/gates; mkdir -p $GATES $OUT $OUT/checks $OUT/logs $OUT/vime $OUT/miles $OUT/build $OUT/runs $OUT/pipeline $OUT/areal $OUT/verlomni
 log()   { echo "[$(date -u +%FT%TZ)] $*" >> $OUT/steps.txt; }
 gate_set()  { echo "$(date -u +%FT%TZ) $2" > $GATES/$1; }       # gate_set NAME note
@@ -139,4 +141,21 @@ driver_2node() {
      $CMD" > "$OUT/logs/$NAME.login_driver.log" 2>&1 &
   fi
   disown; log "driver_2node $NAME (nested_ok=$(gate_ok nested_srun && echo 1 || echo 0))"
+}
+# Same as driver_2node but blocks until the driver step finishes (for pipeline / miles round 3).
+driver_2node_sync() {
+  local J=$1 NA=$2 T=$3 NAME=$4 CMD=$5
+  mkdir -p $OUT/logs
+  if gate_ok nested_srun; then
+    srun --jobid=$J -w "$NA" --overlap -N1 -n1 -c 4 --gres=none --mem=0 --time="$T" \
+      bash -c "source '$SCHED/scripts/common.sh'; slurm_job_env_exports $J; $CMD" \
+      >> "$OUT/logs/$NAME.driver.log" 2>&1
+  else
+    local NLIST; NLIST=$(squeue -h -j "$J" -o %N 2>/dev/null)
+    bash -c \
+      "unset SLURM_STEP_ID SLURM_STEP_NODELIST SLURM_STEP_NUM_NODES SLURM_STEP_NUM_TASKS SLURM_STEP_TASKS_PER_NODE
+       unset SLURM_NTASKS SLURM_NPROCS SLURM_PROCID SLURM_LOCALID SLURM_NODEID SLURM_TASKS_PER_NODE SLURM_CPUS_ON_NODE
+       export SLURM_JOB_ID=$J SLURM_JOB_NODELIST='$NLIST' SLURM_NNODES=2 SLURM_JOB_NUM_NODES=2 SLURM_GRES=gpu:4 SLURM_OVERLAP=1
+       $CMD" >> "$OUT/logs/$NAME.login_driver.log" 2>&1
+  fi
 }

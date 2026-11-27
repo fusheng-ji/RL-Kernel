@@ -1,3 +1,12 @@
+# Partial run summary (schedule push after redact fix `2c49e44b`; JOB_X RUNNING, JOB_Y PENDING)
+
+## Pipeline deviations (2026-11-27, jobx B1)
+
+- **P2 first attempt** (`pipeline_P2_jobx_attempt1_no_MASTER_ADDR`): rows not all exit=0 — missing `MASTER_ADDR`/`MASTER_PORT` in nested srun. **Accepted rerun** (runner-only): `MASTER_ADDR` from job node-a, `MASTER_PORT` per row, rank-0 driver `srun -w` pinned to node-a. **Not a code/recipe change.**
+- **Second attempt P2**: **9/9 `exit=0`** in `partial-results/pipeline/P2/rows.txt`.
+- **P3/P4 first attempt** (`pipeline_P3P4_jobx_attempt1_single_node_srun`): 5+5 rows `exit=1`, `Only allocated 1 nodes asked for 2` — chain should have STOPped; fixed `u_pipeline.sh` to exit 1 when any row is non-zero; P3/P4 now use `driver_2node_sync` + `slurm_job_env_exports`.
+- **jobxB1b (step .55`)**: continued into vime V2 after bad P3/P4; V2 FAIL (`smoke--num-layers_4` rc=1 on shared card). V3/V4 not run. `START=P3` relaunch runs **P3/P4 only** then exits.
+
 # Partial run summary (second incremental push; JOB_X still RUNNING, JOB_Y PENDING)
 
 **Allocation:** two 2-node x 4 H100 jobs, non-exclusive, 64 CPU per node. A ran on JOB_X after step0 retries. `nodea_done` and `nodeb_done` are both set. B2a (miles H2) is running; B2b, C and B1 have not started (JOB_Y pending).

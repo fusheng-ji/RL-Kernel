@@ -4,7 +4,7 @@ set -euo pipefail
 D=$(dirname "$0")
 # shellcheck source=/dev/null
 [ -f "$D/stage_push.local.sh" ] && source "$D/stage_push.local.sh"
-S=${SCHED_ROOT:-<SCRATCH>/sched_20261127}
+S=${SCHED_ROOT:?SCHED_ROOT unset — source stage_push.local.sh}
 ST=$S/stage_miles_h2_redacted
 rm -rf "$ST"
 rsync -a "$S/stage_miles_h2_results/" "$ST/"
@@ -17,8 +17,12 @@ export LEAK_PAT_CPU_PART LEAK_PAT_CLUSTER_LOGIN LEAK_PAT_CLUSTER_HOST LEAK_PAT_F
 find "$ST" -type f -print0 | while IFS= read -r -d '' f; do
   python3 "$D/redact_tree.py" "$f"
 done
-sed -i -e 's/<NODE_A_HOST>/node-a/g' -e 's/<NODE_B_HOST>/node-b/g' \
-  -e 's/<CLUSTER_NODE_PREFIX>\[[^]]*\]/node-a+node-b/g' "$ST/extra/job_steps_timeline.txt" 2>/dev/null || true
+tl="$ST/extra/job_steps_timeline.txt"
+if [ -f "$tl" ] && [ -n "${LEAK_HOST_A:-}" ] && [ -n "${LEAK_REPL_NODE_A:-}" ]; then
+  sed -i -e "s/${LEAK_HOST_A}/${LEAK_REPL_NODE_A}/g" \
+         -e "s/${LEAK_HOST_B}/${LEAK_REPL_NODE_B}/g" \
+         -e 's/<CLUSTER>\[[^]]*\]/node-a+node-b/g' "$tl" 2>/dev/null || true
+fi
 bash "$D/gzip_large_logs.sh" "$ST"
 python3 - "$ST/SUMMARY.md" <<'PY'
 import pathlib, sys

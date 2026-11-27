@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # After miles H2 settles, run P1/P2 → P3/P4 → vime V2 → V3/V4 on JOB_X node-a (full B1 on JOB_X per review).
-D=$(dirname "$0"); source "$D/common.sh"; J=${1:-<JOB_1>}
+D=$(dirname "$0"); source "$D/common.sh"; J=${1:-$JA}
 log "jobx B1 waiter started job=$J"
 while :; do
   ohs=0; pgrep -f "on_job_start.sh $J first" >/dev/null && ohs=1
