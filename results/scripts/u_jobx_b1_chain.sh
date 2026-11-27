@@ -2,10 +2,16 @@
 # JOB_X B1 chain: P1,P2 (stop on fail) → P3,P4 → V2 idle GPU → V3,V4
 D=$(dirname "$0"); source "$D/common.sh"
 export CUDA_VISIBLE_DEVICES=0,1,2,3
+START=${START:-P1}
+if [ "$START" = P1 ]; then
 PA=$OUT/not-green-attempts/pipeline_P1P2_jobx_attempt1; mkdir -p "$PA"
 for P in P1 P2; do [ -d "$OUT/pipeline/$P" ] && mv "$OUT/pipeline/$P" "$PA/"; done
 bash "$D/u_pipeline.sh" P1 || { log "STOP: P1 failed"; exit 1; }
 grep -qE 'exit=0$' "$OUT/pipeline/P1/pytest.txt" || { log "STOP: P1 pytest not all pass"; exit 1; }
+else
+PA=$OUT/not-green-attempts/pipeline_P2_jobx_attempt1_no_MASTER_ADDR; mkdir -p "$PA"
+[ -d "$OUT/pipeline/P2" ] && mv "$OUT/pipeline/P2" "$PA/"
+fi
 bash "$D/u_pipeline.sh" P2 || { log "STOP: P2 failed"; exit 1; }
 grep -vE ' exit=0$' "$OUT/pipeline/P2/rows.txt" 2>/dev/null | grep -q . && { log "STOP: P2 rows not all exit=0"; exit 1; }
 bash "$D/u_pipeline.sh" P3 || { log "STOP: P3 failed"; exit 1; }

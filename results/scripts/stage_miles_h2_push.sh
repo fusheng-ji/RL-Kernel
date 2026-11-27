@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Redact stage_miles_h2_results for miles inkling2 results branch (includes ray_logs).
+# Pack redacted miles H2 tree for results branch (includes ray_logs); uses redact_tree.py only.
 set -euo pipefail
 D=$(dirname "$0")
 # shellcheck source=/dev/null
@@ -9,43 +9,15 @@ ST=$S/stage_miles_h2_redacted
 rm -rf "$ST"
 rsync -a "$S/stage_miles_h2_results/" "$ST/"
 export LEAK_USER LEAK_JOB1 LEAK_JOB2 LEAK_GROUP
-export LEAK_PATH_WORK LEAK_PATH_SCRATCH_USER LEAK_PATH_HOME LEAK_PATH_PROJECT_FS
-find "$ST" -type f | while read -r f; do
-  STAGING_TREE="$ST" python3 - "$f" <<'PY'
-import os, re, sys
-p = sys.argv[1]
-s = open(p, errors="replace").read()
-u = os.environ.get("LEAK_USER", "<USER>")
-j1 = os.environ.get("LEAK_JOB1", "<JOB_1>")
-j2 = os.environ.get("LEAK_JOB2", "<JOB_2>")
-g = os.environ.get("LEAK_GROUP", "<GROUP>")
-def esc_path(key, repl):
-    val = os.environ.get(key, "")
-    if not val or "<" in val: return
-    return (re.escape(val), repl)
-R = []
-for key, repl in (("LEAK_PATH_WORK", "<WORK>"), ("LEAK_PATH_SCRATCH_USER", "<SCRATCH>"),
-                  ("LEAK_PATH_PROJECT_FS", "<PROJECT_FS>"), ("LEAK_PATH_HOME", "<HOME>")):
-    pair = esc_path(key, repl)
-    if pair: R.append(pair)
-R += [(rf"(?<!\d){re.escape(j1)}(?!\d)", "<JOB_1>"), (rf"(?<!\d){re.escape(j2)}(?!\d)", "<JOB_2>"),
-      (r"(?<!\d)59\d{5}(?!\d)", "<JOBID>"), (r"0x[0-9a-f]{16}", "<GUID>"),
-      (r"\b10(?:\.\d{1,3}){3}\b", "<IP>"), (r"<CLUSTER>\d+", "node-x"),
-      (r"cpu-0\d\d", "node-c")]
-for var, repl in (("LEAK_PAT_SCRATCH_A", "$SCRATCH_ROOT"), ("LEAK_PAT_SCRATCH_B", "SCRATCH_ROOT"),
-                  ("LEAK_REPL_E", "<E>"), ("LEAK_REPL_V", "<V>"), ("LEAK_PAT_USER_EXTRA", "<USER>"),
-                  ("LEAK_PAT_NODE", "node-x"), ("LEAK_PAT_FS", "<FS>")):
-    pat = os.environ.get(var, "")
-    if pat and "<" not in pat: R.append((pat, repl))
-if u and "<" not in u: R.append((re.escape(u), "<USER>"))
-if g and "<" not in g: R.append((re.escape(g), "<GROUP>"))
-for a, b in R: s = re.sub(a, b, s)
-open(p, "w").write(s)
-PY
+export LEAK_PATH_WORK LEAK_PATH_SCRATCH_USER LEAK_PATH_HOME LEAK_PATH_PROJECT_FS LEAK_PATH_PROJECT_USER
+export LEAK_PAT_SCRATCH_A LEAK_PAT_SCRATCH_B LEAK_REPL_E LEAK_REPL_V LEAK_REPL_E2 LEAK_REPL_ENV
+export LEAK_PAT_USER_EXTRA LEAK_PAT_BUNDLE_A LEAK_PAT_BUNDLE_B LEAK_PAT_BUNDLE_C LEAK_PAT_BUNDLE_D
+export LEAK_PAT_BUNDLE_E LEAK_PAT_BUNDLE_UC LEAK_PAT_PARTITION LEAK_PAT_NODE LEAK_PAT_NODES
+export LEAK_PAT_CPU_PART LEAK_PAT_CLUSTER_LOGIN LEAK_PAT_CLUSTER_HOST LEAK_PAT_FS LEAK_PAT_GROUP_FS
+find "$ST" -type f -print0 | while IFS= read -r -d '' f; do
+  python3 "$D/redact_tree.py" "$f"
 done
-sed -i -e 's/node-x/node-a/g' -e 's/node-x/node-b/g' "$ST/extra/job_steps_timeline.txt" 2>/dev/null || true
-: "${LEAK_GREP_I:?}"
-if grep -rniE "$LEAK_GREP_I" "$ST" >/tmp/miles_h2_leak.txt 2>/dev/null; then
-  head -20 /tmp/miles_h2_leak.txt; exit 1
-fi
+sed -i -e 's/node-x/node-a/g' -e 's/node-x/node-b/g' \
+  -e 's/<CLUSTER>\[[^]]*\]/node-a+node-b/g' "$ST/extra/job_steps_timeline.txt" 2>/dev/null || true
+bash "$D/stage_push_validate.sh" "$ST"
 echo "miles H2 redacted tree: $ST"

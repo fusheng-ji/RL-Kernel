@@ -1,0 +1,292 @@
+{
+ "contract": "h3-pipeline-v1",
+ "tp": 1,
+ "cp": 1,
+ "pp": 2,
+ "pp_sizes": [
+  25,
+  25
+ ],
+ "inject_handoff": null,
+ "train_time_embedder": true,
+ "torch_deterministic_algorithms": false,
+ "pipeline_first_drift_forward": null,
+ "pipeline_first_drift_backward": null,
+ "sp": false,
+ "cp_mode": "ring",
+ "attention": "h3_full",
+ "size": "40",
+ "packed_rows": 40,
+ "inject": null,
+ "sharded": true,
+ "lora": null,
+ "strict_boundaries": true,
+ "world": 2,
+ "spans": [
+  [
+   0,
+   40
+  ]
+ ],
+ "all_bitwise": true,
+ "ranks": [
+  {
+   "rank": 0,
+   "host": "node-x",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "input_grad.hidden_states": true,
+    "input_grad.audio_hidden_states": true,
+    "input_grad.encoder_hidden_states": true,
+    "time_embedder_grads": true,
+    "handoffs_verified": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true
+   },
+   "weight_shards_compared": 175,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 178.50764036923647,
+    "canonical": 4.676902430132031,
+    "parallel": 2.388370618224144
+   },
+   "readback": {
+    "contract": "h3-pipeline-v1",
+    "transport": "torch.distributed.pipelining 2.13.0+cu130",
+    "pp": 2,
+    "pp_rank": 0,
+    "blocks": [
+     0,
+     25
+    ],
+    "column_ranks": [
+     0,
+     1
+    ],
+    "grid": {
+     "contract": "h3-parallel-model-v1",
+     "parallel_contract": "h3-parallel-v2",
+     "rank": 0,
+     "tp": 1,
+     "cp": 1,
+     "sp": false,
+     "tp_rank": 0,
+     "cp_rank": 0,
+     "first_rank": 0,
+     "rank_order": "first_rank + cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+     "tp_group_ranks": [
+      0
+     ],
+     "cp_group_ranks": [
+      0
+     ],
+     "tp_collective": null,
+     "cp_mode": "ring",
+     "cp_contract": null,
+     "attention": "h3_full",
+     "kernels": {
+      "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+      "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+      "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+      "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+      "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+      "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+      "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+      "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp",
+      "o_gemm": "rl_engine.ops.gemm.h3_projections.H3AttentionOGemmOp",
+      "gate_up_gemm": "rl_engine.ops.gemm.h3_projections.H3FFNGateUpGemmOp",
+      "down_gemm": "rl_engine.ops.gemm.h3_ffn_down.H3FFNDownGemmOp"
+     }
+    }
+   },
+   "sharded": {
+    "load_seconds": 26.638579426333308,
+    "resident_param_bytes": 33941250048,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 34981793280
+   },
+   "refused": null,
+   "packed_bindings": {
+    "packed_index_copy": "row",
+    "packed_index_select": "other stage"
+   },
+   "boundary_bindings": {
+    "proj_in": {
+     "row": "video_input_projection_fp32",
+     "status": "row"
+    },
+    "proj_out": {
+     "row": "video_output_projection_fp32",
+     "status": "other stage"
+    },
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "other stage"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "row"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "row"
+    },
+    "time_embedder": {
+     "row": "timestep_mlp_fp32",
+     "status": "row"
+    },
+    "norm_out": {
+     "row": "final_adaln_out",
+     "status": "other stage"
+    }
+   },
+   "stage": {
+    "pp": 2,
+    "pp_rank": 0,
+    "lo": 0,
+    "hi": 25,
+    "total": 50
+   }
+  },
+  {
+   "rank": 1,
+   "host": "node-x",
+   "checks": {
+    "video_velocity_bitwise": true,
+    "audio_velocity_bitwise": true,
+    "handoffs_verified": true,
+    "block_outputs_bitwise": true,
+    "block_output_gradients_bitwise": true,
+    "weight_shard_gradients_bitwise": true
+   },
+   "weight_shards_compared": 175,
+   "weight_shards_mismatched": [],
+   "lora_shards_compared": 0,
+   "lora_shards_mismatched": [],
+   "shards_missing": [],
+   "lora_bytes": null,
+   "first_drift_forward": null,
+   "first_drift_backward": null,
+   "seconds": {
+    "load": 178.7467695530504,
+    "canonical": 4.6770140789449215,
+    "parallel": 3.7161748465150595
+   },
+   "readback": {
+    "contract": "h3-pipeline-v1",
+    "transport": "torch.distributed.pipelining 2.13.0+cu130",
+    "pp": 2,
+    "pp_rank": 1,
+    "blocks": [
+     25,
+     50
+    ],
+    "column_ranks": [
+     0,
+     1
+    ],
+    "grid": {
+     "contract": "h3-parallel-model-v1",
+     "parallel_contract": "h3-parallel-v2",
+     "rank": 1,
+     "tp": 1,
+     "cp": 1,
+     "sp": false,
+     "tp_rank": 0,
+     "cp_rank": 0,
+     "first_rank": 1,
+     "rank_order": "first_rank + cp_rank * tp + tp_rank (TP groups are consecutive ranks)",
+     "tp_group_ranks": [
+      1
+     ],
+     "cp_group_ranks": [
+      1
+     ],
+     "tp_collective": null,
+     "cp_mode": "ring",
+     "cp_contract": null,
+     "attention": "h3_full",
+     "kernels": {
+      "projection": "rl_engine.backends.cuda.model_specific.minimax_h3.adaln_projection.H3AdaLNProjectionCudaOp",
+      "norm": "rl_engine.backends.cuda.model_specific.minimax_h3.rmsnorm.H3RMSNormCudaOp",
+      "gate": "rl_engine.backends.cuda.model_specific.minimax_h3.gate_residual.H3GateResidualCudaOp",
+      "gemm": "rl_engine.backends.shared.triton.gemm.det_gemm.TritonDetGemmOp",
+      "qkv": "rl_engine.backends.cuda.model_specific.minimax_h3.projection.H3QKVGemmCudaOp",
+      "attention": "rl_engine.backends.cuda.attention.deterministic_attn.DeterministicAttentionOp",
+      "attention_h3": "rl_engine.backends.cuda.attention.h3_full_attention.H3FullAttentionOp",
+      "swiglu": "rl_engine.backends.cuda.activation.swiglu.SwiGLUCudaOp",
+      "o_gemm": "rl_engine.ops.gemm.h3_projections.H3AttentionOGemmOp",
+      "gate_up_gemm": "rl_engine.ops.gemm.h3_projections.H3FFNGateUpGemmOp",
+      "down_gemm": "rl_engine.ops.gemm.h3_ffn_down.H3FFNDownGemmOp"
+     }
+    }
+   },
+   "sharded": {
+    "load_seconds": 25.312492091208696,
+    "resident_param_bytes": 32339180032,
+    "full_model_param_bytes": 66280430080,
+    "parallel_peak_bytes": 33369280512
+   },
+   "refused": null,
+   "packed_bindings": {
+    "packed_index_copy": "other stage",
+    "packed_index_select": "reference"
+   },
+   "boundary_bindings": {
+    "proj_in": {
+     "row": "video_input_projection_fp32",
+     "status": "other stage"
+    },
+    "proj_out": {
+     "row": "video_output_projection_fp32",
+     "status": "row"
+    },
+    "audio_proj_in": {
+     "row": "audio_input_projection_fp32",
+     "status": "other stage"
+    },
+    "audio_proj_out": {
+     "row": "audio_output_projection_fp32",
+     "status": "row"
+    },
+    "context_embedder": {
+     "row": "text_context_projection",
+     "status": "other stage"
+    },
+    "token_refiner": {
+     "row": "token_refiner_block",
+     "status": "other stage"
+    },
+    "time_embedder": {
+     "row": "timestep_mlp_fp32",
+     "status": "other stage"
+    },
+    "norm_out": {
+     "row": "final_adaln_out",
+     "status": "row"
+    }
+   },
+   "stage": {
+    "pp": 2,
+    "pp_rank": 1,
+    "lo": 25,
+    "hi": 50,
+    "total": 50
+   }
+  }
+ ],
+ "torch": "2.13.0+cu130",
+ "device": "NVIDIA H100"
+}

@@ -28,6 +28,7 @@ for letter in c d; do
 done
 sacct -j "${JA:-<JOB_1>}" --format=JobID,Start,End,NodeList -P \
   | sed -e 's/node-x/node-a/g' -e 's/node-x/node-b/g' \
+    -e 's/<CLUSTER>\[[^]]*\]/node-a+node-b/g' \
   > "$DEST/extra/job_steps_timeline.txt"
 cat > "$DEST/SUMMARY.md" <<EOF
 # miles H2 H100 probe (JOB_X)

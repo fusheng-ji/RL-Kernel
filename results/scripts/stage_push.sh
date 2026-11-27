@@ -82,84 +82,13 @@ done
 
 export STAGING_TREE="$ST"
 export LEAK_USER LEAK_JOB1 LEAK_JOB2 LEAK_GROUP
-export LEAK_PATH_WORK LEAK_PATH_SCRATCH_USER LEAK_PATH_HOME LEAK_PATH_PROJECT_FS
+export LEAK_PATH_WORK LEAK_PATH_SCRATCH_USER LEAK_PATH_HOME LEAK_PATH_PROJECT_FS LEAK_PATH_PROJECT_USER
+export LEAK_PAT_SCRATCH_A LEAK_PAT_SCRATCH_B LEAK_REPL_E LEAK_REPL_V LEAK_REPL_E2 LEAK_REPL_ENV
+export LEAK_PAT_USER_EXTRA LEAK_PAT_BUNDLE_A LEAK_PAT_BUNDLE_B LEAK_PAT_BUNDLE_C LEAK_PAT_BUNDLE_D
+export LEAK_PAT_BUNDLE_E LEAK_PAT_BUNDLE_UC LEAK_PAT_PARTITION LEAK_PAT_NODE LEAK_PAT_NODES
+export LEAK_PAT_CPU_PART LEAK_PAT_CLUSTER_LOGIN LEAK_PAT_CLUSTER_HOST LEAK_PAT_FS LEAK_PAT_GROUP_FS
 find "$ST" -type f ! -path '*/scripts/stage_push.sh' | while read -r f; do
-  python3 - "$f" <<'PY'
-import os, re, sys
-
-p = sys.argv[1]
-s = open(p, errors="replace").read()
-u = os.environ.get("LEAK_USER", "<USER>")
-j1 = os.environ.get("LEAK_JOB1", "<JOB_1>")
-j2 = os.environ.get("LEAK_JOB2", "<JOB_2>")
-g = os.environ.get("LEAK_GROUP", "<GROUP>")
-
-def esc_path(key, repl):
-    val = os.environ.get(key, "")
-    if not val or "<" in val:
-        return
-    return (re.escape(val), repl)
-
-R = []
-for key, repl in (
-    ("LEAK_PATH_WORK", "<WORK>"),
-    ("LEAK_PATH_SCRATCH_USER", "<SCRATCH>"),
-    ("LEAK_PATH_PROJECT_FS", "<PROJECT_FS>"),
-    ("LEAK_PATH_HOME", "<HOME>"),
-):
-    pair = esc_path(key, repl)
-    if pair:
-        R.append(pair)
-
-R += [
-    (rf"(?<!\d){re.escape(j1)}(?!\d)", "<JOB_1>"),
-    (rf"(?<!\d){re.escape(j2)}(?!\d)", "<JOB_2>"),
-    (r"(?<!\d)59\d{5}(?!\d)", "<JOBID>"),
-    (r"cpu_job_\d+\.log", "cpu_job.log"),
-    (r"cpu-0\d\d", "node-c"),
-    (r"--qos=\w+", "--qos=<QOS>"),
-    (r"0x[0-9a-f]{16}", "<GUID>"),
-]
-for var, repl in (
-    ("LEAK_PAT_SCRATCH_A", "$SCRATCH_ROOT"),
-    ("LEAK_PAT_SCRATCH_B", "SCRATCH_ROOT"),
-    ("LEAK_REPL_E", "<E>"),
-    ("LEAK_REPL_V", "<V>"),
-    ("LEAK_REPL_E2", "<E2>"),
-    ("LEAK_REPL_ENV", "<ENV>"),
-    ("LEAK_PAT_USER_EXTRA", "<USER>"),
-    ("LEAK_PAT_BUNDLE_A", "$BUNDLE/<BUNDLE_SCRIPTS_DIR>"),
-    ("LEAK_PAT_BUNDLE_B", "$B/<BUNDLE_SCRIPTS_DIR>"),
-    ("LEAK_PAT_BUNDLE_C", "/<BUNDLE_SCRIPTS_DIR>"),
-    ("LEAK_PAT_BUNDLE_D", "/<BUNDLE_SCRIPTS_DIR>/"),
-    ("LEAK_PAT_BUNDLE_E", "<BUNDLE_SCRIPTS_DIR>/"),
-    ("LEAK_PAT_BUNDLE_UC", "BUNDLE_SCRIPTS"),
-    ("LEAK_PAT_PARTITION", "<PARTITION>"),
-    ("LEAK_PAT_NODE", "node-x"),
-    ("LEAK_PAT_NODES", "<NODES>"),
-    ("LEAK_PAT_CPU_PART", "<CPU_PARTITION>"),
-    ("LEAK_PAT_CLUSTER_LOGIN", "<CLUSTER>"),
-    ("LEAK_PAT_CLUSTER_HOST", "<CLUSTER>"),
-    ("LEAK_PAT_FS", "<FS>"),
-):
-    pat = os.environ.get(var, "")
-    if pat and "<" not in pat:
-        R.append((pat, repl))
-if u and "<" not in u:
-    R.append((re.escape(u), "<USER>"))
-if g and "<" not in g:
-    R.append((re.escape(g), "<GROUP>"))
-R += [
-    (r"\b10(?:\.\d{1,3}){3}\b", "<IP>"),
-    (r"\b192\.168(?:\.\d{1,3}){2}\b", "<IP>"),
-    (r"\b172\.(?:1[6-9]|2\d|3[01])(?:\.\d{1,3}){2}\b", "<IP>"),
-    (r"GPU-[0-9a-f]{8}-[0-9a-f-]{27}", "<GPU-UUID>"),
-]
-
-for a, b in R:
-    s = re.sub(a, b, s)
-open(p, "w").write(s)
-PY
+  python3 "$D/redact_tree.py" "$f"
 done
 COMMIT_SP="$S/wt/push/results/scripts/stage_push.sh"
 cp "$COMMIT_SP" "$ST/scripts/stage_push.sh"
@@ -196,6 +125,8 @@ if find "$ST" -printf '%P\n' | grep -niE "$LEAK_RE" >/tmp/stage_push_leak_paths.
   head -20 /tmp/stage_push_leak_paths.txt
   exit 1
 fi
+
+bash "$D/stage_push_validate.sh" "$ST"
 
 echo "== leak check OK =="
 find "$ST" -type f \( -name '*.png' -o -name '*.safetensors' -o -name '*.pt' -o -name '*.sqsh' \)

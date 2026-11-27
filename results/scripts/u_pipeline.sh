@@ -7,7 +7,8 @@ cd $WP; tree_status $WP $O/status-before.txt || exit 1
 export PYTHONPATH=$WP RL_KERNEL_H3_STRICT=1 RL_KERNEL_H3_WEIGHTS=$WEIGHTS HF_HUB_OFFLINE=1 TMPDIR=${TMPDIR:-/tmp}
 nvidia-smi > $O/nvidia-smi.txt; { echo "driver=$(nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -1)"; $E1/bin/python -c "import torch;print('torch',torch.__version__)"; } > $O/env.txt
 PY="$E1/bin/python"; NN=${SLURM_JOB_NUM_NODES:-2}
-run() { local n=$1 out=$2; shift 2; srun --jobid=${SLURM_JOB_ID:?} --overlap -N$([ $n -gt 4 ] && echo 2 || echo 1) --ntasks=$n -c $([ $n -gt 4 ] && echo 8 || echo 16) --ntasks-per-node=$([ $n -gt 4 ] && echo 4 || echo $n) --gres=gpu:$([ $n -gt 4 ] && echo 4 || echo $n) --exact --mem=0 \
+MA=$(nodes_of ${SLURM_JOB_ID:?} | sed -n 1p); export MASTER_ADDR=$MA; RUNN=0   # rank 0 is pinned to node-a with -w
+run() { local n=$1 out=$2; shift 2; RUNN=$((RUNN+1)); export MASTER_PORT=$((29600+RUNN)); srun --jobid=${SLURM_JOB_ID:?} -w $MA --overlap -N$([ $n -gt 4 ] && echo 2 || echo 1) --ntasks=$n -c $([ $n -gt 4 ] && echo 8 || echo 16) --ntasks-per-node=$([ $n -gt 4 ] && echo 4 || echo $n) --gres=gpu:$([ $n -gt 4 ] && echo 4 || echo $n) --exact --mem=0 \
   $PY "$@" --out $O/$out > $O/$out.log 2>&1; echo "$out exit=$?" >> $O/rows.txt; }
 FM="tools/validation/models/h3_parallel_full_model.py --checkpoint $CKPT --sharded"
 case $P in
