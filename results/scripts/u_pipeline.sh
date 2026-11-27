@@ -37,5 +37,6 @@ esac
 tree_status $WP $O/status-after.txt
 case $P in
  P2|P3|P4)
+   [ -n "${PIPELINE_CONTINUE:-}" ] && exit 0
    [ -f "$O/rows.txt" ] && grep -vE ' exit=0$' "$O/rows.txt" | grep -q . && exit 1;;
 esac

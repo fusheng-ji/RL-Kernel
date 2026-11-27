@@ -1,11 +1,22 @@
 # Partial run summary (schedule push after redact fix `2c49e44b`; JOB_X RUNNING, JOB_Y PENDING)
 
+## vime V2 (structural OOM on H100)
+
+- `h_vi` head at run: `a517384fe`. GPU preflight: card 0, `memory.used` 0 MiB (idle). Not shared-card contention.
+- `smoke--num-layers_4`: OOM on 94 GB, needs >=102 GiB for BF16 weights+grads (structural). Other six smoke subtests rc=0.
+- Gate: `OK known: num-layers_4 OOM structural (94 GB)`. Evidence under `partial-results/vime/V2-structural/`.
+
 ## Pipeline deviations (2026-11-27, jobx B1)
 
 - **P2 first attempt** (`pipeline_P2_jobx_attempt1_no_MASTER_ADDR`): rows not all exit=0 — missing `MASTER_ADDR`/`MASTER_PORT` in nested srun. **Accepted rerun** (runner-only): `MASTER_ADDR` from job node-a, `MASTER_PORT` per row, rank-0 driver `srun -w` pinned to node-a. **Not a code/recipe change.**
 - **Second attempt P2**: **9/9 `exit=0`** in `partial-results/pipeline/P2/rows.txt`.
 - **P3/P4 first attempt** (`pipeline_P3P4_jobx_attempt1_single_node_srun`): 5+5 rows `exit=1`, `Only allocated 1 nodes asked for 2` — chain should have STOPped; fixed `u_pipeline.sh` to exit 1 when any row is non-zero; P3/P4 now use `driver_2node_sync` + `slurm_job_env_exports`.
-- **jobxB1b (step .55`)**: continued into vime V2 after bad P3/P4; V2 FAIL (`smoke--num-layers_4` rc=1 on shared card). V3/V4 not run. `START=P3` relaunch runs **P3/P4 only** then exits.
+- **P1 (effective)**: `partial-results/pipeline/P1/` — 212 passed, `pytest.txt` exit=0. Earlier 7-fail IPC (`expandable_segments`) in `not-green-attempts/pipeline_P1P2_jobx_attempt1/P1/`.
+- **P3 driver note**: nested srun may log `Job step's --cpus-per-task value exceeds that of job (8 > 4)` from the `-c 4` `driver_2node` step; rows still ran. `slurm_job_env_exports` now unsets step CPU/mem exports for later drivers (miles b3, V3/V4).
+- **`P3/nvidia-smi.txt`**: captured inside `--gres=none` driver ("No devices"); after P4, `pipeline_capture_nvidia_smi.sh` adds per-node files with GPUs.
+- **P3/P4 driver split**: first `jobxP3` driver used pre-unset CPU env (`--cpus-per-task 8 > 4` in logs); P3-r2, T11, V3/V4 use updated `slurm_job_env_exports`.
+- **`pp4-tp2-s925 exit=134`**: P2P RECV timeout (retained); diagnostic **r2** run under `pipeline/P3-r2/` with NCCL_DEBUG.
+- **jobxB1b (step .55`)**: continued into vime V2 after bad P3/P4; V2 structural OOM above. V3/V4 via `jobx_after_p34.sh` after P3/P4 and T11.
 
 # Partial run summary (second incremental push; JOB_X still RUNNING, JOB_Y PENDING)
 

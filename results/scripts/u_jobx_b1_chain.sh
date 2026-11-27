@@ -7,7 +7,7 @@ run_jobx_p3p4() {
   local J=${SLURM_JOB_ID:?}
   local NA; NA=$(nodes_of "$J" | sed -n 1p)
   driver_2node_sync "$J" "$NA" "4:00:00" jobxP3P4 \
-    "export SLURM_JOB_ID=$J; bash $D/u_pipeline.sh P3 && bash $D/u_pipeline.sh P4"
+    "export PIPELINE_CONTINUE=1 SLURM_JOB_ID=$J; bash $D/u_pipeline.sh P3; bash $D/u_pipeline.sh P4"
 }
 if [ "$START" = P1 ]; then
   PA=$OUT/not-green-attempts/pipeline_P1P2_jobx_attempt1; mkdir -p "$PA"

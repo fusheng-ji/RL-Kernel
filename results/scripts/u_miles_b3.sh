@@ -15,6 +15,10 @@ if [ "$stagerc" = 96 ]; then
   gate_set miles_H2_busy "BUSY rc=96 TAG=$TAG"
   exit 96
 fi
+for gc in "$WORK"/runs/h2_memprobe-"$TAG"/gpu_check_node*.txt; do
+  [ -f "$gc" ] || continue
+  grep -A5 '== cpus' "$gc" | grep -q 'nproc=64' || { log "STOP: b3 gpu_check cpus not 64 in $gc"; exit 1; }
+done
 python3 - "$WORK" "$OUT/miles" "$TAG" "$stagerc" <<'PY'
 import glob, re, sys
 work, out, tag, stagerc = sys.argv[1:5]
