@@ -1,6 +1,7 @@
 #!/bin/bash
 # Runs once per node inside the container. Node 0: Ray head, waits for 8 GPUs, runs the stage. Node 1: Ray worker.
 # Both: nvidia-smi and SGLang /metrics samplers (and, for H6, the live-engine checksum sidecar) for the engines on that node.
+# Stops with rc 96 before anything starts if a GPU of either node is already in use (gpu_idle_check.sh).
 # args: <stage script> [args...]
 set -u
 STAGE=$1; shift
@@ -8,6 +9,11 @@ N=${SLURM_NODEID:?}
 cd /root/miles
 MYIP=$(getent ahostsv4 "$(hostname)" | awk 'NR==1{print $1}')
 [ "$N" = 0 ] && MYIP=$MASTER_ADDR
+bash "$THIS/scripts/gpu_idle_check.sh" "$RUN/gpu_check_node$N" > "$RUN/.gpucheck_node$N" 2>&1; GC=$?
+if [ "$GC" != 0 ]; then
+  [ "$N" = 0 ] && touch "$RUN/.done"
+  echo "node $N: $(cat "$RUN/.gpucheck_node$N"); stage not started"; exit 96
+fi
 nvidia-smi --query-gpu=timestamp,index,memory.used,utilization.gpu --format=csv,noheader -l 5 > "$RUN/gpu_mem_node$N.csv" 2>/dev/null & MON="$!"
 python3 "$THIS/scripts/scrape_metrics.py" "$RUN/sglang_metrics_node$N.jsonl" > "$RUN/scrape_node$N.log" 2>&1 & MON="$MON $!"
 case $(basename "$STAGE") in
@@ -20,10 +26,14 @@ if [ "$N" = 0 ]; then
   ray start --head --node-ip-address "$MASTER_ADDR" --num-gpus 4 --disable-usage-stats > "$RUN/ray_head.log" 2>&1
   for i in $(seq 120); do
     g=$(python3 -c "import ray; ray.init(address='auto', logging_level='ERROR'); print(int(ray.cluster_resources().get('GPU', 0)))" 2>/dev/null)
-    [ "${g:-0}" -ge 8 ] && break; sleep 5
+    [ "${g:-0}" -ge 8 ] && break
+    grep -q busy "$RUN/.gpucheck_node1" 2>/dev/null && break
+    sleep 5
   done
   echo "ray GPUs=${g:-0}" | tee "$RUN/ray_gpus.txt"
-  if [ "${g:-0}" -ge 8 ]; then
+  if grep -q busy "$RUN/.gpucheck_node1" 2>/dev/null; then
+    echo "node 1: $(cat "$RUN/.gpucheck_node1"); stage not started"; rc=96
+  elif [ "${g:-0}" -ge 8 ]; then
     export MILES_SCRIPT_EXTERNAL_RAY=1
     bash "$STAGE" "$@"; rc=$?
   else

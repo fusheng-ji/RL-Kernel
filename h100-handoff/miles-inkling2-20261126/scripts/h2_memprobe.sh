@@ -3,6 +3,8 @@
 # An out-of-memory error is a probe result: the stage exits 0 and train.log keeps the error.
 set -x
 export SG_TP=$2 SG_MEM=$3
+# NCCL init and transport lines (which NIC / HCA each rank picked) go to train.log; a debug setting only.
+export NCCL_DEBUG=${NCCL_DEBUG:-INFO} NCCL_DEBUG_SUBSYS=${NCCL_DEBUG_SUBSYS:-INIT,NET}
 source $THIS/scripts/lib_train.sh
 SG_TP=$2; SG_MEM=$3
 RUN_TIMEOUT=3600 run_miles 1 "" $1; echo "$1 rc=$?"

@@ -1,5 +1,21 @@
 # H100 handoff: native miles x Inkling-2-Mini end-to-end baseline on 2 nodes x 4 H100 (2026-11-26)
 
+## Round 2 (2026-11-27): what changed and what to run
+
+Round 1 stopped at H2: no probe passed. H0 and H1 passed and stay valid; do not rerun them. Round 1 ran on nodes shared with other steps, so its memory numbers are not usable. Read from the round-1 logs:
+- `a` (TP1, 0.55): SGLang does not start (hybrid state cache memory negative). As expected; **not rerun**.
+- `b` (TP1, 0.80): rollout and one training step finished (`perf 0`), then an NCCL ALLTOALL watchdog timeout, peak about 94 GB per GPU. Other steps held memory on the same GPUs, so this is **rerun** on idle nodes.
+- `c`, `d` (TP2): `Inkling2 tensor parallelism requires NVLink multicast`. The image's SGLang notes that H100 TP2 reports multicast support but the driver refuses the mapping (`symm_workspace.py`, `is_multicast_supported`), and Inkling2's custom all-reduce only takes groups of 4, 6 or 8. **Not rerun.**
+
+Changes in this round:
+1. **New probes `e` and `f`: TP4**, one engine over the 4 GPUs of a node (2 engines in all), at 0.55 and 0.70. Each GPU then holds 12.5 GB of weights instead of 50 GB. Whether it starts depends on NVLink multicast inside one node; the fabric state is recorded (point 3).
+2. **Idle-GPU check at every stage start** (`scripts/gpu_idle_check.sh`, called by `node_entry.sh` on both nodes and by `run_stage_1node.sbatch`). The stage does not start, rc 96, if a node does not see exactly 4 GPUs or a GPU already uses more than 1 GiB. **Nothing else may run on these GPUs for the whole job**: no other `srun` step, before or during. The cleanup in `lib_train.sh` kills every SGLang server on both nodes, other jobs' included. A rc 96 is not a result: wait for idle nodes and rerun with a new `TAG`.
+3. Each stage writes `gpu_check_node{0,1}.txt`: memory and processes per GPU, `nvidia-smi topo -m`, `nvlink -s` and the fabric section of `nvidia-smi -q`.
+4. H2 sets `NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET` (unless already set), so `train.log` shows which NIC and HCA each rank uses. A debug setting only.
+
+Run in round 2: H2 probes `b2`, `e`, `f` (each on its own idle 2-node job, one after the other), then continue with H3 as written if one passes. Round-1 outputs go to `not-green-attempts/round1/` unchanged; results go on the same results branch.
+
+
 ## Why
 
 The native miles path (torchtitan FSDP2 trainer + colocated SGLang rollout, no RL-Kernel code) for `thinkingmachines/Inkling-2-Mini` is the Path A baseline for the later miles + RL-Kernel comparison (RFC #736, INK-55 / INK-66 / INK-72). It ran on 8 x B200, in one node (`reference/b200-summary.json`). This round measures the same baseline on H100:
@@ -93,8 +109,10 @@ Each probe is one real recipe step (rollout, train, weight sync), in its own job
 |---|---|---|---|
 | `a` | 1 | 0.55 | the recipe as it is; expected to fail at engine start |
 | `b` | 1 | 0.80 | the recipe's TP1 layout |
-| `c` | 2 | 0.55 | |
-| `d` | 2 | 0.70 | |
+| `c` | 2 | 0.55 | round 1 only (multicast refused, see Round 2) |
+| `d` | 2 | 0.70 | round 1 only (multicast refused, see Round 2) |
+| `e` | 4 | 0.55 | round 2: one engine per node |
+| `f` | 4 | 0.70 | round 2 |
 
 ```bash
 $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=a --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh a 1 0.55
@@ -103,13 +121,21 @@ $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=c --time=01:30:00 <THIS_DIR>/sc
 $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=d --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh d 2 0.70
 ```
 
-A probe **passes** when its `train.log` ends with `train rc=0`, has one `perf 0:` line, and shows no out-of-memory error. Pick the first passing probe in the order `b`, `c`, `d` (TP1 first, it is the recipe's layout), and write it down for every later task:
+Round 2 (new tags, idle nodes, one job at a time):
+
+```bash
+$SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=b2 --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh b2 1 0.80
+$SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=e --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh e 4 0.55
+$SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=f --time=01:30:00 <THIS_DIR>/scripts/run_stage.sbatch <THIS_DIR>/scripts/h2_memprobe.sh f 4 0.70
+```
+
+A probe **passes** when its `train.log` ends with `train rc=0`, has one `perf 0:` line, and shows no out-of-memory error. Pick the first passing probe in the order `b2`, `e`, `f` (TP1 first, it is the recipe's layout; in round 1 the order was `b`, `c`, `d`), and write it down for every later task:
 
 ```bash
 echo "export SG_TP=1 SG_MEM=0.80" > <WORK>/h100.env    # the chosen probe's values
 ```
 
-If none of `b`, `c`, `d` passes, **stop and report H2**. Do not try other settings and do not turn on offload. The B200 reference is one TP1 engine per GPU at 0.55, peak 135 to 136 GiB per GPU.
+If none of `b2`, `e`, `f` passes, **stop and report H2** with the `gpu_check_node*.txt` files. Do not try other settings and do not turn on offload. The B200 reference is one TP1 engine per GPU at 0.55, peak 135 to 136 GiB per GPU.
 
 ## H3. Smoke, 3 steps (2 nodes)
 
@@ -198,7 +224,7 @@ $SB --export=ALL,WORK=<WORK>,THIS=<THIS_DIR>,TAG=r0 --time=01:30:00 <THIS_DIR>/s
 | late x data 99 | `h7_w98_r99.json` | `trainer_vs_live_decode`, `trainer_vs_fresh_prefill`, `live_decode_vs_fresh_prefill` |
 | late x data 33 / 66 | `h7_w32_r33.json`, `h7_w65_r66.json` | the same three |
 
-The B200 version (`localization` in the reference): original x data 99 rose +6% to +17% per bucket against original x data 0, late x data 99 rose +19% to +29%. B200 has not yet separated the rest; on H100 the fresh-prefill pair on the late weights does it.
+The B200 version (`localization` in the reference): original x data 99 rose +6% to +17% per bucket against original x data 0, late x data 99 rose +19% to +29%. B200 later separated the rest (rerun with exports, 2026-11-26, `localization_rerun` in the reference): weight sync is bitwise (574 tensors on all 8 engines after exports 32 and 65), the live engine equals a fresh prefill on the same weights, and late x data 99 is +25% to +31% per bucket on the fresh-prefill pair. About half of the rise comes from the data, half from the trained weights. H100 repeats this with its own exports.
 
 ## H8. Summaries (1 node)
 
@@ -207,7 +233,7 @@ Write the stage directories you used into `<WORK>/h8.env`, for example:
 ```bash
 cat > <WORK>/h8.env <<'EOF'
 H1=<WORK>/runs/h1_env-r0
-H2_DIRS="<WORK>/runs/h2_memprobe-a <WORK>/runs/h2_memprobe-b <WORK>/runs/h2_memprobe-c <WORK>/runs/h2_memprobe-d"
+H2_DIRS="<WORK>/runs/h2_memprobe-b2 <WORK>/runs/h2_memprobe-e <WORK>/runs/h2_memprobe-f"
 H3=<WORK>/runs/h3_smoke-r0
 H4T=<WORK>/runs/h4_trainer-r0
 H4S=<WORK>/runs/h4_sglang-r0
@@ -246,8 +272,8 @@ Everything lands in `<WORK>/runs/report/`. `run100_summary.txt` and `run100_drif
 Push the fork branch `handoff/h100-miles-inkling2-results-20261126` (from this branch), with `results/`:
 - `H0/`: `image_digest.txt`, `download.sha256`, `revisions.txt`;
 - `H1/`: `env.txt`, `bf16_a.sha256`, `bf16_b.sha256`, `pytest_*.log`, the job log;
-- `H2/`: `h2_probe_summary.json`, and per probe `train.log`, `h100_config.txt`, `gpu_mem_node*.csv`;
-- per H3 to H7 run: `train.log` (and the sub-run ones), `h100_config.txt`, `gpu_mem_node*.csv`, `ray_gpus.txt`, the job log;
+- `H2/`: `h2_probe_summary.json`, and per probe `train.log`, `h100_config.txt`, `gpu_mem_node*.csv`, `gpu_check_node*.txt`, the job log; for a probe that fails, the first traceback with file and line;
+- per H3 to H7 run: `train.log` (and the sub-run ones), `h100_config.txt`, `gpu_mem_node*.csv`, `gpu_check_node*.txt`, `ray_gpus.txt`, the job log;
 - `report/`: everything H8 wrote **except** `run100_drift_rows.pt` if it is above 20 MB;
 - `SUMMARY.md`: the H2 choice, each gate's verdict, every deviation (including the SGLang setting and any NCCL variable), and the tables: H5 speed, H6 curve (first / last 10 steps), H7 2 x 2.
 
