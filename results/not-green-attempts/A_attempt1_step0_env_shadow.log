@@ -1,0 +1,33 @@
+## first A attempt on job <JOB_1>, 2026-11-27T06:42Z: step 0 failed (env shadowed by non-executable ~/.local/bin/env, exit 13; out/checks missing)
+[2026-11-27T06:42:39Z] on_job_start JOB=<JOB_1> which=first
+[2026-11-27T06:43:59Z] A on job <JOB_1>: node-a=node-x node-b=node-x
+[2026-11-27T06:43:59Z] STOP: nested_srun failed
+[2026-11-27T06:43:59Z] STOP: alloc_A failed
+## gate nested_srun:
+2026-11-27T06:43:59Z FAIL see <WORK>/out/checks/nested-srun-2node.txt
+## monitor.log tail:
+slurmstepd: error: execve(): <HOME>/.local/bin/env: Permission denied
+srun: error: node-x: task 0: Exited with exit code 13
+slurmstepd: error: execve(): <HOME>/.local/bin/env: Permission denied
+srun: error: node-x: task 1: Exited with exit code 13
+<WORK>/scripts/step0_twocards.sh: line 5: <WORK>/out/checks/twocards-record-1.txt: No such file or directory
+<WORK>/scripts/step0_twocards.sh: line 5: <WORK>/out/checks/twocards-record-2.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 11: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 12: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 22: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '<WORK>/out/checks/nested-srun-2node.txt'
+<WORK>/scripts/step0_nested.sh: line 11: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 12: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 16: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 17: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 17: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 18: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 19: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+<WORK>/scripts/step0_nested.sh: line 19: <WORK>/out/checks/nested-srun-2node.txt: No such file or directory
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '<WORK>/out/checks/nested-srun-2node.txt'
+[... 0
+0 mksquashfs 'Cannot stat ... ignoring' lines removed ...]

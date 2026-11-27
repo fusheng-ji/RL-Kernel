@@ -1,0 +1,56 @@
+nodes=2 head_ip_set=yes
+Filesystem                         Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv   98G   28G   66G  30% /
+/dev/mapper/ubuntu--vg-ubuntu--lv   98G   28G   66G  30% /
+tmpfs                              378G  2.3G  376G   1% /dev/shm
+<CLUSTER>                        126T  120T  5.5T  96% <FS>
+ray GPUs=8
++ export SG_TP=2 SG_MEM=0.55
++ SG_TP=2
++ SG_MEM=0.55
++ source <WORK>/wt/h_mi/h100-handoff/miles-inkling2-20261126/scripts/lib_train.sh
+++ '[' -f <WORK>/miles/h100.env ']'
+++ SG_TP=2
+++ SG_MEM=0.55
++ SG_TP=2
++ SG_MEM=0.55
++ RUN_TIMEOUT=3600
++ run_miles 1 '' c
++ local O=<WORK>/miles/runs/h2_memprobe-c
++ '[' -n c ']'
++ O=<WORK>/miles/runs/h2_memprobe-c/c
++ mkdir -p <WORK>/miles/runs/h2_memprobe-c/c
++ cd /root/miles
++ kill_engines
++ python3 -c '
+from ray.job_submission import JobSubmissionClient
+c = JobSubmissionClient('\''http://<IP>:8265'\'')
+for j in c.list_jobs():
+    if str(j.status).split('\''.'\'')[-1] in ('\''PENDING'\'', '\''RUNNING'\''): print('\''stopping'\'', j.submission_id, c.stop_job(j.submission_id))
+'
++ python3 -c 'import miles.utils.external_utils.command_utils.legacy as U; U.exec_command_multi_node('\''pkill -9 -f "[s]glang.launch_server"; sleep 3; true'\'')'
++ echo 'SG_TP=2 SG_MEM=0.55'
+++ h100_args
+++ echo '--expert-model-parallel-size 8 --rollout-num-gpus-per-engine 2 --sglang-mem-fraction-static 0.55'
++ timeout --kill-after=60 3600 python3 -c '
+import sys
+from scripts.run_inkling2_mini import ScriptArgs, execute
+execute(ScriptArgs(num_nodes=2, num_gpus_per_node=4, num_rollout=int(sys.argv[1]), model_dir=sys.argv[2], data_dir=sys.argv[3], output_dir=sys.argv[4], extra_args=sys.argv[5]))
+' 1 <WORK>/miles/models <WORK>/miles/datasets <WORK>/miles/runs/h2_memprobe-c/c/out ' --expert-model-parallel-size 8 --rollout-num-gpus-per-engine 2 --sglang-mem-fraction-static 0.55'
++ local rc=124
++ echo 'train rc=124'
++ tee -a <WORK>/miles/runs/h2_memprobe-c/c/train.log
+train rc=124
++ kill_engines
++ python3 -c '
+from ray.job_submission import JobSubmissionClient
+c = JobSubmissionClient('\''http://<IP>:8265'\'')
+for j in c.list_jobs():
+    if str(j.status).split('\''.'\'')[-1] in ('\''PENDING'\'', '\''RUNNING'\''): print('\''stopping'\'', j.submission_id, c.stop_job(j.submission_id))
+'
++ python3 -c 'import miles.utils.external_utils.command_utils.legacy as U; U.exec_command_multi_node('\''pkill -9 -f "[s]glang.launch_server"; sleep 3; true'\'')'
++ return 124
+c rc=124
++ echo 'c rc=124'
++ exit 0
+stage rc=0

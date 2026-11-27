@@ -1,0 +1,176 @@
+Filesystem                         Size  Used Avail Use% Mounted on
+/dev/mapper/ubuntu--vg-ubuntu--lv   98G   28G   66G  30% /
+/dev/mapper/ubuntu--vg-ubuntu--lv   98G   28G   66G  30% /
+tmpfs                              378G  2.3G  376G   1% /dev/shm
+<CLUSTER>                        126T  120T  5.6T  96% <FS>
++ cd /root/miles
++ cat <WORK>/miles/runs/h1_env-r0/env.txt
++ date -u
+Fri Nov 27 02:27:31 PM UTC 2026
++ nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv
+name, driver_version, memory.total [MiB]
+NVIDIA H100, 580.173.02, 95830 MiB
+NVIDIA H100, 580.173.02, 95830 MiB
+NVIDIA H100, 580.173.02, 95830 MiB
+NVIDIA H100, 580.173.02, 95830 MiB
++ nvidia-smi topo -m
++ head -12
+	[4mGPU0	GPU1	GPU2	GPU3	NIC0	NIC1	NIC2	NIC3	NIC4	NIC5	CPU Affinity	NUMA Affinity	GPU NUMA ID[0m
+GPU0	 X 	NV6	NV6	NV6	NODE	NODE	NODE	PXB	SYS	SYS	0-15,48-63	0		N/A
+GPU1	NV6	 X 	NV6	NV6	NODE	NODE	PXB	NODE	SYS	SYS	0-15,48-63	0		N/A
+GPU2	NV6	NV6	 X 	NV6	SYS	SYS	SYS	SYS	NODE	PXB	24-39,72-87	1		N/A
+GPU3	NV6	NV6	NV6	 X 	SYS	SYS	SYS	SYS	PXB	NODE	24-39,72-87	1		N/A
+NIC0	NODE	NODE	SYS	SYS	 X 	PIX	NODE	NODE	SYS	SYS				
+NIC1	NODE	NODE	SYS	SYS	PIX	 X 	NODE	NODE	SYS	SYS				
+NIC2	NODE	PXB	SYS	SYS	NODE	NODE	 X 	NODE	SYS	SYS				
+NIC3	PXB	NODE	SYS	SYS	NODE	NODE	NODE	 X 	SYS	SYS				
+NIC4	SYS	SYS	NODE	PXB	SYS	SYS	SYS	SYS	 X 	NODE				
+NIC5	SYS	SYS	PXB	NODE	SYS	SYS	SYS	SYS	NODE	 X 				
+
++ git -C /root/miles rev-parse HEAD
+1e1d3fe833fcd79c072c35149a56937536492559
++ git -C /root/miles status --porcelain -uno
++ head
++ git -C /sgl-workspace/sglang rev-parse HEAD
+99f0be56153d55b79b08301543ab046583890ccc
++ git -C /sgl-workspace/sglang status --porcelain -uno
++ head
+ M python/sglang/srt/models/inkling2.py
++ git -C /root/torchtitan rev-parse HEAD
+45e33cd413b64cb37a7840cfd3c9765d3c639ae1
++ python3 -c 'import torch,sys;print('\''torch'\'',torch.__version__,torch.version.cuda,torch.cuda.device_count())'
+torch 2.14.1+cu130 13.0 4
++ python3 -m pip list
++ grep -iE '^(torch|torchtitan|sglang|sglang-kernel|sglang-router|flashinfer|transformers|ray|tml-renderers|miles|flash-attn|triton|numpy|transformer)'
+flash-attn-4                             4.0.0b37
+flashinfer-cubin                         0.7.2
+flashinfer-jit-cache                     0.7.2+cu130
+flashinfer-jit-cache-sm100a              0.7.2+cu130
+flashinfer-jit-cache-sm103a              0.7.2+cu130
+flashinfer-jit-cache-sm120f              0.7.2+cu130
+flashinfer-jit-cache-sm80                0.7.2+cu130
+flashinfer-jit-cache-sm89                0.7.2+cu130
+flashinfer-jit-cache-sm90a               0.7.2+cu130
+flashinfer-python                        0.7.2
+miles                                    0.2.0                        /root/miles
+miles-dashboard                          0.1.0                        /root/miles/packages/miles-dashboard
+numpy                                    2.3.5
+ray                                      2.58.2
+sglang                                   0.5.24.dev105+g6840aa6       /sgl-workspace/sglang/python
+sglang-kernel                            0.4.11
+sglang-router                            0.3.2
+tml-renderers                            0.4.2
+torch                                    2.14.1+cu130
+torch_c_dlpack_ext                       0.1.5
+torch_checkpointing                      0.1.1
+torch_memory_saver                       0.0.10
+torch_remat                              0.2.2
+torchaudio                               2.11.0+cu130
+torchcodec                               0.17.0+cu130
+torchft-nightly                          2026.4.3
+torchtitan                               0.4.0                        /root/torchtitan
+torchvision                              0.29.2
+transformer_engine                       2.17.0+miles
+transformer_engine_cu13                  2.17.0+miles
+transformer_engine_torch                 2.17.0+miles
+transformers                             5.19.0
+triton                                   3.8.0
++ env
++ grep -E 'PYTHONPATH|SGLANG|CUDA|LD_LIBRARY'
++ sort
+CUDA_HOME=/usr/local/cuda
+CUDA_VERSION=13.0.3
+CUDA_VISIBLE_DEVICES=0,1,2,3
+LD_LIBRARY_PATH=/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/usr/local/cuda/lib64:/usr/local/nvidia/lib:/usr/local/nvidia/lib64
+NV_CUDA_CUDART_DEV_VERSION=13.0.96-1
+NV_CUDA_CUDART_VERSION=13.0.96-1
+NV_CUDA_LIB_VERSION=13.0.3-1
+NV_CUDA_NSIGHT_COMPUTE_DEV_PACKAGE=cuda-nsight-compute-13-0=13.0.3-1
+NV_CUDA_NSIGHT_COMPUTE_VERSION=13.0.3-1
+NVIDIA_PRODUCT_NAME=CUDA
+NVIDIA_REQUIRE_CUDA=cuda>=13.0 brand=unknown,driver>=535,driver<536 brand=grid,driver>=535,driver<536 brand=tesla,driver>=535,driver<536 brand=nvidia,driver>=535,driver<536 brand=quadro,driver>=535,driver<536 brand=quadrortx,driver>=535,driver<536 brand=nvidiartx,driver>=535,driver<536 brand=vapps,driver>=535,driver<536 brand=vpc,driver>=535,driver<536 brand=vcs,driver>=535,driver<536 brand=vws,driver>=535,driver<536 brand=cloudgaming,driver>=535,driver<536 brand=unknown,driver>=550,driver<551 brand=grid,driver>=550,driver<551 brand=tesla,driver>=550,driver<551 brand=nvidia,driver>=550,driver<551 brand=quadro,driver>=550,driver<551 brand=quadrortx,driver>=550,driver<551 brand=nvidiartx,driver>=550,driver<551 brand=vapps,driver>=550,driver<551 brand=vpc,driver>=550,driver<551 brand=vcs,driver>=550,driver<551 brand=vws,driver>=550,driver<551 brand=cloudgaming,driver>=550,driver<551 brand=unknown,driver>=565,driver<566 brand=grid,driver>=565,driver<566 brand=tesla,driver>=565,driver<566 brand=nvidia,driver>=565,driver<566 brand=quadro,driver>=565,driver<566 brand=quadrortx,driver>=565,driver<566 brand=nvidiartx,driver>=565,driver<566 brand=vapps,driver>=565,driver<566 brand=vpc,driver>=565,driver<566 brand=vcs,driver>=565,driver<566 brand=vws,driver>=565,driver<566 brand=cloudgaming,driver>=565,driver<566 brand=unknown,driver>=570,driver<571 brand=grid,driver>=570,driver<571 brand=tesla,driver>=570,driver<571 brand=nvidia,driver>=570,driver<571 brand=quadro,driver>=570,driver<571 brand=quadrortx,driver>=570,driver<571 brand=nvidiartx,driver>=570,driver<571 brand=vapps,driver>=570,driver<571 brand=vpc,driver>=570,driver<571 brand=vcs,driver>=570,driver<571 brand=vws,driver>=570,driver<571 brand=cloudgaming,driver>=570,driver<571 brand=unknown,driver>=575,driver<576 brand=grid,driver>=575,driver<576 brand=tesla,driver>=575,driver<576 brand=nvidia,driver>=575,driver<576 brand=quadro,driver>=575,driver<576 brand=quadrortx,driver>=575,driver<576 brand=nvidiartx,driver>=575,driver<576 brand=vapps,driver>=575,driver<576 brand=vpc,driver>=575,driver<576 brand=vcs,driver>=575,driver<576 brand=vws,driver>=575,driver<576 brand=cloudgaming,driver>=575,driver<576
+PYTHONPATH=/opt/harbor-deps
+SGLANG_BUILD_COMMIT=297e54fd105e974cdf401e5b4d20253a22c16f90
+SGLANG_BUILD_URL=https://github.com/sgl-project/sglang/actions/runs/40978390987
+SGLANG_IMAGE_TAG=lmsysorg/sglang:v0.5.23
+SGLANG_RUST_BUILD_MODE=never
+SGLANG_UNIFIED_RADIX_TREE_CORE_BACKEND=python
++ mkdir -p <WORK>/miles/tmp
++ S=<WORK>/miles/models/Inkling-2-Mini
++ for i in a b
++ D=<WORK>/miles/models/Inkling-2-Mini-bf16
++ '[' a = b ']'
++ '[' a = b ']'
++ '[' -f <WORK>/miles/models/Inkling-2-Mini-bf16/model.safetensors.index.json ']'
++ python3 tools/convert_inkling2_to_bf16.py --model-dir <WORK>/miles/models/Inkling-2-Mini --save-dir <WORK>/miles/models/Inkling-2-Mini-bf16
++ cd <WORK>/miles/models/Inkling-2-Mini-bf16
++ find . -type f -not -path './.cache/*' -print0
++ sort -z
++ xargs -0 sha256sum
++ for i in a b
++ D=<WORK>/miles/models/Inkling-2-Mini-bf16
++ '[' b = b ']'
++ D=<WORK>/miles/tmp/bf16-check
++ '[' b = b ']'
++ rm -rf <WORK>/miles/tmp/bf16-check
++ '[' -f <WORK>/miles/tmp/bf16-check/model.safetensors.index.json ']'
++ python3 tools/convert_inkling2_to_bf16.py --model-dir <WORK>/miles/models/Inkling-2-Mini --save-dir <WORK>/miles/tmp/bf16-check
++ cd <WORK>/miles/tmp/bf16-check
++ find . -type f -not -path './.cache/*' -print0
++ sort -z
++ xargs -0 sha256sum
++ cmp -s <WORK>/miles/runs/h1_env-r0/bf16_a.sha256 <WORK>/miles/runs/h1_env-r0/bf16_b.sha256
+BF16_BYTE_IDENTICAL
++ echo BF16_BYTE_IDENTICAL
++ rm -rf <WORK>/miles/tmp/bf16-check
++ python3 -
+++ python3 -c 'import json;print(len(json.load(open('\''<WORK>/miles/runs/h1_env-r0/bf16_tensors.json'\''))))'
+bf16 tensors: 1116
++ echo 'bf16 tensors: 1116'
++ export CUDA_VISIBLE_DEVICES=0
++ CUDA_VISIBLE_DEVICES=0
++ for t in tests/fast/backends/test_torchtitan_inkling2.py tests/fast/backends/test_torchtitan_hf_export.py tests/fast/tools/test_convert_inkling2_to_bf16.py tests/fast-gpu/test_torchtitan_inkling2_forward.py
++ timeout 1200 python3 -m pytest -q -p no:cacheprovider tests/fast/backends/test_torchtitan_inkling2.py
+++ basename tests/fast/backends/test_torchtitan_inkling2.py .py
+tests/fast/backends/test_torchtitan_inkling2.py rc=0
++ echo 'tests/fast/backends/test_torchtitan_inkling2.py rc=0'
+++ basename tests/fast/backends/test_torchtitan_inkling2.py .py
++ tail -4 <WORK>/miles/runs/h1_env-r0/pytest_test_torchtitan_inkling2.log
+
+(21 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================== 9 passed, 2 warnings in 8.46s =========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
++ for t in tests/fast/backends/test_torchtitan_inkling2.py tests/fast/backends/test_torchtitan_hf_export.py tests/fast/tools/test_convert_inkling2_to_bf16.py tests/fast-gpu/test_torchtitan_inkling2_forward.py
++ timeout 1200 python3 -m pytest -q -p no:cacheprovider tests/fast/backends/test_torchtitan_hf_export.py
+++ basename tests/fast/backends/test_torchtitan_hf_export.py .py
+tests/fast/backends/test_torchtitan_hf_export.py rc=0
++ echo 'tests/fast/backends/test_torchtitan_hf_export.py rc=0'
+++ basename tests/fast/backends/test_torchtitan_hf_export.py .py
++ tail -4 <WORK>/miles/runs/h1_env-r0/pytest_test_torchtitan_hf_export.log
+
+(1 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================== 1 passed, 2 warnings in 0.72s =========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
++ for t in tests/fast/backends/test_torchtitan_inkling2.py tests/fast/backends/test_torchtitan_hf_export.py tests/fast/tools/test_convert_inkling2_to_bf16.py tests/fast-gpu/test_torchtitan_inkling2_forward.py
++ timeout 1200 python3 -m pytest -q -p no:cacheprovider tests/fast/tools/test_convert_inkling2_to_bf16.py
+++ basename tests/fast/tools/test_convert_inkling2_to_bf16.py .py
+tests/fast/tools/test_convert_inkling2_to_bf16.py rc=0
++ echo 'tests/fast/tools/test_convert_inkling2_to_bf16.py rc=0'
+++ basename tests/fast/tools/test_convert_inkling2_to_bf16.py .py
++ tail -4 <WORK>/miles/runs/h1_env-r0/pytest_test_convert_inkling2_to_bf16.log
+
+(2 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================== 1 passed, 2 warnings in 0.73s =========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
++ for t in tests/fast/backends/test_torchtitan_inkling2.py tests/fast/backends/test_torchtitan_hf_export.py tests/fast/tools/test_convert_inkling2_to_bf16.py tests/fast-gpu/test_torchtitan_inkling2_forward.py
++ timeout 1200 python3 -m pytest -q -p no:cacheprovider tests/fast-gpu/test_torchtitan_inkling2_forward.py
+++ basename tests/fast-gpu/test_torchtitan_inkling2_forward.py .py
+tests/fast-gpu/test_torchtitan_inkling2_forward.py rc=0
++ echo 'tests/fast-gpu/test_torchtitan_inkling2_forward.py rc=0'
+++ basename tests/fast-gpu/test_torchtitan_inkling2_forward.py .py
++ tail -4 <WORK>/miles/runs/h1_env-r0/pytest_test_torchtitan_inkling2_forward.log
+
+(1 durations < 0.005s hidden.  Use -vv to show these durations.)
+======================== 1 passed, 2 warnings in 20.12s ========================
+sys:1: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+stage rc=0

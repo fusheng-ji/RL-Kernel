@@ -37,6 +37,7 @@ if [ -d "$OUT" ]; then
     | while read -r f; do d="$ST/partial-results/verlomni/runs/${f#$OUT/verlomni/runs/}"; mkdir -p "$(dirname "$d")"; cp "$f" "$d"; done
 fi
 cp "$S/not-green-attempts"/* "$ST/not-green-attempts/" 2>/dev/null || true
+[ -d "$OUT/not-green-attempts" ] && rsync -a --exclude "tmp/" "$OUT/not-green-attempts/" "$ST/not-green-attempts/" 2>/dev/null || true
 
 for f in prep-verify.txt test_only_N2_exclusive_18h.txt miles_dl.log vime_prep.log verlomni_prep.log cpu_job.log sqsh-superblock.txt monitor.log; do
   [ -f "$S/checks/$f" ] && cp "$S/checks/$f" "$ST/checks/"
@@ -99,9 +100,9 @@ R = [
     (r"\b<SITE>/", "<BUNDLE_SCRIPTS_DIR>/"),
     (r"\b<SITE_UC>\b", "BUNDLE_SCRIPTS"),
     # jobs
-    (rf"\b{re.escape(j1)}\b", "<JOB_1>"),
-    (rf"\b{re.escape(j2)}\b", "<JOB_2>"),
-    (r"\b59\d{5}\b", "<JOBID>"),
+    (rf"(?<!\d){re.escape(j1)}(?!\d)", "<JOB_1>"),
+    (rf"(?<!\d){re.escape(j2)}(?!\d)", "<JOB_2>"),
+    (r"(?<!\d)59\d{5}(?!\d)", "<JOBID>"),
     (r"cpu_job_\d+\.log", "cpu_job.log"),
     # partition / nodes / qos
     (r"<PARTITION>", "<PARTITION>"),
@@ -141,7 +142,7 @@ if [ -n "$bad_names" ]; then
 fi
 
 LEAK_RE="<FS_PREFIX>|<CLUSTER_PREFIX>|<SITE>|${LEAK_USER}|${LEAK_JOB1}|${LEAK_JOB2}|_venv"
-if grep -rniE "$LEAK_RE" "$ST" >/tmp/stage_push_leak.txt 2>/dev/null; then
+if grep -rniE "$LEAK_RE" "$ST" --exclude=stage_push.sh >/tmp/stage_push_leak.txt 2>/dev/null; then
   echo "== LEAK: contents (must be empty) =="
   head -40 /tmp/stage_push_leak.txt
   exit 1

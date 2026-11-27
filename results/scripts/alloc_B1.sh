@@ -4,6 +4,6 @@ D=$(dirname "$0"); source $D/common.sh; J=${1:?job id}; mapfile -t N < <(nodes_o
 gate_ok nested_srun || { log "B1 blocked: nested_srun gate"; exit 1; }
 gate_wait_stop build_WP 86400
 T=12:00:00; gate_ok vime_V0 || T=04:00:00
-V3='gate_ok vime_V0 && gate_ok vime_V2 && bash '"$D"'/u_vime.sh V3 && bash '"$D"'/u_vime.sh V4'
+V3='gate_ok vime_V0 && { gate_ok vime_V2 || srun --jobid='$J' -w '$NA' --overlap -N1 -n1 -c 16 --gres=gpu:1 --exact --mem=0 /usr/bin/env bash '"$D"'/u_vime.sh V2; } && gate_ok vime_V2 && bash '"$D"'/u_vime.sh V3 && bash '"$D"'/u_vime.sh V4'
 CMD="bash $D/u_pipeline.sh P3; bash $D/u_pipeline.sh P4; $V3"
 driver_2node "$J" "$NA" "$T" B1 "$CMD"

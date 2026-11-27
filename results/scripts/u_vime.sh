@@ -2,6 +2,7 @@
 # vime V0..V4 by running the handoff sbatch files inside the allocation (alloc_driver / gpu_step), not with sbatch.
 # usage: u_vime.sh V0|V2|V3|V4 ; env: JOB, NODEA (first node of JOB)   gates: vime_V0 vime_V2
 source "$(dirname "$0")/common.sh"
+export ENROOT_MOUNT_HOME=n
 export H=$WT/h_vi/h100-handoff/vime-dsv4-20261126 W=$SCHED/vime SCRATCH=${VIME_LOCAL:-/tmp} HF_HUB_OFFLINE=1
 export SLURM_CPUS_PER_TASK=${CPT:-32}; S=$W/runs
 case $1 in

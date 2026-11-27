@@ -1,0 +1,5 @@
+Retry with handoff cd4fda86. STEP_FAIL flashmla (/root/FlashMLA exists), freeze_differs_from_b200, flash-attn-4_installed.
+Cause found: enroot mounts the host $HOME as /root in the container (ENROOT_MOUNT_HOME default). The host home's
+user-site packages (/root/.local: nvidia-cutlass-dsl 4.8.1, apache-tvm-ffi 0.1.16, editable flash-attn-4 from a host
+checkout) and an earlier ~/FlashMLA clone are visible to the container, so the "image" differs from the B200 freeze
+before any pip step runs. Fix in the local runner only: ENROOT_MOUNT_HOME=n (handoff files unchanged).
