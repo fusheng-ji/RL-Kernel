@@ -24,7 +24,7 @@ ray GPUs=8
 + kill_engines
 + python3 -c '
 from ray.job_submission import JobSubmissionClient
-c = JobSubmissionClient('\''http://<IP>:8265'\'')
+c = JobSubmissionClient('\''http://127.0.0.1:8265'\'')
 for j in c.list_jobs():
     if str(j.status).split('\''.'\'')[-1] in ('\''PENDING'\'', '\''RUNNING'\''): print('\''stopping'\'', j.submission_id, c.stop_job(j.submission_id))
 '
@@ -44,7 +44,7 @@ train rc=1
 + kill_engines
 + python3 -c '
 from ray.job_submission import JobSubmissionClient
-c = JobSubmissionClient('\''http://<IP>:8265'\'')
+c = JobSubmissionClient('\''http://127.0.0.1:8265'\'')
 for j in c.list_jobs():
     if str(j.status).split('\''.'\'')[-1] in ('\''PENDING'\'', '\''RUNNING'\''): print('\''stopping'\'', j.submission_id, c.stop_job(j.submission_id))
 '

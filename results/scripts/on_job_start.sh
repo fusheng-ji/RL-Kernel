@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Auto-run: patch gate for A; user_release for C/B1/B2.
+# Auto-run: patch gate for A; user_release for C/B2. B1 runs on JOB_X after miles H2 (see jobx_b1_wait.sh).
 D=$(dirname "$0"); source "$D/common.sh"
 J=$1; WHICH=$2   # first | second
 log "on_job_start JOB=$J which=$WHICH"
@@ -23,6 +23,7 @@ if [ "$WHICH" = first ]; then
     gate_wait_stop nodeb_done 36000
     gate_wait_stop miles_H0 36000
     bash "$D/alloc_B2.sh" "$J" a
+    gate_ok miles_H2 || { log "STOP: miles_H2 FAIL — B2b not started (README §H2)"; exit 0; }
     gate_wait_stop miles_H5 86400
     gate_ok miles_H5 || { log "STOP: miles_H5 not OK"; exit 1; }
     bash "$D/alloc_B2.sh" "$J" b
@@ -31,13 +32,5 @@ elif [ "$WHICH" = second ]; then
   (
     gate_wait_stop user_release_C 172800
     bash "$D/alloc_C.sh" "$J"
-  ) &
-  (
-    gate_wait_stop user_release_B1 172800
-    gate_wait_stop build_WP 36000
-    gate_wait_stop vime_V2 36000
-    gate_wait_stop areal_done 36000
-    gate_ok nested_srun || { log "STOP: nested_srun not OK for B1"; exit 1; }
-    bash "$D/alloc_B1.sh" "$J"
   ) &
 fi

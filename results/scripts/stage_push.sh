@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
 # Build redacted stage tree for handoff results branches. Does not push.
-# Usage: SCHED_ROOT=/path/to/sched bash stage_push.sh
-# Committed copy: site-specific patterns are shown as <PLACEHOLDERS>; the copy that runs holds the real values.
+# Committed copy: site paths and identity come from stage_push.local.sh (not committed).
 set -euo pipefail
-S=${SCHED_ROOT:-${SCRATCH_ROOT:?}/sched_20261127}
+D=$(dirname "$0")
+# shellcheck source=/dev/null
+[ -f "$D/stage_push.local.sh" ] && source "$D/stage_push.local.sh"
+S=${SCHED_ROOT:-<SCRATCH>/sched_20261127}
 ST=$S/stage_out
 LEAK_USER=${LEAK_USER:-<USER>}
 LEAK_JOB1=${LEAK_JOB1:-<JOB_1>}
 LEAK_JOB2=${LEAK_JOB2:-<JOB_2>}
+LEAK_GROUP=${LEAK_GROUP:-<GROUP>}
 
 rm -rf "$ST"
 mkdir -p "$ST"/{scripts,checks,not-green-attempts,partial-results}
 cp "$S/stage/PLAN.md" "$ST/PLAN.md"
 [ -f "$S/stage/RUN_SUMMARY.md" ] && cp "$S/stage/RUN_SUMMARY.md" "$ST/RUN_SUMMARY.md"
-cp "$S/scripts"/*.sh "$S/scripts"/*.sbatch "$ST/scripts/" 2>/dev/null || true
-cp "$S/scripts/stage_push.sh" "$ST/scripts/" 2>/dev/null || true
+for f in "$S/scripts"/*.sh "$S/scripts"/*.sbatch; do
+  [ -f "$f" ] || continue
+  case "$f" in *.local.sh) continue ;; esac
+  cp "$f" "$ST/scripts/"
+done
 cp "$S/scripts/areal_pick_driver_cpus.py" "$ST/scripts/" 2>/dev/null || true
 OUT=${OUT:-$S/out}
 if [ -d "$OUT" ]; then
@@ -36,6 +42,16 @@ if [ -d "$OUT" ]; then
   find "$OUT/verlomni/runs" -type f \( -name '*.json' -o -name '*.jsonl' -o -name '*.log' -o -name '*.txt' -o -name 'preflight.json' -o -name 'trust.txt' \) 2>/dev/null \
     | while read -r f; do d="$ST/partial-results/verlomni/runs/${f#$OUT/verlomni/runs/}"; mkdir -p "$(dirname "$d")"; cp "$f" "$d"; done
 fi
+if [ -d "$S/stage_miles_h2_results" ]; then
+  mkdir -p "$ST/partial-results/miles-h2"
+  rsync -a --exclude 'ray_logs/' --exclude 'ray_logs_node1/' --exclude 'probe-*/ray_logs/' \
+    "$S/stage_miles_h2_results/" "$ST/partial-results/miles-h2/"
+fi
+# Full vime freeze artifacts (re-copied each push; redaction must not break version pins in == fields)
+for vf in env-freeze-sm90.txt base-image-freeze.txt pip-list.txt; do
+  [ -f "$S/vime/wheels-sm90/$vf" ] && cp "$S/vime/wheels-sm90/$vf" "$ST/partial-results/vime/" 2>/dev/null || true
+done
+[ -f "$OUT/vime/env-freeze-sm90.txt" ] && cp "$OUT/vime/env-freeze-sm90.txt" "$ST/partial-results/vime/" 2>/dev/null || true
 cp "$S/not-green-attempts"/* "$ST/not-green-attempts/" 2>/dev/null || true
 [ -d "$OUT/not-green-attempts" ] && rsync -a --exclude "tmp/" "$OUT/not-green-attempts/" "$ST/not-green-attempts/" 2>/dev/null || true
 
@@ -43,7 +59,6 @@ for f in prep-verify.txt test_only_N2_exclusive_18h.txt miles_dl.log vime_prep.l
   [ -f "$S/checks/$f" ] && cp "$S/checks/$f" "$ST/checks/"
 done
 cp "$S/areal-release/areal-ropefusion-placement-run/NOTES.md" "$ST/checks/areal-placement-NOTES.md" 2>/dev/null || true
-cp "$S/not-green-attempts"/* "$ST/not-green-attempts/" 2>/dev/null || true
 [ -f "$S/checks/cpu_job.log" ] && cp "$S/checks/cpu_job.log" "$ST/checks/"
 
 for f in "$ST/checks/cpu_job.log" "$ST/not-green-attempts/cpu_job.log"; do
@@ -66,8 +81,9 @@ for f in "$ST/not-green-attempts"/*.log; do
 done
 
 export STAGING_TREE="$ST"
-export LEAK_USER LEAK_JOB1 LEAK_JOB2
-find "$ST" -type f | while read -r f; do
+export LEAK_USER LEAK_JOB1 LEAK_JOB2 LEAK_GROUP
+export LEAK_PATH_WORK LEAK_PATH_SCRATCH_USER LEAK_PATH_HOME LEAK_PATH_PROJECT_FS
+find "$ST" -type f ! -path '*/scripts/stage_push.sh' | while read -r f; do
   python3 - "$f" <<'PY'
 import os, re, sys
 
@@ -76,53 +92,68 @@ s = open(p, errors="replace").read()
 u = os.environ.get("LEAK_USER", "<USER>")
 j1 = os.environ.get("LEAK_JOB1", "<JOB_1>")
 j2 = os.environ.get("LEAK_JOB2", "<JOB_2>")
+g = os.environ.get("LEAK_GROUP", "<GROUP>")
 
-# Order: specific before general (same table for all result branches).
-R = [
-    # work tree root
-    (rf"<FS>", "<WORK>"),
-    (rf"<FS>", "<SCRATCH>"),
-    (r"<PROJECT_FS>"']*", "<PROJECT_FS>"),
-    (rf"<FS>", "<HOME>"),
-    # scratch env vars before bare SCRATCH_ROOT
-    (r"\$SCRATCH_ROOT", "$SCRATCH_ROOT"),
-    (r"\b<SCRATCH_VAR>\b", "SCRATCH_ROOT"),
-    # venv names before generic _venv grep would fire in output
-    (r"<E>", "<E>"),
-    (r"<V>", "<V>"),
-    (r"<E2>", "<E2>"),
-    (r"<ENV>\w*", "<ENV>"),
-    # AReaL bundle dir + variable (before generic <SITE>)
-    (r"\$BUNDLE/<BUNDLE_SCRIPTS_DIR>\b", "$BUNDLE/<BUNDLE_SCRIPTS_DIR>"),
-    (r"\$B/<BUNDLE_SCRIPTS_DIR>\b", "$B/<BUNDLE_SCRIPTS_DIR>"),
-    (r"/<BUNDLE_SCRIPTS_DIR>\b", "/<BUNDLE_SCRIPTS_DIR>"),
-    (r"/<BUNDLE_SCRIPTS_DIR>/", "/<BUNDLE_SCRIPTS_DIR>/"),
-    (r"\b<SITE>/", "<BUNDLE_SCRIPTS_DIR>/"),
-    (r"\b<SITE_UC>\b", "BUNDLE_SCRIPTS"),
-    # jobs
+def esc_path(key, repl):
+    val = os.environ.get(key, "")
+    if not val or "<" in val:
+        return
+    return (re.escape(val), repl)
+
+R = []
+for key, repl in (
+    ("LEAK_PATH_WORK", "<WORK>"),
+    ("LEAK_PATH_SCRATCH_USER", "<SCRATCH>"),
+    ("LEAK_PATH_PROJECT_FS", "<PROJECT_FS>"),
+    ("LEAK_PATH_HOME", "<HOME>"),
+):
+    pair = esc_path(key, repl)
+    if pair:
+        R.append(pair)
+
+R += [
     (rf"(?<!\d){re.escape(j1)}(?!\d)", "<JOB_1>"),
     (rf"(?<!\d){re.escape(j2)}(?!\d)", "<JOB_2>"),
     (r"(?<!\d)59\d{5}(?!\d)", "<JOBID>"),
     (r"cpu_job_\d+\.log", "cpu_job.log"),
-    # partition / nodes / qos
-    (r"<PARTITION>", "<PARTITION>"),
-    (r"<CLUSTER>\d+", "node-x"),
-    (r"<CPU_PARTITION>", "<CPU_PARTITION>"),
     (r"cpu-0\d\d", "node-c"),
     (r"--qos=\w+", "--qos=<QOS>"),
-    (r"<CLUSTER>\[[0-9,]+\]", "<NODES>"),
-    # identity
-    (re.escape(u), "<USER>"),
-    (r"<GROUP>[\w-]*", "<GROUP>"),
-    (r"<USER>|<LOCAL_USER>@\S+", "<USER>"),
-    # network / hardware ids
-    (r"\b(?:\d{1,3}\.){3}\d{1,3}\b", "<IP>"),
+    (r"0x[0-9a-f]{16}", "<GUID>"),
+]
+for var, repl in (
+    ("LEAK_PAT_SCRATCH_A", "$SCRATCH_ROOT"),
+    ("LEAK_PAT_SCRATCH_B", "SCRATCH_ROOT"),
+    ("LEAK_REPL_E", "<E>"),
+    ("LEAK_REPL_V", "<V>"),
+    ("LEAK_REPL_E2", "<E2>"),
+    ("LEAK_REPL_ENV", "<ENV>"),
+    ("LEAK_PAT_USER_EXTRA", "<USER>"),
+    ("LEAK_PAT_BUNDLE_A", "$BUNDLE/<BUNDLE_SCRIPTS_DIR>"),
+    ("LEAK_PAT_BUNDLE_B", "$B/<BUNDLE_SCRIPTS_DIR>"),
+    ("LEAK_PAT_BUNDLE_C", "/<BUNDLE_SCRIPTS_DIR>"),
+    ("LEAK_PAT_BUNDLE_D", "/<BUNDLE_SCRIPTS_DIR>/"),
+    ("LEAK_PAT_BUNDLE_E", "<BUNDLE_SCRIPTS_DIR>/"),
+    ("LEAK_PAT_BUNDLE_UC", "BUNDLE_SCRIPTS"),
+    ("LEAK_PAT_PARTITION", "<PARTITION>"),
+    ("LEAK_PAT_NODE", "node-x"),
+    ("LEAK_PAT_NODES", "<NODES>"),
+    ("LEAK_PAT_CPU_PART", "<CPU_PARTITION>"),
+    ("LEAK_PAT_CLUSTER_LOGIN", "<CLUSTER>"),
+    ("LEAK_PAT_CLUSTER_HOST", "<CLUSTER>"),
+    ("LEAK_PAT_FS", "<FS>"),
+):
+    pat = os.environ.get(var, "")
+    if pat and "<" not in pat:
+        R.append((pat, repl))
+if u and "<" not in u:
+    R.append((re.escape(u), "<USER>"))
+if g and "<" not in g:
+    R.append((re.escape(g), "<GROUP>"))
+R += [
+    (r"\b10(?:\.\d{1,3}){3}\b", "<IP>"),
+    (r"\b192\.168(?:\.\d{1,3}){2}\b", "<IP>"),
+    (r"\b172\.(?:1[6-9]|2\d|3[01])(?:\.\d{1,3}){2}\b", "<IP>"),
     (r"GPU-[0-9a-f]{8}-[0-9a-f-]{27}", "<GPU-UUID>"),
-    # cluster hostnames only (not DRIVER_MODE=login)
-    (r"\blogin[-.][\w.]+", "<CLUSTER>"),
-    (r"\b<CLUSTER_PREFIX>[-\w.]+", "<CLUSTER>"),
-    # remaining <FS> paths
-    (r"<FS>"']*", "<FS>"),
 ]
 
 for a, b in R:
@@ -130,19 +161,32 @@ for a, b in R:
 open(p, "w").write(s)
 PY
 done
+COMMIT_SP="$S/wt/push/results/scripts/stage_push.sh"
+cp "$COMMIT_SP" "$ST/scripts/stage_push.sh"
 
 find "$ST" -name 'cpu_job_*.log' -exec bash -c 'mv "$1" "$(dirname "$1")/cpu_job.log"' _ {} \; 2>/dev/null || true
-
 find "$ST/partial-results" -type d -name tmp -exec rm -rf {} + 2>/dev/null || true
-bad_names=$(find "$ST" \( -name "*${LEAK_USER}*" -o -name '*<GROUP>*' \) ! -path '*/tmp/*' 2>/dev/null | head -20 || true)
+bad_names=
+if [ "$LEAK_USER" != "<USER>" ]; then
+  bad_names=$(find "$ST" -name "*${LEAK_USER}*" ! -path '*/tmp/*' 2>/dev/null | head -20 || true)
+fi
 if [ -n "$bad_names" ]; then
   echo "LEAK: suspicious file names:"
   echo "$bad_names"
   exit 1
 fi
+if [ "$LEAK_GROUP" != "<GROUP>" ]; then
+  bad_names=$(find "$ST" -name "*${LEAK_GROUP}*" ! -path '*/tmp/*' 2>/dev/null | head -20 || true)
+  if [ -n "$bad_names" ]; then
+    echo "LEAK: suspicious file names (group):"
+    echo "$bad_names"
+    exit 1
+  fi
+fi
 
-LEAK_RE="<FS_PREFIX>|<CLUSTER_PREFIX>|<SITE>|${LEAK_USER}|${LEAK_JOB1}|${LEAK_JOB2}|_venv"
-if grep -rniE "$LEAK_RE" "$ST" --exclude=stage_push.sh >/tmp/stage_push_leak.txt 2>/dev/null; then
+: "${LEAK_GREP_I:?LEAK_GREP_I unset — source stage_push.local.sh}"
+LEAK_RE="$LEAK_GREP_I"
+if grep -rniE "$LEAK_RE" "$ST" >/tmp/stage_push_leak.txt 2>/dev/null; then
   echo "== LEAK: contents (must be empty) =="
   head -40 /tmp/stage_push_leak.txt
   exit 1

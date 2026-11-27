@@ -24,7 +24,7 @@ ray GPUs=8
 + kill_engines
 + python3 -c '
 from ray.job_submission import JobSubmissionClient
-c = JobSubmissionClient('\''http://<IP>:8265'\'')
+c = JobSubmissionClient('\''http://127.0.0.1:8265'\'')
 for j in c.list_jobs():
     if str(j.status).split('\''.'\'')[-1] in ('\''PENDING'\'', '\''RUNNING'\''): print('\''stopping'\'', j.submission_id, c.stop_job(j.submission_id))
 '
@@ -37,3 +37,20 @@ import sys
 from scripts.run_inkling2_mini import ScriptArgs, execute
 execute(ScriptArgs(num_nodes=2, num_gpus_per_node=4, num_rollout=int(sys.argv[1]), model_dir=sys.argv[2], data_dir=sys.argv[3], output_dir=sys.argv[4], extra_args=sys.argv[5]))
 ' 1 <WORK>/miles/models <WORK>/miles/datasets <WORK>/miles/runs/h2_memprobe-d/d/out ' --expert-model-parallel-size 8 --rollout-num-gpus-per-engine 2 --sglang-mem-fraction-static 0.70'
++ local rc=124
++ echo 'train rc=124'
++ tee -a <WORK>/miles/runs/h2_memprobe-d/d/train.log
+train rc=124
++ kill_engines
++ python3 -c '
+from ray.job_submission import JobSubmissionClient
+c = JobSubmissionClient('\''http://127.0.0.1:8265'\'')
+for j in c.list_jobs():
+    if str(j.status).split('\''.'\'')[-1] in ('\''PENDING'\'', '\''RUNNING'\''): print('\''stopping'\'', j.submission_id, c.stop_job(j.submission_id))
+'
++ python3 -c 'import miles.utils.external_utils.command_utils.legacy as U; U.exec_command_multi_node('\''pkill -9 -f "[s]glang.launch_server"; sleep 3; true'\'')'
++ return 124
+d rc=124
++ echo 'd rc=124'
++ exit 0
+stage rc=0
