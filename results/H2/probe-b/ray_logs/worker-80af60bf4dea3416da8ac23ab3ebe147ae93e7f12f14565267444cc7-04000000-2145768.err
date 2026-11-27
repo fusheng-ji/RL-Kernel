@@ -1,0 +1,67 @@
+:job_id:04000000
+:actor_name:RolloutExecutor
+[2026-11-27 17:55:01.451 rollout_executor] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=216 packages_probed=false stored=false
+[2026-11-27 17:55:11.396 rollout_executor] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=216 packages_probed=true stored=false
+[2026-11-27 17:55:24.269 rollout_executor] router_manager.py:75 - Router ready at host='<IP>' port=20000 external_host=None
+Using blocking ray.get inside async actor. This blocks the event loop. Please use `await` on object ref with asyncio.gather if you want to yield execution to the event loop instead.
+[2026-11-27 17:55:46.646 rollout_executor] rollout_executor.py:174 - import path='miles.rollout.inference_rollout.inference_rollout_common.InferenceRolloutFn' config=None as generate_rollout function.
+[2026-11-27 17:55:46.648 rollout_executor] rollout_executor.py:175 - import path='miles.rollout.inference_rollout.inference_rollout_common.InferenceRolloutFn' config=None as eval_generate_rollout function.
+[2026-11-27 18:00:14.872 rollout_executor] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=217 packages_probed=true stored=false
+/opt/sglang/lib/python3.12/site-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+/opt/sglang/lib/python3.12/site-packages/transformer_engine/__init__.py:103: RuntimeWarning: Detected a Jax installation but could not find the shared object file for the Transformer Engine Jax extension library. If this is not intentional, please reinstall Transformer Engine with `pip install transformer_engine[jax]` or build from source with `NVTE_FRAMEWORK=jax`.
+  warnings.warn(
+
+Rollout generation:   0%|          | 0/256 [00:00<?, ?it/s][2026-11-27 18:07:08.515 rollout_executor] inference_rollout_train.py:147 - First rollout sample: text_preview=<|message_system|><|content_text|>Thinking effort level: 0.9<|end_message|><|message_user|><|content_text|>Solve the following math problem step by step. The last line of your response should be of the form Answer: \boxed{$Answer} where $Answer is the answer to the problem.\n\nThe number 24 can be made by multiplying together four prime numbers: 2, 2, 2 and 3. How many primes must be multiplied to make 2400?\n\nRemember to put your answer on its own line after "Answer:".<|end_message|><|message_model|><|con...<truncated chars=1208>, label=8, reward_summary=1
+
+Rollout generation:   3%|▎         | 8/256 [01:00<31:18,  7.57s/it]
+Rollout generation:   6%|▋         | 16/256 [01:29<20:57,  5.24s/it]
+Rollout generation:   9%|▉         | 24/256 [01:30<11:16,  2.91s/it]
+Rollout generation:  12%|█▎        | 32/256 [01:30<06:38,  1.78s/it]
+Rollout generation:  16%|█▌        | 40/256 [01:35<04:49,  1.34s/it]
+Rollout generation:  19%|█▉        | 48/256 [01:46<04:43,  1.37s/it]
+Rollout generation:  22%|██▏       | 56/256 [01:58<04:39,  1.40s/it]
+Rollout generation:  25%|██▌       | 64/256 [02:24<06:20,  1.98s/it]
+Rollout generation:  28%|██▊       | 72/256 [02:34<05:26,  1.77s/it]
+Rollout generation:  31%|███▏      | 80/256 [02:37<03:54,  1.33s/it]
+Rollout generation:  34%|███▍      | 88/256 [02:42<03:05,  1.10s/it]
+Rollout generation:  38%|███▊      | 96/256 [02:45<02:21,  1.13it/s]
+Rollout generation:  44%|████▍     | 112/256 [02:46<01:14,  1.93it/s]
+Rollout generation:  50%|█████     | 128/256 [02:48<00:44,  2.86it/s]
+Rollout generation:  53%|█████▎    | 136/256 [02:54<00:51,  2.34it/s]
+Rollout generation:  56%|█████▋    | 144/256 [02:58<00:52,  2.12it/s]
+Rollout generation:  59%|█████▉    | 152/256 [02:59<00:37,  2.75it/s]
+Rollout generation:  62%|██████▎   | 160/256 [03:11<01:05,  1.46it/s]
+Rollout generation:  66%|██████▌   | 168/256 [03:16<00:57,  1.53it/s]
+Rollout generation:  69%|██████▉   | 176/256 [03:52<02:19,  1.75s/it]
+Rollout generation:  72%|███████▏  | 184/256 [04:11<02:17,  1.91s/it]
+Rollout generation:  75%|███████▌  | 192/256 [04:46<02:48,  2.64s/it]
+Rollout generation:  78%|███████▊  | 200/256 [05:33<03:22,  3.61s/it]
+Rollout generation:  81%|████████▏ | 208/256 [05:40<02:13,  2.79s/it]
+Rollout generation:  84%|████████▍ | 216/256 [06:27<02:28,  3.70s/it]
+Rollout generation:  88%|████████▊ | 224/256 [06:49<01:49,  3.43s/it]
+Rollout generation:  91%|█████████ | 232/256 [07:02<01:09,  2.88s/it]
+Rollout generation:  94%|█████████▍| 240/256 [07:04<00:33,  2.10s/it]
+Rollout generation:  97%|█████████▋| 248/256 [07:06<00:12,  1.53s/it]
+Rollout generation: 100%|██████████| 256/256 [07:09<00:00,  1.20s/it]
+Rollout generation: 100%|██████████| 256/256 [07:09<00:00,  1.68s/it]
+[2026-11-27 18:13:17.540 rollout_executor] inference_rollout_train.py:175 - Finish rollout: text_preview=<|message_system|><|content_text|>Thinking effort level: 0.9<|end_message|><|message_user|><|content_text|>Solve the following math problem step by step. The last line of your response should be of the form Answer: \boxed{$Answer} where $Answer is the answer to the problem.\n\nLet $\mathbb{N}$ be the set of positive integers, and let $f: \mathbb{N} \to \mathbb{N}$ be a function satisfying\n[list]\n[*] $f(1) = 1$,\n[*] for $n \in \mathbb{N}$, $f(2n) = 2f(n)$ and $f(2n+1) = 2f(n) - 1$.\n[/list]\nDetermine the...<truncated chars=8546>, label=1899, reward_summary=0
+[2026-11-27 18:13:17.543 rollout_executor] inference_rollout_train.py:34 - Abort request for ['http://<IP>:20037', 'http://<IP>:20002', 'http://<IP>:20105', 'http://<IP>:20070', 'http://<IP>:20035', 'http://<IP>:20072', 'http://<IP>:20000', 'http://<IP>:20107']
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20037: Client error '401 Unauthorized' for url 'http://<IP>:20037/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20002: Client error '401 Unauthorized' for url 'http://<IP>:20002/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20105: Client error '401 Unauthorized' for url 'http://<IP>:20105/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20070: Client error '401 Unauthorized' for url 'http://<IP>:20070/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20035: Client error '401 Unauthorized' for url 'http://<IP>:20035/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20072: Client error '401 Unauthorized' for url 'http://<IP>:20072/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20000: Client error '401 Unauthorized' for url 'http://<IP>:20000/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.578 rollout_executor] inference_rollout_train.py:40 - Failed to abort worker at http://<IP>:20107: Client error '401 Unauthorized' for url 'http://<IP>:20107/abort_request'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/401: {"error":"Unauthorized"}
+[2026-11-27 18:13:17.582 rollout_executor] rollout_data_conversion.py:45 - Final collected 256 samples from rollout to train
+[2026-11-27 18:13:17.772 rollout_executor] metrics.py:99 - perf 0: {'rollout/raw_reward': 0.5703125, 'rollout/num_training_samples': 256, 'rollout/episode_raw_reward': 0.5703125, 'rollout/episode_response_length/mean': 2795.40625, 'rollout/episode_response_length/median': 3166.5, 'rollout/episode_response_length/max': 4096, 'rollout/episode_response_length/min': 322, 'rollout/episode_total_response_length/mean': 2795.40625, 'rollout/response_len/mean': 2795.40625, 'rollout/response_len/median': 3166.5, 'rollout/response_len/max': 4096, 'rollout/response_len/min': 322, 'rollout/zero_std/count_1': 16, 'rollout/zero_std/count_0': 9, 'rollout/zero_std/all_zero_percentage': 0.28125, 'rollout/zero_std/all_one_percentage': 0.5, 'rollout/zero_std/percentage': 0.78125, 'rollout/prefix_cache_hit_rate': 0.0, 'rollout/avg_cached_tokens_per_sample': 0.0, 'rollout/repetition_frac': 0.0, 'rollout/truncated_ratio': 0.42578125, 'rollout/weight_version/mean': 1.0, 'rollout/weight_version/median': 1.0, 'rollout/weight_version/max': 1, 'rollout/weight_version/min': 1, 'rollout/weight_version/mixed_version_ratio': 0.0, 'perf/rollout_time': 439.4330880641937, 'perf/tokens_per_gpu_per_sec': 203.56455266958056, 'perf/longest_sample_tokens_per_sec': 9.321100552632132, 'perf/effective_tokens_per_gpu_per_sec': 203.56455266958056, 'perf/longest_effective_sample_tokens_per_sec': 9.321100552632132}

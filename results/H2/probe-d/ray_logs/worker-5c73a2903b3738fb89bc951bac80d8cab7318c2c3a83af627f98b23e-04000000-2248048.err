@@ -1,0 +1,40 @@
+:job_id:04000000
+WARNING:absl:Failed to load jax profiler: cannot import name 'jaxlib_extension_version' from 'jax._src.lib' (/opt/sglang/lib/python3.12/site-packages/jax/_src/lib/__init__.py)
+:actor_name:TorchtitanTrainRayActor
+[2026-11-27 19:33:14.374 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=230 packages_probed=false stored=false
+[2026-11-27 19:33:20.024 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=230 packages_probed=true stored=false
+[2026-11-27 19:33:44.641 actor_cell00000_rank00000] compat.py:72 - Patched FSDPParam.to_accumulated_grad_if_needed with the upstream getattr guard
+[2026-11-27 19:33:46.252 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=232 packages_probed=false stored=false
+[2026-11-27 19:33:46.831 actor_cell00000_rank00000] train_actor.py:294 - Set NUMA affinity for cuda:0 (NVML index 0, PCI bus id <PCI>)
+[2026-11-27 19:33:47.000 actor_cell00000_rank00000] base.py:669 - initial_load_model_only=True has no effect without an initial_load_path.
+[2026-11-27 19:34:43.375 actor_cell00000_rank00000] utils.py:421 - torch.distributed is already initialized. Skipping init_distributed. The provided comm_config and other settings will not take effect.
+[2026-11-27 19:34:43.379 actor_cell00000_rank00000] garbage_collector.py:75 - [GC] Initial GC collection took 0.00 seconds
+[2026-11-27 19:34:43.379 actor_cell00000_rank00000] parallelism_context.py:301 - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=8, cp=1, tp=1, ep=8
+[2026-11-27 19:34:43.408 actor_cell00000_rank00000] parallelism_context.py:376 - Successfully created meshes with active axes: ['loss', 'ep', 'dp', 'dp_shard']
+[2026-11-27 19:34:43.419 actor_cell00000_rank00000] metrics.py:108 - CUDA capacity: NVIDIA H100 with 93.09GiB memory
+[2026-11-27 19:34:43.717 actor_cell00000_rank00000] flops.py:141 - Total parameter count: 26,070,382,080, active parameters: 2,674,865,664
+[2026-11-27 19:34:45.952 actor_cell00000_rank00000] fsdp.py:476 - Applied FSDP to the model
+[rank0]:W1127 19:34:46.791000 2248048 torch/distributed/tensor/_redistribute.py:394] While redistributing from (_StridedShard(dim=0, sf=8), Shard(dim=0)) to (Replicate(), Replicate()), 2 sequential all_gather operations will be performed. This is suboptimal: multiple collective operations have higher latency (separate kernel launches and synchronization points) and may give inconsistent results between ranks due to different reduction orders. it is not possible to merge non-ascending order all_gather operations.
+[2026-11-27 19:35:03.029 actor_cell00000_rank00000] training_engine.py:434 - Model Inkling2Model.Config size: 26,070,382,080 total parameters
+[2026-11-27 19:35:03.040 actor_cell00000_rank00000] optimizer.py:356 - Optimizer AdamW (model_part=0): 670 params [.*] {'lr': 1e-06, 'betas': (0.9, 0.98), 'eps': 1e-08, 'weight_decay': 0.1, 'foreach': None, 'fused': True}
+[2026-11-27 19:35:03.047 actor_cell00000_rank00000] base.py:669 - initial_load_model_only=True has no effect without an initial_load_path.
+[2026-11-27 19:35:03.072 actor_cell00000_rank00000] dcp.py:231 - Checkpointing active. Checkpoints will be loaded from and saved to /tmp/miles-torchtitan-18ortxg1/torchtitan/actor/checkpoint
+[2026-11-27 19:35:03.073 actor_cell00000_rank00000] parallel.py:83 - [Rank 0] titan ParallelState: dp=8 tp=1 pp=1 ep=8 pp_last=True
+[2026-11-27 19:35:03.074 actor_cell00000_rank00000] base.py:294 - Loading HF safetensors from hf_assets_path: <WORK>/miles/models/Inkling-2-Mini-bf16
+[2026-11-27 19:35:03.074 actor_cell00000_rank00000] base.py:327 - Loading the checkpoint from <WORK>/miles/models/Inkling-2-Mini-bf16.
+[2026-11-27 19:35:25.265 actor_cell00000_rank00000] garbage_collector.py:75 - [GC] GC collection for checkpoint loading. took 0.02 seconds
+[2026-11-27 19:35:25.266 actor_cell00000_rank00000] base.py:341 - Finished loading the checkpoint in 22.19 seconds.
+[2026-11-27 19:35:26.248 actor_cell00000_rank00000] timer.py:33 - Timer sleep start
+[2026-11-27 19:35:26.250 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage before moving the model to host: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 78.33, 'used_GB': 14.75, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-27 19:35:51.090 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage after moving the model to host: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 78.3, 'used_GB': 14.79, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-27 19:35:51.090 actor_cell00000_rank00000] timer.py:44 - Timer sleep end (elapsed: 24.8s)
+[2026-11-27 19:35:51.093 actor_cell00000_rank00000] timer.py:33 - Timer train_wait start
+[2026-11-27 19:38:30.231 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=233 packages_probed=true stored=false
+[2026-11-27 19:41:23.371 actor_cell00000_rank00000] timer.py:33 - Timer update_weights start
+[2026-11-27 19:41:23.376 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage before update_weights: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 79.45, 'used_GB': 13.63, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-27 19:41:23.389 actor_cell00000_rank00000] timer.py:33 - Timer update_weights_implementation start
+[2026-11-27 19:42:05.931 actor_cell00000_rank00000] timer.py:44 - Timer update_weights_implementation end (elapsed: 42.5s)
+[2026-11-27 19:42:05.932 actor_cell00000_rank00000] timer.py:33 - Timer finalize_and_resume_engines start
+[2026-11-27 19:42:05.949 actor_cell00000_rank00000] timer.py:44 - Timer finalize_and_resume_engines end (elapsed: 0.0s)
+[2026-11-27 19:42:05.965 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage after update_weights: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 79.45, 'used_GB': 13.63, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-27 19:42:06.840 actor_cell00000_rank00000] timer.py:44 - Timer update_weights end (elapsed: 43.5s)
