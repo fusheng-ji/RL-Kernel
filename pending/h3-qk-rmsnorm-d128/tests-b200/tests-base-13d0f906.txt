@@ -1,0 +1,414 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-9.1.1, pluggy-1.6.0 -- <HOME>/<ENV>/bin/python
+rootdir: <WORK>/bf1121/qk-base
+configfile: pyproject.toml
+plugins: platformdirs-4.12.2, anyio-4.15.1
+collecting ... collected 286 items
+
+tests/models/minimax_h3/test_h3_token_refiner.py::test_graph_equals_the_fingerprint_vocabulary PASSED [  0%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_graph_is_well_formed_and_owners_are_declared PASSED [  0%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_refiner_has_no_adaln_and_no_rope_nodes PASSED [  1%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[0-1] PASSED [  1%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[0-64] PASSED [  1%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[0-257] PASSED [  2%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-1] PASSED [  2%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-64] PASSED [  2%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-257] FAILED [  3%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_report_names_rows_status_and_backend_per_node PASSED [  3%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_full_refiner_stack_against_golden_and_provider PASSED [  3%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_refiner_rows_do_not_depend_on_batch_neighbours PASSED [  4%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_backward_against_fp32_golden PASSED [  4%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_operator_trace_covers_the_refiner_paths PASSED [  4%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_text_path_context_projection_then_refiner PASSED [  5%]
+tests/models/minimax_h3/test_h3_token_refiner.py::test_refiner_qkv_nodes_share_one_combined_row_call PASSED [  5%]
+tests/validation/operators/test_elementwise_inventory.py::test_inventory_covers_c5_required_items PASSED [  5%]
+tests/validation/operators/test_elementwise_inventory.py::test_every_item_has_a_verdict_or_blocker PASSED [  6%]
+tests/validation/operators/test_elementwise_inventory.py::test_no_untracked_needs_fix_without_blocker PASSED [  6%]
+tests/validation/operators/test_elementwise_inventory.py::test_on_chain_differentiable_ops_are_c3_c4_enumerable PASSED [  6%]
+tests/validation/operators/test_elementwise_inventory.py::test_qk_norm_still_required_on_chain PASSED [  7%]
+tests/validation/operators/test_forward_invariance.py::TestReportStructure::test_accuracy_and_invariance_reported_separately PASSED [  7%]
+tests/validation/operators/test_forward_invariance.py::TestReportStructure::test_report_contains_required_runtime_metadata PASSED [  8%]
+tests/validation/operators/test_forward_invariance.py::TestReportStructure::test_missing_runtime_metadata_fails_closed PASSED [  8%]
+tests/validation/operators/test_forward_invariance.py::TestReportStructure::test_report_contains_max_abs_rel_tensor_name PASSED [  8%]
+tests/validation/operators/test_forward_invariance.py::TestInvariance::test_invariance_bitwise_zero_tolerance PASSED [  9%]
+tests/validation/operators/test_forward_invariance.py::TestInvariance::test_identity_op_passes_invariance PASSED [  9%]
+tests/validation/operators/test_forward_invariance.py::TestInvariance::test_logical_unpadding_before_compare PASSED [  9%]
+tests/validation/operators/test_forward_invariance.py::TestInvariance::test_padding_configs_use_c2_padded_layout PASSED [ 10%]
+tests/validation/operators/test_forward_invariance.py::TestInvariance::test_missing_active_token_hard_fails PASSED [ 10%]
+tests/validation/operators/test_forward_invariance.py::TestInvariance::test_padded_tensor_is_logically_unpadded PASSED [ 10%]
+tests/validation/operators/test_forward_invariance.py::TestAccuracy::test_missing_reference_is_rejected PASSED [ 11%]
+tests/validation/operators/test_forward_invariance.py::TestAccuracy::test_accuracy_uses_c1_tolerances PASSED [ 11%]
+tests/validation/operators/test_forward_invariance.py::TestAccuracy::test_no_private_thresholds PASSED [ 11%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_valid_provenance_passes PASSED [ 12%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_silent_fallback_rejected PASSED [ 12%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_cross_profile_fallback_rejected PASSED [ 12%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_none_provenance_fails_closed PASSED [ 13%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_required_profiles_share_report_schema[cuda_bf16-cuda] PASSED [ 13%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_required_profiles_share_report_schema[triton_cuda_bf16-triton] PASSED [ 13%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_provenance_failure_fails_report PASSED [ 14%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_runtime_observation_mismatch_fails_closed[observed_actual_backend-triton] PASSED [ 14%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_runtime_observation_mismatch_fails_closed[observed_kernel_id-other-kernel] PASSED [ 15%]
+tests/validation/operators/test_forward_invariance.py::TestBackendProvenance::test_runtime_observation_mismatch_fails_closed[observed_output_dtype-float32] PASSED [ 15%]
+tests/validation/operators/test_forward_invariance.py::TestConfigMatrix::test_config_matrix_covers_c2_cells PASSED [ 15%]
+tests/validation/operators/test_forward_invariance.py::TestConfigMatrix::test_canonical_config_exists PASSED [ 16%]
+tests/validation/operators/test_forward_invariance.py::TestLogprobSmoke::test_logprob_smoke_passes_for_identical PASSED [ 16%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_required_forward_ops_are_enumerable PASSED [ 16%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_rms_norm_forward_passes_c3 PASSED [ 17%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[embedding] PASSED [ 17%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[rms_norm] PASSED [ 17%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[qk_norm] PASSED [ 18%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[det_gemm] PASSED [ 18%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[rope] PASSED [ 18%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[attention] PASSED [ 19%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[silu] PASSED [ 19%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[swiglu] PASSED [ 19%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[lm_head] PASSED [ 20%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[logp] PASSED [ 20%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[batch_invariant_logp] PASSED [ 20%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[pack] PASSED [ 21%]
+tests/validation/operators/test_forward_invariance.py::TestForwardAdapters::test_native_forward_adapter_is_batch_invariant[linear_logp] PASSED [ 21%]
+tests/validation/operators/test_four_judgment_matrix.py::test_matrix_covers_required_ops_profiles_judgments_and_tiers PASSED [ 22%]
+tests/validation/operators/test_four_judgment_matrix.py::test_triton_required_candidates_are_declared PASSED [ 22%]
+tests/validation/operators/test_four_judgment_matrix.py::test_logp_and_batch_invariant_logp_have_own_case_ids PASSED [ 22%]
+tests/validation/operators/test_four_judgment_matrix.py::test_pack_is_explicit_na_with_c2_reason PASSED [ 23%]
+tests/validation/operators/test_four_judgment_matrix.py::test_hidden_required_na_detects_unreasoned_na_status PASSED [ 23%]
+tests/validation/operators/test_four_judgment_matrix.py::test_sm90_declared_cells_are_pending_hopper PASSED [ 23%]
+tests/validation/operators/test_four_judgment_matrix.py::test_declared_runnable_ops_have_short_and_primary_case_ids PASSED [ 24%]
+tests/validation/operators/test_four_judgment_matrix.py::test_triton_rope_has_case_ids_but_cuda_rope_is_hopper PASSED [ 24%]
+tests/validation/operators/test_four_judgment_matrix.py::test_checked_in_execute_matrix_has_zero_red PASSED [ 24%]
+tests/validation/operators/test_gradient_invariance.py::TestReportStructure::test_accuracy_and_invariance_reported_separately PASSED [ 25%]
+tests/validation/operators/test_gradient_invariance.py::TestReportStructure::test_report_contains_diagnostics PASSED [ 25%]
+tests/validation/operators/test_gradient_invariance.py::TestInvariance::test_invariance_bitwise_zero_tolerance PASSED [ 25%]
+tests/validation/operators/test_gradient_invariance.py::TestInvariance::test_identity_op_passes PASSED [ 26%]
+tests/validation/operators/test_gradient_invariance.py::TestInvariance::test_parameter_drift_fails_singleton_aggregate PASSED [ 26%]
+tests/validation/operators/test_gradient_invariance.py::TestInvariance::test_b1_bn_share_denominator_and_order PASSED [ 26%]
+tests/validation/operators/test_gradient_invariance.py::TestInvariance::test_missing_active_token_hard_fails PASSED [ 27%]
+tests/validation/operators/test_gradient_invariance.py::TestPhysicalLayout::test_physical_tensor_is_restored_through_c2_map PASSED [ 27%]
+tests/validation/operators/test_gradient_invariance.py::TestPhysicalLayout::test_layout_sensitive_op_is_detected PASSED [ 27%]
+tests/validation/operators/test_gradient_invariance.py::TestPhysicalLayout::test_bn_is_one_call_and_chunking_splits PASSED [ 28%]
+tests/validation/operators/test_gradient_invariance.py::TestPhysicalLayout::test_non_differentiable_candidate_raises_missing_backward PASSED [ 28%]
+tests/validation/operators/test_gradient_invariance.py::TestPhysicalLayout::test_pack_inactive_tokens_contribute_zero PASSED [ 29%]
+tests/validation/operators/test_gradient_invariance.py::TestAccuracy::test_missing_reference_is_rejected PASSED [ 29%]
+tests/validation/operators/test_gradient_invariance.py::TestAccuracy::test_accuracy_uses_c1_gradient_rows PASSED [ 29%]
+tests/validation/operators/test_gradient_invariance.py::TestAccuracy::test_no_private_thresholds PASSED [ 30%]
+tests/validation/operators/test_gradient_invariance.py::TestBackendProvenance::test_required_profiles_share_report_schema PASSED [ 30%]
+tests/validation/operators/test_gradient_invariance.py::TestBackendProvenance::test_cross_profile_fallback_fails PASSED [ 30%]
+tests/validation/operators/test_gradient_invariance.py::TestBackendProvenance::test_runtime_observation_mismatch_fails_closed PASSED [ 31%]
+tests/validation/operators/test_gradient_invariance.py::TestAdapters::test_required_ops_are_enumerable PASSED [ 31%]
+tests/validation/operators/test_gradient_invariance.py::TestAdapters::test_stable_grad_names PASSED [ 31%]
+tests/validation/operators/test_gradient_invariance.py::TestAdapters::test_kv_is_absent_not_required PASSED [ 32%]
+tests/validation/operators/test_gradient_invariance.py::TestAdapters::test_status_matrix_has_no_untracked_red PASSED [ 32%]
+tests/validation/operators/test_gradient_invariance.py::TestAdapters::test_profiles_do_not_borrow_candidates PASSED [ 32%]
+tests/validation/operators/test_gradient_invariance.py::TestAdapters::test_no_atomic_add_in_bi_sources PASSED [ 33%]
+tests/validation/operators/test_gradient_invariance.py::TestRealAdapter::test_native_rms_norm_gradient_accuracy_passes PASSED [ 33%]
+tests/validation/operators/test_gradient_invariance.py::TestRealAdapter::test_native_rms_norm_padding_and_permutation_are_bitwise PASSED [ 33%]
+tests/validation/operators/test_gradient_invariance.py::TestRealAdapter::test_native_rms_norm_chunk_non_invariance_is_detected PASSED [ 34%]
+tests/validation/operators/test_h3_down_fixture.py::test_range_download_limits_read_and_preserves_requested_bytes PASSED [ 34%]
+tests/validation/operators/test_h3_down_fixture.py::test_range_download_rejects_invalid_ranges[200--full shard-refusing full shard] PASSED [ 34%]
+tests/validation/operators/test_h3_down_fixture.py::test_range_download_rejects_invalid_ranges[206-bytes 0-3/100-abcd-Content-Range] PASSED [ 35%]
+tests/validation/operators/test_h3_down_fixture.py::test_range_download_rejects_invalid_ranges[206-bytes 10-13/100-abc-length mismatch] PASSED [ 35%]
+tests/validation/operators/test_h3_down_fixture.py::test_range_download_rejects_invalid_ranges[206-bytes 10-13/100-abcde-length mismatch] PASSED [ 36%]
+tests/validation/operators/test_h3_down_fixture.py::test_tensor_extent_rejects_wrong_shape_dtype_or_byte_count PASSED [ 36%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[gpu-failure] PASSED [ 36%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[validation-failure] PASSED [ 37%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[plot-failure] PASSED [ 37%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[success] PASSED [ 37%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[gpu-log-failure] PASSED [ 38%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[validation-log-failure] PASSED [ 38%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[gpu-and-log-failure] PASSED [ 38%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[validation-and-log-failure] PASSED [ 39%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_preserves_failure_priority_and_evidence_directory[validation-without-report] PASSED [ 39%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_refuses_to_overwrite_prior_evidence[False] PASSED [ 39%]
+tests/validation/operators/test_h3_down_tooling.py::test_runbook_refuses_to_overwrite_prior_evidence[True] PASSED [ 40%]
+tests/validation/operators/test_h3_down_tooling.py::test_gpu_validator_refuses_cpu_and_preserves_error_evidence PASSED [ 40%]
+tests/validation/operators/test_h3_down_tooling.py::test_failed_run_renders_summary_without_inventing_charts PASSED [ 40%]
+tests/validation/operators/test_h3_down_tooling.py::test_plot_pipeline_with_explicitly_synthetic_test_data FAILED [ 41%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[None-synthetic] PASSED [ 41%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[None-captured] PASSED [ 41%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[passed_probe-synthetic] PASSED [ 42%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[passed_probe-captured] PASSED [ 42%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[failed_probe-synthetic] PASSED [ 43%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[failed_probe-captured] PASSED [ 43%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[error-synthetic] PASSED [ 43%]
+tests/validation/operators/test_h3_down_tooling.py::test_fixture_label_cannot_clear_capture_qualification[error-captured] PASSED [ 44%]
+tests/validation/operators/test_h3_projection_fixture.py::test_range_download_limits_read_and_preserves_requested_bytes PASSED [ 44%]
+tests/validation/operators/test_h3_projection_fixture.py::test_range_download_rejects_invalid_ranges[200--full shard-refusing full shard] PASSED [ 44%]
+tests/validation/operators/test_h3_projection_fixture.py::test_range_download_rejects_invalid_ranges[206-bytes 0-3/100-abcd-Content-Range] PASSED [ 45%]
+tests/validation/operators/test_h3_projection_fixture.py::test_range_download_rejects_invalid_ranges[206-bytes 10-13/100-abc-length mismatch] PASSED [ 45%]
+tests/validation/operators/test_h3_projection_fixture.py::test_range_download_rejects_invalid_ranges[206-bytes 10-13/100-abcde-length mismatch] PASSED [ 45%]
+tests/validation/operators/test_h3_projection_fixture.py::test_tensor_extent_rejects_wrong_shape_dtype_or_byte_count[shape0] PASSED [ 46%]
+tests/validation/operators/test_h3_projection_fixture.py::test_tensor_extent_rejects_wrong_shape_dtype_or_byte_count[shape1] PASSED [ 46%]
+tests/validation/operators/test_h3_projection_runner.py::test_cpu_refusal_preserves_provenance PASSED [ 46%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[4-21-inapplicable0-h3_ffn_gate_up_gemm] PASSED [ 47%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[4-21-inapplicable0-h3_attention_o_gemm] PASSED [ 47%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[3-21-inapplicable1-h3_ffn_gate_up_gemm] PASSED [ 47%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[3-21-inapplicable1-h3_attention_o_gemm] PASSED [ 48%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[4-4-inapplicable2-h3_ffn_gate_up_gemm] PASSED [ 48%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[4-4-inapplicable2-h3_attention_o_gemm] PASSED [ 48%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[3-3-inapplicable3-h3_ffn_gate_up_gemm] PASSED [ 49%]
+tests/validation/operators/test_h3_projection_runner.py::test_matrix_shapes_with_independent_cpu_reference[3-3-inapplicable3-h3_attention_o_gemm] PASSED [ 49%]
+tests/validation/operators/test_h3_projection_runner.py::test_cpu_surrogate_detects_reference_failures[y] PASSED [ 50%]
+tests/validation/operators/test_h3_projection_runner.py::test_cpu_surrogate_detects_reference_failures[dx] PASSED [ 50%]
+tests/validation/operators/test_h3_projection_runner.py::test_cpu_surrogate_detects_reference_failures[dw] PASSED [ 50%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_rejects_failed_sources_and_detects_drift PASSED [ 51%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[same-0-passed-None] PASSED [ 51%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[digest-1-failed-None] PASSED [ 51%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[status-2-error-both reports] PASSED [ 52%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[provenance-2-error-replay provenance mismatch] PASSED [ 52%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[ambiguous-2-error-ambiguous duplicate replay case] PASSED [ 52%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[subset-2-error-nonempty subset] PASSED [ 53%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[invalid_json-2-error-invalid original report JSON] PASSED [ 53%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_preserves_input_hashes[unreadable-2-error-could not read replay report] PASSED [ 53%]
+tests/validation/operators/test_h3_projection_runner.py::test_replay_cli_wont_overwrite_an_input_report PASSED [ 54%]
+tests/validation/operators/test_h3_projection_runner.py::test_pinned_task_geometry PASSED [ 54%]
+tests/validation/operators/test_kv_consistency.py::test_c6_cases_all_include_direct_decode PASSED [ 54%]
+tests/validation/operators/test_kv_consistency.py::test_c6_gold_decode_matches_prefill_on_cpu PASSED [ 55%]
+tests/validation/operators/test_kv_consistency.py::test_c6_rejects_missing_direct_decode_flag PASSED [ 55%]
+tests/validation/operators/test_kv_consistency.py::test_c6_profile_candidate_family PASSED [ 55%]
+tests/validation/operators/test_kv_consistency.py::test_c7_stateful_cache_is_not_concat PASSED [ 56%]
+tests/validation/operators/test_kv_consistency.py::test_c7_stateful_cache_chunked_backward_survives_later_writes PASSED [ 56%]
+tests/validation/operators/test_kv_consistency.py::test_c7_stateful_cache_preserves_prefix_validity PASSED [ 56%]
+tests/validation/operators/test_kv_consistency.py::test_c7_gold_b1_and_generate_rescore PASSED [ 57%]
+tests/validation/operators/test_kv_consistency.py::test_c7_rejects_concat_reference_as_b1 PASSED [ 57%]
+tests/validation/operators/test_kv_consistency.py::test_c6_c7_use_c1_not_private_thresholds PASSED [ 58%]
+tests/validation/operators/test_op_checks.py::test_video_input_projection_reference_forward_and_backward PASSED [ 58%]
+tests/validation/operators/test_op_checks.py::test_video_output_projection_reference_forward_and_backward PASSED [ 58%]
+tests/validation/operators/test_op_checks.py::test_backward_context_surrounds_actual_autograd PASSED [ 59%]
+tests/validation/operators/test_op_checks.py::test_logp_native_candidate_suite_passes PASSED [ 59%]
+tests/validation/operators/test_op_checks.py::test_embedding_native_candidate_suite_passes_issue_108_helper PASSED [ 59%]
+tests/validation/operators/test_op_checks.py::test_lm_head_native_candidate_suite_passes_issue_108_helper PASSED [ 60%]
+tests/validation/operators/test_op_checks.py::test_issue151_ops_pass_shared_issue_108_spec_path PASSED [ 60%]
+tests/validation/operators/test_op_checks.py::test_suite_reports_failure_for_bad_candidate PASSED [ 60%]
+tests/validation/operators/test_op_checks.py::test_suite_report_to_dict_contains_error_metrics PASSED [ 61%]
+tests/validation/operators/test_op_checks.py::test_ws1_report_persists_roles_and_backend_provenance PASSED [ 61%]
+tests/validation/operators/test_op_checks.py::test_ws1_report_accepts_triton_backend_provenance PASSED [ 61%]
+tests/validation/operators/test_op_checks.py::test_ws1_report_rejects_backend_provenance_mismatch PASSED [ 62%]
+tests/validation/operators/test_op_checks.py::test_ws1_report_checks_observed_output_dtype_against_provenance PASSED [ 62%]
+tests/validation/operators/test_op_checks.py::test_candidate_arch_key_uses_tolerance_override PASSED [ 62%]
+tests/validation/operators/test_op_checks.py::test_legacy_contract_rejects_non_forward_judgment PASSED [ 63%]
+tests/validation/operators/test_op_checks.py::test_logp_native_candidate_backward_suite_passes PASSED [ 63%]
+tests/validation/operators/test_op_checks.py::test_backward_suite_reports_failure_for_bad_gradient PASSED [ 63%]
+tests/validation/operators/test_op_checks.py::test_random_grad_mode_catches_nonuniform_upstream_gradient_bug PASSED [ 64%]
+tests/validation/operators/test_operator_inputs.py::test_video_input_projection_contract_and_logical_keys PASSED [ 64%]
+tests/validation/operators/test_operator_inputs.py::test_video_output_projection_contract_and_logical_keys PASSED [ 65%]
+tests/validation/operators/test_operator_inputs.py::test_random_packed_index_copy_inputs_are_seeded_and_valid[dtype0] PASSED [ 65%]
+tests/validation/operators/test_operator_inputs.py::test_random_packed_index_copy_inputs_are_seeded_and_valid[dtype1] PASSED [ 65%]
+tests/validation/operators/test_operator_inputs.py::test_random_packed_index_copy_inputs_are_seeded_and_valid[dtype2] PASSED [ 66%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[rms_norm] PASSED [ 66%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[qk_norm] PASSED [ 66%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[pack] PASSED [ 67%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[matmul] PASSED [ 67%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[det_gemm] PASSED [ 67%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[attention] PASSED [ 68%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[logp] PASSED [ 68%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[linear_logp] PASSED [ 68%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[batch_invariant_logp] PASSED [ 69%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[rope] PASSED [ 69%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[silu] PASSED [ 69%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[swiglu] PASSED [ 70%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[embedding] PASSED [ 70%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[lm_head] PASSED [ 70%]
+tests/validation/operators/test_operator_inputs.py::test_operator_inputs_support_all_issue_108_ops[kv_cache_attention] PASSED [ 71%]
+tests/validation/operators/test_operator_inputs.py::test_constant_logp_inputs_are_deterministic PASSED [ 71%]
+tests/validation/operators/test_operator_inputs.py::test_constant_batch_invariant_logp_inputs_match_operator_contract PASSED [ 72%]
+tests/validation/operators/test_operator_inputs.py::test_random_logp_inputs_are_seeded PASSED [ 72%]
+tests/validation/operators/test_operator_inputs.py::test_random_conditioning_noise_mix_inputs_are_seeded_and_per_sample[dtype0] PASSED [ 72%]
+tests/validation/operators/test_operator_inputs.py::test_random_conditioning_noise_mix_inputs_are_seeded_and_per_sample[dtype1] PASSED [ 73%]
+tests/validation/operators/test_operator_inputs.py::test_random_conditioning_noise_mix_inputs_are_seeded_and_per_sample[dtype2] PASSED [ 73%]
+tests/validation/operators/test_operator_inputs.py::test_cp_attention_operator_spec_registers_backward_grad_inputs PASSED [ 73%]
+tests/validation/operators/test_operator_inputs.py::test_constant_linear_logp_inputs_match_operator_contract PASSED [ 74%]
+tests/validation/operators/test_operator_inputs.py::test_constant_embedding_inputs_match_operator_contract PASSED [ 74%]
+tests/validation/operators/test_operator_inputs.py::test_constant_lm_head_inputs_match_operator_contract PASSED [ 74%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c1_contract_declares_ascend_as_a_required_profile PASSED [ 75%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c1_ascend_provenance_validates_and_rejects_borrowed_backends PASSED [ 75%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c1_ascend_has_no_private_tolerance_relaxation PASSED [ 75%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c2_manifest_declares_every_required_ascend_node PASSED [ 76%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c2_identity_hash_covers_the_added_profile PASSED [ 76%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c2_ascend_representative_cases_mirror_the_cuda_tiers PASSED [ 76%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c2_ascend_cases_pin_real_ascend_kernels_and_sources PASSED [ 77%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_c4_every_required_adapter_resolves_an_ascend_candidate PASSED [ 77%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c4_adapter_status_matrix_has_no_red_ascend_rows PASSED [ 77%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_operator_specs_expose_an_importable_ascend_candidate_per_chain_node PASSED [ 78%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c5_inventory_carries_an_ascend_verdict_with_no_blockers PASSED [ 78%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c8_matrix_includes_ascend_in_the_required_profiles PASSED [ 79%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c8_matrix_can_be_scoped_to_one_hosts_profiles PASSED [ 79%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c8_ascend_cells_are_never_silently_na PASSED [ 79%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_accelerator_maps_the_ascend_profile_to_the_npu PASSED [ 80%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_candidate_family_maps_ascend_ids PASSED [ 80%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_resolve_device_fails_closed_without_an_npu PASSED [ 80%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_tf32_policy_holds_on_npu_without_a_tf32_switch PASSED [ 81%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_to_c10_clis_accept_the_ascend_profile[tools/validation/operators/check_forward_invariance.py] PASSED [ 81%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_to_c10_clis_accept_the_ascend_profile[tools/validation/operators/check_gradient_invariance.py] PASSED [ 81%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_to_c10_clis_accept_the_ascend_profile[tools/validation/operators/check_decode_prefill.py] PASSED [ 82%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_to_c10_clis_accept_the_ascend_profile[tools/validation/operators/check_stateful_kv.py] PASSED [ 82%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_to_c10_clis_accept_the_ascend_profile[tools/validation/models/ws1_chain_gate.py] PASSED [ 82%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_to_c10_clis_accept_the_ascend_profile[tools/validation/models/ws1_chain_fwd_bwd.py] PASSED [ 83%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c3_to_c10_clis_accept_the_ascend_profile[tools/validation/operators/ws1_candidate_evidence.py] PASSED [ 83%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c11_ascend_ci_entry_points_exist_and_target_the_ascend_profile PASSED [ 83%]
+tests/validation/operators/test_ws1_ascend_closeout.py::test_c11_chain_gate_script_is_profile_parameterised PASSED [ 84%]
+tests/validation/operators/test_ws1_candidate_evidence.py::test_ws1_cuda_and_triton_candidate_runtime_provenance FAILED [ 84%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_all_ws1_single_ops_are_registered PASSED [ 84%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_check_operator_runs_ported_ops[rms_norm-cuda] PASSED [ 85%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_check_operator_runs_ported_ops[qk_norm-cuda] PASSED [ 85%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_check_operator_runs_ported_ops[silu-triton] PASSED [ 86%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_check_operator_runs_ported_ops[swiglu-triton] PASSED [ 86%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_check_operator_runs_ported_ops[rope-triton] PASSED [ 86%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_check_operator_runs_ported_ops[pack-pytorch] PASSED [ 87%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_c3_triton_silu_is_bitwise_invariant PASSED [ 87%]
+tests/validation/operators/test_ws1_gtest_gpu.py::test_c4_cuda_rms_norm_is_bitwise_invariant PASSED [ 87%]
+tests/validation/operators/test_ws1_workload.py::test_default_manifest_path_exists PASSED [ 88%]
+tests/validation/operators/test_ws1_workload.py::test_manifest_loads_and_validates PASSED [ 88%]
+tests/validation/operators/test_ws1_workload.py::test_model_identity_is_full_qwen3_8b PASSED [ 88%]
+tests/validation/operators/test_ws1_workload.py::test_clip_interval_pinned_and_aligns_with_c1 PASSED [ 89%]
+tests/validation/operators/test_ws1_workload.py::test_forbidden_comparison_roles_align_with_c1 PASSED [ 89%]
+tests/validation/operators/test_ws1_workload.py::test_primary_matrix_2x2_and_n PASSED [ 89%]
+tests/validation/operators/test_ws1_workload.py::test_chunk_plan_multi_chunk_non_divisible PASSED [ 90%]
+tests/validation/operators/test_ws1_workload.py::test_logical_batch_reproducible_and_hash_stable PASSED [ 90%]
+tests/validation/operators/test_ws1_workload.py::test_fixture_hash_covers_all_manifest_identity_fields PASSED [ 90%]
+tests/validation/operators/test_ws1_workload.py::test_same_workload_id_rejects_unversioned_manifest_change PASSED [ 91%]
+tests/validation/operators/test_ws1_workload.py::test_short_long_and_varlen_fixtures_are_materialized PASSED [ 91%]
+tests/validation/operators/test_ws1_workload.py::test_chain_semantics_report_and_actual_boundaries PASSED [ 91%]
+tests/validation/operators/test_ws1_workload.py::test_stale_primary_completion_len_rejected PASSED [ 92%]
+tests/validation/operators/test_ws1_workload.py::test_active_tokens_are_completion_only PASSED [ 92%]
+tests/validation/operators/test_ws1_workload.py::test_padding_restores_logical_identity[right] PASSED [ 93%]
+tests/validation/operators/test_ws1_workload.py::test_padding_restores_logical_identity[left] PASSED [ 93%]
+tests/validation/operators/test_ws1_workload.py::test_batch_permutation_restores_multiset PASSED [ 93%]
+tests/validation/operators/test_ws1_workload.py::test_singleton_aggregate_matches_bn_multiset PASSED [ 94%]
+tests/validation/operators/test_ws1_workload.py::test_chunk_positions_cover_logical_keys PASSED [ 94%]
+tests/validation/operators/test_ws1_workload.py::test_chunk_and_pack_layouts_restore_identity PASSED [ 94%]
+tests/validation/operators/test_ws1_workload.py::test_stochastic_policy_hard_fails_undeclared_rng PASSED [ 95%]
+tests/validation/operators/test_ws1_workload.py::test_backend_profiles_enumerate_required_nodes PASSED [ 95%]
+tests/validation/operators/test_ws1_workload.py::test_triton_profile_has_all_required_candidates PASSED [ 95%]
+tests/validation/operators/test_ws1_workload.py::test_representative_cases_stable_ids_and_pins PASSED [ 96%]
+tests/validation/operators/test_ws1_workload.py::test_fixture_case_shapes_are_derived_from_fixed_fixtures PASSED [ 96%]
+tests/validation/operators/test_ws1_workload.py::test_declared_candidates_resolve_to_real_operator_specs PASSED [ 96%]
+tests/validation/operators/test_ws1_workload.py::test_capabilities_packing_and_qk_norm PASSED [ 97%]
+tests/validation/operators/test_ws1_workload.py::test_missing_weight_hash_rejected PASSED [ 97%]
+tests/validation/operators/test_ws1_workload.py::test_packing_cannot_be_marked_na_when_supported PASSED [ 97%]
+tests/validation/operators/test_ws1_workload.py::test_architecture_shrink_rejected PASSED [ 98%]
+tests/validation/operators/test_ws1_workload.py::test_missing_matrix_cell_rejected PASSED [ 98%]
+tests/validation/operators/test_ws1_workload.py::test_reference_payload_contains_required_fields PASSED [ 98%]
+tests/validation/operators/test_ws1_workload.py::test_ws1_reference_cli_emits_identity PASSED [ 99%]
+tests/validation/operators/test_ws1_workload.py::test_candidate_evidence_cli_help_is_available PASSED [ 99%]
+tests/validation/operators/test_ws1_workload.py::test_build_chunk_plan_edges PASSED [100%]
+
+=================================== FAILURES ===================================
+_____________ test_nodes_accuracy_repeat_batch_and_isolated[1-257] _____________
+
+refiner_weights = {'token_refiner.refiner_blocks.0.norm1.weight': tensor([0.9492, 0.7734, 0.9023,  ..., 0.8359, 0.7656, 0.8984], device=...     [-0.0776,  0.0403,  0.0126,  ..., -0.0128,  0.0439,  0.0193]],
+       device='cuda:0', dtype=torch.bfloat16), ...}
+block = 1, tokens = 257
+
+    @needs_gpu
+    @pytest.mark.parametrize("tokens", [1, 64, 257])
+    @pytest.mark.parametrize("block", [0, 1])
+    def test_nodes_accuracy_repeat_batch_and_isolated(refiner_weights, block, tokens):
+        report = hr.run_refiner_case(refiner_weights, block=block, tokens=tokens, seed=3)
+        assert report["first_repeat_drift"] is None
+        assert report["first_batch_drift"] is None
+        for entry in report["nodes"]:
+            name = entry["node"]
+>           assert entry["candidate_rel_err_vs_golden"] <= (
+                FORWARD_FACTOR * entry["provider_rel_err_vs_golden"] + FORWARD_FLOOR
+            ), name
+E           AssertionError: swiglu
+E           assert 0.012112910519658411 <= ((1.25 * 0.008155954869872396) + 0.001)
+
+tests/models/minimax_h3/test_h3_token_refiner.py:84: AssertionError
+----------------------------- Captured stdout call -----------------------------
+INFO 11-25 00:03:01 [RL-Kernel]: KernelRegistry initialized for cuda
+INFO 11-25 00:03:01 [RL-Kernel]: TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO 11-25 00:03:01 [RL-Kernel]: Successfully linked to _C.deterministic_attention_forward/backward.
+INFO 11-25 00:03:01 [RL-Kernel]: Successfully linked to precompiled _C.swiglu_forward kernel.
+------------------------------ Captured log call -------------------------------
+INFO     RL-Kernel:registry.py:1335 KernelRegistry initialized for cuda
+INFO     RL-Kernel:det_gemm.py:1425 TritonDetGemmOp ready (deterministic, autotune disabled).
+INFO     RL-Kernel:deterministic_attn.py:118 Successfully linked to _C.deterministic_attention_forward/backward.
+INFO     RL-Kernel:swiglu.py:112 Successfully linked to precompiled _C.swiglu_forward kernel.
+____________ test_plot_pipeline_with_explicitly_synthetic_test_data ____________
+
+tmp_path = PosixPath('<WORK>/t/qb<JOB>/pytest-of-<USER>/pytest-0/test_plot_pipeline_with_explic0')
+
+    def test_plot_pipeline_with_explicitly_synthetic_test_data(tmp_path):
+        checks = [
+            {
+                "judgment": "forward_accuracy" if name == "y" else "gradient_accuracy",
+                "tensor": name,
+                "transform": "fp32_reference",
+                "passed": True,
+                "max_error_over_tolerance": 0.5,
+                "max_abs_error": 0.01,
+            }
+            for name in ("y", "dx", "dw")
+        ]
+        keys = (
+            "candidate_forward",
+            "candidate_forward_backward",
+            "torch_bf16_forward",
+            "torch_bf16_forward_backward",
+        )
+        source = tmp_path / "synthetic-test-report.json"
+        source.write_text(
+            json.dumps(
+                {
+                    "status": "test_fixture",
+                    "cases": [
+                        {
+                            "rows": 1,
+                            "input_family": "synthetic_test_data",
+                            "checks": checks,
+                            "benchmarks": {key: {"median_ms": 1.0} for key in keys},
+                        }
+                    ],
+                }
+            )
+        )
+        result = subprocess.run(
+            [
+                sys.executable,
+                str(ROOT / "benchmarks/operators/gemm/plot_h3_down_report.py"),
+                str(source),
+                "--output-dir",
+                str(tmp_path),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+>       assert result.returncode == 0, result.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "<WORK>/bf1121/qk-base/benchmarks/operators/gemm/plot_h3_down_report.py", line 193, in <module>
+E             main()
+E           File "<WORK>/bf1121/qk-base/benchmarks/operators/gemm/plot_h3_down_report.py", line 155, in main
+E             import matplotlib
+E         ModuleNotFoundError: No module named 'matplotlib'
+E         
+E       assert 1 == 0
+E        +  where 1 = CompletedProcess(args=['<HOME>/<ENV>/bin/python', '<WORK>/bf1121/qk-base/benchmarks/operators/gemm/plot_h3_down_report.py', '<WORK>/t/qb<JOB>/pytest-of-<USER>/pytest-0/test_plot_pipeline_with_explic0/synthetic-test-report.json', '--output-dir', '<WORK>/t/qb<JOB>/pytest-of-<USER>/pytest-0/test_plot_pipeline_with_explic0'], returncode=1, stdout='', stderr='Traceback (most recent call last):\n  File "<WORK>/bf1121/qk-base/benchmarks/operators/gemm/plot_h3_down_report.py", line 193, in <module>\n    main()\n  File "<WORK>/bf1121/qk-base/benchmarks/operators/gemm/plot_h3_down_report.py", line 155, in main\n    import matplotlib\nModuleNotFoundError: No module named \'matplotlib\'\n').returncode
+
+tests/validation/operators/test_h3_down_tooling.py:268: AssertionError
+____________ test_ws1_cuda_and_triton_candidate_runtime_provenance _____________
+
+    @pytest.mark.skipif(not torch.cuda.is_available(), reason="WS1 candidate evidence requires CUDA")
+    def test_ws1_cuda_and_triton_candidate_runtime_provenance():
+        proc = subprocess.run(
+            [sys.executable, str(EVIDENCE_SCRIPT), "--emit-json", "-"],
+            check=False,
+            capture_output=True,
+            text=True,
+            cwd=str(REPO_ROOT),
+            timeout=600,
+        )
+>       assert proc.returncode == 0, proc.stderr
+E       AssertionError: error: strict RL-Kernel SM90 GEMM was requested, but the extension was built without KERNEL_ALIGN_DET_GEMM_SM90=1; refusing naive fallback
+E         
+E       assert 2 == 0
+E        +  where 2 = CompletedProcess(args=['<HOME>/<ENV>/bin/python', '<WORK>/bf1121/qk-base/tools/validation/operators/ws1_candidate_evidence.py', '--emit-json', '-'], returncode=2, stdout='', stderr='error: strict RL-Kernel SM90 GEMM was requested, but the extension was built without KERNEL_ALIGN_DET_GEMM_SM90=1; refusing naive fallback\n').returncode
+
+tests/validation/operators/test_ws1_candidate_evidence.py:30: AssertionError
+=========================== short test summary info ============================
+FAILED tests/models/minimax_h3/test_h3_token_refiner.py::test_nodes_accuracy_repeat_batch_and_isolated[1-257]
+FAILED tests/validation/operators/test_h3_down_tooling.py::test_plot_pipeline_with_explicitly_synthetic_test_data
+FAILED tests/validation/operators/test_ws1_candidate_evidence.py::test_ws1_cuda_and_triton_candidate_runtime_provenance
+================== 3 failed, 283 passed in 105.74s (0:01:45) ===================
