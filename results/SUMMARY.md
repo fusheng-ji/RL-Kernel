@@ -13,7 +13,7 @@ No other settings tried; no offload (README §H2). H2 failed, so H3–H7 not run
 
 Round-1 outputs were moved to `not-green-attempts/round1/` before this run. b3 is the single round-3 probe (README §H2), with `TORCH_NCCL_DUMP_ON_TIMEOUT` flight-recorder dumps and py-spy stacks taken during the hang.
 
-**Pre-run checks (scheduler side):** `gpu_check_node{0,1}.txt`: `nproc 64` on both nodes; `nvidia-smi-start-node*.txt`: 0 MiB used on all 8 GPUs; no other job steps on the GPUs during the probe.
+**Pre-run checks (scheduler side):** `gpu_check_node{0,1}.txt`: `nproc 64` on both nodes; `extra/miles-b3-cpuset.txt` (`cpuset_check.sh`, 00:31:42Z): `nproc=64` and the same `Cpus_allowed_list` on both nodes; `nvidia-smi-start-node*.txt`: 0 MiB used on all 8 GPUs; no other job steps on the GPUs during the probe. Handoff checkout `h_mi` at `8929af9b3` during b3 (`extra/h_mi-head-b3.txt`).
 
 **Timeline (UTC; `train.log` and `gpu_mem_*.csv` timestamps are CET = UTC+1):**
 - 00:32Z start; 00:44Z rollout peak 93.5 GiB/GPU (node-a) and 90.9 GiB/GPU (node-b), from `gpu_mem_node*.csv`.
@@ -30,7 +30,7 @@ Round-1 outputs were moved to `not-green-attempts/round1/` before this run. b3 i
 
 **Files:** `H2/probe-b3/` holds `train.log`, `h100_config.txt`, `h2_b3_verdict.txt`, `gpu_check_node*.txt`, `nvidia-smi-start-node*.txt`, `gpu_mem_node*.csv`, `stacks/` (py-spy, two rounds per rank), `hang_stacks_node*.log`, `fr-json/` (flight recorder per rank, converted from the pickle dumps to JSON and gzipped), `ray_logs/`, `ray_logs_node1/`. All redacted with the same table as round 1.
 
-**Gate note:** the scheduler's b3 wrapper exited before writing the gate (a `set -e` bug, fixed), so the gate still read the round-1 `FAIL b,c,d` until it was corrected by hand to `FAIL b3`. The probe itself ran to completion; only the bookkeeping was affected.
+**Gate note:** the scheduler's b3 wrapper never wrote the gate, so it still read the round-1 `FAIL b,c,d` until it was corrected by hand to `FAIL b3`. Two bugs in `u_miles_b3.sh`, both fixed: (1) `set -e` was switched back on before the verdict step, which exits 1 on FAIL, so the script stopped there (this is what happened: the schedule log has no line from the later check); (2) the next check looked for `nproc=64` while `gpu_check` writes `nproc 64`, so it would have logged `STOP: b3 gpu_check cpus not 64` even with (1) fixed. The probe itself ran to completion; only the bookkeeping was affected.
 
 See `extra/h2_b_nccl_info_warn.txt`, multicast tracebacks, `extra/job_steps_timeline.txt`, and GPU diag in `extra/gpu_topo_nvlink_fabric.txt` when present.
 
