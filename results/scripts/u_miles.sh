@@ -8,7 +8,10 @@ gate_ok miles_H0 || { echo "miles H0 digest gate not OK"; exit 1; }
 st() { local t=$1 tag=$2 stage=$3; shift 3; TAG=$tag timeout -k 60 $t bash $RS $SC/$stage "$@" > $OUT/miles/$stage-$tag.log 2>&1; echo "$stage-$tag exit=$?" >> $OUT/steps.txt; }
 s1() { local t=$1 tag=$2 stage=$3; shift 3; TAG=$tag timeout -k 60 $t bash $R1 $SC/$stage "$@" > $OUT/miles/$stage-$tag.log 2>&1; echo "$stage-$tag exit=$?" >> $OUT/steps.txt; }
 case $1 in
- H1) s1 1h r0 h1_env.sh; gate_set miles_H1 "done";;
+ H1) s1 1h r0 h1_env.sh; h1rc=$(grep -o 'h1_env.sh-r0 exit=[0-9]*' $OUT/steps.txt | tail -1 | cut -d= -f2)
+     # README expects a clean tree in the image; a non-empty git status is a fact to report, not a failure
+     dirty=$(grep -cE '^ ?[MADRCU?]{1,2} ' $WORK/runs/h1_env-r0/env.txt 2>/dev/null)
+     if [ "$h1rc" = 0 ]; then gate_set miles_H1 "done exit=0 git_status_lines=${dirty:-?}"; else gate_set miles_H1 "FAIL exit=${h1rc:-none}"; exit 1; fi;;
  H2) gate_ok miles_H1 || exit 1
      st 90m a h2_memprobe.sh a 1 0.55; st 90m b h2_memprobe.sh b 1 0.80; st 90m c h2_memprobe.sh c 2 0.55; st 90m d h2_memprobe.sh d 2 0.70
      python3 - "$WORK" "$OUT/miles" <<'PY'
@@ -22,7 +25,8 @@ def probe_pass(letter):
     txt = open(logs[-1], errors="replace").read()
     rc = re.findall(r"^train rc=(\d+)", txt, re.M)
     if not rc or int(rc[-1]) != 0: return False, "train rc"
-    if len(re.findall(r"perf 0:", txt)) != 1: return False, "perf0 count"
+    # README round 3 item 5: count the trainer's " - step 0: {" line, not "perf 0:" (the rollout logs one too)
+    if not re.search(r" - step 0: \{", txt): return False, "no trainer step 0"
     if ERR.search(txt): return False, "error in log"
     return True, logs[-1]
 chosen = None

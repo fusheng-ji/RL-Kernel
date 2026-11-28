@@ -9,16 +9,12 @@ gate_ok miles_H1 || exit 1
 set +e
 timeout -k 60 5400 bash "$RS" "$THIS/scripts/h2_memprobe.sh" "$TAG" 1 0.80 >"$OUT/miles/h2_memprobe-${TAG}.log" 2>&1
 stagerc=$?
-set -e
+# stay in set +e: the verdict heredoc below exits 1 on FAIL and b3rc must still reach the gate
 echo "stage_rc=$stagerc" >>"$OUT/miles/h2_memprobe-${TAG}.log"
 if [ "$stagerc" = 96 ]; then
   gate_set miles_H2_busy "BUSY rc=96 TAG=$TAG"
   exit 96
 fi
-for gc in "$WORK"/runs/h2_memprobe-"$TAG"/gpu_check_node*.txt; do
-  [ -f "$gc" ] || continue
-  grep -A5 '== cpus' "$gc" | grep -q 'nproc=64' || { log "STOP: b3 gpu_check cpus not 64 in $gc"; exit 1; }
-done
 python3 - "$WORK" "$OUT/miles" "$TAG" "$stagerc" <<'PY'
 import glob, re, sys
 work, out, tag, stagerc = sys.argv[1:5]
@@ -40,6 +36,11 @@ open(f"{out}/h2_{tag}_verdict.txt", "a").write(f"{verdict} train_rc={trc}\n")
 sys.exit(0 if verdict == "PASS" else 1)
 PY
 b3rc=$?
+for gc in "$WORK"/runs/h2_memprobe-"$TAG"/gpu_check_node*.txt; do
+  [ -f "$gc" ] || continue
+  # gpu_check writes "nproc 64" (space); accept "nproc=64" too
+  grep -A5 '== cpus' "$gc" | grep -qE '^nproc[ =]64$' || { log "STOP: b3 gpu_check cpus not 64 in $gc"; exit 1; }
+done
 if [ $b3rc != 0 ]; then
   gate_set miles_H2 "FAIL $TAG"
   exit 1

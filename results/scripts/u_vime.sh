@@ -25,6 +25,12 @@ PY
  V3|V4) gate_ok vime_V0 && gate_wait vime_V2 3600 || exit 1
      grep -q none $GATES/vime_dsa 2>/dev/null && export DSA_BACKEND=none
      export SLURM_GRES=gpu:4 SLURM_OVERLAP=1
-     if [ $1 = V3 ]; then bash $H/core.sbatch > $OUT/vime/V3.log 2>&1; python3 $H/analyze.py $S/core > $OUT/vime/V3-summary.json
-     else bash $H/drift.sbatch > $OUT/vime/V4.log 2>&1; python3 $H/analyze.py $S/drift > $OUT/vime/V4-summary.json; fi;;
+     # scripts/common.sh exports CKPT=h3ckpt/hf_full (H3); vime's common.sh keeps an inherited CKPT, so pin the DSv4 slice.
+     export CKPT=$W/ckpt/v4-4l
+     # SUITE (core / drift by default) names both the run dir and the out/vime file tag; a rerun uses a new SUITE.
+     if [ $1 = V3 ]; then export SUITE=${SUITE:-core}; sb=core.sbatch; else export SUITE=${SUITE:-drift}; sb=drift.sbatch; fi
+     tag=$1; case $SUITE in core|drift) ;; *) tag=$1-$SUITE;; esac
+     bash $H/$sb > $OUT/vime/$tag.log 2>&1; python3 $H/analyze.py $S/$SUITE > $OUT/vime/$tag-summary.json
+     n=0; ok=0; for f in $S/$SUITE/*/rc; do [ -f "$f" ] || continue; n=$((n+1)); [ "$(cat $f)" = 0 ] && ok=$((ok+1)); done
+     log "vime $tag cases rc=0: $ok/$n ($(for f in $S/$SUITE/*/rc; do [ -f "$f" ] && printf '%s=%s ' "$(basename $(dirname $f))" "$(cat $f)"; done))";;
 esac

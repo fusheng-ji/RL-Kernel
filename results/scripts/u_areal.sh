@@ -14,40 +14,65 @@ srun --jobid=$J --overlap -w "$NB" -N1 -n1 --ntasks=1 \
   > $O/import-time-node-b.txt 2>&1 || true
 
 RAY_STEPS=$O/ray_step_ids.txt; : > "$RAY_STEPS"
+# Ray head/worker sruns are named areal_ray_*; cancelling those steps (own cgroup) stops only this task's Ray.
+# Never `ray stop` / pkill here: other tasks (vime) run Ray on the same nodes. (sacct has no Command field on 24.05.)
+ray_step_ids() { squeue -h -s -j "$J" -o '%i|%j' 2>/dev/null | awk -F'|' '$2 ~ /^areal_ray_/ {print $1}'; }
 stop_ray_steps() {
-  while read -r sid; do [ -n "$sid" ] && scancel "$sid" 2>/dev/null || true; done < "$RAY_STEPS"
-  sacct -j "$J" -S today --format=JobID,Command -P -n 2>/dev/null | grep start_ray.sh | cut -d'|' -f1 | while read -r s; do scancel "$s" 2>/dev/null; done
-  : > "$RAY_STEPS"
-  sleep 15
+  local s left
+  for s in $(ray_step_ids); do echo "$s" >> "$RAY_STEPS"; scancel "$s" 2>/dev/null || true; done
+  for _ in $(seq 1 12); do left=$(ray_step_ids | wc -l); [ "$left" = 0 ] && break; sleep 5; done
+  [ "$left" = 0 ] || { log "areal: $left areal_ray_* steps still alive after scancel"; return 1; }
+  sleep 10
 }
 
 # Optional extra srun args per role: head_srun_extra worker_srun_extra (e.g. --cpu-bind=none)
 start_ray_cluster() {
   local head_res="${1:-}" worker_res="${2:-}" tag="${3:-}"
   local head_extra="${4:-}" worker_extra="${5:-}"
-  stop_ray_steps
+  stop_ray_steps || return 1
   local head_log=$O/logs/ray_head${tag}.log worker_log=$O/logs/ray_worker${tag}.log
   # shellcheck disable=SC2086
-  setsid nohup srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 $head_extra \
+  setsid nohup srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 -J "areal_ray_head${tag}" $head_extra \
     /usr/bin/env RAY_NODE_RESOURCES="$head_res" RAY_BLOCK=1 bash "$BUNDLE_SCRIPTS/start_ray.sh" head > "$head_log" 2>&1 &
-  sleep 4; sacct -j "$J" -S today -n --format=JobID,Command 2>/dev/null | grep 'start_ray.sh head' | awk '{print $1}' | tail -1 >> "$RAY_STEPS" || true
   local hip=""; for _ in $(seq 1 40); do
+    grep -q 'already running' "$head_log" 2>/dev/null && { log "areal$tag: ray head found a running cluster (see $head_log)"; return 1; }
     hip=$(grep -oE 'RAY_ADDRESS=[0-9.]+:' "$head_log" 2>/dev/null | head -1 | sed 's/RAY_ADDRESS=//;s/:$//')
     [ -n "$hip" ] && break; sleep 5
   done
-  [ -n "$hip" ] || { echo "no HEAD_IP in $head_log"; return 1; }
-  echo "$hip" > "$O/ray_head_ip_${tag}.txt"
+  [ -n "$hip" ] || { log "areal$tag: no HEAD_IP in $head_log"; return 1; }
+  echo "$hip" > "$O/ray_head_ip${tag}.txt"     # tag starts with "_": ray_head_ip_C1.txt
   # shellcheck disable=SC2086
-  setsid nohup srun --jobid=$J --overlap -w "$NB" -N1 -n1 --ntasks=1 $worker_extra \
+  setsid nohup srun --jobid=$J --overlap -w "$NB" -N1 -n1 --ntasks=1 -J "areal_ray_worker${tag}" $worker_extra \
     /usr/bin/env RAY_NODE_RESOURCES="$worker_res" RAY_BLOCK=1 bash "$BUNDLE_SCRIPTS/start_ray.sh" worker "$hip" > "$worker_log" 2>&1 &
-  sleep 4; sacct -j "$J" -S today -n --format=JobID,Command 2>/dev/null | grep 'start_ray.sh worker' | awk '{print $1}' | tail -1 >> "$RAY_STEPS" || true
+  local i gpus
   for i in $(seq 1 12); do
-    if srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 bash -c \
-      "unset \$(env | cut -d= -f1 | grep ^SLURM_); source $B/activate.sh; RAY_ADDRESS=${hip}:26379 timeout 90 python -c 'import ray; ray.init(); print(ray.cluster_resources().get(\"GPU\")); ray.shutdown()'" 2>/dev/null | grep -qE '^8'; then
-      echo "ray_ready probe=$i tag=$tag" >> "$O/ray-probe.txt"; return 0
-    fi; sleep 20
+    grep -q 'already running' "$head_log" 2>/dev/null && { log "areal$tag: ray head found a running cluster (see $head_log)"; return 1; }
+    gpus=$(srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 bash -c \
+      "unset \$(env | cut -d= -f1 | grep ^SLURM_); source $B/activate.sh; RAY_ADDRESS=${hip}:26379 timeout 90 python -c 'import ray; ray.init(); print(ray.cluster_resources().get(\"GPU\")); ray.shutdown()'" 2>/dev/null | tail -1)
+    echo "probe=$i tag=$tag gpus=${gpus:-none}" >> "$O/ray-probe.txt"
+    if [[ "$gpus" =~ ^8(\.0)?$ ]]; then echo "ray_ready probe=$i tag=$tag" >> "$O/ray-probe.txt"; return 0; fi
+    # more than 8 GPUs: a stale node joined; waiting will not fix it
+    [[ "$gpus" =~ ^[0-9.]+$ ]] && awk "BEGIN{exit !($gpus > 8)}" && { log "areal$tag: ray cluster has $gpus GPUs, want 8"; return 1; }
+    sleep 20
   done
+  log "areal$tag: ray cluster not ready after 12 probes (last gpus=${gpus:-none})"
   return 1
+}
+
+# trust_check RDIR: write trust.txt; ok only if native/run.json returncode==0 and stats.jsonl has rows
+trust_check() {
+  python3 - "$1" <<'PY'
+import json, os, sys
+r = sys.argv[1]
+try:
+    rc = json.load(open(os.path.join(r, "native/run.json"))).get("returncode")
+    n = sum(1 for _ in open(os.path.join(r, "native/stats.jsonl")))
+    msg = f"returncode={rc} stats_lines={n}\n"; ok = rc == 0 and n > 0
+except Exception as e:
+    msg = f"parse_err={e}\n"; ok = False
+open(os.path.join(r, "trust.txt"), "w").write(msg)
+sys.exit(0 if ok else 1)
+PY
 }
 
 snap() {
@@ -68,22 +93,20 @@ run_layout() {
   ( snap "$tag" & )
   srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 \
     bash "$D/areal_run_verify.sh" "$hip" "$rdir" --arms native --steps 4 "$@" \
-    > "$rdir/driver.log" 2>&1 || true
-  python3 - <<PY
-import json,glob,os
-r="$rdir"
-try:
-  rc=json.load(open(os.path.join(r,"native/run.json"))).get("returncode")
-  n=sum(1 for _ in open(os.path.join(r,"native/stats.jsonl")))
-  open(os.path.join(r,"trust.txt"),"w").write(f"returncode={rc} stats_lines={n}\n")
-except Exception as e:
-  open(os.path.join(r,"trust.txt"),"w").write(f"parse_err={e}\n")
-PY
+    > "$rdir/driver.log" 2>&1
+  local st=$?
+  trust_check "$rdir" || { log "areal $tag: driver exit=$st, $(cat $rdir/trust.txt)"; return 1; }
 }
 
 ACTOR_RES='{"rlk_actor_node": 1}'
 run_layout L1-actor-on-driver "$ACTOR_RES" "" || log "L1 failed"
 run_layout L2-actor-off-driver "" "$ACTOR_RES" || log "L2 failed"
+# C1-C3 vary the slower of L1/L2; without both baselines they cannot be interpreted.
+if ! { trust_check "$O/runs/L1-actor-on-driver" && trust_check "$O/runs/L2-actor-off-driver"; }; then
+  stop_ray_steps
+  gate_set areal_done "FAIL L1/L2 baseline missing; C1-C4 not run"
+  log "STOP: areal L1/L2 baseline missing; C1-C4 not run"; exit 1
+fi
 
 python3 - "$O" <<'PY'
 import json, os, sys
@@ -128,31 +151,41 @@ else
   C_HEAD=""; C_WORK="$ACTOR_RES"
 fi
 
-# C1: cpu-bind=none on head, worker, driver
-stop_ray_steps
-start_ray_cluster "$C_HEAD" "$C_WORK" "_C1" --cpu-bind=none --cpu-bind=none && \
-  srun --jobid=$J --overlap -w "$NA" -N1 -n1 --cpu-bind=none --ntasks=1 \
-    bash "$D/areal_run_verify.sh" "$(cat $O/ray_head_ip_C1.txt)" "$O/runs/C1-cpu-bind-none" --arms native --steps 4 \
-    > "$O/runs/C1-cpu-bind-none/driver.log" 2>&1 || log "C1 failed"
+# run_c NAME TAG DIR: start Ray, then run the driver command in "$@" (it gets HIP and RDIR in its env), check trust.
+C_FAIL=""
+run_c() {
+  local name=$1 tag=$2 rdir=$O/runs/$3; shift 3
+  mkdir -p "$rdir"
+  if ! start_ray_cluster "$C_HEAD" "$C_WORK" "$tag" "${C_HEAD_EXTRA:-}" "${C_WORK_EXTRA:-}"; then
+    log "$name failed: ray cluster"; C_FAIL="$C_FAIL $name"; return 1
+  fi
+  local hip; hip=$(cat "$O/ray_head_ip${tag}.txt")
+  HIP=$hip RDIR=$rdir "$@" > "$rdir/driver.log" 2>&1
+  local st=$?
+  trust_check "$rdir" || { log "$name failed: driver exit=$st, $(cat $rdir/trust.txt)"; C_FAIL="$C_FAIL $name"; return 1; }
+  log "$name ok: $(cat $rdir/trust.txt)"
+}
 
+# Driver commands (same as before); run_c sets HIP and RDIR.
+drv_c1() { srun --jobid=$J --overlap -w "$NA" -N1 -n1 --cpu-bind=none --ntasks=1 \
+  bash "$D/areal_run_verify.sh" "$HIP" "$RDIR" --arms native --steps 4; }
+drv_c2() { srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 \
+  bash -c "allowed=\$(awk '/^Cpus_allowed_list:/{print \$2}' /proc/self/status)
+    others=\$(python3 $D/areal_pick_driver_cpus.py '$PLACEMENT' \"\$allowed\")
+    taskset -c \"\$others\" bash $D/areal_run_verify.sh '$HIP' '$RDIR' --arms native --steps 4"; }
+drv_c3() { srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 \
+  /usr/bin/env OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 \
+  bash "$D/areal_run_verify.sh" "$HIP" "$RDIR" --arms native --steps 4; }
+
+# C1: cpu-bind=none on head, worker, driver
+C_HEAD_EXTRA=--cpu-bind=none C_WORK_EXTRA=--cpu-bind=none run_c C1 _C1 C1-cpu-bind-none drv_c1
 # C2: taskset driver to cores not overlapping actor (from placement snap)
 PLACEMENT=$(ls -t "$O"/placement-L*.txt 2>/dev/null | head -1)
-stop_ray_steps
-start_ray_cluster "$C_HEAD" "$C_WORK" "_C2" && \
-  srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 \
-    bash -c "allowed=\$(awk '/^Cpus_allowed_list:/{print \$2}' /proc/self/status)
-      others=\$(python3 $D/areal_pick_driver_cpus.py '$PLACEMENT' \"\$allowed\")
-      taskset -c \"\$others\" bash $D/areal_run_verify.sh '$(cat $O/ray_head_ip_C2.txt)' $O/runs/C2-driver-cores --arms native --steps 4" \
-    > "$O/runs/C2-driver-cores/driver.log" 2>&1 || log "C2 failed"
-
+run_c C2 _C2 C2-driver-cores drv_c2
 # C3: thread limit (slower baseline layout)
-stop_ray_steps
-start_ray_cluster "$C_HEAD" "$C_WORK" "_C3" && \
-  srun --jobid=$J --overlap -w "$NA" -N1 -n1 --ntasks=1 \
-    /usr/bin/env OMP_NUM_THREADS=8 MKL_NUM_THREADS=8 OPENBLAS_NUM_THREADS=8 \
-    bash "$D/areal_run_verify.sh" "$(cat $O/ray_head_ip_C3.txt)" "$O/runs/C3-thread-limit" --arms native --steps 4 \
-    > "$O/runs/C3-thread-limit/driver.log" 2>&1 || log "C3 failed"
+run_c C3 _C3 C3-thread-limit drv_c3
 
-gate_set areal_C4 "SKIP not attempted"
+# C4 (HANDOFF step 3) moves the driver and Ray head to a CPU node; this allocation has GPU nodes only.
+gate_set areal_C4 "SKIP not run: no CPU node in allocation (HANDOFF step 3)"
 stop_ray_steps
-gate_set areal_done "$(date -u +%FT%TZ)"
+if [ -n "$C_FAIL" ]; then gate_set areal_done "FAIL$C_FAIL"; else gate_set areal_done "OK C1-C3"; fi
