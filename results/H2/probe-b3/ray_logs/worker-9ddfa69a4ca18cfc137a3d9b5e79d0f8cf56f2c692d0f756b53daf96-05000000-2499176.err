@@ -1,0 +1,119 @@
+:job_id:05000000
+WARNING:absl:Failed to load jax profiler: cannot import name 'jaxlib_extension_version' from 'jax._src.lib' (/opt/sglang/lib/python3.12/site-packages/jax/_src/lib/__init__.py)
+:actor_name:TorchtitanTrainRayActor
+[2026-11-28 01:34:47.092 actor_cell00000_rank00001] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=270 packages_probed=false stored=false
+[2026-11-28 01:34:50.033 actor_cell00000_rank00001] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=270 packages_probed=true stored=false
+[2026-11-28 01:35:03.603 actor_cell00000_rank00001] compat.py:72 - Patched FSDPParam.to_accumulated_grad_if_needed with the upstream getattr guard
+[rank1]:[W1128 01:35:04.914425613 Utils.hpp:137] Warning: Environment variable TORCH_NCCL_TRACE_BUFFER_SIZE is deprecated; use TORCH_FR_BUFFER_SIZE instead (function operator())
+[2026-11-28 01:35:04.956 actor_cell00000_rank00001] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=272 packages_probed=false stored=false
+[2026-11-28 01:35:05.489 actor_cell00000_rank00001] train_actor.py:294 - Set NUMA affinity for cuda:1 (NVML index 1, PCI bus id <PCI>)
+[2026-11-28 01:35:05.568 actor_cell00000_rank00001] base.py:669 - initial_load_model_only=True has no effect without an initial_load_path.
+[2026-11-28 01:35:28.468 actor_cell00000_rank00001] utils.py:421 - torch.distributed is already initialized. Skipping init_distributed. The provided comm_config and other settings will not take effect.
+[2026-11-28 01:35:28.473 actor_cell00000_rank00001] garbage_collector.py:75 - [GC] Initial GC collection took 0.00 seconds
+[2026-11-28 01:35:28.475 actor_cell00000_rank00001] parallelism_context.py:301 - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=8, cp=1, tp=1, ep=8
+[2026-11-28 01:35:28.486 actor_cell00000_rank00001] parallelism_context.py:376 - Successfully created meshes with active axes: ['loss', 'ep', 'dp', 'dp_shard']
+[2026-11-28 01:35:28.490 actor_cell00000_rank00001] metrics.py:108 - CUDA capacity: NVIDIA H100 with 93.09GiB memory
+[2026-11-28 01:35:28.573 actor_cell00000_rank00001] flops.py:141 - Total parameter count: 26,070,382,080, active parameters: 2,674,865,664
+[2026-11-28 01:35:29.062 actor_cell00000_rank00001] fsdp.py:476 - Applied FSDP to the model
+[rank1]:W1128 01:35:29.294000 2499176 torch/distributed/tensor/_redistribute.py:394] While redistributing from (_StridedShard(dim=0, sf=8), Shard(dim=0)) to (Replicate(), Replicate()), 2 sequential all_gather operations will be performed. This is suboptimal: multiple collective operations have higher latency (separate kernel launches and synchronization points) and may give inconsistent results between ranks due to different reduction orders. it is not possible to merge non-ascending order all_gather operations.
+/opt/sglang/lib/python3.12/site-packages/torch/nn/init.py:119: UserWarning: Environment variable TORCH_NCCL_TRACE_BUFFER_SIZE is deprecated; use TORCH_FR_BUFFER_SIZE instead (Triggered internally at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:137.)
+  if not mask.any():
+[2026-11-28 01:35:33.332 actor_cell00000_rank00001] training_engine.py:434 - Model Inkling2Model.Config size: 26,070,382,080 total parameters
+[2026-11-28 01:35:33.339 actor_cell00000_rank00001] optimizer.py:356 - Optimizer AdamW (model_part=0): 670 params [.*] {'lr': 1e-06, 'betas': (0.9, 0.98), 'eps': 1e-08, 'weight_decay': 0.1, 'foreach': None, 'fused': True}
+[2026-11-28 01:35:33.342 actor_cell00000_rank00001] base.py:669 - initial_load_model_only=True has no effect without an initial_load_path.
+[2026-11-28 01:35:33.354 actor_cell00000_rank00001] dcp.py:231 - Checkpointing active. Checkpoints will be loaded from and saved to /tmp/miles-torchtitan-1zujcxh7/torchtitan/actor/checkpoint
+[2026-11-28 01:35:33.355 actor_cell00000_rank00001] parallel.py:83 - [Rank 1] titan ParallelState: dp=8 tp=1 pp=1 ep=8 pp_last=True
+[2026-11-28 01:35:33.355 actor_cell00000_rank00001] base.py:294 - Loading HF safetensors from hf_assets_path: <WORK>/miles/models/Inkling-2-Mini-bf16
+[2026-11-28 01:35:33.355 actor_cell00000_rank00001] base.py:327 - Loading the checkpoint from <WORK>/miles/models/Inkling-2-Mini-bf16.
+[2026-11-28 01:35:43.523 actor_cell00000_rank00001] garbage_collector.py:75 - [GC] GC collection for checkpoint loading. took 0.01 seconds
+[2026-11-28 01:35:43.524 actor_cell00000_rank00001] base.py:341 - Finished loading the checkpoint in 10.17 seconds.
+[2026-11-28 01:35:44.316 actor_cell00000_rank00001] memory_utils.py:41 - [Rank 1] Memory-Usage before moving the model to host: {'gpu': '1', 'total_GB': 93.09, 'free_GB': 78.94, 'used_GB': 14.15, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-28 01:36:03.456 actor_cell00000_rank00001] memory_utils.py:41 - [Rank 1] Memory-Usage after moving the model to host: {'gpu': '1', 'total_GB': 93.09, 'free_GB': 78.9, 'used_GB': 14.18, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-28 01:39:52.987 actor_cell00000_rank00001] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=273 packages_probed=true stored=false
+[2026-11-28 01:39:59.713 actor_cell00000_rank00001] memory_utils.py:41 - [Rank 1] Memory-Usage before update_weights: {'gpu': '1', 'total_GB': 93.09, 'free_GB': 29.58, 'used_GB': 63.51, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+
+[miles-colocate] Update weights: 0it [00:00, ?it/s][2026-11-28 01:40:00.541 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 1it [00:00,  1.31it/s][2026-11-28 01:40:00.554 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:00.685 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 3it [00:00,  3.99it/s][2026-11-28 01:40:00.790 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 4it [00:01,  5.00it/s][2026-11-28 01:40:00.900 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 5it [00:01,  5.86it/s][2026-11-28 01:40:00.958 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:00.992 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.037 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 8it [00:01, 10.28it/s][2026-11-28 01:40:01.067 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.113 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.143 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 11it [00:01, 14.49it/s][2026-11-28 01:40:01.190 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.219 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.265 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 14it [00:01, 17.30it/s][2026-11-28 01:40:01.295 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.342 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.372 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 17it [00:01, 20.09it/s][2026-11-28 01:40:01.417 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.446 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.493 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 20it [00:01, 21.43it/s][2026-11-28 01:40:01.523 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.569 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.601 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 23it [00:01, 23.19it/s][2026-11-28 01:40:01.646 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.676 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.723 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 26it [00:01, 23.64it/s][2026-11-28 01:40:01.753 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.800 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.830 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 29it [00:02, 24.83it/s][2026-11-28 01:40:01.876 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.905 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.952 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 32it [00:02, 24.78it/s][2026-11-28 01:40:01.981 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.057 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.140 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 35it [00:02, 21.16it/s][2026-11-28 01:40:02.192 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.220 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.267 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 38it [00:02, 21.88it/s][2026-11-28 01:40:02.385 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.433 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.466 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 41it [00:02, 19.24it/s][2026-11-28 01:40:02.517 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.550 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.596 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 44it [00:02, 20.24it/s][2026-11-28 01:40:02.627 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.672 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.702 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 47it [00:02, 22.16it/s][2026-11-28 01:40:02.748 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.785 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.828 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 50it [00:03, 22.65it/s][2026-11-28 01:40:02.857 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.905 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.934 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 53it [00:03, 24.05it/s][2026-11-28 01:40:12.503 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:12.988 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:13.081 actor_cell00000_rank00001] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 56it [00:13,  1.05s/it]
+[miles-colocate] Update weights: 56it [00:19,  2.86it/s]
+[2026-11-28 01:40:19.392 actor_cell00000_rank00001] memory_utils.py:41 - [Rank 1] Memory-Usage after update_weights: {'gpu': '1', 'total_GB': 93.09, 'free_GB': 27.85, 'used_GB': 65.24, 'allocated_GB': 12.15, 'reserved_GB': 13.89}
+[2026-11-28 01:47:16.091 actor_cell00000_rank00001] memory_utils.py:41 - [Rank 1] Memory-Usage before moving the model to device: {'gpu': '1', 'total_GB': 93.09, 'free_GB': 78.0, 'used_GB': 15.09, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-28 01:47:24.314 actor_cell00000_rank00001] memory_utils.py:41 - [Rank 1] Memory-Usage after moving the model to device: {'gpu': '1', 'total_GB': 93.09, 'free_GB': 65.85, 'used_GB': 27.23, 'allocated_GB': 24.31, 'reserved_GB': 24.31}
+[rank1]:[E1128 01:57:32.200110986 ProcessGroupNCCL.cpp:1917] [PG ID 0 PG GUID 0(default_pg) Rank 1] Observed flight recorder dump signal from another rank via TCPStore.
+[rank1]:[E1128 01:57:32.200440905 ProcessGroupNCCL.cpp:1982] [PG ID 0 PG GUID 0(default_pg) Rank 1] Received a dump signal due to a collective timeout from  rank 0 and we will try our best to dump the debug info. Last enqueued NCCL work: 880, last completed NCCL work: 880.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
+[rank1]:[E1128 01:57:32.200865373 ProcessGroupNCCL.cpp:1694] [PG ID 0 PG GUID 0(default_pg) Rank 1] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0

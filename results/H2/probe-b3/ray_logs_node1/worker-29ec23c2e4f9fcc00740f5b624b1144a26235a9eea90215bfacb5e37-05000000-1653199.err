@@ -1,0 +1,287 @@
+:job_id:05000000
+:actor_name:TrainerController
+[2026-11-28 01:34:59.909 trainer_controller_actor] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=255 packages_probed=false stored=false
+Using blocking ray.get inside async actor. This blocks the event loop. Please use `await` on object ref with asyncio.gather if you want to yield execution to the event loop instead.
+[2026-11-28 01:35:01.679 trainer_controller_actor] profiler.py:151 - Failed to load jax profiler: cannot import name 'jaxlib_extension_version' from 'jax._src.lib' (/opt/sglang/lib/python3.12/site-packages/jax/_src/lib/__init__.py)
+[2026-11-28 01:35:01.769 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.array_checkpoint_handler.ArrayCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.array_checkpoint_handler.ArrayCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.773 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.proto_checkpoint_handler.ProtoCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.proto_checkpoint_handler.ProtoCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.775 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.json_checkpoint_handler.JsonCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.json_checkpoint_handler.JsonCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.779 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.base_pytree_checkpoint_handler.BasePyTreeCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.base_pytree_checkpoint_handler.BasePyTreeCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.780 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.pytree_checkpoint_handler.PyTreeCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.pytree_checkpoint_handler.PyTreeCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.782 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.standard_checkpoint_handler.StandardCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.standard_checkpoint_handler.StandardCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.783 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.random_key_checkpoint_handler.JaxRandomKeyCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.random_key_checkpoint_handler.JaxRandomKeyCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.784 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint._src.handlers.random_key_checkpoint_handler.NumpyRandomKeyCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint._src.handlers.random_key_checkpoint_handler.NumpyRandomKeyCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.800 trainer_controller_actor] handler_type_registry.py:62 - Handler "orbax.checkpoint.test_utils.ErrorCheckpointHandler" already exists in the registry with associated type <class 'orbax.checkpoint.test_utils.ErrorCheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:01.801 trainer_controller_actor] handler_type_registry.py:62 - Handler "grain._src.python.checkpoint.handler.CheckpointHandler" already exists in the registry with associated type <class 'grain._src.python.checkpoint.handler.CheckpointHandler'>. Skipping registration.
+[2026-11-28 01:35:03.298 trainer_controller_actor] config.py:125 - JAX version 0.4.38 available.
+[2026-11-28 01:35:03.556 trainer_controller_actor] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\"}" num_packages=449 num_env_vars=255 packages_probed=true stored=false
+[2026-11-28 01:35:03.586 trainer_controller_actor] cell.py:253 - ft op=execute phase=start cell=trainer-engine-actor-00000 fn=configure_master_addr_and_port n_actors=8
+[2026-11-28 01:35:03.598 trainer_controller_actor] cell.py:264 - ft op=execute phase=end cell=trainer-engine-actor-00000 fn=configure_master_addr_and_port ok=true elapsed_s=0.0
+[2026-11-28 01:35:03.598 trainer_controller_actor] cell.py:253 - ft op=execute phase=start cell=trainer-engine-actor-00000 fn=init n_actors=8
+[2026-11-28 01:36:03.460 trainer_controller_actor] cell.py:264 - ft op=execute phase=end cell=trainer-engine-actor-00000 fn=init ok=true elapsed_s=59.9
+[2026-11-28 01:36:03.460 trainer_controller_actor] cell.py:210 - ft op=state phase=start name=_mark_as_alive cell=trainer-engine-actor-00000 from_state=StateAllocatedUninitialized
+[2026-11-28 01:36:03.461 trainer_controller_actor] cell.py:221 - ft op=state phase=end name=_mark_as_alive cell=trainer-engine-actor-00000 to_state=StateAllocatedAlive
+[2026-11-28 01:36:03.464 trainer_controller_actor] cell.py:253 - ft op=execute phase=start cell=trainer-engine-actor-00000 fn=get_train_parallel_config n_actors=8
+[2026-11-28 01:36:03.470 trainer_controller_actor] cell.py:264 - ft op=execute phase=end cell=trainer-engine-actor-00000 fn=get_train_parallel_config ok=true elapsed_s=0.0
+[2026-11-28 01:39:59.702 trainer_controller_actor] group.py:426 - ft op=update_weights phase=start rollout=
+[2026-11-28 01:39:59.703 trainer_controller_actor] cell.py:253 - ft op=execute phase=start cell=trainer-engine-actor-00000 fn=update_weights n_actors=8
+[2026-11-28 01:40:06.715 trainer_controller_actor] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\"}" num_packages=449 num_env_vars=256 packages_probed=true stored=false
+[2026-11-28 01:40:20.548 trainer_controller_actor] cell.py:264 - ft op=execute phase=end cell=trainer-engine-actor-00000 fn=update_weights ok=true elapsed_s=20.8
+[2026-11-28 01:47:16.085 trainer_controller_actor] group.py:204 - ft op=train phase=start rollout=0 attempt=0
+[2026-11-28 01:47:16.085 trainer_controller_actor] group.py:677 - ft op=refresh phase=start rollout=0 alive=0 healing= all_states="(0, 'StateAllocatedAlive')" quorum=0
+[2026-11-28 01:47:16.085 trainer_controller_actor] group.py:700 - ft op=refresh phase=decision rollout=0 needs_reconfigure=false reason=alive_config_unchanged,no_healing quorum=0
+[2026-11-28 01:47:16.085 trainer_controller_actor] cell.py:253 - ft op=execute phase=start cell=trainer-engine-actor-00000 fn=train n_actors=8
+[2026-11-28 01:58:31.792 trainer_controller_actor] cell.py:280 - ft op=execute phase=fail cell=trainer-engine-actor-00000 fn=train elapsed_s=675.7
+Traceback (most recent call last):
+  File "/root/miles/miles/ray/train/cell.py", line 258, in _execute_raw
+    result = await self._cancellabel_tasks.gather(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/utils/async_utils.py", line 194, in gather
+    return await asyncio.wait_for(asyncio.gather(*tasks), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/root/miles/miles/utils/workers/ray_worker_handle.py", line 29, in call
+    return await getattr(self._actor_handle, name).remote(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ray.exceptions.RayTaskError(RuntimeError): [36mray::TorchtitanTrainRayActor.train()[39m (pid=2499178, ip=<IP>, actor_id=140cafd2b0b9fed08a3a13e605000000, repr=<miles.backends.torchtitan_utils.actor.TorchtitanTrainRayActor object at 0x72bcadc4d520>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 184, in train
+    self._train_core(rollout_id=rollout_id, rollout_data=rollout_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 223, in _train_core
+    data_iterator, num_microbatches = self._score_rollout(runner, rollout_data)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 252, in _score_rollout
+    rollout_data.update(self._log_probs(runner, data_iterator, num_microbatches))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 294, in _log_probs
+    forward_store.extend(runner.forward_only_step(batches, compute))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/trainer.py", line 298, in forward_only_step
+    return self.trainer.run_forward(batches, compute)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/trainer.py", line 228, in run_forward
+    self.loss_fn(self.model_parts[0](inputs, **model_kwargs), labels)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1889, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1837, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py", line 321, in forward
+    blocks, partial = self._run_layer(layer, blocks, partial, docs)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py", line 293, in _run_layer
+    return layer(blocks, partial, docs, messages)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1889, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1837, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py", line 180, in forward
+    mlp = self.mlp_sconv(self.feed_forward(self.mlp_norm(mlp_input)), docs.positions)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/base/module.py", line 311, in forward_with_redistribution
+    outputs = fn(*args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/moe.py", line 814, in forward
+    out_TD = self.routed_experts(
+             ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/base/module.py", line 311, in forward_with_redistribution
+    outputs = fn(*args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/runtime.py", line 1396, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/moe.py", line 130, in forward
+    ) = self.token_dispatcher.dispatch(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py", line 423, in dispatch
+    ) = remat.region(
+        ^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch_remat/_api.py", line 437, in wrapper
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py", line 490, in _dispatch
+    num_global_tokens_per_local_expert_EP_e = self._token_count_exchange(
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py", line 276, in _token_count_exchange
+    return spmd.all_to_all(
+           ^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/_traceback.py", line 174, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/_collectives.py", line 1220, in all_to_all
+    return _AllToAllStack.apply(x, pg, split_dim, concat_dim, dtype_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/_collectives.py", line 922, in forward
+    _dist.dist.all_to_all(output_chunks, input_chunks, group=pg)
+  File "/opt/sglang/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 6267, in all_to_all
+    work = group.alltoall(output_tensor_list, input_tensor_list, opts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: NCCL Error 3: internal error - please report this issue to the NCCL developers
+[2026-11-28 01:58:31.799 trainer_controller_actor] cell.py:210 - ft op=state phase=start name=_mark_as_errored cell=trainer-engine-actor-00000 from_state=StateAllocatedAlive
+[2026-11-28 01:58:31.800 trainer_controller_actor] cell.py:221 - ft op=state phase=end name=_mark_as_errored cell=trainer-engine-actor-00000 to_state=StateAllocatedErrored
+[2026-11-28 01:58:31.800 trainer_controller_actor] cell.py:160 - ft op=confirm_dead phase=start cell=trainer-engine-actor-00000 n_actors=8
+[2026-11-28 01:58:41.810 trainer_controller_actor] cell.py:337 - Timed out asking a worker to kill itself; falling back to the death confirmation probe
+[2026-11-28 01:58:41.810 trainer_controller_actor] cell.py:337 - Timed out asking a worker to kill itself; falling back to the death confirmation probe
+[2026-11-28 01:58:41.810 trainer_controller_actor] cell.py:337 - Timed out asking a worker to kill itself; falling back to the death confirmation probe
+[2026-11-28 01:58:41.811 trainer_controller_actor] cell.py:337 - Timed out asking a worker to kill itself; falling back to the death confirmation probe
+[2026-11-28 01:58:43.829 trainer_controller_actor] cell.py:166 - ft op=confirm_dead phase=end cell=trainer-engine-actor-00000 elapsed_s=12.0
+[2026-11-28 01:58:43.829 trainer_controller_actor] async_utils.py:163 - execute_all_alive_and_catch#train error index=0
+Traceback (most recent call last):
+  File "/root/miles/miles/ray/train/cell.py", line 115, in train
+    return await self._execute_raw(
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/ray/train/cell.py", line 258, in _execute_raw
+    result = await self._cancellabel_tasks.gather(
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/utils/async_utils.py", line 194, in gather
+    return await asyncio.wait_for(asyncio.gather(*tasks), timeout=timeout)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/python/cpython-3.12.16-linux-x86_64-gnu/lib/python3.12/asyncio/tasks.py", line 520, in wait_for
+    return await fut
+           ^^^^^^^^^
+  File "/root/miles/miles/utils/workers/ray_worker_handle.py", line 29, in call
+    return await getattr(self._actor_handle, name).remote(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ray.exceptions.RayTaskError(RuntimeError): [36mray::TorchtitanTrainRayActor.train()[39m (pid=2499178, ip=<IP>, actor_id=140cafd2b0b9fed08a3a13e605000000, repr=<miles.backends.torchtitan_utils.actor.TorchtitanTrainRayActor object at 0x72bcadc4d520>)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 184, in train
+    self._train_core(rollout_id=rollout_id, rollout_data=rollout_data)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 223, in _train_core
+    data_iterator, num_microbatches = self._score_rollout(runner, rollout_data)
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 252, in _score_rollout
+    rollout_data.update(self._log_probs(runner, data_iterator, num_microbatches))
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/training_utils/torch_native/actor.py", line 294, in _log_probs
+    forward_store.extend(runner.forward_only_step(batches, compute))
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/trainer.py", line 298, in forward_only_step
+    return self.trainer.run_forward(batches, compute)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/trainer.py", line 228, in run_forward
+    self.loss_fn(self.model_parts[0](inputs, **model_kwargs), labels)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1889, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1837, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py", line 321, in forward
+    blocks, partial = self._run_layer(layer, blocks, partial, docs)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py", line 293, in _run_layer
+    return layer(blocks, partial, docs, messages)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1889, in _call_impl
+    return inner()
+           ^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1837, in inner
+    result = forward_call(*args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py", line 180, in forward
+    mlp = self.mlp_sconv(self.feed_forward(self.mlp_norm(mlp_input)), docs.positions)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/base/module.py", line 311, in forward_with_redistribution
+    outputs = fn(*args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/moe.py", line 814, in forward
+    out_TD = self.routed_experts(
+             ^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1783, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1794, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/base/module.py", line 311, in forward_with_redistribution
+    outputs = fn(*args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/runtime.py", line 1396, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/moe.py", line 130, in forward
+    ) = self.token_dispatcher.dispatch(
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py", line 423, in dispatch
+    ) = remat.region(
+        ^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch_remat/_api.py", line 437, in wrapper
+    return function(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py", line 490, in _dispatch
+    num_global_tokens_per_local_expert_EP_e = self._token_count_exchange(
+                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py", line 276, in _token_count_exchange
+    return spmd.all_to_all(
+           ^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/_traceback.py", line 174, in wrapper
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/_collectives.py", line 1220, in all_to_all
+    return _AllToAllStack.apply(x, pg, split_dim, concat_dim, dtype_options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/spmd_types/_collectives.py", line 922, in forward
+    _dist.dist.all_to_all(output_chunks, input_chunks, group=pg)
+  File "/opt/sglang/lib/python3.12/site-packages/torch/distributed/c10d_logger.py", line 83, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/sglang/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py", line 6267, in all_to_all
+    work = group.alltoall(output_tensor_list, input_tensor_list, opts)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: NCCL Error 3: internal error - please report this issue to the NCCL developers
+[2026-11-28 01:58:43.831 trainer_controller_actor] group.py:288 - ft op=check errored=0 discarded= normal= decision=give_up reason="all alive cells failed"

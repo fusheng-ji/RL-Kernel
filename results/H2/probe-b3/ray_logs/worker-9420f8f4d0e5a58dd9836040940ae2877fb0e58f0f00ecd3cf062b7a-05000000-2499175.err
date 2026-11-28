@@ -1,0 +1,316 @@
+:job_id:05000000
+WARNING:absl:Failed to load jax profiler: cannot import name 'jaxlib_extension_version' from 'jax._src.lib' (/opt/sglang/lib/python3.12/site-packages/jax/_src/lib/__init__.py)
+:actor_name:TorchtitanTrainRayActor
+[2026-11-28 01:34:47.156 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=270 packages_probed=false stored=false
+[2026-11-28 01:34:50.084 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=270 packages_probed=true stored=false
+[2026-11-28 01:35:03.603 actor_cell00000_rank00000] compat.py:72 - Patched FSDPParam.to_accumulated_grad_if_needed with the upstream getattr guard
+[rank0]:[W1128 01:35:04.913914656 Utils.hpp:137] Warning: Environment variable TORCH_NCCL_TRACE_BUFFER_SIZE is deprecated; use TORCH_FR_BUFFER_SIZE instead (function operator())
+[2026-11-28 01:35:04.951 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{}" num_packages=0 num_env_vars=272 packages_probed=false stored=false
+[2026-11-28 01:35:05.507 actor_cell00000_rank00000] train_actor.py:294 - Set NUMA affinity for cuda:0 (NVML index 0, PCI bus id <PCI>)
+[2026-11-28 01:35:05.578 actor_cell00000_rank00000] base.py:669 - initial_load_model_only=True has no effect without an initial_load_path.
+[2026-11-28 01:35:28.466 actor_cell00000_rank00000] utils.py:421 - torch.distributed is already initialized. Skipping init_distributed. The provided comm_config and other settings will not take effect.
+[2026-11-28 01:35:28.466 actor_cell00000_rank00000] garbage_collector.py:75 - [GC] Initial GC collection took 0.00 seconds
+[2026-11-28 01:35:28.466 actor_cell00000_rank00000] parallelism_context.py:301 - Building device mesh with parallelism: pp=1, dp_replicate=1, dp_shard=8, cp=1, tp=1, ep=8
+[2026-11-28 01:35:28.477 actor_cell00000_rank00000] parallelism_context.py:376 - Successfully created meshes with active axes: ['loss', 'ep', 'dp', 'dp_shard']
+[2026-11-28 01:35:28.481 actor_cell00000_rank00000] metrics.py:108 - CUDA capacity: NVIDIA H100 with 93.09GiB memory
+[2026-11-28 01:35:28.566 actor_cell00000_rank00000] flops.py:141 - Total parameter count: 26,070,382,080, active parameters: 2,674,865,664
+[2026-11-28 01:35:29.062 actor_cell00000_rank00000] fsdp.py:476 - Applied FSDP to the model
+[rank0]:W1128 01:35:29.293000 2499175 torch/distributed/tensor/_redistribute.py:394] While redistributing from (_StridedShard(dim=0, sf=8), Shard(dim=0)) to (Replicate(), Replicate()), 2 sequential all_gather operations will be performed. This is suboptimal: multiple collective operations have higher latency (separate kernel launches and synchronization points) and may give inconsistent results between ranks due to different reduction orders. it is not possible to merge non-ascending order all_gather operations.
+/opt/sglang/lib/python3.12/site-packages/torch/nn/init.py:119: UserWarning: Environment variable TORCH_NCCL_TRACE_BUFFER_SIZE is deprecated; use TORCH_FR_BUFFER_SIZE instead (Triggered internally at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/Utils.hpp:137.)
+  if not mask.any():
+[2026-11-28 01:35:33.334 actor_cell00000_rank00000] training_engine.py:434 - Model Inkling2Model.Config size: 26,070,382,080 total parameters
+[2026-11-28 01:35:33.340 actor_cell00000_rank00000] optimizer.py:356 - Optimizer AdamW (model_part=0): 670 params [.*] {'lr': 1e-06, 'betas': (0.9, 0.98), 'eps': 1e-08, 'weight_decay': 0.1, 'foreach': None, 'fused': True}
+[2026-11-28 01:35:33.344 actor_cell00000_rank00000] base.py:669 - initial_load_model_only=True has no effect without an initial_load_path.
+[2026-11-28 01:35:33.354 actor_cell00000_rank00000] dcp.py:231 - Checkpointing active. Checkpoints will be loaded from and saved to /tmp/miles-torchtitan-4u6z35u8/torchtitan/actor/checkpoint
+[2026-11-28 01:35:33.356 actor_cell00000_rank00000] parallel.py:83 - [Rank 0] titan ParallelState: dp=8 tp=1 pp=1 ep=8 pp_last=True
+[2026-11-28 01:35:33.356 actor_cell00000_rank00000] base.py:294 - Loading HF safetensors from hf_assets_path: <WORK>/miles/models/Inkling-2-Mini-bf16
+[2026-11-28 01:35:33.356 actor_cell00000_rank00000] base.py:327 - Loading the checkpoint from <WORK>/miles/models/Inkling-2-Mini-bf16.
+[2026-11-28 01:35:43.521 actor_cell00000_rank00000] garbage_collector.py:75 - [GC] GC collection for checkpoint loading. took 0.01 seconds
+[2026-11-28 01:35:43.521 actor_cell00000_rank00000] base.py:341 - Finished loading the checkpoint in 10.17 seconds.
+[2026-11-28 01:35:44.296 actor_cell00000_rank00000] timer.py:33 - Timer sleep start
+[2026-11-28 01:35:44.297 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage before moving the model to host: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 78.88, 'used_GB': 14.2, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-28 01:36:03.456 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage after moving the model to host: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 78.84, 'used_GB': 14.24, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-28 01:36:03.457 actor_cell00000_rank00000] timer.py:44 - Timer sleep end (elapsed: 19.2s)
+[2026-11-28 01:36:03.457 actor_cell00000_rank00000] timer.py:33 - Timer train_wait start
+[2026-11-28 01:39:53.043 actor_cell00000_rank00000] reporter.py:90 - audit op=env_report_summary hostname=node-x versions="{\"python\":\"3.12.16\",\"platform\":\"Linux-6.8.0-136-generic-x86_64-with-glibc2.39\",\"miles\":\"0.2.0\",\"sglang\":\"0.5.24.dev105+g6840aa6\",\"sglang-router\":\"0.3.2\",\"megatron-core\":\"0.19.0+8e43d3852\",\"transformers\":\"5.19.0\",\"ray\":\"2.58.2\",\"flashinfer-python\":\"0.7.2\",\"torch\":\"2.14.1+cu130\",\"torch_cuda\":\"13.0\"}" repos="{\"sglang\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"radix-transfer-plugins\":\"99f0be56153d55b79b08301543ab046583890ccc-dirty-eb65e79ccc97\",\"megatron-core\":\"8e43d38528aac22fef29d30db7a709041bf257cc\",\"miles\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"miles-dashboard\":\"1e1d3fe833fcd79c072c35149a56937536492559\",\"sgl-nvidia-mega\":\"6fd7ac30371a45ef246bb9db2e3559c398156feb\",\"torchtitan\":\"45e33cd413b64cb37a7840cfd3c9765d3c639ae1\"}" num_packages=449 num_env_vars=273 packages_probed=true stored=false
+[2026-11-28 01:39:59.707 actor_cell00000_rank00000] timer.py:33 - Timer update_weights start
+[2026-11-28 01:39:59.713 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage before update_weights: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 29.52, 'used_GB': 63.57, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-28 01:39:59.744 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20035/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.744 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.745 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20068/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.745 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.746 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20072/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.746 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20037/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.747 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20107/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.749 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/pause_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.754 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20035/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.755 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20105/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.755 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20072/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.756 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20068/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.756 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20037/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.756 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20000/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.757 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20000/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.757 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: GET http://<IP>:20107/flush_cache "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.769 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20035/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.770 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.770 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20072/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.770 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.771 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.771 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20037/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.771 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20107/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.772 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20068/begin_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:39:59.780 actor_cell00000_rank00000] timer.py:33 - Timer update_weights_implementation start
+
+[miles-colocate] Update weights: 0it [00:00, ?it/s][2026-11-28 01:40:00.519 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 1it [00:00,  1.35it/s][2026-11-28 01:40:00.554 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:00.688 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 3it [00:00,  3.93it/s][2026-11-28 01:40:00.790 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 4it [00:01,  4.96it/s][2026-11-28 01:40:00.900 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 5it [00:01,  5.83it/s][2026-11-28 01:40:00.958 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:00.991 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.038 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 8it [00:01, 10.23it/s][2026-11-28 01:40:01.067 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.114 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.144 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 11it [00:01, 14.44it/s][2026-11-28 01:40:01.190 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.220 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.265 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 14it [00:01, 17.25it/s][2026-11-28 01:40:01.295 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.342 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.372 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 17it [00:01, 20.06it/s][2026-11-28 01:40:01.417 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.447 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.493 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 20it [00:01, 21.43it/s][2026-11-28 01:40:01.523 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.569 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.602 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 23it [00:01, 23.14it/s][2026-11-28 01:40:01.647 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.676 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.723 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 26it [00:01, 23.64it/s][2026-11-28 01:40:01.753 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.801 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.831 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 29it [00:02, 24.79it/s][2026-11-28 01:40:01.876 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.906 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:01.952 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 32it [00:02, 24.77it/s][2026-11-28 01:40:01.982 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.057 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.141 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 35it [00:02, 21.16it/s][2026-11-28 01:40:02.191 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.220 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.267 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 38it [00:02, 21.90it/s][2026-11-28 01:40:02.385 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.433 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.466 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 41it [00:02, 19.25it/s][2026-11-28 01:40:02.518 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.550 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.596 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 44it [00:02, 20.24it/s][2026-11-28 01:40:02.626 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.672 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.702 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 47it [00:02, 22.17it/s][2026-11-28 01:40:02.749 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.778 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.828 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 50it [00:03, 22.62it/s][2026-11-28 01:40:02.858 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.905 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:02.935 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 53it [00:03, 24.01it/s][2026-11-28 01:40:11.886 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:12.339 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+[2026-11-28 01:40:12.427 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weights_from_tensor "HTTP/1.1 200 OK"
+
+[miles-colocate] Update weights: 56it [00:12,  1.02it/s][2026-11-28 01:40:19.315 actor_cell00000_rank00000] timer.py:44 - Timer update_weights_implementation end (elapsed: 19.5s)
+[2026-11-28 01:40:19.315 actor_cell00000_rank00000] timer.py:33 - Timer finalize_and_resume_engines start
+[2026-11-28 01:40:19.333 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20035/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.333 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20072/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.334 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.335 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20037/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.335 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20068/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.336 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.336 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.337 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20107/end_weight_update "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.344 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20035/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.344 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20072/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.345 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.346 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.346 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20037/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.347 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20107/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.347 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.347 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20068/update_weight_version "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.354 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20072/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.355 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20105/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.356 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20035/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.356 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.357 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20000/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.357 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20037/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.357 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20107/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.358 actor_cell00000_rank00000] _client.py:1740 - HTTP Request: POST http://<IP>:20068/continue_generation "HTTP/1.1 200 OK"
+[2026-11-28 01:40:19.365 actor_cell00000_rank00000] timer.py:44 - Timer finalize_and_resume_engines end (elapsed: 0.0s)
+
+[miles-colocate] Update weights: 56it [00:19,  2.86it/s]
+[2026-11-28 01:40:19.399 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage after update_weights: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 27.79, 'used_GB': 65.29, 'allocated_GB': 12.15, 'reserved_GB': 13.89}
+[2026-11-28 01:40:19.913 actor_cell00000_rank00000] timer.py:44 - Timer update_weights end (elapsed: 20.2s)
+[2026-11-28 01:47:16.089 actor_cell00000_rank00000] timer.py:33 - Timer wake_up start
+[2026-11-28 01:47:16.090 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage before moving the model to device: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 77.91, 'used_GB': 15.17, 'allocated_GB': 12.15, 'reserved_GB': 12.17}
+[2026-11-28 01:47:24.315 actor_cell00000_rank00000] memory_utils.py:41 - [Rank 0] Memory-Usage after moving the model to device: {'gpu': '0', 'total_GB': 93.09, 'free_GB': 65.77, 'used_GB': 27.32, 'allocated_GB': 24.31, 'reserved_GB': 24.31}
+[2026-11-28 01:47:24.315 actor_cell00000_rank00000] timer.py:44 - Timer wake_up end (elapsed: 8.2s)
+[2026-11-28 01:47:24.315 actor_cell00000_rank00000] timer.py:44 - Timer train_wait end (elapsed: 680.9s)
+[2026-11-28 01:47:24.315 actor_cell00000_rank00000] timer.py:33 - Timer train start
+[2026-11-28 01:47:24.368 actor_cell00000_rank00000] timer.py:33 - Timer log_probs start
+
+log_probs:   0%|          | 0/32 [00:00<?, ?it/s]
+log_probs: 100%|██████████| 32/32 [00:00<00:00, 1108.96it/s]
+[rank0]:[E1128 01:57:31.536917580 ProcessGroupNCCL.cpp:741] [PG GUID 0(default_pg) Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=881, OpType=ALLTOALL, NumelIn=128, NumelOut=128, Timeout(ms)=600000) ran for 600077 milliseconds before timing out.
+[rank0]:[E1128 01:57:31.537819006 ProcessGroupNCCL.cpp:2390] [PG ID 0 PG GUID 0(default_pg) Rank 0]  failure detected by watchdog at work sequence id: 881 PG status: last enqueued work: 881, last started work: -1 (), last completed work: 880
+[rank0]:[E1128 01:57:31.538963131 ProcessGroupNCCL.cpp:785] Stack trace of the failed collective: 
+#0 all_to_all from /opt/sglang/lib/python3.12/site-packages/torch/distributed/distributed_c10d.py:6267
+#1 wrapper from /opt/sglang/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83
+#2 forward from /opt/sglang/lib/python3.12/site-packages/spmd_types/_collectives.py:922
+#3 all_to_all from /opt/sglang/lib/python3.12/site-packages/spmd_types/_collectives.py:1220
+#4 wrapper from /opt/sglang/lib/python3.12/site-packages/spmd_types/_traceback.py:174
+#5 _token_count_exchange from /root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py:276
+#6 _dispatch from /root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py:490
+#7 wrapper from /opt/sglang/lib/python3.12/site-packages/torch_remat/_api.py:437
+#8 dispatch from /root/torchtitan/torchtitan/models/common/moe/token_dispatcher.py:423
+#9 forward from /root/torchtitan/torchtitan/models/common/moe/moe.py:130
+#10 wrapper from /opt/sglang/lib/python3.12/site-packages/spmd_types/runtime.py:1396
+#11 forward_with_redistribution from /root/torchtitan/torchtitan/models/base/module.py:311
+#12 _call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1794
+#13 _wrapped_call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1783
+#14 forward from /root/torchtitan/torchtitan/models/common/moe/moe.py:814
+#15 forward_with_redistribution from /root/torchtitan/torchtitan/models/base/module.py:311
+#16 _call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1794
+#17 _wrapped_call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1783
+#18 forward from /root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py:180
+#19 inner from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1837
+#20 _call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1889
+#21 _wrapped_call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1783
+#22 _run_layer from /root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py:293
+#23 forward from /root/miles/miles/backends/torchtitan_utils/models/inkling2/model.py:321
+#24 inner from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1837
+#25 _call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1889
+#26 _wrapped_call_impl from /opt/sglang/lib/python3.12/site-packages/torch/nn/modules/module.py:1783
+#27 run_forward from /root/miles/miles/backends/torchtitan_utils/trainer.py:228
+#28 forward_only_step from /root/miles/miles/backends/torchtitan_utils/trainer.py:298
+#29 _log_probs from /root/miles/miles/backends/training_utils/torch_native/actor.py:294
+#30 decorate_context from /opt/sglang/lib/python3.12/site-packages/torch/utils/_contextlib.py:124
+#31 _resume_span from /opt/sglang/lib/python3.12/site-packages/ray/util/tracing/tracing_helper.py:487
+#32 _score_rollout from /root/miles/miles/backends/training_utils/torch_native/actor.py:252
+#33 _resume_span from /opt/sglang/lib/python3.12/site-packages/ray/util/tracing/tracing_helper.py:487
+#34 _train_core from /root/miles/miles/backends/training_utils/torch_native/actor.py:223
+#35 _resume_span from /opt/sglang/lib/python3.12/site-packages/ray/util/tracing/tracing_helper.py:487
+#36 train from /root/miles/miles/backends/training_utils/torch_native/actor.py:184
+#37 _resume_span from /opt/sglang/lib/python3.12/site-packages/ray/util/tracing/tracing_helper.py:487
+#38 actor_method_executor from /opt/sglang/lib/python3.12/site-packages/ray/_private/function_manager.py:740
+#39 main_loop from /opt/sglang/lib/python3.12/site-packages/ray/_private/worker.py:1066
+#40 <module> from /opt/sglang/lib/python3.12/site-packages/ray/_private/workers/default_worker.py:323
+
+[rank0]:[E1128 01:57:31.539127141 ProcessGroupNCCL.cpp:2732] [PG ID 0 PG GUID 0(default_pg) Rank 0] First PG on this rank to signal dumping.
+[rank0]:[E1128 01:57:32.322270960 ProcessGroupNCCL.cpp:1982] [PG ID 0 PG GUID 0(default_pg) Rank 0] Received a dump signal due to a collective timeout from this local rank and we will try our best to dump the debug info. Last enqueued NCCL work: 881, last completed NCCL work: 880.This is most likely caused by incorrect usages of collectives, e.g., wrong sizes used across ranks, the order of collectives is not same for all ranks or the scheduled collective, for some reason, didn't run. Additionally, this can be caused by GIL deadlock or other reasons such as network errors or bugs in the communications library (e.g. NCCL), etc. 
+[rank0]:[E1128 01:57:32.322910357 ProcessGroupNCCL.cpp:1694] [PG ID 0 PG GUID 0(default_pg) Rank 0] ProcessGroupNCCL preparing to dump debug info. Include stack trace: 1, only active collectives: 0
+[rank0]:[E1128 01:58:31.539261202 ProcessGroupNCCL.cpp:802] [PG GUID 0(default_pg) Rank 0] Some NCCL operations have failed or timed out. Due to the asynchronous nature of CUDA kernels, subsequent GPU operations might run on corrupted/incomplete data.
+[rank0]:[E1128 01:58:31.539327652 ProcessGroupNCCL.cpp:816] [PG GUID 0(default_pg) Rank 0] To avoid data inconsistency, we are taking the entire process down.
+[rank0]:[E1128 01:58:31.540827715 ProcessGroupNCCL.cpp:2192] [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [PG GUID 0(default_pg) Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=881, OpType=ALLTOALL, NumelIn=128, NumelOut=128, Timeout(ms)=600000) ran for 600077 milliseconds before timing out.
+Exception raised from checkTimeout at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:744 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x791fc835e60d in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x791fc835f5e2 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistBackendError::DistBackendError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x791fc835f712 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2a7 (0x78efb97c5847 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x15b1 (0x78efb97d17e1 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x78efb97d2a57 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x791fe4eecdb4 in /usr/lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9cb84 (0x791fe7a9cb84 in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129ecc (0x791fe7b29ecc in /usr/lib/x86_64-linux-gnu/libc.so.6)
+
+[2026-11-28 01:58:31,619 E 2499175 2500378] logging.cc:118: Unhandled exception: N3c1016DistBackendErrorE. what(): [PG ID 0 PG GUID 0(default_pg) Rank 0] Process group watchdog thread terminated with exception: [PG GUID 0(default_pg) Rank 0] Watchdog caught collective operation timeout: WorkNCCL(SeqNum=881, OpType=ALLTOALL, NumelIn=128, NumelOut=128, Timeout(ms)=600000) ran for 600077 milliseconds before timing out.
+Exception raised from checkTimeout at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:744 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x791fc835e60d in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x791fc835f5e2 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistBackendError::DistBackendError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x791fc835f712 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: c10d::ProcessGroupNCCL::WorkNCCL::checkTimeout(std::optional<std::chrono::duration<long, std::ratio<1l, 1000l> > >) + 0x2a7 (0x78efb97c5847 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: c10d::ProcessGroupNCCL::Watchdog::runLoop() + 0x15b1 (0x78efb97d17e1 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #5: c10d::ProcessGroupNCCL::Watchdog::run() + 0x157 (0x78efb97d2a57 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #6: <unknown function> + 0xecdb4 (0x791fe4eecdb4 in /usr/lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #7: <unknown function> + 0x9cb84 (0x791fe7a9cb84 in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #8: <unknown function> + 0x129ecc (0x791fe7b29ecc in /usr/lib/x86_64-linux-gnu/libc.so.6)
+
+Exception raised from run at /__w/pytorch/pytorch/torch/csrc/distributed/c10d/ProcessGroupNCCL.cpp:2198 (most recent call first):
+frame #0: c10::Error::Error(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x9d (0x791fc835e60d in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #1: c10::DistError::DistError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x791fc835f5e2 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #2: c10::DistBackendError::DistBackendError(c10::SourceLocation, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >) + 0x72 (0x791fc835f712 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libc10.so)
+frame #3: <unknown function> + 0x6cf968 (0x78efb8ecf968 in /opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so)
+frame #4: <unknown function> + 0xecdb4 (0x791fe4eecdb4 in /usr/lib/x86_64-linux-gnu/libstdc++.so.6)
+frame #5: <unknown function> + 0x9cb84 (0x791fe7a9cb84 in /usr/lib/x86_64-linux-gnu/libc.so.6)
+frame #6: <unknown function> + 0x129ecc (0x791fe7b29ecc in /usr/lib/x86_64-linux-gnu/libc.so.6)
+ /opt/sglang/lib/python3.12/site-packages/ray/_raylet.so(+0x183e98a) [0x791fe6a3e98a] ray::operator<<()
+/opt/sglang/lib/python3.12/site-packages/ray/_raylet.so(+0x183f43c) [0x791fe6a3f43c] ray::RayLog::operator<< <>()
+/opt/sglang/lib/python3.12/site-packages/ray/_raylet.so(+0x90aca3) [0x791fe5b0aca3] ray::TerminateHandler()
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb0da) [0x791fe4ebb0da]
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(_ZSt10unexpectedv+0) [0x791fe4ea5a55] std::unexpected()
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb0c1) [0x791fe4ebb0c1]
+/opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so(+0x6cfa10) [0x78efb8ecfa10] c10d::ProcessGroupNCCL::Watchdog::run()
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(+0xecdb4) [0x791fe4eecdb4]
+/usr/lib/x86_64-linux-gnu/libc.so.6(+0x9cb84) [0x791fe7a9cb84]
+/usr/lib/x86_64-linux-gnu/libc.so.6(+0x129ecc) [0x791fe7b29ecc]
+
+[2026-11-28 01:58:31,628 E 2499175 2500378] logging.cc:125: Stack trace: 
+ /opt/sglang/lib/python3.12/site-packages/ray/_raylet.so(+0x183e98a) [0x791fe6a3e98a] ray::operator<<()
+/opt/sglang/lib/python3.12/site-packages/ray/_raylet.so(+0x183f43c) [0x791fe6a3f43c] ray::RayLog::operator<< <>()
+/opt/sglang/lib/python3.12/site-packages/ray/_raylet.so(+0x18419f8) [0x791fe6a419f8] ray::TerminateHandler()
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb0da) [0x791fe4ebb0da]
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(_ZSt10unexpectedv+0) [0x791fe4ea5a55] std::unexpected()
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(+0xbb0c1) [0x791fe4ebb0c1]
+/opt/sglang/lib/python3.12/site-packages/torch/lib/libtorch_cuda.so(+0x6cfa10) [0x78efb8ecfa10] c10d::ProcessGroupNCCL::Watchdog::run()
+/usr/lib/x86_64-linux-gnu/libstdc++.so.6(+0xecdb4) [0x791fe4eecdb4]
+/usr/lib/x86_64-linux-gnu/libc.so.6(+0x9cb84) [0x791fe7a9cb84]
+/usr/lib/x86_64-linux-gnu/libc.so.6(+0x129ecc) [0x791fe7b29ecc]
+
+*** SIGABRT received at time=1795827511 on cpu 49 ***
+PC: @     0x791fe7a9ec0c  (unknown)  pthread_kill
+    @     0x791fe7a45330       3136  (unknown)
+    @     0x791fe7a4527e         32  raise
+    @     0x791fe7a288ff        192  abort
+    @     0x791fe5b0ab8e       1184  ray::TerminateHandler()
+    @     0x791fe4ebb0da         16  (unknown)
+    @     0x791fe4ea5a55         16  std::terminate()
+    @     0x791fe4ebb0c1         32  std::rethrow_exception()
+    @     0x78efb8ecfa10        880  c10d::ProcessGroupNCCL::Watchdog::run()
+    @     0x791fe4eecdb4         32  (unknown)
+    @     0x791fe7a9cb84        176  (unknown)
+    @     0x791fe7b29ecc  (unknown)  (unknown)
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474: *** SIGABRT received at time=1795827511 on cpu 49 ***
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474: PC: @     0x791fe7a9ec0c  (unknown)  pthread_kill
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe7a45330       3136  (unknown)
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe7a4527e         32  raise
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe7a288ff        192  abort
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe5b0ab8e       1184  ray::TerminateHandler()
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe4ebb0da         16  (unknown)
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe4ea5a55         16  std::terminate()
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe4ebb0c1         32  std::rethrow_exception()
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x78efb8ecfa10        880  c10d::ProcessGroupNCCL::Watchdog::run()
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe4eecdb4         32  (unknown)
+[2026-11-28 01:58:31,643 E 2499175 2500378] logging.cc:474:     @     0x791fe7a9cb84        176  (unknown)
+[2026-11-28 01:58:31,644 E 2499175 2500378] logging.cc:474:     @     0x791fe7b29ecc  (unknown)  (unknown)
+Fatal Python error: Aborted
+
+
+Extension modules: msgpack._cmsgpack, google._upb._message, psutil._psutil_linux, charset_normalizer.md, charset_normalizer.cd, simplejson._speedups, requests.packages.charset_normalizer.md, requests.packages.chardet.md, requests.packages.charset_normalizer.cd, requests.packages.chardet.cd, yaml._yaml, uvloop.loop, ray._raylet, wcwidth._wcwidth_c, numpy._core._multiarray_umath, numpy.linalg._umath_linalg, torch._C, torch._C._dynamo.autograd_compiler, torch._C._dynamo.eval_frame, torch._C._dynamo.guards, torch._C._dynamo.utils, torch._C._fft, torch._C._linalg, torch._C._nested, torch._C._nn, torch._C._sparse, torch._C._special, cuda.bindings._internal.utils, cuda.bindings._internal.driver, cuda.bindings.cydriver, cuda.bindings.driver, cuda.bindings._internal.runtime_ptds, cuda.bindings._internal.runtime, cuda.bindings.cyruntime, cuda.bindings.runtime, numpy.random._common, numpy.random.bit_generator, numpy.random._bounded_integers, numpy.random._pcg64, numpy.random._mt19937, numpy.random._generator, numpy.random._philox, numpy.random._sfc64, numpy.random.mtrand, xxhash._xxhash, markupsafe._speedups, zstandard.backend_c, cuda.bindings._internal.nvrtc, cuda.bindings.cynvrtc, cuda.bindings.nvrtc, jaxlib.cpu_feature_guard, lz4._version, lz4.frame._frame, pyarrow.lib, _cyutility, pandas._libs._cyutility, pandas._libs.tslibs.ccalendar, pandas._libs.tslibs.np_datetime, pandas._libs.tslibs.dtypes, pandas._libs.tslibs.base, pandas._libs.tslibs.nattype, pandas._libs.tslibs.timezones, pandas._libs.properties, pandas._libs.tslibs.fields, pandas._libs.tslibs.timedeltas, pandas._libs.tslibs.tzconversion, pandas._libs.tslibs.timestamps, pandas._libs.tslibs.offsets, pandas._libs.tslibs.strptime, pandas._libs.tslibs.parsing, pandas._libs.tslibs.conversion, pandas._libs.tslibs.period, pandas._libs.tslibs.vectorized, pandas._libs.ops_dispatch, pandas._libs.missing, pandas._libs.hashtable, pandas._libs.algos, pandas._libs.interval, pandas._libs.lib, pyarrow._compute, pandas._libs.ops, pandas._libs.groupby, pandas._libs.hashing, pandas._libs.arrays, pandas._libs.tslib, pandas._libs.sparse, pandas._libs.internals, pandas._libs.index, pandas._libs.writers, pandas._libs.join, pandas._libs.indexing, pandas._libs.window.aggregations, pandas._libs.window.indexers, pandas._libs.reshape, pandas._libs._ujson, pandas._libs.parsers, pandas._libs.testing, pyarrow._acero, pyarrow._fs, pyarrow._csv, pyarrow._json, pyarrow._substrait, pyarrow._dataset, pyarrow._dataset_orc, pyarrow._parquet, pyarrow._azurefs, pyarrow._hdfs, pyarrow._gcsfs, pyarrow._s3fs, pyarrow._parquet_encryption, pyarrow._dataset_parquet_encryption, pyarrow._dataset_parquet, pybase64._pybase64, multidict._multidict, yarl._quoting_c, propcache._helpers_c, aiohttp._http_writer, aiohttp._http_parser, aiohttp._websocket.mask, aiohttp._websocket.reader_c, frozenlist._frozenlist, msgspec._core, zmq.backend.cython._zmq, regex._regex, PIL._imaging, setproctitle._setproctitle, cython.cimports.libc.math, tvm_ffi.core, sentencepiece._sentencepiece, PIL._imagingft, _cffi_backend, scipy._cyutility, scipy._lib._ccallback_c, scipy.linalg._fblas, scipy.linalg._flapack, scipy.linalg._batched_linalg, scipy.linalg._cythonized_array_utils, scipy.linalg._solve_toeplitz, scipy.linalg._internal_matfuncs, scipy.linalg._linalg_pythran, scipy.linalg.cython_blas, scipy.linalg.cython_lapack, scipy.linalg._decomp_update, scipy.sparse._sparsetools, _csparsetools, scipy.sparse._csparsetools, scipy.sparse.linalg._dsolve._superlu, scipy.sparse.linalg._eigen.arpack._arpacklib, scipy.sparse.linalg._propack, scipy.optimize._group_columns, scipy._lib.messagestream, scipy.optimize._trlib._trlib, scipy.optimize._lbfgsb, _moduleTNC, scipy.optimize._moduleTNC, scipy.optimize._slsqplib, scipy.optimize._minpack, scipy.optimize._lsq.givens_elimination, scipy.optimize._zeros, scipy._lib._uarray._uarray, scipy.special._ufuncs_cxx, scipy.special._ellip_harm_2, scipy.special._special_ufuncs, scipy.special._gufuncs, scipy.special._ufuncs, scipy.special._specfun, scipy.special._comb, scipy.linalg._decomp_interpolative, scipy.optimize._bglu_dense, scipy.optimize._lsap, scipy.spatial._ckdtree, scipy.spatial._hausdorff, scipy.spatial._distance_wrap, scipy.spatial._qhull, scipy.spatial._voronoi, scipy.spatial.transform._rotation_cy, scipy.spatial.transform._rigid_transform_cy, scipy.optimize._direct, mooncake._fast_copy, cuda_utils (total: 180)
