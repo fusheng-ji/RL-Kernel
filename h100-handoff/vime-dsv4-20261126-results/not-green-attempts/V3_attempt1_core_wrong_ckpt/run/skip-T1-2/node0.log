@@ -1,0 +1,170 @@
++ : '--use-stateless-adam --use-precision-aware-optimizer --no-save-optim --reset-optimizer-states'
++ '[' -n '' ']'
++ ROLE=head
++ HEAD=<IP>
++ NGPU=2
++ MYIP=<IP>
++ IFN=ibo8.8005
++ export PYTHONNOUSERSITE=1 HOME=/tmp/home PYTHONUNBUFFERED=1 V4_ALLOW_NUMPY2=1
++ PYTHONNOUSERSITE=1
++ HOME=/tmp/home
++ PYTHONUNBUFFERED=1
++ V4_ALLOW_NUMPY2=1
++ mkdir -p /tmp/home <WORK>/vime/runs/core/skip-T1-2
+++ hostname
+VLLM_PATCH_FAILED
++ echo VLLM_PATCH_FAILED
+++ hostname
++ cat <WORK>/vime/runs/core/skip-T1-2/vllm-patch-node-x.log
++ cd /usr/local/lib/python3.12/dist-packages
++ patch -p1 --forward
+patching file vllm/model_executor/model_loader/reload/layerwise.py
+Reversed (or previously applied) patch detected!  Skipping patch.
+1 out of 1 hunk ignored -- saving rejects to file vllm/model_executor/model_loader/reload/layerwise.py.rej
+patching file vllm/models/deepseek_v4/nvidia/model.py
+Reversed (or previously applied) patch detected!  Skipping patch.
+2 out of 2 hunks ignored -- saving rejects to file vllm/models/deepseek_v4/nvidia/model.py.rej
++ echo numpy-mode=numpy2-with-patch0002
++ export XDG_CACHE_HOME=<WORK>/vime/jitcache VLLM_CACHE_ROOT=<WORK>/vime/jitcache/vllm TILELANG_CACHE_DIR=<WORK>/vime/jitcache/tilelang FLASHINFER_WORKSPACE_BASE=<WORK>/vime/jitcache TRITON_CACHE_DIR=/tmp/triton-cache TORCHINDUCTOR_CACHE_DIR=/tmp/inductor-cache
++ XDG_CACHE_HOME=<WORK>/vime/jitcache
++ VLLM_CACHE_ROOT=<WORK>/vime/jitcache/vllm
++ TILELANG_CACHE_DIR=<WORK>/vime/jitcache/tilelang
++ FLASHINFER_WORKSPACE_BASE=<WORK>/vime/jitcache
++ TRITON_CACHE_DIR=/tmp/triton-cache
++ TORCHINDUCTOR_CACHE_DIR=/tmp/inductor-cache
++ export PYTHONPATH=<WORK>/vime/src/vime-fix-run:<WORK>/vime/src/Megatron-run:<WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/probe V4PROBE_DIR=<WORK>/vime/runs/core/skip-T1-2
++ PYTHONPATH=<WORK>/vime/src/vime-fix-run:<WORK>/vime/src/Megatron-run:<WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/probe
++ V4PROBE_DIR=<WORK>/vime/runs/core/skip-T1-2
++ export NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET NCCL_DEBUG_FILE=<WORK>/vime/runs/core/skip-T1-2/nccl-%h-%p.log CUDA_DEVICE_MAX_CONNECTIONS=1 NCCL_CUMEM_ENABLE=0
++ NCCL_DEBUG=INFO
++ NCCL_DEBUG_SUBSYS=INIT,NET
++ NCCL_DEBUG_FILE=<WORK>/vime/runs/core/skip-T1-2/nccl-%h-%p.log
++ CUDA_DEVICE_MAX_CONNECTIONS=1
++ NCCL_CUMEM_ENABLE=0
++ : 0,1,2,3
+++ echo 0,1,2,3
+++ cut -d, -f1-2
++ export CUDA_VISIBLE_DEVICES=0,1
++ CUDA_VISIBLE_DEVICES=0,1
++ echo CVD=0,1
+CVD=0,1
++ nvidia-smi -L
++ head -8
+GPU 0: NVIDIA H100 (UUID: <GPU-UUID>)
+GPU 1: NVIDIA H100 (UUID: <GPU-UUID>)
+GPU 2: NVIDIA H100 (UUID: <GPU-UUID>)
+GPU 3: NVIDIA H100 (UUID: <GPU-UUID>)
+++ echo -n <WORK>/vime/runs/core/skip-T1-2
+++ cksum
+++ cut '-d ' -f1
++ RAY_PORT=24021
++ export RAY_ADDRESS=<IP>:24021
++ RAY_ADDRESS=<IP>:24021
++ export NCCL_SOCKET_IFNAME=ibo8.8005 GLOO_SOCKET_IFNAME=ibo8.8005 TP_SOCKET_IFNAME=ibo8.8005
++ NCCL_SOCKET_IFNAME=ibo8.8005
++ GLOO_SOCKET_IFNAME=ibo8.8005
++ TP_SOCKET_IFNAME=ibo8.8005
+IFN=ibo8.8005 MYIP=<IP> RAY_ADDRESS=<IP>:24021
++ echo IFN=ibo8.8005 MYIP=<IP> RAY_ADDRESS=<IP>:24021
++ '[' head = worker ']'
++ ray start --head --port 24021 --ray-client-server-port 33521 --node-ip-address <IP> --num-gpus 2 --disable-usage-stats --include-dashboard=false
+2026-11-28 02:53:25,557	INFO usage_lib.py:448 -- Usage stats collection is disabled.
+2026-11-28 02:53:25,558	INFO scripts.py:1043 -- [37mLocal node IP[39m: [1m<IP>[22m
+2026-11-28 02:53:25,558	WARNING authentication_token_setup.py:76 -- Token authentication is disabled for this Ray cluster. Anyone with network access to the cluster can run arbitrary code and access its data. To enable token authentication, generate a token with `ray get-auth-token --generate` or set RAY_AUTH_MODE=token. For more information, see https://docs.ray.io/en/latest/ray-security/token-auth.html
+2026-11-28 02:53:27,103	WARNING utils.py:473 -- Detecting docker specified CPUs. In previous versions of Ray, CPU detection in containers was incorrect. Please ensure that Ray has enough CPUs allocated. As a temporary workaround to revert to the prior behavior, set `RAY_USE_MULTIPROCESSING_CPU_COUNT=1` as an env var before starting Ray. Set the env var: `RAY_DISABLE_DOCKER_CPU_WARNING=1` to mute this warning.
+2026-11-28 02:53:28,774	SUCC scripts.py:1084 -- [32m--------------------[39m
+2026-11-28 02:53:28,774	SUCC scripts.py:1085 -- [32mRay runtime started.[39m
+2026-11-28 02:53:28,774	SUCC scripts.py:1086 -- [32m--------------------[39m
+2026-11-28 02:53:28,774	INFO scripts.py:1088 -- [36mNext steps[39m
+2026-11-28 02:53:28,774	INFO cli_output_helpers.py:16 -- [2mNote: The following commands are intended for use on[22m
+2026-11-28 02:53:28,774	INFO cli_output_helpers.py:17 -- [2mthe head node or within the cluster network.[22m
+2026-11-28 02:53:28,774	INFO scripts.py:1092 -- To add another node to this Ray cluster, run
+2026-11-28 02:53:28,774	INFO scripts.py:1095 -- [1m  ray start --address='<IP>:24021'[22m
+2026-11-28 02:53:28,774	INFO scripts.py:1106 -- To connect to this Ray cluster:
+2026-11-28 02:53:28,775	INFO scripts.py:1108 -- [35mimport[39m[26m ray
+2026-11-28 02:53:28,775	INFO scripts.py:1109 -- ray[35m.[39m[26minit(_node_ip_address[35m=[39m[26m[33m'<IP>'[39m[26m)
+2026-11-28 02:53:28,775	INFO scripts.py:1142 -- To terminate the Ray runtime, run
+2026-11-28 02:53:28,775	INFO scripts.py:1143 -- [1m  ray stop[22m
+2026-11-28 02:53:28,775	INFO scripts.py:1146 -- To view the status of the cluster, use
+2026-11-28 02:53:28,775	INFO scripts.py:1147 --   [1mray status[22m[26m
+++ seq 60
++ for i in $(seq 60)
+++ python3 -c 'import ray;ray.init(address='\''auto'\'',log_to_driver=False);print(len([x for x in ray.nodes() if x['\''Alive'\'']]))'
+++ tail -1
++ n=1
++ '[' 1 = 2 ']'
++ sleep 5
++ for i in $(seq 60)
+++ python3 -c 'import ray;ray.init(address='\''auto'\'',log_to_driver=False);print(len([x for x in ray.nodes() if x['\''Alive'\'']]))'
+++ tail -1
++ n=2
++ '[' 2 = 2 ']'
++ break
++ cd <WORK>/vime/src/vime-fix-run
++ source scripts/models/deepseek-v4-flash.sh
+++ DSV4_NUM_LAYERS=4
+++ DSV4_COMPRESS_RATIOS='([0,0,4,128])'
+++ MODEL_ARGS=(--spec vime_plugins.models.deepseek_v4 get_dsv4_spec --model-name deepseek_v4 --experimental-attention-variant dsv4_hybrid --num-layers "$DSV4_NUM_LAYERS" --hidden-size 4096 --num-attention-heads 64 --num-query-groups 1 --kv-channels 512 --q-lora-rank 1024 --qk-pos-emb-head-dim 64 --v-head-dim 512 --qk-layernorm --output-projection-groups 8 --output-projection-lora-rank 1024 --vocab-size 129280 --make-vocab-size-divisible-by 128 --disable-bias-linear --swiglu --activation-func-clamp-value 10 --untie-embeddings-and-output-weights --position-embedding-type rope --rotary-base 10000 --rotary-scaling-factor 16 --original-max-position-embeddings 65536 --normalization RMSNorm --norm-epsilon 1e-6 --multi-latent-attention --csa-window-size 128 --csa-compress-ratios "$DSV4_COMPRESS_RATIOS" --csa-compress-rotary-base 160000 --dsa-indexer-n-heads 64 --dsa-indexer-head-dim 128 --dsa-indexer-topk 512 --dsa-indexer-loss-coeff 0 --num-experts 256 --moe-num-hash-layers 3 --moe-ffn-hidden-size 2048 --moe-shared-expert-intermediate-size 2048 --moe-router-topk 6 --moe-router-score-function sqrtsoftplus --moe-router-enable-expert-bias --moe-router-topk-scaling-factor 1.5 --moe-router-dtype fp32 --moe-grouped-gemm --moe-token-dispatcher-type alltoall --enable-hyper-connections --mhc-num-residual-streams 4 --mhc-sinkhorn-iterations 20 --mtp-num-layers 0 --attention-dropout 0 --hidden-dropout 0 --bf16 --grad-reduce-in-bf16 --enable-experimental)
++ tee <WORK>/vime/runs/core/skip-T1-2/train.log
++ python3 train.py --spec vime_plugins.models.deepseek_v4 get_dsv4_spec --model-name deepseek_v4 --experimental-attention-variant dsv4_hybrid --num-layers 4 --hidden-size 4096 --num-attention-heads 64 --num-query-groups 1 --kv-channels 512 --q-lora-rank 1024 --qk-pos-emb-head-dim 64 --v-head-dim 512 --qk-layernorm --output-projection-groups 8 --output-projection-lora-rank 1024 --vocab-size 129280 --make-vocab-size-divisible-by 128 --disable-bias-linear --swiglu --activation-func-clamp-value 10 --untie-embeddings-and-output-weights --position-embedding-type rope --rotary-base 10000 --rotary-scaling-factor 16 --original-max-position-embeddings 65536 --normalization RMSNorm --norm-epsilon 1e-6 --multi-latent-attention --csa-window-size 128 --csa-compress-ratios '([0,0,4,128])' --csa-compress-rotary-base 160000 --dsa-indexer-n-heads 64 --dsa-indexer-head-dim 128 --dsa-indexer-topk 512 --dsa-indexer-loss-coeff 0 --num-experts 256 --moe-num-hash-layers 3 --moe-ffn-hidden-size 2048 --moe-shared-expert-intermediate-size 2048 --moe-router-topk 6 --moe-router-score-function sqrtsoftplus --moe-router-enable-expert-bias --moe-router-topk-scaling-factor 1.5 --moe-router-dtype fp32 --moe-grouped-gemm --moe-token-dispatcher-type alltoall --enable-hyper-connections --mhc-num-residual-streams 4 --mhc-sinkhorn-iterations 20 --mtp-num-layers 0 --attention-dropout 0 --hidden-dropout 0 --bf16 --grad-reduce-in-bf16 --enable-experimental --hf-checkpoint <SCRATCH>/h3ckpt/hf_full --load <SCRATCH>/h3ckpt/hf_full --ref-load <SCRATCH>/h3ckpt/hf_full --prompt-data <WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/data/gsm8k.jsonl --input-key prompt --label-key label --rollout-shuffle --custom-rm-path v4probe.reward --rollout-data-postprocess-path v4probe.postprocess --num-rollout 2 --rollout-batch-size 8 --n-samples-per-prompt 4 --rollout-max-response-len 32 --rollout-temperature 1 --global-batch-size 32 --tensor-model-parallel-size 1 --context-parallel-size 1 --expert-tensor-parallel-size 1 --use-dynamic-batch-size --max-tokens-per-gpu 4096 --advantage-estimator grpo --kl-loss-coef 0.0 --kl-coef 0.0 --entropy-coef 0.0 --eps-clip 0.2 --optimizer adam --lr 1e-6 --lr-decay-style constant --weight-decay 0.0 --adam-beta1 0.9 --adam-beta2 0.98 --dsa-indexer-loss-coeff 0 --use-stateless-adam --use-precision-aware-optimizer --no-save-optim --reset-optimizer-states --vllm-gpu-memory-utilization 0.5 --vllm-enable-expert-parallel --vllm-moe-backend triton --vllm-kv-cache-dtype fp8 --vllm-block-size 256 --vllm-enable-scale-out --vllm-enforce-eager --vllm-max-model-len 2048 --pipeline-model-parallel-size 2 --expert-model-parallel-size 2 --pipeline-model-parallel-layout 'Et*3|t*1L' --actor-num-nodes 2 --actor-num-gpus-per-node 2 --rollout-num-gpus 1 --rollout-num-gpus-per-engine 1 --dsa-kernel-backend cudnn
+W1128 02:53:42.130000 2562779 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1128 02:53:42.131000 2562779 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:53:42.132000 2562779 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:53:52.182000 2562779 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:53:52.183000 2562779 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:53:52.183000 2562779 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:53:52.184000 2562779 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:53:52.184000 2562779 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:53:52.184000 2562779 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:53:52.185000 2562779 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:53:52.185000 2562779 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:53:52.185000 2562779 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:53:52.186000 2562779 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:53:52.186000 2562779 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:53:52.186000 2562779 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+/usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+<WORK>/vime/src/Megatron-run/megatron/core/models/mimo/config/base_configs.py:12: UserWarning: MimoModelConfig is experimental and still under active development. The API may change without notice in future releases.
+  class MimoModelConfig:
+LANG_RL Log directory: None
+WARNING: Inferring the appropriate argparse argument type from <class 'megatron.core.transformer.transformer_config.TransformerConfig'> failed for pad_packed_seq_alignment: typing.Union[int, typing.Literal['max'], NoneType].
+Deferring to attribute metadata. If the metadata is incomplete, 'parser.add_argument()' may fail.
+Original failure: Unions not supported by argparse: typing.Union[int, typing.Literal['max'], NoneType]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/dist-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+  File "/usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '<SCRATCH>/h3ckpt/hf_full'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<WORK>/vime/src/vime-fix-run/train.py", line 98, in <module>
+    args = parse_args()
+           ^^^^^^^^^^^^
+  File "<WORK>/vime/src/vime-fix-run/vime/utils/arguments.py", line 1745, in parse_args
+    args = megatron_parse_args(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "<WORK>/vime/src/vime-fix-run/vime/backends/megatron_utils/arguments.py", line 209, in megatron_parse_args
+    hf_config = AutoConfig.from_pretrained(args.hf_checkpoint, trust_remote_code=True)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/models/auto/configuration_auto.py", line 397, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '<SCRATCH>/h3ckpt/hf_full'. Use `repo_type` argument if needed.
++ echo 1
++ touch <WORK>/vime/runs/core/skip-T1-2/DONE

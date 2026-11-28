@@ -1,0 +1,59 @@
+W1128 02:52:46.749000 2557807 torch/_opaque_base.py:6] torch._opaque_base is deprecated, use torch._custom_class_base instead
+W1128 02:52:46.750000 2557807 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:52:46.751000 2557807 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:52:56.938000 2557807 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:52:56.939000 2557807 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:52:56.939000 2557807 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:52:56.940000 2557807 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:52:56.941000 2557807 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:52:56.941000 2557807 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:52:56.941000 2557807 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:52:56.942000 2557807 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:52:56.942000 2557807 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+W1128 02:52:56.942000 2557807 torch/_library/opaque_object.py:381] is_opaque_value_type is deprecated, use is_opaque_constant_type instead
+W1128 02:52:56.942000 2557807 torch/_library/opaque_object.py:288] register_opaque_type is deprecated, use register_custom_class instead
+W1128 02:52:56.942000 2557807 torch/_library/opaque_object.py:211] typ='value' is deprecated, use typ='constant' instead
+/usr/local/lib/python3.12/dist-packages/torch/jit/_script.py:1491: FutureWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+<WORK>/vime/src/Megatron-run/megatron/core/models/mimo/config/base_configs.py:12: UserWarning: MimoModelConfig is experimental and still under active development. The API may change without notice in future releases.
+  class MimoModelConfig:
+LANG_RL Log directory: None
+WARNING: Inferring the appropriate argparse argument type from <class 'megatron.core.transformer.transformer_config.TransformerConfig'> failed for pad_packed_seq_alignment: typing.Union[int, typing.Literal['max'], NoneType].
+Deferring to attribute metadata. If the metadata is incomplete, 'parser.add_argument()' may fail.
+Original failure: Unions not supported by argparse: typing.Union[int, typing.Literal['max'], NoneType]
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.12/dist-packages/transformers/utils/hub.py", line 537, in cached_files
+    hf_hub_download(
+  File "/usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_validators.py", line 85, in _inner_fn
+    validate_repo_id(arg_value)
+  File "/usr/local/lib/python3.12/dist-packages/huggingface_hub/utils/_validators.py", line 133, in validate_repo_id
+    raise HFValidationError(
+huggingface_hub.errors.HFValidationError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '<SCRATCH>/h3ckpt/hf_full'. Use `repo_type` argument if needed.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<WORK>/vime/src/vime-fix-run/train.py", line 98, in <module>
+    args = parse_args()
+           ^^^^^^^^^^^^
+  File "<WORK>/vime/src/vime-fix-run/vime/utils/arguments.py", line 1745, in parse_args
+    args = megatron_parse_args(
+           ^^^^^^^^^^^^^^^^^^^^
+  File "<WORK>/vime/src/vime-fix-run/vime/backends/megatron_utils/arguments.py", line 209, in megatron_parse_args
+    hf_config = AutoConfig.from_pretrained(args.hf_checkpoint, trust_remote_code=True)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/models/auto/configuration_auto.py", line 397, in from_pretrained
+    config_dict, unused_kwargs = PreTrainedConfig.get_config_dict(pretrained_model_name_or_path, **kwargs)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/configuration_utils.py", line 919, in get_config_dict
+    config_dict, kwargs = cls._get_config_dict(pretrained_model_name_or_path, **kwargs)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/configuration_utils.py", line 971, in _get_config_dict
+    resolved_config_file = cached_file(
+                           ^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/utils/hub.py", line 370, in cached_file
+    file = cached_files(path_or_repo_id=path_or_repo_id, filenames=[filename], **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.12/dist-packages/transformers/utils/hub.py", line 595, in cached_files
+    raise OSError(f"{e}") from e
+OSError: Repo id must be in the form 'repo_name' or 'namespace/repo_name': '<SCRATCH>/h3ckpt/hf_full'. Use `repo_type` argument if needed.

@@ -1,0 +1,74 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.1.1, pluggy-1.7.0
+rootdir: <WORK>/vime/src/vime-fix-run
+configfile: pyproject.toml
+plugins: anyio-4.15.1, platformdirs-4.14.8
+collected 96 items
+
+tests/test_vllm_cli_args_compat.py ......                                [  6%]
+tests/test_optimizer_grad_norm_guards.py ...........                     [ 17%]
+tests/test_deepseek_v4_weights.py ...........s...ss                      [ 35%]
+tests/test_hf_to_megatron.py .......................                     [ 59%]
+tests/test_deepseek_v4_routing_replay.py .....                           [ 64%]
+tests/test_stateless_adam.py ...                                         [ 67%]
+tests/test_megatron_argument_validation.py ............................. [ 97%]
+                                                                         [ 97%]
+tests/test_vllm_weight_checker.py ..                                     [100%]
+
+=============================== warnings summary ===============================
+../Megatron-run/megatron/core/models/mimo/config/base_configs.py:12
+  <WORK>/vime/src/Megatron-run/megatron/core/models/mimo/config/base_configs.py:12: UserWarning: MimoModelConfig is experimental and still under active development. The API may change without notice in future releases.
+    class MimoModelConfig:
+
+../Megatron-run/megatron/rl/inference/inference_interface.py:11
+  <WORK>/vime/src/Megatron-run/megatron/rl/inference/inference_interface.py:11: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.14/migration/
+    class InferenceInterface(BaseModel):
+
+../Megatron-run/megatron/rl/__init__.py:31
+../Megatron-run/megatron/rl/__init__.py:31
+  <WORK>/vime/src/Megatron-run/megatron/rl/__init__.py:31: PydanticDeprecatedSince20: The `__fields__` attribute is deprecated, use the `model_fields` class property instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.14/migration/
+    cls.Library.type_names[register_type.__fields__['type_name'].default] = register_type
+
+tests/test_deepseek_v4_routing_replay.py::test_megatron_hash_router_uses_vime_replay
+  /usr/local/lib/python3.12/dist-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+    return func(*args, **kwargs)
+
+tests/test_deepseek_v4_routing_replay.py::test_megatron_hash_router_uses_vime_replay
+  <WORK>/vime/src/Megatron-run/megatron/core/transformer/transformer_config.py:2977: UserWarning: moe_ffn_hidden_size is not set, using ffn_hidden_size instead.
+    warnings.warn("moe_ffn_hidden_size is not set, using ffn_hidden_size instead.")
+
+tests/test_deepseek_v4_routing_replay.py::test_megatron_hash_router_uses_vime_replay
+  <WORK>/vime/src/Megatron-run/megatron/core/transformer/transformer_config.py:4445: UserWarning: full scope is deprecated. Use empty cuda_graph_modules to capture the whole layer.
+    warnings.warn(
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+============================== slowest durations ===============================
+4.01s call     tests/test_deepseek_v4_weights.py::test_online_fp8_scale_matches_v4_checkpoint_format
+2.37s call     tests/test_deepseek_v4_routing_replay.py::test_v4_router_matches_vllm_on_fixed_inputs
+0.78s call     tests/test_deepseek_v4_routing_replay.py::test_megatron_hash_router_uses_vime_replay
+0.16s call     tests/test_deepseek_v4_weights.py::test_flash_recipe_uses_recognized_megatron_args
+0.02s call     tests/test_megatron_argument_validation.py::test_update_weight_disk_dir_required_for_disk_transport
+0.01s call     tests/test_megatron_argument_validation.py::test_force_fp8_ue8m0_scale_argument
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_preserves_explicit_start_rollout_id
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_preserves_zero_rollout_gpus_under_colocate
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_rejects_equal_debug_data_paths
+0.01s call     tests/test_megatron_argument_validation.py::test_update_weight_delta_requires_local_checkpoint_dir
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_rejects_non_positive_rollout_temperature[0.0]
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_preserves_larger_rollout_gpus_under_colocate
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_rejects_non_positive_rollout_temperature[-0.1]
+0.01s call     tests/test_megatron_argument_validation.py::test_update_weight_delta_requires_disk_transport
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_defaults_start_rollout_id_to_zero
+0.01s call     tests/test_megatron_argument_validation.py::test_update_weight_delta_rejects_colocate
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_derives_dspark_from_speculative_method
+0.01s call     tests/test_megatron_argument_validation.py::test_update_weight_delta_disk_is_valid
+0.01s call     tests/test_megatron_argument_validation.py::test_vime_validate_args_preserves_zero_rollout_gpus_without_colocate
+0.01s call     tests/test_megatron_argument_validation.py::test_hf_validate_all_moe_skips_dense_intermediate_size
+0.01s call     tests/test_optimizer_grad_norm_guards.py::test_finite_grad_norm_passes[value2]
+
+(267 durations < 0.005s hidden.  Use -vv to show these durations.)
+=========================== short test summary info ============================
+SKIPPED [1] tests/test_deepseek_v4_weights.py:132: Set DSV4_CHECKPOINT to check the local Flash checkpoint
+SKIPPED [1] tests/test_deepseek_v4_weights.py:208: Set DSV4_CHECKPOINT to validate the local Flash checkpoint
+SKIPPED [1] tests/test_deepseek_v4_weights.py:227: Set DSV4_CHECKPOINT to validate the local Flash checkpoint
+================== 93 passed, 3 skipped, 7 warnings in 23.59s ==================
+rc=0

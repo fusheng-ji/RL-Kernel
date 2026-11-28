@@ -1,0 +1,167 @@
++ : '--use-stateless-adam --use-precision-aware-optimizer --no-save-optim --reset-optimizer-states'
++ '[' -n 'NVTE_ALLOW_NONDETERMINISTIC_ALGO=0 CUBLAS_WORKSPACE_CONFIG=:4096:8' ']'
++ export NVTE_ALLOW_NONDETERMINISTIC_ALGO=0 CUBLAS_WORKSPACE_CONFIG=:4096:8
++ NVTE_ALLOW_NONDETERMINISTIC_ALGO=0
++ CUBLAS_WORKSPACE_CONFIG=:4096:8
++ ROLE=worker
++ HEAD=<IP>
++ NGPU=2
++ MYIP=<IP>
++ IFN=ibo8.8005
++ export PYTHONNOUSERSITE=1 HOME=/tmp/home PYTHONUNBUFFERED=1 V4_ALLOW_NUMPY2=1
++ PYTHONNOUSERSITE=1
++ HOME=/tmp/home
++ PYTHONUNBUFFERED=1
++ V4_ALLOW_NUMPY2=1
++ mkdir -p /tmp/home <WORK>/vime/runs/core-r2/det-R2
+++ hostname
++ echo VLLM_PATCH_FAILED
+VLLM_PATCH_FAILED
+++ hostname
++ cat <WORK>/vime/runs/core-r2/det-R2/vllm-patch-node-x.log
++ cd /usr/local/lib/python3.12/dist-packages
++ patch -p1 --forward
+patching file vllm/model_executor/model_loader/reload/layerwise.py
+Reversed (or previously applied) patch detected!  Skipping patch.
+1 out of 1 hunk ignored -- saving rejects to file vllm/model_executor/model_loader/reload/layerwise.py.rej
+patching file vllm/models/deepseek_v4/nvidia/model.py
+Reversed (or previously applied) patch detected!  Skipping patch.
+2 out of 2 hunks ignored -- saving rejects to file vllm/models/deepseek_v4/nvidia/model.py.rej
++ echo numpy-mode=numpy2-with-patch0002
++ export XDG_CACHE_HOME=<WORK>/vime/jitcache VLLM_CACHE_ROOT=<WORK>/vime/jitcache/vllm TILELANG_CACHE_DIR=<WORK>/vime/jitcache/tilelang FLASHINFER_WORKSPACE_BASE=<WORK>/vime/jitcache TRITON_CACHE_DIR=/tmp/triton-cache TORCHINDUCTOR_CACHE_DIR=/tmp/inductor-cache
++ XDG_CACHE_HOME=<WORK>/vime/jitcache
++ VLLM_CACHE_ROOT=<WORK>/vime/jitcache/vllm
++ TILELANG_CACHE_DIR=<WORK>/vime/jitcache/tilelang
++ FLASHINFER_WORKSPACE_BASE=<WORK>/vime/jitcache
++ TRITON_CACHE_DIR=/tmp/triton-cache
++ TORCHINDUCTOR_CACHE_DIR=/tmp/inductor-cache
++ export PYTHONPATH=<WORK>/vime/src/vime-fix-run:<WORK>/vime/src/Megatron-run:<WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/probe V4PROBE_DIR=<WORK>/vime/runs/core-r2/det-R2
++ PYTHONPATH=<WORK>/vime/src/vime-fix-run:<WORK>/vime/src/Megatron-run:<WORK>/wt/h_vi/h100-handoff/vime-dsv4-20261126/probe
++ V4PROBE_DIR=<WORK>/vime/runs/core-r2/det-R2
++ export NCCL_DEBUG=INFO NCCL_DEBUG_SUBSYS=INIT,NET NCCL_DEBUG_FILE=<WORK>/vime/runs/core-r2/det-R2/nccl-%h-%p.log CUDA_DEVICE_MAX_CONNECTIONS=1 NCCL_CUMEM_ENABLE=0
++ NCCL_DEBUG=INFO
++ NCCL_DEBUG_SUBSYS=INIT,NET
++ NCCL_DEBUG_FILE=<WORK>/vime/runs/core-r2/det-R2/nccl-%h-%p.log
++ CUDA_DEVICE_MAX_CONNECTIONS=1
++ NCCL_CUMEM_ENABLE=0
++ : 0,1,2,3
+++ echo 0,1,2,3
+++ cut -d, -f1-2
++ export CUDA_VISIBLE_DEVICES=0,1
++ CUDA_VISIBLE_DEVICES=0,1
++ echo CVD=0,1
+CVD=0,1
++ nvidia-smi -L
++ head -8
+GPU 0: NVIDIA H100 (UUID: <GPU-UUID>)
+GPU 1: NVIDIA H100 (UUID: <GPU-UUID>)
+GPU 2: NVIDIA H100 (UUID: <GPU-UUID>)
+GPU 3: NVIDIA H100 (UUID: <GPU-UUID>)
+++ echo -n <WORK>/vime/runs/core-r2/det-R2
+++ cksum
+++ cut '-d ' -f1
++ RAY_PORT=22249
++ export RAY_ADDRESS=<IP>:22249
++ RAY_ADDRESS=<IP>:22249
++ export NCCL_SOCKET_IFNAME=ibo8.8005 GLOO_SOCKET_IFNAME=ibo8.8005 TP_SOCKET_IFNAME=ibo8.8005
++ NCCL_SOCKET_IFNAME=ibo8.8005
++ GLOO_SOCKET_IFNAME=ibo8.8005
++ TP_SOCKET_IFNAME=ibo8.8005
+IFN=ibo8.8005 MYIP=<IP> RAY_ADDRESS=<IP>:22249
++ echo IFN=ibo8.8005 MYIP=<IP> RAY_ADDRESS=<IP>:22249
++ '[' worker = worker ']'
+++ seq 60
++ for i in $(seq 60)
++ ray start --address=<IP>:22249 --num-gpus 2 --node-ip-address <IP> --disable-usage-stats
+2026-11-28 04:36:38,112	INFO scripts.py:1234 -- [37mLocal node IP[39m: [1m<IP>[22m
+2026-11-28 04:36:42,610	WARNING utils.py:473 -- Detecting docker specified CPUs. In previous versions of Ray, CPU detection in containers was incorrect. Please ensure that Ray has enough CPUs allocated. As a temporary workaround to revert to the prior behavior, set `RAY_USE_MULTIPROCESSING_CPU_COUNT=1` as an env var before starting Ray. Set the env var: `RAY_DISABLE_DOCKER_CPU_WARNING=1` to mute this warning.
+2026-11-28 04:36:44,260	SUCC scripts.py:1250 -- [32m--------------------[39m
+2026-11-28 04:36:44,260	SUCC scripts.py:1251 -- [32mRay runtime started.[39m
+2026-11-28 04:36:44,261	SUCC scripts.py:1252 -- [32m--------------------[39m
+2026-11-28 04:36:44,261	INFO scripts.py:1254 -- To terminate the Ray runtime, run
+2026-11-28 04:36:44,261	INFO scripts.py:1255 -- [1m  ray stop[22m
++ break
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ sleep 5
++ '[' '!' -f <WORK>/vime/runs/core-r2/det-R2/DONE ']'
++ exit 0
