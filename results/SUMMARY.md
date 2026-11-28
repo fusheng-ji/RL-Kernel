@@ -37,6 +37,7 @@ Environment:
 | T5 b | `h3_image_reference_conditioning.py --device cuda` | 0 | `arms not equal to the CPU reference or failing the fixed-row loop: none`; CPU-generator arms equal B200 for all 4 fixtures; `probes` equal B200 exactly |
 | T5 c | `h3_image_refcond_real_vae_check.py` | 0 | `all_green True`; all 4 arms bitwise equal to Diffusers, rows fixed over 6 steps |
 | T6 | `h3_image_full_chain.py --root <IMG> --text-encoder-root <CKPT> --out <OUT>/T6/run --repeat`, then pytest `test_h3_image_full_chain.py` (`<V>` + accelerate 1.16.0) | 0 / 0 | `exit=0`, `all_gates_pass True`; all 4 fixtures: `gate`, `secondary_equal`, `run_to_run_equal` true, `first_drift` null, all 11 stages equal; **26 passed**; peak memory 64.9 / 67.0 / 67.0 / **67.3** GiB (`t2i_upscaled` / `t2i_example` / `edit_two_refs` / `edit_example`); seconds per fixture, RL-Kernel chain / Diffusers: 4.6 / 6.4, 21.7 / 28.8, 17.3 / 19.1, 23.0 / 29.8 |
+| T11 | T10-edit second process: `h3_image_trajectory.py --fixtures edit_two_refs,edit_example --strict-only --against results/T10/edit/run-a` (from `9991f16fa`), in `<W10>` at `4cfa3cbfc` as is (no rebuild) | 0 | `ok True`, `six_in_order` true for both; `binding_counts` row 30 / interim 6 / reference 3; `equal_to_other_process` **true** for `edit_two_refs` and `edit_example`; `fixed_reference_rows.fixed` true for both; peak 69.3 / 69.8 GiB, 608.8 / 730.3 s; status before/after 0 / 0; node-b GPU 0 (0 MiB at start, chosen as the first idle card) (`T11/`) |
 
 ## Findings
 
