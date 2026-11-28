@@ -105,4 +105,12 @@ T10 ran `4cfa3cbfc` (ws1_full with the two SM90 fixes, `d3bc9fe41` contiguous he
 | a, `run-t2i` / `run-b` (`t2i_upscaled`) | 0 / 0 | `ok` true, controls as above, training ok; second process `equal_to_other_process` true at steps 0 and 5 |
 | a, `t2i-vs-t9` (strict `t2i_upscaled` against T9 `run-a` at `69e0e42c9`) | 0 | `equal_to_other_process` true: the fixes leave T9's step records and output unchanged on H100 |
 | T10-edit `run-a` (`edit_two_refs` controls + training at step 5, `edit_example`) | 0 | `ok` true; loop alone, batch rows 0 / 1 (and the partner request) and permutation first drift null; training at head 5 ok, checkpointed twice equal, peak 81.8 GiB; reference rows fixed at all six steps (6,528 and 1,024 rows); schedule and inputs equal to Diffusers; strict chain 610.0 s / 731.4 s (B200 499 / 597), peak 69.3 / 69.8 GiB |
-| T10-edit `run-b` (second process) | - | not run; sent again as T11 |
+| T10-edit `run-b` (second process) | - | not run in T10; run as T11 (below) |
+
+## T11 (2026-11-28)
+
+T11 is the T10-edit second process at `4cfa3cbfc`, on one idle H100 of a shared node (0 MiB used at start, `nvidia-smi.txt`), against T10-edit `run-a` as published on the results branch. Bindings 30 row / 6 interim / 3 reference; worktree clean before and after.
+
+| Task | Exit | Headline |
+|---|---|---|
+| `run-b` (`edit_two_refs`, `edit_example`, strict only, `--against` T10-edit `run-a`) | 0 | `equal_to_other_process` true for both fixtures (step records and output); six calls in order; reference rows fixed at all six steps (6,528 and 1,024 rows); strict chain 608.8 s / 730.3 s, peak 69.3 / 69.8 GiB |
